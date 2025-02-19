@@ -1,8 +1,8 @@
-import { FaRegHeart, FaRegStar } from "react-icons/fa6";
+import { FaRegHeart, FaStar } from "react-icons/fa6";
 
 function Product({type}: any) {
   return (
-    <div className="border rounded-2xl shadow-lg p-4 w-full bg-white flex flex-wrap gap-2.5">
+    <div className="border rounded-2xl shadow-lg p-4 w-full bg-white flex flex-wrap gap-3">
       <div className="w-full aspect-square">
         <img
           className="w-full h-full object-contain"
@@ -20,11 +20,11 @@ function Product({type}: any) {
       </div>
       <div className="flex justify-between w-full">
         <div className= "center-flex justify-start">
-          <FaRegStar width={18} height={18} />
-          <FaRegStar width={18} height={18} />
-          <FaRegStar width={18} height={18} />
-          <FaRegStar width={18} height={18} />
-          <FaRegStar width={18} height={18} />
+        <FaStar className="w-4.5 h-4.5 text-secondary"/>
+        <FaStar className="w-4.5 h-4.5 text-secondary"/>
+        <FaStar className="w-4.5 h-4.5 text-secondary"/>
+        <FaStar className="w-4.5 h-4.5 text-secondary"/>
+        <FaStar className="w-4.5 h-4.5 text-secondary"/>
         </div>
         <div className="center-flex gap-1">
           <p className={`${type == 4 ? "text-sm" : "text-xs"}`}>Yêu thích</p>
