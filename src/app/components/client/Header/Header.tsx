@@ -143,7 +143,7 @@ function Header() {
       {showMenu && (
         <div
           onClick={() => setShowMenu(false)}
-          className="bg-black/30 fixed inset-0 cursor-pointer"
+          className="bg-black/30 fixed inset-0 z-20 cursor-pointer"
         ></div>
       )}
     </>
