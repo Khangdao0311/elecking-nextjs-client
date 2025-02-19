@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .container-custom {
+        @apply container xl:max-w-[1280px] mx-auto;
+    }
+
+    .center-flex {
+        @apply flex items-center justify-center;
+    }
+
+    .center-fixed {
+        @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+    }
+
+    .overlay {
+        @apply fixed inset-0 bg-black/30 z-40;
+    }
+
+}
