@@ -13,7 +13,7 @@ export default function DefaultLayout({
       <Sidebar />
       <div className="pl-64">
         <HeaderAdmin />
-        <main className="p-4">{children}</main>
+        <main className="p-4 flex flex-col gap-4">{children}</main>
       </div>
     </Fragment>
   );
