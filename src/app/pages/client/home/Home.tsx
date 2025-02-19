@@ -25,7 +25,7 @@ const imageSlide = [
 function Home() {
   return (
     <>
-      /*Slide*/
+      {/* Slide */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <Swiper
           spaceBetween={30}
@@ -66,7 +66,7 @@ function Home() {
         </div>
       </section>
 
-      /*Product Sale*/
+      {/* Product Sale */}
       <section className="w-full bg-primary h-[500] py-5">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
@@ -88,7 +88,7 @@ function Home() {
         </div>
       </section>
 
-      /*Promot*/
+      {/* Promot*/ }
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <img
           className="w-full rounded-lg"
@@ -97,7 +97,7 @@ function Home() {
         />
       </section>
       
-      /*Sản Phẩm Nổi Bật*/
+      {/* Sản Phẩm Nổi Bật */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
@@ -121,7 +121,7 @@ function Home() {
         </div>
       </section>
 
-      /*Điện Thoại, Máy Tính Bảng*/
+      {/* Điện Thoại, Máy Tính Bảng */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
@@ -150,7 +150,7 @@ function Home() {
         </div>
       </section>
 
-      /*LAPTOP, MÀN HÌNH, TIVI*/
+      {/* LAPTOP, MÀN HÌNH, TIVI */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
@@ -179,7 +179,7 @@ function Home() {
         </div>
       </section>
 
-      /*TAI NGHE, LOA*/
+      {/* /*TAI NGHE, LOA */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
@@ -206,7 +206,7 @@ function Home() {
         </div>
       </section>
 
-      /*DANH MỤC*/
+      {/* DANH MỤC */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
@@ -261,7 +261,7 @@ function Home() {
         </div>
       </section>
 
-      /*THƯƠNG HIỆU*/
+      {/* THƯƠNG HIỆU */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
