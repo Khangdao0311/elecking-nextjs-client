@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Select with Choices.js</title>
+
+    <!-- Thêm thư viện Choices.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+</head>
+<body>
+
+    <label for="select">Chọn danh mục:</label>
+    <select id="select">
+        <option value="">-- Chọn --</option>
+        <optgroup label="Danh mục">
+            <option value="fruit">Trái cây</option>
+            <option value="vegetable">Rau củ</option>
+        </optgroup>
+    </select>
+
+    <script>
+        // Khởi tạo Choices.js
+        const choice = new Choices("#select", { searchEnabled: false });
+
+        // Dữ liệu các cấp
+        const options2 = {
+            "fruit": { label: "Loại trái cây", items: ["Táo", "Chuối", "Cam"] },
+            "vegetable": { label: "Loại rau củ", items: ["Cà rốt", "Xà lách", "Bắp cải"] }
+        };
+
+        const options3 = {
+           " Táo": { label: "Chi tiết Táo", items: ["Táo đỏ", "Táo xanh"] },
+            "Chuối": { label: "Chi tiết Chuối", items: ["Chuối sứ", "Chuối già"] },
+            "Cam": { label: "Chi tiết Cam", items: ["Cam sành", "Cam mật"] },
+            "Cà rốt": { label: "Chi tiết Cà rốt", items: ["Cà rốt Đà Lạt", "Cà rốt Nhật"] },
+           " Xà lách": { label: "Chi tiết Xà lách", items: ["Xà lách Mỹ", "Xà lách Romaine"] },
+            "Bắp cải": { label: "Chi tiết Bắp cải", items: ["Bắp cải trắng", "Bắp cải tím"] }
+        };
+
+        document.getElementById("select").addEventListener("change", function () {
+            const value = this.value;
+            choice.clearChoices();
+
+            // Nếu chọn danh mục chính (Cấp 1)
+            if (options2[value]) {
+                choice.setChoices([
+                    { value: "", label: "-- Chọn --", disabled: true },
+                    { value: "back", label: "⬅️ Quay lại", customProperties: { level: 0 } },
+                    ...options2[value].items.map(item => ({ value: item, label: item, customProperties: { level: 2 } }))
+                ]);
+            }
+            // Nếu chọn cấp 2
+            else if (options3[value]) {
+                choice.setChoices([
+                    { value: "", label: "-- Chọn --", disabled: true },
+                    { value: "back", label: "⬅️ Quay lại", customProperties: { level: 1 } },
+                    ...options3[value].items.map(item => ({ value: item, label: item, customProperties: { level: 3 } }))
+                ]);
+            }
+            // Nếu chọn "Quay lại"
+            else if (value === "back") {
+                choice.setChoices([
+                    { value: "", label: "-- Chọn --", disabled: true },
+                    { label: "Danh mục", choices: [
+                        { value: "fruit", label: "Trái cây" },
+                        { value: "vegetable", label: "Rau củ" }
+                    ]}
+                ]);
+            }
+        });
+    </script>
+
+</body>
+</html>
