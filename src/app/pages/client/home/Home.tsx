@@ -2,15 +2,12 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-
 // import required modules
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { ImFire } from "react-icons/im";
 import { MdArrowForwardIos } from "react-icons/md";
 import Product from "@/app/components/client/Product";
+
 
 const imageSlide = [
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/16-pro-max-AfterValentine.jpg",
@@ -38,6 +35,10 @@ function Home() {
             clickable: true,
           }}
           navigation={true}
+          // navigation={{
+            //   nextEl: ".custom-next",
+            //   prevEl: ".custom-prev",
+            // }}
           modules={[Autoplay, Pagination, Navigation]}
           className="mySwiper h-96 w-full"
         >
