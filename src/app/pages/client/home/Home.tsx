@@ -7,8 +7,9 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { ImFire } from "react-icons/im";
 import { MdArrowForwardIos } from "react-icons/md";
 import Product from "@/app/components/client/Product";
+import * as productServices from "@/app/services/product.service";
 
-
+import { Fragment, useEffect, useState } from "react";
 const imageSlide = [
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/16-pro-max-AfterValentine.jpg",
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/samsung-s25-gia-chuan-19-2.jpg",
@@ -20,6 +21,41 @@ const imageSlide = [
 ];
 
 function Home() {
+  const [productSale, setProductSale] = useState([]);
+  useEffect(() => {
+    productServices.getQuery("sale=false").then((res) => setProductSale(res));
+  }, []);
+
+  const [productHot, setProductHot] = useState([]);
+  useEffect(() => {
+    productServices
+      .getQuery("orderby=view-desc")
+      .then((res) => setProductHot(res));
+  }, []);
+
+  const [productLaptop, setProductLaptop] = useState([]);
+  useEffect(() => {
+    productServices
+      .getQuery(
+        "categoryid=67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578"
+      )
+      .then((res) => setProductLaptop(res));
+  }, []);
+
+  const [productTablet, setProductTablet] = useState([]);
+  useEffect(() => {
+    productServices
+      .getQuery("categoryid=67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574")
+      .then((res) => setProductTablet(res));
+  }, []);
+
+  const [headPhone, setHeadPhone] = useState([]);
+  useEffect(() => {
+    productServices
+      .getQuery("categoryid=67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a")
+      .then((res) => setHeadPhone(res));
+  }, []);
+
   return (
     <>
       {/* Slide */}
@@ -36,9 +72,9 @@ function Home() {
           }}
           navigation={true}
           // navigation={{
-            //   nextEl: ".custom-next",
-            //   prevEl: ".custom-prev",
-            // }}
+          //   nextEl: ".custom-next",
+          //   prevEl: ".custom-prev",
+          // }}
           modules={[Autoplay, Pagination, Navigation]}
           className="mySwiper h-96 w-full"
         >
@@ -81,15 +117,12 @@ function Home() {
             <MdArrowForwardIos className="text-white w-5 h-5" />
           </div>
         </div>
-        <div className="grid grid-cols-4 container-custom gap-4">
-          <Product type={4} />
-          <Product type={4} />
-          <Product type={4} />
-          <Product type={4} />
+        <div className="grid grid-cols-5 container-custom gap-4">
+          <Product product={productSale} />
         </div>
       </section>
 
-      {/* Promot*/ }
+      {/* Promot*/}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <img
           className="w-full rounded-lg"
@@ -97,7 +130,7 @@ function Home() {
           alt=""
         />
       </section>
-      
+
       {/* Sản Phẩm Nổi Bật */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
@@ -114,11 +147,7 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
+          <Product product={productHot} />
         </div>
       </section>
 
@@ -138,16 +167,8 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
+          <Product product={productTablet}/>
+      
         </div>
       </section>
 
@@ -167,16 +188,7 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
+          <Product product={productLaptop} />
         </div>
       </section>
 
@@ -194,16 +206,8 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
+          <Product product={headPhone}/>
+        
         </div>
       </section>
 
@@ -216,48 +220,114 @@ function Home() {
         </div>
         <div className="grid grid-cols-9 container-custom gap-3.5">
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Điện thoại</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/i/p/ip-14-hp-cu.png" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Điện thoại
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/i/p/ip-14-hp-cu.png"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Máy tính bảng</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-cate-cu.png" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Máy tính bảng
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-cate-cu.png"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Laptop</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-392.svg" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Laptop
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-392.svg"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Tai nghe</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-tai-nghe_1.png" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Tai nghe
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-tai-nghe_1.png"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Màn hình</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-man-hinh.png" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Màn hình
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-man-hinh.png"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">TiVi</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-man-hinh.png" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              TiVi
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-man-hinh.png"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Đồng hồ thông minh</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-451.svg" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Đồng hồ thông minh
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-451.svg"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Loa</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-loa_1.png" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Loa
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-loa_1.png"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Đồ gia dụng</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-846.svg" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Đồ gia dụng
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-846.svg"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Cáp sạc</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-114.svg" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Cáp sạc
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-114.svg"
+              alt=""
+            />
           </div>
           <div className="bg-primary rounded-lg w-32 h-32">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">Sạc dự phòng</p>
-            <img className="w-full  h-full object-contain"  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-122.svg" alt="" />
+            <p className="absolute p-1 w-32 text-white text-sm font-bold">
+              Sạc dự phòng
+            </p>
+            <img
+              className="w-full  h-full object-contain"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-122.svg"
+              alt=""
+            />
           </div>
         </div>
       </section>
@@ -270,10 +340,26 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-4 container-custom gap-4">
-          <img className="rounded-lg" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/apple-chinh-hang-home.jpg" alt="" />
-          <img className="rounded-lg" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/SIS%20asus.png" alt="" />
-          <img className="rounded-lg" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/gian-hang-samsung-home.png" alt="" />
-          <img className="rounded-lg" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/xiaomi.png" alt="" />
+          <img
+            className="rounded-lg"
+            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/apple-chinh-hang-home.jpg"
+            alt=""
+          />
+          <img
+            className="rounded-lg"
+            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/SIS%20asus.png"
+            alt=""
+          />
+          <img
+            className="rounded-lg"
+            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/gian-hang-samsung-home.png"
+            alt=""
+          />
+          <img
+            className="rounded-lg"
+            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/xiaomi.png"
+            alt=""
+          />
         </div>
       </section>
     </>

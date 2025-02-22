@@ -1,7 +1,7 @@
 "use client";
 
 import ProductVariant from "@/app/pages/client/productDetail/ProductVariant";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -15,6 +15,9 @@ import { Pagination } from "antd";
 import Product from "@/app/components/client/Product";
 import ModalAddProduct from "@/app/components/client/ModalAddProduct";
 import ProductColor from "./ProductColor";
+import { useParams, useSearchParams } from "next/navigation";
+import * as productServices from "@/app/services/product.service";
+
 // import Swiper core and required modules
 
 SwiperCore.use([Navigation, Thumbs]);
@@ -22,7 +25,11 @@ SwiperCore.use([Navigation, Thumbs]);
 function ProductDetail() {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>();
   const [showModal, setShowModal] = useState(false);
-
+  // const [productDetail, setProductDetail] = useState([])
+  const params = useParams()
+  console.log(params.id);
+  const [productDetail, setProductDetail] = useState<IProduct>()
+    
   const rams = [
     {
       name: "1TB",
@@ -70,39 +77,66 @@ function ProductDetail() {
         <hr className="my-4" />
         <div className="flex gap-4">
           {/* hình ảnh */}
-          <div className="w-7/12 flex flex-wrap ">
+          <div className="w-7/12 flex flex-wrap gap-2.5">
             <Swiper
               spaceBetween={10}
               navigation={true}
               thumbs={{ swiper: thumbsSwiper }}
-              className="mySwiper2"
+              className="w-full h-[340px] border border-gray-200 rounded-2xl"
             >
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_3.png" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_3.png"
+                />
               </SwiperSlide>
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_4__1.jpg" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_4__1.jpg"
+                />
               </SwiperSlide>
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_5__1.jpg" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_5__1.jpg"
+                />
               </SwiperSlide>
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_6__1.jpg" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_6__1.jpg"
+                />
               </SwiperSlide>
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_7__1.jpg" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_7__1.jpg"
+                />
               </SwiperSlide>
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_8__1.jpg" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_8__1.jpg"
+                />
               </SwiperSlide>
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_9__1.jpg" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_9__1.jpg"
+                />
               </SwiperSlide>
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_1__1.jpg" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_1__1.jpg"
+                />
               </SwiperSlide>
               <SwiperSlide>
-                <img className="w-full h-full object-contain" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_10__1.jpg" />
+                <img
+                  className="w-full h-full object-contain"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_10__1.jpg"
+                />
               </SwiperSlide>
             </Swiper>
             <Swiper
@@ -115,55 +149,55 @@ function ProductDetail() {
             >
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_3.png"
                 />
               </SwiperSlide>
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_4__1.jpg"
                 />
               </SwiperSlide>
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_5__1.jpg"
                 />
               </SwiperSlide>
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_6__1.jpg"
                 />
               </SwiperSlide>
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_7__1.jpg"
                 />
               </SwiperSlide>
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_8__1.jpg"
                 />
               </SwiperSlide>
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_9__1.jpg"
                 />
               </SwiperSlide>
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_1__1.jpg"
                 />
               </SwiperSlide>
               <SwiperSlide>
                 <img
-                  className="w-20 h-20"
+                  className="w-20 h-20 border rounded-lg"
                   src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_10__1.jpg"
                 />
               </SwiperSlide>
@@ -189,11 +223,11 @@ function ProductDetail() {
               <div className="grid grid-cols-3 flex-wrap gap-2.5">
                 {Color.map((color, i) => (
                   <div key={i}>
-                    <ProductColor 
-                    color={color.name}
-                    price={color.price}
-                    checked = {colorName}
-                    onClick = {() => setColorName(color.name)}
+                    <ProductColor
+                      color={color.name}
+                      price={color.price}
+                      checked={colorName}
+                      onClick={() => setColorName(color.name)}
                     />
                   </div>
                 ))}
@@ -481,11 +515,11 @@ function ProductDetail() {
           <p className="text-3xl font-medium">Sản Phẩm Tương Tự</p>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
+          {/* <Product type={5} />
           <Product type={5} />
           <Product type={5} />
           <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
+          <Product type={5} /> */}
         </div>
       </section>
       {showModal && (

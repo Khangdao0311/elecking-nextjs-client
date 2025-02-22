@@ -1,9 +1,8 @@
+import axios from "axios";
 
-
-function getProductSale() {
+export function getQuery(param: any) {
     return ( 
-        fetch('')
+        axios.get(`http://localhost:8080/product?${param}`).then((response: any) => response.data)
      );
 }
 
-export default getProductSale;
