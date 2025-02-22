@@ -18,14 +18,15 @@ function Checkout() {
   };
 
   const [CheckoutSuccac, setCheckoutSuccacOpen] = useState(false);
-  const [payment, setPayment] = useState(false);
   const [editAddress, seteditAddress] = useState(false);
   const [newAddress, setNewAddress] = useState(false);
   const [address, setAddress] = useState(false);
-  const [isVoucherOpen, setIsVoucherOpen] = useState(false);
-  const [selectedVouchers, setSelectedVouchers] = useState<
-    { id: number; discount: string }[]
-  >([]);
+  const [payment, setPayment] = useState(false);
+  const [checkPayment, setCheckPayment] = useState("");
+  const [checkaddress, setCheckaddress] = useState("1");
+
+
+
 
   const showAdress = () => setAddress(true);
   const showpayment = () => setPayment(true);
@@ -38,6 +39,7 @@ function Checkout() {
     setAddress(false);
   };
   const closeAddress = () => setAddress(false);
+  const closepayment = () => setPayment(false);
   const showModal = () => setCheckoutSuccacOpen(true);
   const closeModal = () => setCheckoutSuccacOpen(false);
   const closeEditAddress = () => {
@@ -48,40 +50,51 @@ function Checkout() {
     setNewAddress(false);
     setAddress(true);
   };
-  const vouchers = [
+
+  const Payments = [
     {
-      id: 1,
-      discount: "100.000 đ",
-      minOrder: "5.000.000 đ",
-      expiry: "30/01/2025",
+      id: "1",
+      name: "Thanh Toán Khi Nhận Hàng",
+      image: "https://bacsicayxanh.vn/images/info-policy/payment-policy/cod.png"
     },
     {
-      id: 2,
-      discount: "200.000 đ",
-      minOrder: "10.000.000 đ",
-      expiry: "30/01/2025",
+      id: "2",
+      name: "VNPAY",
+      image: "https://ee3v7pn43nm.exactdn.com/wp-content/uploads/2022/03/Vi-Vnpay.png?strip=all&lossy=1&ssl=1"
     },
     {
-      id: 3,
-      discount: "300.000 đ",
-      minOrder: "15.000.000 đ",
-      expiry: "30/01/2025",
+      id: "3",
+      name: "Ví MoMo",
+      image: "https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBM0E3SHc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--3873048b5c25240e612222d38b001c927993024c/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RkhKbGMybDZaVjkwYjE5c2FXMXBkRnNIYVFJc0FXa0NMQUU9IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--15c3f2f3e11927673ae52b71712c1f66a7a1b7bd/MoMo%20Logo.png"
     },
   ];
-  const toggleVoucherSelection = (voucher: {
-    id: number;
-    discount: string;
-  }) => {
-    setSelectedVouchers((prev) => {
-      const isSelected = prev.some((v) => v.id === voucher.id);
-      if (isSelected) {
-        return prev.filter((v) => v.id !== voucher.id);
-      } else {
-        return [...prev, voucher];
-      }
-    });
-  };console.log((newAddress || address || editAddress)&& "a");
-  
+
+
+
+  const Address =[
+    {
+      id: "1",
+      name: "Nguyễn Văn A",
+      description: "Hẻm 14 Đường Nguyễn Thị Đặng",
+      province: "TP. Hồ Chí Minh",
+      district: "Quận 12",
+      ward: "Phường Tân Thới Hiệp",
+      default: true,
+      phone: "0976767676"
+    },
+    {
+      id: "2",
+      name: "Nguyễn Văn BH",
+      description: "Hẻm 14 Đường Nguyễn Thị Đặng",
+      province: "TP. Hồ Chí Minh",
+      district: "Quận 12",
+      ward: "Phường Tân Thới Hiệp",
+      default: true,
+      phone: "0976767676"
+    }
+  ] 
+   const abc = Address.find(a => a.id ===checkaddress)
+
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 flex flex-col gap-6">
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
@@ -92,12 +105,11 @@ function Checkout() {
         <div className="flex items-center gap-10 w-full place-content-between">
           <div className="flex gap-6 items-center">
             <div className="flex gap-4 text-xl font-semibold">
-              <p>Nguyễn Văn A</p>
-              <p>0967676767</p>
+              <p>{abc?.name}</p>
+              <p>{abc?.phone}</p>
             </div>
             <p className="text-base font-normal w-[812px]">
-              Hẻm 14 Đường Nguyễn Thị Đặng, Phường Tân Thới Hiệp, Quận 12, TP.
-              Hồ Chí Minh
+              {abc?.description}, {abc?.ward}, {abc?.district}, {abc?.province}
             </p>
           </div>
           <p
@@ -151,7 +163,10 @@ function Checkout() {
       </div>
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
         <p className="text-xl font-bold w-full">Phương Thức Thanh Toán</p>
-        <div className="flex place-content-between border-gray-300 border px-12 py-5 items-center rounded-lg cursor-pointer"onClick={showpayment}>
+        <div
+          className="flex place-content-between border-gray-300 border px-12 py-5 items-center rounded-lg cursor-pointer"
+          onClick={showpayment}
+        >
           <div className="flex gap-6 items-center">
             <img
               src="https://www.shutterstock.com/image-vector/credit-card-cartoon-vector-illustration-600nw-2472976831.jpg"
@@ -173,7 +188,6 @@ function Checkout() {
           </div>
           <p
             className="text-lg font-bold text-blue-600 cursor-pointer"
-            onClick={() => setIsVoucherOpen(true)}
           >
             Chọn mã
           </p>
@@ -213,28 +227,35 @@ function Checkout() {
               <p className="text-xl font-semibold">Địa chỉ của tôi</p>
             </div>
             <div className="p-4 h-[500px] flex items-start flex-col gap-4 border border-y border-gray-200 ">
-              <div className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg">
-                <input type="radio" className="accent-primary w-5 h-5" />
-                <div className="flex flex-col w-full items-start gap-2.5">
-                  <div className="flex justify-between w-full">
-                    <div className="flex gap-5">
-                      <p className="text-base font-medium">Nguyễn văn A</p>
-                      <p className="text-base font-normal">096767676</p>
+                {Address.map((address, i)=>(
+                  <div key={i} className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg" onClick={() => {
+                    setCheckaddress(address.id);
+                  }}>
+                  <input type="radio" className="accent-primary w-5 h-5" readOnly checked={address.id == checkaddress}/>
+                  <div className="flex flex-col w-full items-start gap-2.5">
+                    <div className="flex justify-between w-full">
+                      <div className="flex gap-5">
+                        <p className="text-base font-medium">{address.name}</p>
+                        <p className="text-base font-normal">{address.phone}</p>
+                      </div>
+                      <p
+                        className="tetx-sm font-semibold text-blue-500 cursor-pointer"
+                        onClick={showEditAddress}
+                      >
+                        Cập nhật
+                      </p>
                     </div>
-                    <p
-                      className="tetx-sm font-semibold text-blue-500 cursor-pointer"
-                      onClick={showEditAddress}
-                    >
-                      Cập nhật
+                    <p>{address.description}</p>
+                    <p>{address.ward}, {address.district}, {address.province}</p>
+                    <p className="text-primary text-xs font-normal border border-primary rounded-sm px-1 ">
+                      Mặc định
                     </p>
                   </div>
-                  <p>Hẻm 14 Đường Nguyễn Thị Đặng</p>
-                  <p>Phường Tân Thới Hiệp, Quận 12, TP. Hồ Chí Minh</p>
-                  <p className="text-primary text-xs font-normal border border-primary rounded-sm px-1 ">
-                    Mặc định
-                  </p>
-                </div>
-              </div>
+                  </div>
+                ))}
+
+
+              
               <div
                 className="flex cursor-pointer  gap-2 px-6 py-3 items-center shadow-md border border-gray-200 rounded-lg"
                 onClick={showNewAddress}
@@ -255,7 +276,7 @@ function Checkout() {
               </p>
             </div>
           </div>
-          <div className="overlay" onClick={() => console.log("ada")}></div>
+          <div className="overlay"></div>
         </>
       )}
       {newAddress && (
@@ -280,75 +301,75 @@ function Checkout() {
               <div className="flex gap-4">
                 <div className="h-10 w-full !text-sm font-normal">
                   <Select
-                  className="w-full h-full"
-                  showSearch
-                  placeholder="Tỉnh/Thành phố"
-                  optionFilterProp="label"
-                  onChange={onChange}
-                  onSearch={onSearch}
-                  options={[
-                    {
-                      value: "jack",
-                      label: "Jack97",
-                    },
-                    {
-                      value: "lucy",
-                      label: "Lucy",
-                    },
-                    {
-                      value: "tom",
-                      label: "Tom",
-                    },
-                  ]}
-                />
+                    className="w-full h-full"
+                    showSearch
+                    placeholder="Tỉnh/Thành phố"
+                    optionFilterProp="label"
+                    onChange={onChange}
+                    onSearch={onSearch}
+                    options={[
+                      {
+                        value: "jack",
+                        label: "Jack97",
+                      },
+                      {
+                        value: "lucy",
+                        label: "Lucy",
+                      },
+                      {
+                        value: "tom",
+                        label: "Tom",
+                      },
+                    ]}
+                  />
                 </div>
                 <div className="h-10 w-full !text-sm font-normal">
                   <Select
-                  className="w-full h-full !text-sm font-normal"
-                  showSearch
-                  placeholder="Quận/Huyện"
-                  optionFilterProp="label"
-                  onChange={onChange}
-                  onSearch={onSearch}
-                  options={[
-                    {
-                      value: "jack",
-                      label: "Jack97",
-                    },
-                    {
-                      value: "lucy",
-                      label: "Lucy",
-                    },
-                    {
-                      value: "tom",
-                      label: "Tom",
-                    },
-                  ]}
-                />
+                    className="w-full h-full !text-sm font-normal"
+                    showSearch
+                    placeholder="Quận/Huyện"
+                    optionFilterProp="label"
+                    onChange={onChange}
+                    onSearch={onSearch}
+                    options={[
+                      {
+                        value: "jack",
+                        label: "Jack97",
+                      },
+                      {
+                        value: "lucy",
+                        label: "Lucy",
+                      },
+                      {
+                        value: "tom",
+                        label: "Tom",
+                      },
+                    ]}
+                  />
                 </div>
                 <div className="h-10 w-full !text-sm font-normal">
                   <Select
-                  className="w-full h-full"
-                  showSearch
-                  placeholder="Phường/Xã"
-                  optionFilterProp="label"
-                  onChange={onChange}
-                  onSearch={onSearch}
-                  options={[
-                    {
-                      value: "jack",
-                      label: "Jack97",
-                    },
-                    {
-                      value: "lucy",
-                      label: "Lucy",
-                    },
-                    {
-                      value: "tom",
-                      label: "Tom",
-                    },
-                  ]}
-                />
+                    className="w-full h-full"
+                    showSearch
+                    placeholder="Phường/Xã"
+                    optionFilterProp="label"
+                    onChange={onChange}
+                    onSearch={onSearch}
+                    options={[
+                      {
+                        value: "jack",
+                        label: "Jack97",
+                      },
+                      {
+                        value: "lucy",
+                        label: "Lucy",
+                      },
+                      {
+                        value: "tom",
+                        label: "Tom",
+                      },
+                    ]}
+                  />
                 </div>
               </div>
               <textarea
@@ -386,7 +407,7 @@ function Checkout() {
               </p>
             </div>
           </div>
-          <div className="overlay" onClick={() => console.log("ada")}></div>
+          <div className="overlay"></div>
         </>
       )}
       {editAddress && (
@@ -411,75 +432,75 @@ function Checkout() {
               <div className="flex gap-4">
                 <div className="h-10 w-full !text-sm font-normal">
                   <Select
-                  className="w-full h-full"
-                  showSearch
-                  placeholder="Tỉnh/Thành phố"
-                  optionFilterProp="label"
-                  onChange={onChange}
-                  onSearch={onSearch}
-                  options={[
-                    {
-                      value: "jack",
-                      label: "Jack97",
-                    },
-                    {
-                      value: "lucy",
-                      label: "Lucy",
-                    },
-                    {
-                      value: "tom",
-                      label: "Tom",
-                    },
-                  ]}
-                />
+                    className="w-full h-full"
+                    showSearch
+                    placeholder="Tỉnh/Thành phố"
+                    optionFilterProp="label"
+                    onChange={onChange}
+                    onSearch={onSearch}
+                    options={[
+                      {
+                        value: "jack",
+                        label: "Jack97",
+                      },
+                      {
+                        value: "lucy",
+                        label: "Lucy",
+                      },
+                      {
+                        value: "tom",
+                        label: "Tom",
+                      },
+                    ]}
+                  />
                 </div>
                 <div className="h-10 w-full !text-sm font-normal">
                   <Select
-                  className="w-full h-full !text-sm font-normal"
-                  showSearch
-                  placeholder="Quận/Huyện"
-                  optionFilterProp="label"
-                  onChange={onChange}
-                  onSearch={onSearch}
-                  options={[
-                    {
-                      value: "jack",
-                      label: "Jack97",
-                    },
-                    {
-                      value: "lucy",
-                      label: "Lucy",
-                    },
-                    {
-                      value: "tom",
-                      label: "Tom",
-                    },
-                  ]}
-                />
+                    className="w-full h-full !text-sm font-normal"
+                    showSearch
+                    placeholder="Quận/Huyện"
+                    optionFilterProp="label"
+                    onChange={onChange}
+                    onSearch={onSearch}
+                    options={[
+                      {
+                        value: "jack",
+                        label: "Jack97",
+                      },
+                      {
+                        value: "lucy",
+                        label: "Lucy",
+                      },
+                      {
+                        value: "tom",
+                        label: "Tom",
+                      },
+                    ]}
+                  />
                 </div>
                 <div className="h-10 w-full !text-sm font-normal">
                   <Select
-                  className="w-full h-full"
-                  showSearch
-                  placeholder="Phường/Xã"
-                  optionFilterProp="label"
-                  onChange={onChange}
-                  onSearch={onSearch}
-                  options={[
-                    {
-                      value: "jack",
-                      label: "Jack97",
-                    },
-                    {
-                      value: "lucy",
-                      label: "Lucy",
-                    },
-                    {
-                      value: "tom",
-                      label: "Tom",
-                    },
-                  ]}
-                />
+                    className="w-full h-full"
+                    showSearch
+                    placeholder="Phường/Xã"
+                    optionFilterProp="label"
+                    onChange={onChange}
+                    onSearch={onSearch}
+                    options={[
+                      {
+                        value: "jack",
+                        label: "Jack97",
+                      },
+                      {
+                        value: "lucy",
+                        label: "Lucy",
+                      },
+                      {
+                        value: "tom",
+                        label: "Tom",
+                      },
+                    ]}
+                  />
                 </div>
               </div>
               <textarea
@@ -517,97 +538,67 @@ function Checkout() {
               </p>
             </div>
           </div>
-          <div className="overlay" onClick={() => console.log("ada")}></div>
+          <div className="overlay"></div>
         </>
       )}
-      {isVoucherOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">🎟 Khuyến Mãi</h2>
-            <div className="space-y-2">
-              {vouchers.map((voucher) => (
-                <label
-                  key={voucher.id}
-                  className="flex items-center gap-3 p-2 border rounded-lg cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedVouchers.some((v) => v.id === voucher.id)}
-                    onChange={() => toggleVoucherSelection(voucher)}
-                  />
-                  <div>
-                    <p className="font-medium">Giảm {voucher.discount}</p>
-                    <p className="text-sm text-gray-500">
-                      Đơn tối thiểu: {voucher.minOrder}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      HSD: {voucher.expiry}
-                    </p>
-                  </div>
-                </label>
-              ))}
-            </div>
-            <div className="flex justify-end gap-4 mt-4">
-              <button
-                onClick={() => setIsVoucherOpen(false)}
-                className="px-4 py-2 bg-gray-300 rounded-lg"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={() => setIsVoucherOpen(false)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-              >
-                Chọn
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       {CheckoutSuccac && (
+        <>
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-          onClick={closeModal}
+          className="bg-white center-fixed flex-col gap-5 rounded-2xl z-50" onClick={closeModal}
         >
           <div className="bg-white flex flex-col gap-5 rounded-lg py-10 px-20 items-center shadow-xl">
             <FaCheckCircle className="w-36 h-36 text-green-500" />
             <p className="text-2xl font-bold">Đặt hàng thành công</p>
           </div>
         </div>
+        <div className="overlay" onClick={closeModal}></div>
+        </>
       )}
       {payment && (
         <>
           <div className="bg-white center-fixed w-[524px] flex-col gap-5 rounded-lg shadow-xl z-50">
-           <p className="text-xl font-semibold px-5 h-20 flex items-center">Chọn Phương Thức Thanh Toán</p>
-           <div className="p-4 border-y border-gray-200 flex flex-col gap-4 h-[500px]">
-            <div className="flex justify-between border border-gray-300 rounded-lg p-5">
-            <div className="flex items-center">
-              <img src="https://bacsicayxanh.vn/images/info-policy/payment-policy/cod.png" alt="" className="w-16 h-16"/>
-              <p>Thanh toán khi nhận hàng</p>
+            <p className="text-xl font-semibold px-5 h-20 flex items-center">
+              Chọn Phương Thức Thanh Toán
+            </p>
+            <div className="p-4 border-y border-gray-200 flex flex-col gap-4 h-[500px]">
+              {Payments.map((payment, i) => (
+                <div
+                  onClick={() => {
+                    setCheckPayment(payment.id);
+                  }}
+                  className="flex justify-between border border-gray-300 rounded-lg p-5 cursor-pointer"
+                  key={i}
+                >
+                  <div className="flex gap-4 items-center">
+                    <img
+                      src={payment.image}
+                      alt=""
+                      className="w-16 h-16"
+                    />
+                    <p className="text-xl font-medium">{payment.name}</p>
+                  </div>
+                  <input className="w-5 h-5 accent-primary" type="radio" readOnly checked={payment.id == checkPayment} />
+                </div>
+              ))}
             </div>
-              <input type="radio" />
+            <div className="flex gap-4 justify-end p-4">
+              <p
+                className="px-10 border border-gray-300 py-2 rounded-lg cursor-pointer"
+                onClick={closepayment}
+              >
+                Hủy
+              </p>
+              <p className="px-5 bg-primary py-2 rounded-lg text-white">
+                Xác nhận
+              </p>
             </div>
-            <div className="flex justify-between border border-gray-300 rounded-lg p-5">
-            <div className="flex items-center">
-              <img src="https://bacsicayxanh.vn/images/info-policy/payment-policy/cod.png" alt="" className="w-16 h-16"/>
-              <p>Thanh toán khi nhận hàng</p>
-            </div>
-              <input type="radio" />
-            </div>
-            <div className="flex justify-between border border-gray-300 rounded-lg p-5">
-            <div className="flex items-center">
-              <img src="https://bacsicayxanh.vn/images/info-policy/payment-policy/cod.png" alt="" className="w-16 h-16"/>
-              <p>Thanh toán khi nhận hàng</p>
-            </div>
-              <input type="radio" />
-            </div>
-           </div>
           </div>
 
           <div className="overlay" onClick={() => console.log("ada")}></div>
         </>
       )}
     </div>
+    
   );
 }
 
