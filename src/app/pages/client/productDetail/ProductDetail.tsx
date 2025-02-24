@@ -26,10 +26,32 @@ function ProductDetail() {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   // const [productDetail, setProductDetail] = useState([])
-  const params = useParams()
-  console.log(params.id);
-  const [productDetail, setProductDetail] = useState<IProduct>()
-    
+  const params = useParams();
+  const [productDetail, setProductDetail] = useState<IProduct[]>([]);
+  const [productSame, setProductSame] = useState<IProduct[]>([]);
+  const id = params.id;
+  useEffect(() => {
+    if (id) {
+      productServices.getQuery(`id=${id}`).then((res) => setProductDetail(res));
+    }
+  }, [id]);
+
+  const colors = productDetail[0]?.variants[0]?.colors as IProductColor[];
+  // colors?.forEach((e: IProductColor) => console.log(e.name))
+
+  const categoryid = productDetail[0]?.category?.id as IProductCat | string;
+
+  useEffect(() => {
+    if (categoryid) {
+      productServices
+        .getQuery(`categoryid=${categoryid}&limit=6`)
+        .then((res) => {
+          const filter = res.filter((pro: any) => pro.id !== id);
+          setProductSame(filter);
+        });
+    }
+  }, [categoryid]);
+
   const rams = [
     {
       name: "1TB",
@@ -65,15 +87,14 @@ function ProductDetail() {
       price: 32990000,
     },
   ];
+
   const [colorName, setColorName] = useState(Color[0].name);
 
   return (
     <>
       {/* Chi tiết sản phẩm, giá và type */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
-        <div className="text-lg font-extrabold">
-          iPhone 15 Pro Max 256GB | Chính hãng VN/A
-        </div>
+        <div className="text-lg font-extrabold">{productDetail[0]?.name}</div>
         <hr className="my-4" />
         <div className="flex gap-4">
           {/* hình ảnh */}
@@ -84,60 +105,11 @@ function ProductDetail() {
               thumbs={{ swiper: thumbsSwiper }}
               className="w-full h-[340px] border border-gray-200 rounded-2xl"
             >
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_3.png"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_4__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_5__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_6__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_7__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_8__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_9__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_1__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-full h-full object-contain"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_10__1.jpg"
-                />
-              </SwiperSlide>
+              {productDetail[0]?.images.map((img, index) => (
+                <SwiperSlide key={index}>
+                  <img className="w-full h-full object-contain" src={img} />
+                </SwiperSlide>
+              ))}
             </Swiper>
             <Swiper
               onSwiper={(e) => setThumbsSwiper(e)}
@@ -145,70 +117,24 @@ function ProductDetail() {
               slidesPerView={8}
               freeMode={true}
               watchSlidesProgress={true}
-              className="mySwiper"
+              className="w-full"
             >
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_3.png"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_4__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_5__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_6__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_7__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_8__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_9__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_1__1.jpg"
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  className="w-20 h-20 border rounded-lg"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_10__1.jpg"
-                />
-              </SwiperSlide>
+              {productDetail[0]?.images.map((img, index) => (
+                <SwiperSlide key={index}>
+                  <img
+                    className="border border-gray-300 w-20 h-20 rounded-lg"
+                    src={img}
+                  />
+                </SwiperSlide>
+              ))}
             </Swiper>
           </div>
 
           {/* Chọn type */}
           <div className="w-5/12">
             <div className="grid grid-cols-3 flex-wrap gap-2.5">
-              {rams.map((ram, iram) => (
-                <div key={iram}>
+              {rams.map((ram, index) => (
+                <div key={index}>
                   <ProductVariant
                     name={ram.name}
                     price={ram.price}
@@ -221,11 +147,12 @@ function ProductDetail() {
             <div>
               <div className="py-4">Chọn màu để xem Giá</div>
               <div className="grid grid-cols-3 flex-wrap gap-2.5">
-                {Color.map((color, i) => (
+                {colors?.map((color, i) => (
                   <div key={i}>
                     <ProductColor
+                      image={color.image}
                       color={color.name}
-                      price={color.price}
+                      price={productDetail[0]?.price + color.price_extra}
                       checked={colorName}
                       onClick={() => setColorName(color.name)}
                     />
@@ -236,7 +163,11 @@ function ProductDetail() {
             <div className="flex gap-4 items-center py-4">
               <p className="text-base font-medium w-[92px]">Giá</p>
               <p className="text-3xl font-bold text-red-500 w-[204px]">
-                32.490.000 đ
+                {(
+                  productDetail[0]?.price -
+                  productDetail[0]?.variants[0].price_extra -
+                  productDetail[0]?.variants[0].price_sale
+                ).toLocaleString("vi-VN")}
               </p>
               <del className="text-lg font-normal text-gray-500">
                 34.490.000
@@ -515,11 +446,7 @@ function ProductDetail() {
           <p className="text-3xl font-medium">Sản Phẩm Tương Tự</p>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          {/* <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} /> */}
+          <Product product={productSame} />
         </div>
       </section>
       {showModal && (

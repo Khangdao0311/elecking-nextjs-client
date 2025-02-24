@@ -8,7 +8,7 @@ import { ImFire } from "react-icons/im";
 import { MdArrowForwardIos } from "react-icons/md";
 import Product from "@/app/components/client/Product";
 import * as productServices from "@/app/services/product.service";
-
+import config from "@/app/config"
 import { Fragment, useEffect, useState } from "react";
 const imageSlide = [
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/16-pro-max-AfterValentine.jpg",
@@ -21,11 +21,13 @@ const imageSlide = [
 ];
 
 function Home() {
+  // Lấy Sản Phẩm Sale
   const [productSale, setProductSale] = useState([]);
   useEffect(() => {
     productServices.getQuery("sale=false").then((res) => setProductSale(res));
   }, []);
 
+  // Lấy Sản Phẩm Hot
   const [productHot, setProductHot] = useState([]);
   useEffect(() => {
     productServices
@@ -33,6 +35,7 @@ function Home() {
       .then((res) => setProductHot(res));
   }, []);
 
+  // Lấy Sản Phẩm theo danh mục laptop
   const [productLaptop, setProductLaptop] = useState([]);
   useEffect(() => {
     productServices
@@ -42,6 +45,7 @@ function Home() {
       .then((res) => setProductLaptop(res));
   }, []);
 
+  // Lấy Sản Phẩm theo danh mục máy tính bảng
   const [productTablet, setProductTablet] = useState([]);
   useEffect(() => {
     productServices
@@ -49,6 +53,7 @@ function Home() {
       .then((res) => setProductTablet(res));
   }, []);
 
+  // Lấy Sản Phẩm theo danh mục tai nghe
   const [headPhone, setHeadPhone] = useState([]);
   useEffect(() => {
     productServices
@@ -117,7 +122,7 @@ function Home() {
             <MdArrowForwardIos className="text-white w-5 h-5" />
           </div>
         </div>
-        <div className="grid grid-cols-5 container-custom gap-4">
+        <div className="grid grid-cols-5 container-custom gap-2.5">
           <Product product={productSale} />
         </div>
       </section>
@@ -219,7 +224,7 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-9 container-custom gap-3.5">
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Điện thoại
             </p>
@@ -229,7 +234,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Máy tính bảng
             </p>
@@ -239,7 +244,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Laptop
             </p>
@@ -249,7 +254,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Tai nghe
             </p>
@@ -259,7 +264,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Màn hình
             </p>
@@ -269,7 +274,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               TiVi
             </p>
@@ -279,7 +284,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Đồng hồ thông minh
             </p>
@@ -289,7 +294,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Loa
             </p>
@@ -299,7 +304,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Đồ gia dụng
             </p>
@@ -309,7 +314,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Cáp sạc
             </p>
@@ -319,7 +324,7 @@ function Home() {
               alt=""
             />
           </div>
-          <div className="bg-primary rounded-lg w-32 h-32">
+          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
             <p className="absolute p-1 w-32 text-white text-sm font-bold">
               Sạc dự phòng
             </p>
@@ -341,22 +346,22 @@ function Home() {
         </div>
         <div className="grid grid-cols-4 container-custom gap-4">
           <img
-            className="rounded-lg"
+            className="rounded-lg shadow-xl"
             src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/apple-chinh-hang-home.jpg"
             alt=""
           />
           <img
-            className="rounded-lg"
+            className="rounded-lg shadow-xl"
             src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/SIS%20asus.png"
             alt=""
           />
           <img
-            className="rounded-lg"
+            className="rounded-lg shadow-xl"
             src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/gian-hang-samsung-home.png"
             alt=""
           />
           <img
-            className="rounded-lg"
+            className="rounded-lg shadow-xl"
             src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/xiaomi.png"
             alt=""
           />

@@ -1,8 +1,10 @@
 import axios from "axios";
+import config from "../config";
+
 
 export function getQuery(param: any) {
     return ( 
-        axios.get(`http://localhost:8080/product?${param}`).then((response: any) => response.data)
+        axios.get(`${config.api.product}?${param}`).then((response: any) => response.data)
      );
 }
 

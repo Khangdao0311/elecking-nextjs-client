@@ -2,11 +2,12 @@
 
 import Product from "@/app/components/client/Product";
 import { Pagination } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlinePercentage } from "react-icons/ai";
 import { BsSortDown, BsSortDownAlt } from "react-icons/bs";
 import { FaMinus, FaMoneyBill } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
+import * as productServices from "@/app/services/product.service"
 import {
   IoCloseCircle,
   IoCloseOutline,
@@ -50,8 +51,13 @@ function Products() {
   };
 
 
-
-
+  // lấy tất cả sản phẩm limit 20
+  const [products, setProducts] = useState<IProduct[]>([])
+  useEffect(() => {
+    productServices.getQuery(`limit=20`).then(res => setProducts(res))
+  },[])
+  console.log(products);
+  
 
 
   return (
@@ -284,30 +290,8 @@ function Products() {
       {/* Show sản phẩm */}
       <section className="py-4">
         <div className="grid grid-cols-5 gap-2.5 flex-wrap">
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
-          <Product type={5} />
+           <Product product={products} />
+        
         </div>
         <div className="flex items-center justify-center  mt-4">
           <Pagination defaultCurrent={1} total={50} />

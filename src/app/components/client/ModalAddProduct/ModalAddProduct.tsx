@@ -6,7 +6,7 @@ function ModalAddProduct({ onClick }: any) {
       <div>
         <HiCheckCircle className="w-24 h-24 fill-green-500 text-white" />
       </div>
-      <div className="text-2xl font-bold">Sản phẩm đả được thêm vào giỏ hàng</div>
+      <div className="text-2xl font-bold">Sản phẩm đã được thêm vào giỏ hàng</div>
       <div></div>
     </div>
   );

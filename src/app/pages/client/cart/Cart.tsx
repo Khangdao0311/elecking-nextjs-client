@@ -2,10 +2,12 @@
 
 import Voucher from "@/app/components/client/Voucher";
 import Item from "antd/es/list/Item";
+import Link from "next/link";
 import { useState } from "react";
 import { FaCaretDown, FaMinus, FaPlus, FaSortDown } from "react-icons/fa6";
 import { HiOutlineTicket } from "react-icons/hi";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
+import config from "@/app/config";
 
 function Cart() {
   const [showVoucher, setVoucher] = useState(false);
@@ -284,9 +286,11 @@ function Cart() {
               <IoMdArrowDropdown className="w-6 h-6 inline text-black" />
 
             </div>
+            <Link href={config.routes.client.checkout}>
             <button className="bg-primary text-white px-24 py-4 rounded-lg font-bold text-xl">
               Mua Hàng
             </button>
+            </Link>
           </div>
         </div>
       </section>

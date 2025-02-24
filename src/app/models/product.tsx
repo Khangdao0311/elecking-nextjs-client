@@ -7,14 +7,32 @@ interface IProduct{
     status: number
     view: number
     description: string
-    brand_id: string
-    category_id: string
-    variants: IVariant[]
+    brand: IProductBrand
+    category: IProductCat
+    variants: IProductVariant[]
 }
 
-interface IVariant{
+interface IProductVariant{
     property_ids: string[]
     price_extra: number
     price_sale: number
-    color: string[]
+    colors: IProductColor[]
+}
+
+interface IProductColor{
+    name: string
+    image: string
+    price_extra: number
+    status: number
+    quantity: number
+}
+
+interface IProductCat{
+   id: string
+   name: string
+}
+
+interface IProductBrand{
+    id: string
+    name: string
 }
