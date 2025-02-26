@@ -5,7 +5,7 @@ function ProductColor({image, color, price, checked, onClick }: any) {
   return (
     <div 
     onClick={onClick}
-    className={`relative border rounded-lg ${checked == color ? "border-primary": ""} p-2.5 w-[168px] h-[56px] flex gap-2.5 items-center cursor-pointer`}>
+    className={`relative border rounded-lg ${checked ? "border-primary": ""} p-2.5 w-[168px] h-[56px] flex gap-2.5 items-center cursor-pointer`}>
       <img
         src={image}
         alt=""
@@ -15,7 +15,7 @@ function ProductColor({image, color, price, checked, onClick }: any) {
         <p className="text-xs font-bold">{color}</p>
         <p className="text-xs font-normal">{price.toLocaleString('vi-VN')} đ</p>
       </div>
-    {checked == color && (
+    {checked && (
       <FaCheck className="absolute top-0 right-0 bg-primary text-white rounded-tr-lg rounded-bl-lg w-[34px] h-[18px] px-2.5 py-0.5" />
     )}
     </div>

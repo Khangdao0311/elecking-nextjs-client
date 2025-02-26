@@ -30,7 +30,7 @@ function Product(props: { product: IProduct[] }) {
             </div>
             <div className="flex gap-2.5">
               <del className="text-base font-extralight text-gray-400">
-                {(pro.price + pro.variants[0].price_sale + pro.variants[0].price_extra).toLocaleString('vi-VN')}
+                {(pro.price + pro.variants[0].price_extra).toLocaleString('vi-VN')}
               </del>
               <div className="bg-primary text-white px-1.5 py-1 rounded-md text-xs font-bold">
                 -6%

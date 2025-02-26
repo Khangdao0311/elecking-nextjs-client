@@ -13,7 +13,7 @@ interface IProduct{
 }
 
 interface IProductVariant{
-    property_ids: string[]
+    properties: string[]
     price_extra: number
     price_sale: number
     colors: IProductColor[]

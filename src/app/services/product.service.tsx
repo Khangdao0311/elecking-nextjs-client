@@ -2,9 +2,20 @@ import axios from "axios";
 import config from "../config";
 
 
-export function getQuery(param: any) {
-    return ( 
-        axios.get(`${config.api.product}?${param}`).then((response: any) => response.data)
-     );
+export async function getQuery(params: any) {
+    return axios
+      .get(`${config.api.product}`, { params })
+      .then((response: any) => response.data);
+  }
+
+export function getProById(id: string){
+    return(
+        axios.get(`${config.api.product}/${id}`).then((response: any) => response.data)
+    )
 }
 
+export async function getSame(params: any) {
+    return axios
+      .get(`${config.api.product}/same`, { params })
+      .then((response: any) => response.data);
+  }

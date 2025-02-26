@@ -7,7 +7,7 @@ function ProductVariant({ name, price, checked, onClick }: any) {
     <div
       onClick={onClick}
       className={` relative  border ${
-        checked == name ? "border-primary" : ""
+        checked ? "border-primary" : ""
       } rounded-lg p-2.5 w-[168px] h-[54px] flex gap-8.5 items-center cursor-pointer`}
     >
       <div className="text-center w-full">
@@ -16,7 +16,7 @@ function ProductVariant({ name, price, checked, onClick }: any) {
           {price.toLocaleString("vi-VN")} đ
         </p>
       </div>
-      {checked == name && (
+      {checked && (
         <FaCheck className="absolute top-0 right-0 bg-primary text-white rounded-tr-lg rounded-bl-lg w-[34px] h-[18px] px-2.5 py-0.5" />
       )}
     </div>

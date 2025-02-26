@@ -8,7 +8,7 @@ import { ImFire } from "react-icons/im";
 import { MdArrowForwardIos } from "react-icons/md";
 import Product from "@/app/components/client/Product";
 import * as productServices from "@/app/services/product.service";
-import config from "@/app/config"
+import config from "@/app/config";
 import { Fragment, useEffect, useState } from "react";
 const imageSlide = [
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/16-pro-max-AfterValentine.jpg",
@@ -24,41 +24,44 @@ function Home() {
   // Lấy Sản Phẩm Sale
   const [productSale, setProductSale] = useState([]);
   useEffect(() => {
-    productServices.getQuery("sale=false").then((res) => setProductSale(res));
+    const query = { orderby: "sale" };
+    productServices.getQuery(query).then((res) => setProductSale(res));
   }, []);
 
   // Lấy Sản Phẩm Hot
   const [productHot, setProductHot] = useState([]);
   useEffect(() => {
-    productServices
-      .getQuery("orderby=view-desc")
-      .then((res) => setProductHot(res));
+    const query = { orderby: "view-desc" };
+    productServices.getQuery(query).then((res) => setProductHot(res));
   }, []);
 
   // Lấy Sản Phẩm theo danh mục laptop
   const [productLaptop, setProductLaptop] = useState([]);
   useEffect(() => {
-    productServices
-      .getQuery(
-        "categoryid=67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578"
-      )
-      .then((res) => setProductLaptop(res));
+    const query = {
+      categoryid:
+        "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
+    };
+    productServices.getQuery(query).then((res) => setProductLaptop(res));
   }, []);
 
   // Lấy Sản Phẩm theo danh mục máy tính bảng
   const [productTablet, setProductTablet] = useState([]);
   useEffect(() => {
-    productServices
-      .getQuery("categoryid=67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574")
-      .then((res) => setProductTablet(res));
+    const query = {
+      categoryid:
+        "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
+    }
+    productServices.getQuery(query).then((res) => setProductTablet(res));
   }, []);
 
   // Lấy Sản Phẩm theo danh mục tai nghe
   const [headPhone, setHeadPhone] = useState([]);
   useEffect(() => {
-    productServices
-      .getQuery("categoryid=67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a")
-      .then((res) => setHeadPhone(res));
+    const query = {
+      categoryid: "67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a",
+    };
+    productServices.getQuery(query).then((res) => setHeadPhone(res));
   }, []);
 
   return (
@@ -172,8 +175,7 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product product={productTablet}/>
-      
+          <Product product={productTablet} />
         </div>
       </section>
 
@@ -211,8 +213,7 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product product={headPhone}/>
-        
+          <Product product={headPhone} />
         </div>
       </section>
 
