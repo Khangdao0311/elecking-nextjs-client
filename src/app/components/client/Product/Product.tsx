@@ -13,7 +13,7 @@ function Product(props: { product: IProduct[] }) {
             <div className="w-full aspect-square">
               <img
                 className="w-full h-full object-contain"
-                src={pro.images[0]}
+                src={pro.variants[0].colors[0].image}
                 alt=""
               />
             </div>
@@ -30,7 +30,7 @@ function Product(props: { product: IProduct[] }) {
             </div>
             <div className="flex gap-2.5">
               <del className="text-base font-extralight text-gray-400">
-                34.990.000 đ
+                {(pro.price + pro.variants[0].price_sale + pro.variants[0].price_extra).toLocaleString('vi-VN')}
               </del>
               <div className="bg-primary text-white px-1.5 py-1 rounded-md text-xs font-bold">
                 -6%

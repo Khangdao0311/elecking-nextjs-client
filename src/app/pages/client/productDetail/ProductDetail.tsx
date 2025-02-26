@@ -25,7 +25,6 @@ SwiperCore.use([Navigation, Thumbs]);
 function ProductDetail() {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>();
   const [showModal, setShowModal] = useState(false);
-  // const [productDetail, setProductDetail] = useState([])
   const params = useParams();
   const [productDetail, setProductDetail] = useState<IProduct[]>([]);
   const [productSame, setProductSame] = useState<IProduct[]>([]);
@@ -37,8 +36,10 @@ function ProductDetail() {
   }, [id]);
 
   const colors = productDetail[0]?.variants[0]?.colors as IProductColor[];
-  // colors?.forEach((e: IProductColor) => console.log(e.name))
 
+  console.log(colors);
+  
+  
   const categoryid = productDetail[0]?.category?.id as IProductCat | string;
 
   useEffect(() => {
@@ -87,7 +88,7 @@ function ProductDetail() {
       price: 32990000,
     },
   ];
-
+  
   const [colorName, setColorName] = useState(Color[0].name);
 
   return (
@@ -170,7 +171,8 @@ function ProductDetail() {
                 ).toLocaleString("vi-VN")}
               </p>
               <del className="text-lg font-normal text-gray-500">
-                34.490.000
+                {(productDetail[0]?.variants[0].price_extra -
+                  productDetail[0]?.variants[0].price_sale).toLocaleString('vi-VN')}
               </del>
               <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
                 <p className="w-full text-center text-xs font-bold text-white">
@@ -223,66 +225,7 @@ function ProductDetail() {
             <p className="text-xl font-bold">MÔ TẢ SẢN PHẨM</p>
             <div
               dangerouslySetInnerHTML={{
-                __html: ` <p class="text-sm font-medium">Bộ sản phẩm bao gồm:</p>
-            <li class="text-sm font-medium">iPhone sử dụng iOS 18</li>
-            <li class="text-sm font-medium">Cáp Sạc USB‑C (1m)</li>
-            <li class="text-sm font-medium">Tài liệu</li>
-            <p class="text-sm font-medium">Thông tin bảo hành:</p>
-            <p class="text-sm font-medium">
-              Bảo hành: 12 tháng kể từ ngày kích hoạt sản phẩm.
-            </p>
-            <p class="text-sm font-medium">
-              Kích hoạt bảo hành tại: https://checkcoverage.apple.com/vn/en/
-            </p>
-            <p class="text-sm font-medium">
-              Hướng dẫn kiểm tra địa điểm bảo hành gần nhất:
-            </p>
-            <p class="text-sm font-medium">
-              Bước 1: Truy cập vào đường link
-              https://getsupport.apple.com/?caller=grl&locale=en_VN
-            </p>
-            <p class="text-sm font-medium">Bước 2: Chọn sản phẩm.</p>
-            <p class="text-sm font-medium">
-              Bước 3: Điền Apple ID, nhập mật khẩu.
-            </p>
-            <p class="text-sm font-medium">
-              Sau khi hoàn tất, hệ thống sẽ gợi ý những trung tâm bảo hành gần
-              nhất.
-            </p>
-            <p class="text-sm font-medium">
-              Tại Việt Nam, về chính sách bảo hành và đổi trả của Apple, "sẽ
-              được áp dụng chung" theo các điều khoản được liệt kê dưới đây:
-            </p>
-            <p class="text-sm font-medium">
-              1/ Chính sách chung:
-              https://www.apple.com/legal/warranty/products/warranty-rest-of-apac-vietnamese.html
-            </p>
-            <p class="text-sm font-medium">
-              2/ Chính sách cho phụ kiện:
-              https://www.apple.com/legal/warranty/products/accessory-warranty-vietnam.html
-            </p>
-            <p class="text-sm font-medium">
-              3/ Các trung tâm bảo hành Apple ủy quyền tại Việt Nam:
-              https://getsupport.apple.com/repair-locations?locale=vi_VN
-            </p>
-            <p class="text-sm font-medium">
-              Qúy khách vui lòng đọc kỹ hướng dẫn và quy định trên các trang
-              được Apple công bố công khai, Shop chỉ có thể hỗ trợ theo đúng
-              chính sách được đăng công khai của thương hiệu Apple tại Việt Nam,
-            </p>
-            <p class="text-sm font-medium">
-              Bài viết tham khảo chính sách hỗ trợ của nhà phân phối tiêu biểu:
-            </p>
-            <p class="text-sm font-medium">
-              https://synnexfpt.com/bao-hanh/chinh-sach-bao-hanh/?agency-group=1&agency-slug=san-pham-apple
-            </p>
-            <p class="text-sm font-medium">
-              Để thuận tiện hơn trong việc xử lý khiếu nại, đơn hàng của Brand
-              Apple thường có giá trị cao, Qúy khách mua hàng vui lòng quay lại
-              Clip khui mở kiện hàng (khách quan nhất có thể, đủ 6 mặt) giúp
-              Shopee có thêm căn cứ để làm việc với các bên và đẩy nhanh tiến độ
-              xử lý giúp Qúy khách mua hàng.
-            </p>`,
+                __html: ` ${productDetail[0]?.description}`,
               }}
             />
           </div>
