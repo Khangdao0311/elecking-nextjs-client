@@ -6,6 +6,8 @@ const api = {
   user: `${url}/user`,
   auth: `${url}/auth`,
   upload: `${url}/upload`,
+  voucher: `${url}/voucher`,
+  payment: `${url}/payment`,
 };
 
 export default api;
