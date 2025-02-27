@@ -1,14 +1,20 @@
 "use client";
 
 import { Select } from "antd";
-import { useState } from "react";
+import Voucher from "@/app/components/client/Voucher";
+import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import { LuTicket } from "react-icons/lu";
 import { TfiLocationPin } from "react-icons/tfi";
 import { FaCheckCircle } from "react-icons/fa";
-
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import Modal from "./modal";
+import * as productServices from "@/app/services/product.service";
 function Checkout() {
+  var totalProducts = 0;
+  const query = useSearchParams();
+
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
   };
@@ -17,16 +23,16 @@ function Checkout() {
     console.log("search:", value);
   };
 
-  const [CheckoutSuccac, setCheckoutSuccacOpen] = useState(false);
+  const [modal, setModal] = useState(false);
   const [editAddress, seteditAddress] = useState(false);
   const [newAddress, setNewAddress] = useState(false);
   const [address, setAddress] = useState(false);
   const [payment, setPayment] = useState(false);
   const [checkPayment, setCheckPayment] = useState("");
-  const [checkaddress, setCheckaddress] = useState("1");
-
-
-
+  const [checkaddress1, setCheckaddress1] = useState("1");
+  const [checkaddress2, setCheckaddress2] = useState("1");
+  const [productCheckout, setProductCheckOut] = useState<any>([]);
+  const [showVoucher, setVoucher] = useState(false);
 
   const showAdress = () => setAddress(true);
   const showpayment = () => setPayment(true);
@@ -40,8 +46,6 @@ function Checkout() {
   };
   const closeAddress = () => setAddress(false);
   const closepayment = () => setPayment(false);
-  const showModal = () => setCheckoutSuccacOpen(true);
-  const closeModal = () => setCheckoutSuccacOpen(false);
   const closeEditAddress = () => {
     setAddress(true);
     seteditAddress(false);
@@ -51,27 +55,51 @@ function Checkout() {
     setAddress(true);
   };
 
+  // Xét trang thái thanh toán có thành công hay không
+  useEffect(() => {
+    if (query.get("vnp_TransactionStatus")) {
+      setModal(true);
+      setTimeout(() => {
+        setModal(false);
+      }, 1200);
+    }
+  }, [query]);
+
+  function handleOrder() {
+    const order = {
+      order_id: "hjohgcfgvhjklkjhgf",
+      total: "1000000",
+      bankCode: "",
+    };
+
+    fetch("http://localhost:8000/checkout/create_payment_url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.paymentUrl) window.location.href = data.paymentUrl;
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+
   const Payments = [
     {
       id: "1",
       name: "Thanh Toán Khi Nhận Hàng",
-      image: "https://bacsicayxanh.vn/images/info-policy/payment-policy/cod.png"
+      image:
+        "https://bacsicayxanh.vn/images/info-policy/payment-policy/cod.png",
     },
     {
       id: "2",
       name: "VNPAY",
-      image: "https://ee3v7pn43nm.exactdn.com/wp-content/uploads/2022/03/Vi-Vnpay.png?strip=all&lossy=1&ssl=1"
-    },
-    {
-      id: "3",
-      name: "Ví MoMo",
-      image: "https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBM0E3SHc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--3873048b5c25240e612222d38b001c927993024c/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RkhKbGMybDZaVjkwYjE5c2FXMXBkRnNIYVFJc0FXa0NMQUU9IiwiZXhwIjpudWxsLCJwdXIiOiJ2YXJpYXRpb24ifX0=--15c3f2f3e11927673ae52b71712c1f66a7a1b7bd/MoMo%20Logo.png"
+      image:
+        "https://ee3v7pn43nm.exactdn.com/wp-content/uploads/2022/03/Vi-Vnpay.png?strip=all&lossy=1&ssl=1",
     },
   ];
 
-
-
-  const Address =[
+  const Address = [
     {
       id: "1",
       name: "Nguyễn Văn A",
@@ -80,7 +108,7 @@ function Checkout() {
       district: "Quận 12",
       ward: "Phường Tân Thới Hiệp",
       default: true,
-      phone: "0976767676"
+      phone: "0976767676",
     },
     {
       id: "2",
@@ -90,11 +118,30 @@ function Checkout() {
       district: "Quận 12",
       ward: "Phường Tân Thới Hiệp",
       default: true,
-      phone: "0976767676"
-    }
-  ] 
-   const abc = Address.find(a => a.id ===checkaddress)
+      phone: "0976767676",
+    },
+  ];
+  const abc = Address.find((a) => a.id === checkaddress1);
 
+  const checkout = JSON.parse(localStorage.getItem("checkout")!);
+
+  useEffect(() => {
+    async function _() {
+      const _: IProduct[] = [];
+      if (checkout?.length) {
+        for (const item of checkout) {
+          await productServices.getProById(item.product_id).then((res) => {
+            _.push(res);
+          });
+        }
+      }
+      setProductCheckOut(_);
+    }
+    _();
+    
+  }, []);
+
+  // console.log(totalProducts);
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 flex flex-col gap-6">
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
@@ -123,7 +170,7 @@ function Checkout() {
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
         <div className="flex gap-2.5 pb-4 border-b-[1px] border-gray-300">
           <p className="w-[730px] text-base font-medium">Sản phẩm</p>
-          <p className="w-[160px] text-center text-base font-medium">Đơn giá</p>
+          <p className="w-[160px] text-center text-base font-medium">đơn giá</p>
           <p className="w-[160px] text-center text-base font-medium">
             Số lượng
           </p>
@@ -131,26 +178,69 @@ function Checkout() {
             Thành tiền
           </p>
         </div>
-        <div className="flex gap-2.5 items-center">
-          <div className="flex gap-2.5 items-center w-[730px]">
-            <img
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
-              alt="Ảnh"
-              className="w-24 h-24"
-            />
-            <p className="text-base font-medium">
-              iPhone 16 Pro Max | Chính hãng VN/A - 256GB - Titan Sa Mạc
-            </p>
-          </div>
-          <div className="text-center w-[160px] ">
-            <p className="text-base font-medium text-primary">32.790.000 đ</p>
-            <del className="text-xs font-light text-black">32.790.000 đ</del>
-          </div>
-          <p className="text-base font-normal w-[160px] text-center">1</p>
-          <p className="text-base font-bold text-primary w-[160px] text-center">
-            32.790.000 đ
-          </p>
-        </div>
+      
+
+        {productCheckout.map((product: any, index: number) => {
+          totalProducts +=
+            (product.price +
+              product.variants[checkout[index].variant].price_extra -
+              product.variants[checkout[index].variant].price_sale +
+              product.variants[checkout[index].variant].colors[
+                checkout[index].color
+              ].price_extra) *
+            checkout[index].quantity;
+          return (
+            <div key={index} className="flex gap-2.5 items-center">
+              <div className="flex gap-2.5 items-center w-[730px]">
+                <img
+                  src={
+                    product.variants[checkout[index].variant].colors[
+                      checkout[index].color
+                    ].image
+                  }
+                  alt="Ảnh"
+                  className="w-24 h-24"
+                />
+                <p className="text-base font-medium">{`${
+                  product.name
+                } - ${product.variants[checkout[index].variant].properties.join(
+                  " - "
+                )} - ${
+                  product.variants[checkout[index].variant].colors[
+                    checkout[index].color
+                  ].name
+                }`}</p>
+              </div>
+              <div className="text-center w-[160px] ">
+                <p className="text-base font-medium text-primary">
+                  {(
+                    product.price +
+                    product.variants[checkout[index].variant].price_extra -
+                    product.variants[checkout[index].variant].price_sale +
+                    product.variants[checkout[index].variant].colors[
+                      checkout[index].color
+                    ].price_extra
+                  ).toLocaleString("vi", "VN")}
+                </p>
+              </div>
+              <p className="text-base font-normal w-[160px] text-center">
+                {checkout[index].quantity}
+              </p>
+              <p className="text-base font-bold text-primary w-[160px] text-center">
+                {(
+                  (product.price +
+                    product.variants[checkout[index].variant].price_extra -
+                    product.variants[checkout[index].variant].price_sale +
+                    product.variants[checkout[index].variant].colors[
+                      checkout[index].color
+                    ].price_extra) *
+                  checkout[index].quantity
+                ).toLocaleString("vi-VN")}
+              </p>
+            </div>
+          );
+        })}
+
       </div>
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
         <p className="text-xl font-bold w-full ">Lời nhắn</p>
@@ -188,6 +278,7 @@ function Checkout() {
           </div>
           <p
             className="text-lg font-bold text-blue-600 cursor-pointer"
+            onClick={() => setVoucher(showVoucher ? false : true)}
           >
             Chọn mã
           </p>
@@ -195,12 +286,12 @@ function Checkout() {
         <div className="flex justify-end gap-32 py-4 border-y border-gray-300 border-dashed">
           <div className="flex flex-col gap-7">
             <p className="text-lg font-normal">Tổng tiền hàng</p>
-            <p className="text-lg font-normal">Giảm giá sản phẩm</p>
+            <p className="text-lg font-normal">Vận chuyển</p>
             <p className="text-lg font-normal">Voucher</p>
             <p className="text-2xl font-medium">Tổng số tiền</p>
           </div>
           <div className="flex flex-col gap-7 text-end">
-            <p className="text-lg font-normal">34.990.000 đ</p>
+            <p className="text-lg font-normal">{totalProducts.toLocaleString("vi-VN")} đ</p>
             <p className="text-lg font-normal">2.200.000 đ</p>
             <p className="text-lg font-normal">100.000 đ</p>
             <p className="text-2xl font-bold text-primary">32.690.000 đ</p>
@@ -212,7 +303,7 @@ function Checkout() {
             <span className="text-base font-bold">Điều khoản Elecking</span>
           </p>
 
-          <button onClick={showModal}>
+          <button onClick={handleOrder}>
             <p className="bg-primary py-4 px-24 text-white text-2xl font-bold rounded-lg">
               Đặt hàng
             </p>
@@ -227,11 +318,20 @@ function Checkout() {
               <p className="text-xl font-semibold">Địa chỉ của tôi</p>
             </div>
             <div className="p-4 h-[500px] flex items-start flex-col gap-4 border border-y border-gray-200 ">
-                {Address.map((address, i)=>(
-                  <div key={i} className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg" onClick={() => {
-                    setCheckaddress(address.id);
-                  }}>
-                  <input type="radio" className="accent-primary w-5 h-5" readOnly checked={address.id == checkaddress}/>
+              {Address.map((address, i) => (
+                <div
+                  key={i}
+                  className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg"
+                  onClick={() => {
+                    setCheckaddress2(address.id);
+                  }}
+                >
+                  <input
+                    type="radio"
+                    className="accent-primary w-5 h-5"
+                    readOnly
+                    checked={address.id == checkaddress2}
+                  />
                   <div className="flex flex-col w-full items-start gap-2.5">
                     <div className="flex justify-between w-full">
                       <div className="flex gap-5">
@@ -246,16 +346,16 @@ function Checkout() {
                       </p>
                     </div>
                     <p>{address.description}</p>
-                    <p>{address.ward}, {address.district}, {address.province}</p>
+                    <p>
+                      {address.ward}, {address.district}, {address.province}
+                    </p>
                     <p className="text-primary text-xs font-normal border border-primary rounded-sm px-1 ">
                       Mặc định
                     </p>
                   </div>
-                  </div>
-                ))}
+                </div>
+              ))}
 
-
-              
               <div
                 className="flex cursor-pointer  gap-2 px-6 py-3 items-center shadow-md border border-gray-200 rounded-lg"
                 onClick={showNewAddress}
@@ -267,11 +367,20 @@ function Checkout() {
             <div className="flex gap-4 justify-end p-4">
               <p
                 className="px-10 border border-gray-300 py-2 rounded-lg cursor-pointer"
-                onClick={closeAddress}
+                onClick={() => {
+                  setCheckaddress2(checkaddress1);
+                  closeAddress();
+                }}
               >
                 Trở lại
               </p>
-              <p className="px-5 bg-primary py-2 rounded-lg text-white">
+              <p
+                onClick={() => {
+                  setCheckaddress1(checkaddress2);
+                  closeAddress();
+                }}
+                className="px-5 bg-primary py-2 rounded-lg text-white"
+              >
                 Hoàn thành
               </p>
             </div>
@@ -541,19 +650,12 @@ function Checkout() {
           <div className="overlay"></div>
         </>
       )}
-      {CheckoutSuccac && (
-        <>
-        <div
-          className="bg-white center-fixed flex-col gap-5 rounded-2xl z-50" onClick={closeModal}
-        >
-          <div className="bg-white flex flex-col gap-5 rounded-lg py-10 px-20 items-center shadow-xl">
-            <FaCheckCircle className="w-36 h-36 text-green-500" />
-            <p className="text-2xl font-bold">Đặt hàng thành công</p>
-          </div>
-        </div>
-        <div className="overlay" onClick={closeModal}></div>
-        </>
-      )}
+      {modal &&
+        (query.get("vnp_TransactionStatus") == "00" ? (
+          <Modal status="success" content="Đặt hàng thành công" />
+        ) : (
+          <Modal status="erorr" content="Đặt hàng Thất Bại" />
+        ))}
       {payment && (
         <>
           <div className="bg-white center-fixed w-[524px] flex-col gap-5 rounded-lg shadow-xl z-50">
@@ -570,14 +672,15 @@ function Checkout() {
                   key={i}
                 >
                   <div className="flex gap-4 items-center">
-                    <img
-                      src={payment.image}
-                      alt=""
-                      className="w-16 h-16"
-                    />
+                    <img src={payment.image} alt="" className="w-16 h-16" />
                     <p className="text-xl font-medium">{payment.name}</p>
                   </div>
-                  <input className="w-5 h-5 accent-primary" type="radio" readOnly checked={payment.id == checkPayment} />
+                  <input
+                    className="w-5 h-5 accent-primary"
+                    type="radio"
+                    readOnly
+                    checked={payment.id == checkPayment}
+                  />
                 </div>
               ))}
             </div>
@@ -597,8 +700,13 @@ function Checkout() {
           <div className="overlay" onClick={() => console.log("ada")}></div>
         </>
       )}
+      {showVoucher && (
+        <>
+          <Voucher onClick={() => setVoucher(false)} />
+          <div className="overlay"></div>
+        </>
+      )}
     </div>
-    
   );
 }
 
