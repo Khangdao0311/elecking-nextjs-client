@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import config from "@/app/config";
-import { IoPhonePortraitOutline } from "react-icons/io5";
+import { IoPhonePortraitOutline, IoWatch } from "react-icons/io5";
+import { FaHeadphones, FaLaptop, FaTabletScreenButton } from "react-icons/fa6";
+import { CgScreen } from "react-icons/cg";
+import { MdOutlineSurroundSound } from "react-icons/md";
 
 function MenuCategory() {
   return (
@@ -16,39 +19,39 @@ function MenuCategory() {
         </div>
       </Link>
       <div className="group flex gap-2 p-2 items-center hover:bg-gray-200 cursor-pointer">
-        <IoPhonePortraitOutline className="w-6 h-6 group-hover:text-primary" />
+        <FaTabletScreenButton className="w-6 h-6 group-hover:text-primary" />
         <p className="text-sm font-base select-none cursor-pointer  group-hover:text-primary">
           Máy tính bảng
         </p>
       </div>
       <div className="group flex gap-2 p-2 items-center hover:bg-gray-200 cursor-pointer">
-        <IoPhonePortraitOutline className="w-6 h-6 group-hover:text-primary" />
+        <FaLaptop className="w-6 h-6 group-hover:text-primary" />
         <p className="text-sm font-base select-none cursor-pointer  group-hover:text-primary">
-          Điện thoại
+          Laptop
         </p>
       </div>
       <div className="group flex gap-2 p-2 items-center hover:bg-gray-200 cursor-pointer">
-        <IoPhonePortraitOutline className="w-6 h-6 group-hover:text-primary" />
+        <CgScreen className="w-6 h-6 group-hover:text-primary" />
         <p className="text-sm font-base select-none cursor-pointer  group-hover:text-primary">
-          Điện thoại
+          Màn Hình, Ti Vi
         </p>
       </div>
       <div className="group flex gap-2 p-2 items-center hover:bg-gray-200 cursor-pointer">
-        <IoPhonePortraitOutline className="w-6 h-6 group-hover:text-primary" />
+        <FaHeadphones className="w-6 h-6 group-hover:text-primary" />
         <p className="text-sm font-base select-none cursor-pointer  group-hover:text-primary">
-          Điện thoại
+          Tai Nghe
         </p>
       </div>
       <div className="group flex gap-2 p-2 items-center hover:bg-gray-200 cursor-pointer">
-        <IoPhonePortraitOutline className="w-6 h-6 group-hover:text-primary" />
+        <MdOutlineSurroundSound className="w-6 h-6 group-hover:text-primary" />
         <p className="text-sm font-base select-none cursor-pointer  group-hover:text-primary">
-          Điện thoại
+          Loa
         </p>
       </div>
       <div className="group flex gap-2 p-2 items-center hover:bg-gray-200 cursor-pointer">
-        <IoPhonePortraitOutline className="w-6 h-6 group-hover:text-primary" />
+        <IoWatch className="w-6 h-6 group-hover:text-primary" />
         <p className="text-sm font-base select-none cursor-pointer  group-hover:text-primary">
-          Điện thoại
+          Đồng Hồ Thông Minh
         </p>
       </div>
     </div>

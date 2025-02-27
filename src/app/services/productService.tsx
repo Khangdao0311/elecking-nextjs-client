@@ -5,17 +5,17 @@ import config from "../config";
 export async function getQuery(params: any) {
     return axios
       .get(`${config.api.product}`, { params })
-      .then((response: any) => response.data);
+      .then((response: any) => response.data.data);
   }
 
 export function getProById(id: string){
     return(
-        axios.get(`${config.api.product}/${id}`).then((response: any) => response.data)
+        axios.get(`${config.api.product}/${id}`).then((response: any) => response.data.data)
     )
 }
 
 export async function getSame(params: any) {
     return axios
       .get(`${config.api.product}/same`, { params })
-      .then((response: any) => response.data);
+      .then((response: any) => response.data.data);
   }

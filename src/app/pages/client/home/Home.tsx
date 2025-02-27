@@ -7,7 +7,7 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { ImFire } from "react-icons/im";
 import { MdArrowForwardIos } from "react-icons/md";
 import Product from "@/app/components/client/Product";
-import * as productServices from "@/app/services/product.service";
+import * as productServices from "@/app/services/productService";
 import config from "@/app/config";
 import { Fragment, useEffect, useState } from "react";
 const imageSlide = [
@@ -27,6 +27,8 @@ function Home() {
     const query = { orderby: "sale" };
     productServices.getQuery(query).then((res) => setProductSale(res));
   }, []);
+  console.log(productSale);
+  
 
   // Lấy Sản Phẩm Hot
   const [productHot, setProductHot] = useState([]);
