@@ -7,7 +7,7 @@ import { AiOutlinePercentage } from "react-icons/ai";
 import { BsSortDown, BsSortDownAlt } from "react-icons/bs";
 import { FaMinus, FaMoneyBill } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
-import * as productServices from "@/app/services/productService"
+import * as productServices from "@/app/services/product.service"
 import {
   IoCloseCircle,
   IoCloseOutline,
@@ -54,8 +54,7 @@ function Products() {
   // lấy tất cả sản phẩm limit 20
   const [products, setProducts] = useState<IProduct[]>([])
   useEffect(() => {
-    const query = {limit: 100}
-    productServices.getQuery(query).then(res => setProducts(res))
+    productServices.getQuery(`limit=20`).then(res => setProducts(res))
   },[])
   console.log(products);
   

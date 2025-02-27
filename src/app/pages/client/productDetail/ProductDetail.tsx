@@ -16,8 +16,8 @@ import Product from "@/app/components/client/Product";
 import ModalAddProduct from "@/app/components/client/ModalAddProduct";
 import ProductColor from "./ProductColor";
 import { useParams, useSearchParams } from "next/navigation";
-import * as productServices from "@/app/services/productService";
-import ModalLogin from "@/app/components/client/ModalLogin";
+import * as productServices from "@/app/services/product.service";
+
 // import Swiper core and required modules
 
 SwiperCore.use([Navigation, Thumbs]);
@@ -31,24 +31,33 @@ function ProductDetail() {
   const [productSame, setProductSame] = useState<IProduct[]>([]);
   const [iVariant, setIVariant] = useState(0);
   const [icolor, setIColor] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [showLogin, setShowLogin] = useState(false);
-
-
-  const userJSON = localStorage.getItem("user");
-  console.log(product);
-  
 
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => setProduct(res));
   }, [id]);
 
-  useEffect(() => {
-    const query = { id: id, limit: 5 };
-    productServices.getSame(query).then((res) => setProductSame(res));
-  },[id]);
+  useEffect(()=> {
+    const query = {id: id , limit : 5}
+    productServices.getSame(query).then(res => setProductSame(res))
+  })
+  
 
-  return (
+  // const rams = [
+  //   {
+  //     name: "1TB",
+  //     price: 44690000,
+  //   },
+  //   {
+  //     name: "512GB",
+  //     price: 39290000,
+  //   },
+  //   {
+  //     name: "256GB",
+  //     price: 32990000,
+  //   },
+  // ];
+
+  return (  
     <>
       {product && (
         <>
@@ -99,9 +108,9 @@ function ProductDetail() {
                         <ProductVariant
                           name={variant.properties.join(" - ")}
                           price={
-                            product.price +
+                            (product.price +
                             variant.price_extra -
-                            variant.price_sale
+                            variant.price_sale)
                           }
                           checked={index == iVariant}
                           onClick={() => {
@@ -136,11 +145,11 @@ function ProductDetail() {
                   <p className="text-base font-medium w-[92px]">Giá</p>
                   <p className="text-3xl font-bold text-red-500 w-[204px]">
                     {(
-                      product!.price +
+                      product!.price -
                       product!.variants[iVariant].price_extra -
                       product!.variants[iVariant].price_sale +
                       product!.variants[iVariant].colors[icolor].price_extra
-                    ).toLocaleString("vi-VN")}
+                    ).toLocaleString('vi-VN')}
                   </p>
                   <del className="text-lg font-normal text-gray-500">
                     {(
@@ -156,25 +165,13 @@ function ProductDetail() {
                 <div className="flex gap-4 items-center py-4">
                   <p>Số Lượng</p>
                   <div className="flex items-center">
-                    <div
-                      onClick={() => {
-                        if (quantity < 2) {
-                          setQuantity(1);
-                        } else {
-                          setQuantity(quantity - 1);
-                        }
-                      }}
-                      className="w-10 h-10 border rounded-l-lg flex items-center justify-center cursor-pointer"
-                    >
+                    <div className="w-10 h-10 border rounded-l-lg flex items-center justify-center">
                       -
                     </div>
                     <div className="w-20 h-10 border flex items-center justify-center">
-                      {quantity}
+                      1
                     </div>
-                    <div
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="w-10 h-10 border rounded-r-lg flex items-center justify-center cursor-pointer"
-                    >
+                    <div className="w-10 h-10 border rounded-r-lg flex items-center justify-center">
                       +
                     </div>
                   </div>
@@ -183,12 +180,8 @@ function ProductDetail() {
                 <div className="flex gap-4 py-2.5">
                   <div
                     onClick={() => {
-                      if (!userJSON) {
-                        setShowLogin(true);
-                      } else {
-                        setShowModal(true);
-                        setTimeout(() => setShowModal(false), 1000);
-                      }
+                      setShowModal(true);
+                      setTimeout(() => setShowModal(false), 1000);
                     }}
                     className="cursor-pointer flex gap-1.5 p-1 rounded-lg w-[200px] h-[60px] items-center justify-center border border-primary "
                   >
@@ -384,13 +377,6 @@ function ProductDetail() {
           {showModal && (
             <div onClick={() => setShowModal(false)}>
               <ModalAddProduct />
-              <div className="overlay"></div>
-            </div>
-          )}
-
-          {showLogin && (
-            <div onClick={() => setShowLogin(false)}>
-              <ModalLogin />
               <div className="overlay"></div>
             </div>
           )}
