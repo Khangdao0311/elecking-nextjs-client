@@ -1,5 +1,13 @@
+import TitleAdmin from "@/app/components/admin/TitleAdmin";
+import { Table } from "antd";
+
 function ProductList() {
-  return <div>Trang Danh Sách Sản Phẩm</div>;
+  return( 
+  <>
+  <TitleAdmin title="Danh Sách Sản Phẩm" />
+  
+  </>
+  ) 
 }
 
 export default ProductList;

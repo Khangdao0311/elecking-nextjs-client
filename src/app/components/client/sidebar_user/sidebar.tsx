@@ -11,7 +11,7 @@ import { CiLock, CiLogout } from "react-icons/ci";
 function sidebar() {
   const pathname = usePathname();
   return (
-    <div className="flex flex-col w-[308px] items-center bg-white shadow shadow-xd rounded-lg gap-4 p-4">
+    <div className="flex flex-col w-3/12 items-center bg-white shadow shadow-xd rounded-lg gap-4 p-4">
       <Link
         href={config.routes.client.account}
         className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex hover:pl-7 items-center gap-5 hover:bg-primary rounded-lg ${

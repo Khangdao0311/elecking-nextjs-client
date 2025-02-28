@@ -10,6 +10,7 @@ import giaohangtietkiem from "./images/giaohangtietkiem.png";
 import jvatexpress from "./images/jvatexpress.png";
 import appstore from "./images/appstore.png";
 import googleplay from "./images/googleplay.png";
+import banneruserhome from "./images/banner_home_user.png";
 
 
 const images = {
@@ -25,6 +26,7 @@ const images = {
   jvatexpress: jvatexpress.src,
   appstore: appstore.src,
   googleplay: googleplay.src,
+  banneruserhome: banneruserhome.src,
 };
 
 export default images;
