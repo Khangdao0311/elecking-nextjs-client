@@ -12,15 +12,78 @@ import { IoSearchSharp } from "react-icons/io5";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { FaAngleLeft, FaAngleRight, FaCircleUser } from "react-icons/fa6";
 import Link from "next/link";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import config from "@/app/config";
 import LogoMobile from "@/app/assets/LogoMobile";
 import MenuCategory from "../MenuCategory";
 import ModalLogin from "../ModalLogin";
+import { IoIosArrowForward } from "react-icons/io";
+import { usePathname } from 'next/navigation'
+
 function Header() {
+  let pathname = usePathname()
+  console.log(pathname);
+  let breadCrumb: any[] = []
+  switch (pathname) {
+    case '/products':
+      breadCrumb = [{
+        name: 'Trang Chủ',
+        link: config.routes.client.home
+      }, {
+        name: 'Sản phẩm',
+        link: config.routes.client.products
+      }]
+      break;
+    case '/cart':
+      breadCrumb = [{
+        name: 'Trang Chủ',
+        link: config.routes.client.home
+      }, {
+        name: 'Giỏ hàng',
+        link: config.routes.client.cart
+      }]
+      break;
+    case '/login':
+      breadCrumb = [{
+        name: 'Trang Chủ',
+        link: config.routes.client.home
+      }, {
+        name: 'Sản phẩm',
+        link: config.routes.client.login
+      }]
+      break;
+    case '/register':
+      breadCrumb = [{
+        name: 'Trang Chủ',
+        link: config.routes.client.home
+      }, {
+        name: 'Sản phẩm',
+        link: config.routes.client.register
+      }]
+      break;
+    case '/checkout':
+      breadCrumb = [{
+        name: 'Trang Chủ',
+        link: config.routes.client.home
+      }, {
+        name: 'Giỏ hàng',
+        link: config.routes.client.cart
+      }, {
+        name: 'Chi tiết giỏ hàng',
+        link: config.routes.client.checkout
+      }]
+      break;
+
+    default:
+      break;
+  }
+
   const [showMenu, setShowMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  breadCrumb.map((e, i) => (
+    console.log(e.name)
+  ))
   return (
     <>
       <header className="sticky top-0 w-full z-30">
@@ -134,6 +197,18 @@ function Header() {
             </div>
           </div>
         </div>
+        {breadCrumb.length > 0 && (
+          <div className="bg-white">
+            <div className="container-custom flex py-2 items-center gap-2.5 ">
+              {breadCrumb.map((e, i) => (
+                <Fragment key={i} >
+                  {i != 0 && <IoIosArrowForward />}
+                  <Link href={e.link} className="text-xs font-normal">{e.name}</Link>
+                </Fragment>
+              ))}
+            </div>
+          </div>
+        )}
       </header>
       {showLogin && (
         <>
@@ -142,6 +217,7 @@ function Header() {
         </>
       )}
       {showMenu && (
+        // <Link href={config.routes.client.}></Link>
         <div
           onClick={() => setShowMenu(false)}
           className="bg-black/30 fixed inset-0 z-20 cursor-pointer"

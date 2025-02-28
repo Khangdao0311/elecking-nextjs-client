@@ -12,15 +12,15 @@ import * as productServices from "@/app/services/productService";
 import { BsCartX } from "react-icons/bs";
 
 function Cart() {
-  const [showProductCart, setProductCart] = useState<any>([]);
-  const fakeProducts = [
+  const [productCart, setProductCart] = useState<any>([]);
+
+  let cart = [
     { product_id: "67b96ee667788c638a22e2c7", color: 0, quantity: 1, variant: 0 },
     { product_id: "67b96ee667788c638a22e2cc", color: 0, quantity: 2, variant: 0 },
     { product_id: "67b96ee667788c638a22e2c9", color: 0, quantity: 3, variant: 0 }
-
   ];
 
-  localStorage.setItem('products', JSON.stringify(fakeProducts));
+  localStorage.setItem('products', JSON.stringify(cart));
 
   const products = JSON.parse(localStorage.getItem('products') || '[]');
 
@@ -30,7 +30,7 @@ function Cart() {
       if (products?.length) {
         for (const item of products) {
           await productServices.getProById(item.product_id).then((res: any) => {
-            _.push(res);
+            _.push(res.data);
           });
         }
       }
@@ -46,16 +46,13 @@ function Cart() {
   const [isCheckedColor, setCheckedColor] = useState<(string | null)[]>(products.map(() => null));
   const [showRams, setShowRams] = useState<number | null>(null);
   const [showColor, setShowColor] = useState<number | null>(null);
-  const color = ['Titan Sa Mạc', 'Titan Tự Nhiên', 'Titan đen', 'Titan Trắng']
+  const rams = productCart.map((item: any) =>
+    item.variants.map((ite: any) => (
+      ite.properties.join(" - ")
+    ))
+  );
 
-  const rams = ['64GB', '128GB', '258GB', '512GB', '1T']
-  // const rams = showProductCart.map((item: any) =>
-  //   item.variants.map((ite: any) => (
-  //     ite.properties
-  //   ))
-  // ).flat(2);
-
-  // console.log(rams);
+  console.log(rams);
 
 
 
@@ -82,20 +79,20 @@ function Cart() {
   };
   const [checkedItems, setCheckedItems] = useState<boolean[]>(products.map(() => false));
   const [totalPrice, setTotalPrice] = useState(0);
-  const calculateProductPrice = (product: IProduct, productIndex: number) => {
+  const calculateProductPrice = (product: IProduct, iProduct: number) => {
     return (
       (product.price +
-        product.variants[products[productIndex].variant].price_extra -
-        product.variants[products[productIndex].variant].price_sale +
-        product.variants[products[productIndex].variant].colors[
-          products[productIndex].color
-        ].price_extra) * quantities[productIndex]
+        product.variants[products[iProduct].variant].price_extra -
+        product.variants[products[iProduct].variant].price_sale +
+        product.variants[products[iProduct].variant].colors[
+          products[iProduct].color
+        ].price_extra) * quantities[iProduct]
     );
   };
 
 
   const calculateTotalPrice = () => {
-    const total = showProductCart.reduce((sum: any, product: IProduct, index: any) => {
+    const total = productCart.reduce((sum: any, product: IProduct, index: any) => {
       if (checkedItems[index]) {
         return sum + calculateProductPrice(product, index);
       }
@@ -127,11 +124,11 @@ function Cart() {
   }, [quantities]);
 
   const handleRemoveItem = (index: number) => {
-    const updatedProducts = products.filter((_: any, productIndex: any) => productIndex !== index);
+    const updatedProducts = products.filter((_: any, iProduct: any) => iProduct !== index);
     // localStorage.setItem("products", JSON.stringify(updatedProducts));
-    setProductCart(showProductCart.filter((_: any, productIndex: any) => productIndex !== index));
-    setCheckedItems(checkedItems.filter((_, productIndex) => productIndex !== index));
-    setQuantities(quantities.filter((_, productIndex) => productIndex !== index));
+    setProductCart(productCart.filter((_: any, iProduct: any) => iProduct !== index));
+    setCheckedItems(checkedItems.filter((_, iProduct) => iProduct !== index));
+    setQuantities(quantities.filter((_, iProduct) => iProduct !== index));
   };
 
 
@@ -140,7 +137,7 @@ function Cart() {
 
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
-      {showProductCart.length > 0 ? (
+      {productCart.length > 0 ? (
         <div>
           <section>
             <div className="flex flex-col items-center min-h-[678px] gap-5">
@@ -162,16 +159,16 @@ function Cart() {
                 </span>
               </div>
 
-              {showProductCart.map((product: IProduct, productIndex: number) => (
-                <div key={productIndex} className="flex items-center border rounded-xl shadow-[0_4px_6px_rgba(209,213,219,0.5)] p-4 gap-2.5 cursor-pointer w-full">
+              {productCart.map((product: IProduct, iProduct: number) => (
+                <div key={iProduct} className="flex items-center border rounded-xl shadow-[0_4px_6px_rgba(209,213,219,0.5)] p-4 gap-2.5 cursor-pointer w-full">
                   <div className="w-16 flex justify-center">
-                    <input onChange={() => handleCheckItem(productIndex)} checked={checkedItems[productIndex]} type="checkbox" className="w-5 h-5 text-red-600 focus:ring-0" />
+                    <input onChange={() => handleCheckItem(iProduct)} checked={checkedItems[iProduct]} type="checkbox" className="w-5 h-5 text-red-600 focus:ring-0" />
                   </div>
                   <div className="w-[660px] flex gap-2.5">
                     <img
                       src={
-                        product.variants[products[productIndex].variant].colors[
-                          products[productIndex].color
+                        product.variants[products[iProduct].variant].colors[
+                          products[iProduct].color
                         ].image
                       }
                       alt="Sản Phẩm"
@@ -184,49 +181,45 @@ function Cart() {
                       <div className="text-primary text-base font-bold">
                         {(
                           product.price +
-                          product.variants[products[productIndex].variant].price_extra -
-                          product.variants[products[productIndex].variant].price_sale +
-                          product.variants[products[productIndex].variant].colors[
-                            products[productIndex].color
+                          product.variants[cart[iProduct].variant].price_extra -
+                          product.variants[cart[iProduct].variant].price_sale +
+                          product.variants[cart[iProduct].variant].colors[
+                            cart[iProduct].color
                           ].price_extra
                         ).toLocaleString("vi-VN")} đ <del className="text-black text-xs font-normal ">
                           {(product.price).toLocaleString('vn-VN')}
                           đ</del>
-
                       </div>
                     </div>
 
                     <div className="w-72 flex gap-2 items-center">
                       <div
                         onClick={() => {
-                          setShowRams(prev => prev === productIndex ? null : productIndex);
+                          setShowRams(prev => prev === iProduct ? null : iProduct);
                           setShowColor(null);
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
-                        <div>{isCheckedRams[productIndex] || "256GB"}</div>
+                        <div>{product.variants[cart[iProduct].variant].properties.join(" - ")}</div>
                         <FaCaretDown />
 
-                        {showRams === productIndex && (
+                        {showRams === iProduct && (
                           <div
                             className="z-10 w-[404px] flex flex-wrap gap-2 p-4 border border-gray-300 bg-white rounded-2xl absolute top-12 left-0"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {rams.map((ramItem: any) => (
+                            {rams[iProduct].map((ram: any, iram: number) => (
                               <div
-                                key={ramItem}
+                                key={iram}
                                 onClick={() => {
-                                  const newCheckedRams = [...isCheckedRams];
-                                  newCheckedRams[productIndex] = ramItem;
-                                  setCheckedRams(newCheckedRams);
                                   setShowRams(null);
                                 }}
 
-                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${isCheckedRams[productIndex] === ramItem ? "border-primary" : "border-gray-300"
+                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${iram == cart[iProduct].variant ? "border-primary" : "border-gray-300"
                                   }`}
                               >
-                                {ramItem}
-                                {isCheckedRams[productIndex] === ramItem && (
+                                {ram}
+                                {iram == cart[iProduct].variant && (
                                   <div className="absolute w-5 h-3 bg-primary top-0 left-0 rounded-tl-lg rounded-br-lg flex items-center justify-center">
                                     <IoMdCheckmark className="w-3 h-3 text-white" />
                                   </div>
@@ -239,33 +232,34 @@ function Cart() {
 
                       <div
                         onClick={() => {
-                          setShowColor(prev => prev === productIndex ? null : productIndex);
+                          setShowColor(prev => prev === iProduct ? null : iProduct);
                           setShowRams(null);
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
-                        <div>{isCheckedColor[productIndex] || "Titan Sa Mạc"}</div>
+                        <div>{product.variants[cart[iProduct].variant].colors[cart[iProduct].color].name}</div>
                         <FaCaretDown />
 
-                        {showColor === productIndex && (
+                        {showColor === iProduct && (
                           <div
                             className="z-10 w-[404px] flex flex-wrap gap-2 p-4 border border-gray-300 bg-white rounded-2xl absolute top-12 left-0"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {color.map((colorItem) => (
+                            {product.variants[cart[iProduct].variant].colors.map((color, icolor: number) => (
                               <div
-                                key={colorItem}
+                                key={icolor}
                                 onClick={() => {
-                                  const newCheckedColor = [...isCheckedColor];
-                                  newCheckedColor[productIndex] = colorItem;
-                                  setCheckedColor(newCheckedColor);
+                                  // const newCheckedColor = [...isCheckedColor];
+                                  // newCheckedColor[iProduct] = colorItem;
+                                  // setCheckedColor(newCheckedColor);
+
                                   setShowColor(null);
                                 }}
-                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${isCheckedColor[productIndex] === colorItem ? "border-primary" : "border-gray-300"
+                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${icolor === cart[iProduct].color ? "border-primary" : "border-gray-300"
                                   }`}
                               >
-                                {colorItem}
-                                {isCheckedColor[productIndex] === colorItem && (
+                                {color.name}
+                                {icolor === cart[iProduct].color && (
                                   <div className="absolute w-5 h-3 bg-primary top-0 left-0 rounded-tl-lg rounded-br-lg flex items-center justify-center">
                                     <IoMdCheckmark className="w-3 h-3 text-white" />
                                   </div>
@@ -280,34 +274,22 @@ function Cart() {
                   {/* // ))} */}
                   <div className="w-40 flex justify-center items-center">
                     <div className="w-[136px] flex justify-center items-center border rounded-lg">
-                      <button onClick={() => decreaseQuantity(productIndex)} className="w-9 h-9 text-lg flex justify-center items-center">
+                      <button onClick={() => decreaseQuantity(iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
                         <FaMinus className="w-4 h-4" />
                       </button>
-                      <input type="text" value={quantities[productIndex]} readOnly className="w-16 h-9 text-center font-base font-bold border-l border-r" />
-                      <button onClick={() => increaseQuantity(productIndex)} className="w-9 h-9 text-lg flex justify-center items-center">
+                      <input type="text" value={quantities[iProduct]} readOnly className="w-16 h-9 text-center font-base font-bold border-l border-r" />
+                      <button onClick={() => increaseQuantity(iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
                         <FaPlus className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
                   <div className="w-40 text-center text-primary text-base font-bold">
-                    {calculateProductPrice(product, productIndex)
+                    {calculateProductPrice(product, iProduct)
                       .toString()
                       .replace(/\B(?=(\d{3})+(?!\d))/g, ".")} đ
                   </div>
-                  {/* <div className="w-40 text-center text-primary text-base font-bold">
-                {(
-                  product.price +
-                  product.variants[products[productIndex].variant].price_extra -
-                  product.variants[products[productIndex].variant].price_sale +
-                  product.variants[products[productIndex].variant].colors[
-                    products[productIndex].color
-                  ].price_extra
-                ).toLocaleString("vi-VN")} đ
-              </div> */}
-
-
-                  <button onClick={() => handleRemoveItem(productIndex)} className="w-40 text-center text-black text-base font-bold hover:text-red-600">
+                  <button onClick={() => handleRemoveItem(iProduct)} className="w-40 text-center text-black text-base font-bold hover:text-red-600">
                     Xóa
                   </button>
                 </div>
@@ -325,7 +307,9 @@ function Cart() {
                 <div className="flex items-center gap-5">
                   <div className="flex items-center gap-2">
                     <input onChange={handleCheckAll} checked={checkedItems.every(item => item)} type="checkbox" className="mr-2 w-6 h-6" />
-                    <span className="text-base font-medium">Chọn tất cả <span>( 2 )</span></span>
+                    <span className="text-base font-medium">Chọn tất cả <span>
+                   (3)
+                    </span></span>
                   </div>
                   <div>
                     <p>Xóa các sản phẩm đã chọn</p>

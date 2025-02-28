@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import config from "@/app/config";
 import { useState } from "react";
 import { FaEye, FaFacebook } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
@@ -80,9 +82,9 @@ function Login() {
 
             <div className="flex items-center justify-center w-full gap-1.5">
               <div>Bạn mới đến ElecKing ?</div>
-              <div className="text-primary font-semibold text-sm hover:underline cursor-pointer">
+              <Link href={config.routes.client.register} className="text-primary font-semibold text-sm hover:underline cursor-pointer">
                 Đăng ký
-              </div>
+              </Link>
             </div>
           </div>
         </div>
