@@ -84,10 +84,7 @@ function Header() {
         <div className="bg-primary py-3 px-3 md:px-3.5 md:py-3.5 lg:px-4 lg:py-4 xl:px-0 ">
           <div className="container-custom flex gap-4">
             {/* Logo elecking */}
-            <Link
-              href={config.routes.client.home}
-              className=" w-12 md:w-[200px] h-12"
-            >
+            <Link href={config.routes.client.home} className=" w-12 md:w-[200px] h-12">
               <Logo className="hidden md:block" />
               <LogoMobile className="block md:hidden" />
             </Link>
@@ -101,7 +98,7 @@ function Header() {
                 <BiCategory className="w-9 h-9 text-white" />
                 <FaCaretDown className="w-6 h-6 text-white" />
               </div>
-              {showMenu && <MenuCategory />}
+              {showMenu && <MenuCategory onClick={() => setShowMenu(false)} />}
             </div>
 
             {/* Search */}
