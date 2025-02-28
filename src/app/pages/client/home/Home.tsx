@@ -7,7 +7,7 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { ImFire } from "react-icons/im";
 import { MdArrowForwardIos } from "react-icons/md";
 import Product from "@/app/components/client/Product";
-import * as productServices from "@/app/services/product.service";
+import * as productServices from "@/app/services/productService";
 import config from "@/app/config";
 import { Fragment, useEffect, useState } from "react";
 const imageSlide = [
@@ -25,14 +25,14 @@ function Home() {
   const [productSale, setProductSale] = useState([]);
   useEffect(() => {
     const query = { orderby: "sale" };
-    productServices.getQuery(query).then((res) => setProductSale(res));
+    productServices.getQuery(query).then((res) => setProductSale(res.data));
   }, []);
 
   // Lấy Sản Phẩm Hot
   const [productHot, setProductHot] = useState([]);
   useEffect(() => {
     const query = { orderby: "view-desc" };
-    productServices.getQuery(query).then((res) => setProductHot(res));
+    productServices.getQuery(query).then((res) => setProductHot(res.data));
   }, []);
 
   // Lấy Sản Phẩm theo danh mục laptop
@@ -42,7 +42,7 @@ function Home() {
       categoryid:
         "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
     };
-    productServices.getQuery(query).then((res) => setProductLaptop(res));
+    productServices.getQuery(query).then((res) => setProductLaptop(res.data));
   }, []);
 
   // Lấy Sản Phẩm theo danh mục máy tính bảng
@@ -51,7 +51,7 @@ function Home() {
     const query = {
       categoryid: "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
     };
-    productServices.getQuery(query).then((res) => setProductTablet(res));
+    productServices.getQuery(query).then((res) => setProductTablet(res.data));
   }, []);
 
   // Lấy Sản Phẩm theo danh mục tai nghe
@@ -60,7 +60,7 @@ function Home() {
     const query = {
       categoryid: "67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a",
     };
-    productServices.getQuery(query).then((res) => setHeadPhone(res));
+    productServices.getQuery(query).then((res) => setHeadPhone(res.data));
   }, []);
 
   return (

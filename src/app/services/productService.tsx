@@ -4,7 +4,7 @@ import config from "../config";
 export async function getQuery(params: any) {
   return axios
     .get(`${config.api.product}`, { params })
-    .then((response: any) => response.data.data);
+    .then((response: any) => response.data);
 }
 
 export function getProById(id: string) {
@@ -16,5 +16,5 @@ export function getProById(id: string) {
 export async function getSame(params: any) {
   return axios
     .get(`${config.api.product}/same`, { params })
-    .then((response: any) => response.data.data);
+    .then((response: any) => response.data);
 }

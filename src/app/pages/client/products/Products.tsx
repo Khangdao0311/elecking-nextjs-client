@@ -2,12 +2,12 @@
 
 import Product from "@/app/components/client/Product";
 import { Pagination } from "antd";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { AiOutlinePercentage } from "react-icons/ai";
 import { BsSortDown, BsSortDownAlt } from "react-icons/bs";
 import { FaMinus, FaMoneyBill } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
-import * as productServices from "@/app/services/product.service";
+import * as productServices from "@/app/services/productService";
 import { IoCloseCircle, IoCloseOutline } from "react-icons/io5";
 import { MdRemoveRedEye } from "react-icons/md";
 
@@ -62,7 +62,9 @@ function Products() {
   // lấy tất cả sản phẩm limit 20
   const [products, setProducts] = useState<IProduct[]>([]);
   useEffect(() => {
-    productServices.getQuery({ limit: 20 }).then((res) => setProducts(res));
+    productServices
+      .getQuery({ limit: 20 })
+      .then((res) => setProducts(res.data));
   }, []);
 
   return (
@@ -75,17 +77,23 @@ function Products() {
             {/* Giá */}
             <div
               className={`flex items-center gap-1.5 px-2.5 py-2 relative border ${
-                activePopup === "price" ? "border-red-500 bg-red-50" : "border-black bg-white"
+                activePopup === "price"
+                  ? "border-red-500 bg-red-50"
+                  : "border-black bg-white"
               } rounded-lg cursor-pointer`}
             >
               <p
                 onClick={() => togglePopup("price")}
-                className={`text-base ${activePopup === "price" ? "text-red-500" : "text-black"}`}
+                className={`text-base ${
+                  activePopup === "price" ? "text-red-500" : "text-black"
+                }`}
               >
                 Giá
               </p>
               <FaMoneyBill
-                className={`w-6 h-6 ${activePopup === "price" ? "text-red-500" : "text-black"}`}
+                className={`w-6 h-6 ${
+                  activePopup === "price" ? "text-red-500" : "text-black"
+                }`}
               />
 
               {activePopup === "price" && (
@@ -121,7 +129,9 @@ function Products() {
             {/* Danh mục */}
             <div
               className={`flex items-center gap-1.5 px-2.5 py-2 relative border ${
-                activePopup === "category" ? "border-red-500 bg-red-50" : "border-black bg-white"
+                activePopup === "category"
+                  ? "border-red-500 bg-red-50"
+                  : "border-black bg-white"
               } rounded-lg cursor-pointer`}
             >
               <p
@@ -133,7 +143,9 @@ function Products() {
                 Danh mục
               </p>
               <IoMdArrowDropdown
-                className={`w-6 h-6 ${activePopup === "category" ? "text-red-500" : "text-black"}`}
+                className={`w-6 h-6 ${
+                  activePopup === "category" ? "text-red-500" : "text-black"
+                }`}
               />
 
               {activePopup === "category" && (
@@ -176,17 +188,23 @@ function Products() {
             {/* Thương hiệu */}
             <div
               className={`flex items-center gap-1.5 px-2.5 py-2 relative border ${
-                activePopup === "brand" ? "border-red-500 bg-red-50" : "border-black bg-white"
+                activePopup === "brand"
+                  ? "border-red-500 bg-red-50"
+                  : "border-black bg-white"
               } rounded-lg cursor-pointer`}
             >
               <p
                 onClick={() => togglePopup("brand")}
-                className={`text-base ${activePopup === "brand" ? "text-red-500" : "text-black"}`}
+                className={`text-base ${
+                  activePopup === "brand" ? "text-red-500" : "text-black"
+                }`}
               >
                 Thương hiệu
               </p>
               <IoMdArrowDropdown
-                className={`w-6 h-6 ${activePopup === "brand" ? "text-red-500" : "text-black"}`}
+                className={`w-6 h-6 ${
+                  activePopup === "brand" ? "text-red-500" : "text-black"
+                }`}
               />
 
               {activePopup === "brand" && (
@@ -293,7 +311,8 @@ function Products() {
                 }`}
               />
               <p>
-                Giá: <span className="inline">Giá cao</span> - <span className="inline">Thấp</span>
+                Giá: <span className="inline">Giá cao</span> -{" "}
+                <span className="inline">Thấp</span>
               </p>
             </div>
 
@@ -312,7 +331,8 @@ function Products() {
                 }`}
               />
               <p>
-                Giá: <span className="inline">Giá thấp</span> - <span className="inline">Cao</span>
+                Giá: <span className="inline">Giá thấp</span> -{" "}
+                <span className="inline">Cao</span>
               </p>
             </div>
 
@@ -356,7 +376,11 @@ function Products() {
       {/* Show sản phẩm */}
       <section className="py-4">
         <div className="grid grid-cols-5 gap-2.5 flex-wrap">
-          <Product product={products} />
+          {products.map((product:IProduct) => (
+            <Fragment key={product.id}>
+              <Product product={product} />
+            </Fragment>
+          ))}
         </div>
         <div className="flex items-center justify-center  mt-4">
           <Pagination defaultCurrent={1} total={50} />

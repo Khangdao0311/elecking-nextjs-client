@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import { LuTicket } from "react-icons/lu";
-import * as addressServices from "@/app/services/address.service";
+import * as addressServices from "@/app/services/addressService";
 import { TfiLocationPin } from "react-icons/tfi";
 import { FaCheckCircle } from "react-icons/fa";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Modal from "./modal";
-import * as productServices from "@/app/services/product.service";
+import * as productServices from "@/app/services/productService";
 function Checkout() {
   var totalProducts = 0;
   const query = useSearchParams();

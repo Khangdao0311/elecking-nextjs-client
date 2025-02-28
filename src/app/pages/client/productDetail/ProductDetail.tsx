@@ -1,7 +1,7 @@
 "use client";
 
 import ProductVariant from "@/app/pages/client/productDetail/ProductVariant";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -34,21 +34,20 @@ function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [showLogin, setShowLogin] = useState(false);
 
-
   const userJSON = localStorage.getItem("user");
   console.log(product);
-  
 
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => {
-      setProduct(res.data)
+      setProduct(res.data);
     });
   }, [id]);
 
   useEffect(() => {
     const query = { id: id, limit: 5 };
-    productServices.getSame(query).then((res) => setProductSame(res));
-  },[id]);
+    productServices.getSame(query).then((res) => setProductSame(res.data));
+  }, [id]);
+  console.log(productSame);
 
   return (
     <>
@@ -142,37 +141,39 @@ function ProductDetail() {
                       product!.variants[iVariant].price_extra -
                       product!.variants[iVariant].price_sale +
                       product!.variants[iVariant].colors[icolor].price_extra
-                    ).toLocaleString("vi-VN")} đ
+                    ).toLocaleString("vi-VN")}{" "}
+                    đ
                   </p>
                   <del className="text-lg font-normal text-gray-500">
                     {(
                       product!.variants[iVariant].price_extra + product!.price
-                    ).toLocaleString("vi-VN")}
+                    ).toLocaleString("vi-VN")} đ
                   </del>
                   <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
                     {/* <p className="w-full text-center text-xs font-bold text-white">
                       -6%
                     </p> */}
                     {Math.ceil(
-                100 -
-                  ((product.price +
-                    product.variants[0].price_extra -
-                    product.variants[0].price_sale) /
-                    (product.price + product.variants[0].price_extra)) *
-                    100
-              ) > 0 && (
-                <div className="w-full text-center text-xs font-bold text-white">
-                  {Math.ceil(
-                    100 -
-                      ((product.price +
-                        product.variants[0].price_extra -
-                        product.variants[0].price_sale) /
-                        (product.price + product.variants[0].price_extra)) *
-                        100
-                  )}{" "}
-                  %
-                </div>
-              )}
+                      100 -
+                        ((product.price +
+                          product.variants[0].price_extra -
+                          product.variants[0].price_sale) /
+                          (product.price + product.variants[0].price_extra)) *
+                          100
+                    ) > 0 && (
+                      <div className="w-full text-center text-xs font-bold text-white">
+                        {Math.ceil(
+                          100 -
+                            ((product.price +
+                              product.variants[0].price_extra -
+                              product.variants[0].price_sale) /
+                              (product.price +
+                                product.variants[0].price_extra)) *
+                              100
+                        )}{" "}
+                        %
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-4 items-center py-4">
@@ -208,7 +209,6 @@ function ProductDetail() {
                       if (!userJSON) {
                         setShowLogin(true);
                       } else {
-                        
                         setShowModal(true);
                         setTimeout(() => setShowModal(false), 1000);
                       }
@@ -401,7 +401,11 @@ function ProductDetail() {
               <p className="text-3xl font-medium">Sản Phẩm Tương Tự</p>
             </div>
             <div className="grid grid-cols-5 container-custom gap-2.5">
-              <Product product={productSame} />
+              {productSame.map((product) => (
+                <Fragment key={product.id}>
+                  <Product product={product} />
+                </Fragment>
+              ))}
             </div>
           </section>
           {showModal && (
