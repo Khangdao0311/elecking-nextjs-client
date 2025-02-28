@@ -6,11 +6,11 @@ function ProductVariant({ name, price, checked, onClick }: any) {
   return (
     <div
       onClick={onClick}
-      className={` relative  border ${
+      className={` relative  border shadow-lg ${
         checked ? "border-primary" : ""
       } rounded-lg p-2.5 w-[168px] h-[54px] flex gap-8.5 items-center cursor-pointer`}
     >
-      <div className="text-center w-full">
+      <div className="text-center w-full ">
         <p className="tex-xs text-black font-bold">{name}</p>
         <p className="text-xs text-black font-normal">
           {price.toLocaleString("vi-VN")} đ

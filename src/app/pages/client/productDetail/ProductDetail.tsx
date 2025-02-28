@@ -40,13 +40,15 @@ function ProductDetail() {
   
 
   useEffect(() => {
-    productServices.getProById(`${id}`).then((res) => setProduct(res));
+    productServices.getProById(`${id}`).then((res) => {
+      setProduct(res.data)
+    });
   }, [id]);
 
   useEffect(() => {
     const query = { id: id, limit: 5 };
     productServices.getSame(query).then((res) => setProductSame(res));
-  });
+  },[id]);
 
   return (
     <>
@@ -136,7 +138,7 @@ function ProductDetail() {
                   <p className="text-base font-medium w-[92px]">Giá</p>
                   <p className="text-3xl font-bold text-red-500 w-[204px]">
                     {(
-                      product!.price -
+                      product!.price +
                       product!.variants[iVariant].price_extra -
                       product!.variants[iVariant].price_sale +
                       product!.variants[iVariant].colors[icolor].price_extra
@@ -213,12 +215,12 @@ function ProductDetail() {
                     }}
                     className="cursor-pointer flex gap-1.5 p-1 rounded-lg w-[200px] h-[60px] items-center justify-center border border-primary "
                   >
-                    <AiOutlineShoppingCart className="w-[30px] h-[30px] text-primary " />
-                    <p className="text-primary text-sm font-normal ">
+                    <AiOutlineShoppingCart className="w-[30px] h-[30px] text-primary shadow-lg" />
+                    <p className="text-primary text-sm font-normal">
                       Thêm vào giỏ hàng
                     </p>
                   </div>
-                  <div className="flex w-[308px] h-[60px] items-center bg-primary rounded-lg">
+                  <div className="flex w-[308px] h-[60px] items-center bg-primary rounded-lg shadow-lg">
                     <p className="w-full text-center text-white text-lg font-bold">
                       MUA NGAY
                     </p>

@@ -49,9 +49,8 @@ function Home() {
   const [productTablet, setProductTablet] = useState([]);
   useEffect(() => {
     const query = {
-      categoryid:
-        "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
-    }
+      categoryid: "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
+    };
     productServices.getQuery(query).then((res) => setProductTablet(res));
   }, []);
 
@@ -126,7 +125,11 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product product={productSale} />
+          {productSale.map((product: IProduct) => (
+            <Fragment key={product.id}>
+              <Product product={product} />
+            </Fragment>
+          ))}
         </div>
       </section>
 
@@ -155,7 +158,11 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product product={productHot} />
+          {productHot.map((product: IProduct) => (
+            <Fragment key={product.id}>
+              <Product product={product} />
+            </Fragment>
+          ))}
         </div>
       </section>
 
@@ -175,7 +182,11 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product product={productTablet} />
+          {productTablet.map((product: IProduct) => (
+            <Fragment key={product.id}>
+              <Product product={product} />
+            </Fragment>
+          ))}
         </div>
       </section>
 
@@ -195,7 +206,11 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product product={productLaptop} />
+          {productLaptop.map((product: IProduct) => (
+            <Fragment key={product.id}>
+              <Product product={product} />
+            </Fragment>
+          ))}
         </div>
       </section>
 
@@ -213,7 +228,11 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          <Product product={headPhone} />
+        {headPhone.map((product: IProduct) => (
+            <Fragment key={product.id}>
+              <Product product={product} />
+            </Fragment>
+          ))}
         </div>
       </section>
 

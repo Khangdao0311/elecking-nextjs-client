@@ -5,7 +5,7 @@ function ProductColor({image, color, price, checked, onClick }: any) {
   return (
     <div 
     onClick={onClick}
-    className={`relative border rounded-lg ${checked ? "border-primary": ""} p-2.5 w-[168px] h-[56px] flex gap-2.5 items-center cursor-pointer`}>
+    className={`relative border rounded-lg shadow-lg${checked ? "border-primary": ""} p-2.5 w-[168px] h-[56px] flex gap-2.5 items-center cursor-pointer`}>
       <img
         src={image}
         alt=""
