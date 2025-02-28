@@ -39,9 +39,9 @@ function Product(props: { product: IProduct[] }) {
                 <del className="text-base font-extralight text-gray-400">
                   {(pro.price + pro.variants[0].price_extra).toLocaleString(
                     "vi-VN"
-                  )}
+                  )} đ
                 </del>
-              )}
+              )} 
 
               {Math.ceil(
                 100 -

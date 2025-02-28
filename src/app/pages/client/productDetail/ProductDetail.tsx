@@ -46,7 +46,7 @@ function ProductDetail() {
   useEffect(() => {
     const query = { id: id, limit: 5 };
     productServices.getSame(query).then((res) => setProductSame(res));
-  },[id]);
+  });
 
   return (
     <>
@@ -136,11 +136,11 @@ function ProductDetail() {
                   <p className="text-base font-medium w-[92px]">Giá</p>
                   <p className="text-3xl font-bold text-red-500 w-[204px]">
                     {(
-                      product!.price +
+                      product!.price -
                       product!.variants[iVariant].price_extra -
                       product!.variants[iVariant].price_sale +
                       product!.variants[iVariant].colors[icolor].price_extra
-                    ).toLocaleString("vi-VN")}
+                    ).toLocaleString("vi-VN")} đ
                   </p>
                   <del className="text-lg font-normal text-gray-500">
                     {(
@@ -148,9 +148,29 @@ function ProductDetail() {
                     ).toLocaleString("vi-VN")}
                   </del>
                   <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
-                    <p className="w-full text-center text-xs font-bold text-white">
+                    {/* <p className="w-full text-center text-xs font-bold text-white">
                       -6%
-                    </p>
+                    </p> */}
+                    {Math.ceil(
+                100 -
+                  ((product.price +
+                    product.variants[0].price_extra -
+                    product.variants[0].price_sale) /
+                    (product.price + product.variants[0].price_extra)) *
+                    100
+              ) > 0 && (
+                <div className="w-full text-center text-xs font-bold text-white">
+                  {Math.ceil(
+                    100 -
+                      ((product.price +
+                        product.variants[0].price_extra -
+                        product.variants[0].price_sale) /
+                        (product.price + product.variants[0].price_extra)) *
+                        100
+                  )}{" "}
+                  %
+                </div>
+              )}
                   </div>
                 </div>
                 <div className="flex gap-4 items-center py-4">
@@ -186,6 +206,7 @@ function ProductDetail() {
                       if (!userJSON) {
                         setShowLogin(true);
                       } else {
+                        
                         setShowModal(true);
                         setTimeout(() => setShowModal(false), 1000);
                       }
