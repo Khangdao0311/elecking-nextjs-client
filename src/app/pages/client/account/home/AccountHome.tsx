@@ -7,7 +7,7 @@ function AccountHome() {
     <>
       <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <Sidebar />
-        <div className="w-[956px] flex flex-col gap-4">
+        <div className="w-[9/12px] flex flex-col gap-4">
           <div className="flex items-center gap-4">
             <div className="bg-gray-300 w-[92px] h-[92px] rounded-full flex items-center justify-center">
               <FaUser className="w-[45px] h-[45px]" />
