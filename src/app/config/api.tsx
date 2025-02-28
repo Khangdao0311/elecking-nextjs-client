@@ -8,6 +8,7 @@ const api = {
   upload: `${url}/upload`,
   voucher: `${url}/voucher`,
   payment: `${url}/payment`,
+  address: `${url}/address`,
 };
 
 export default api;

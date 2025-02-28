@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import { LuTicket } from "react-icons/lu";
+import * as addressServices from "@/app/services/address.service";
 import { TfiLocationPin } from "react-icons/tfi";
 import { FaCheckCircle } from "react-icons/fa";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -33,6 +34,13 @@ function Checkout() {
   const [checkaddress2, setCheckaddress2] = useState("1");
   const [productCheckout, setProductCheckOut] = useState<any>([]);
   const [showVoucher, setVoucher] = useState(false);
+  //Lấy địa chỉ address
+  const [getaddress,setGetaddress] = useState([]);
+  useEffect(() => {
+    addressServices.getAll().then((res)=>setGetaddress(res));
+  },[]);
+  console.log(getaddress);
+  
 
   const showAdress = () => setAddress(true);
   const showpayment = () => setPayment(true);
@@ -99,29 +107,8 @@ function Checkout() {
     },
   ];
 
-  const Address = [
-    {
-      id: "1",
-      name: "Nguyễn Văn A",
-      description: "Hẻm 14 Đường Nguyễn Thị Đặng",
-      province: "TP. Hồ Chí Minh",
-      district: "Quận 12",
-      ward: "Phường Tân Thới Hiệp",
-      default: true,
-      phone: "0976767676",
-    },
-    {
-      id: "2",
-      name: "Nguyễn Văn BH",
-      description: "Hẻm 14 Đường Nguyễn Thị Đặng",
-      province: "TP. Hồ Chí Minh",
-      district: "Quận 12",
-      ward: "Phường Tân Thới Hiệp",
-      default: true,
-      phone: "0976767676",
-    },
-  ];
-  const abc = Address.find((a) => a.id === checkaddress1);
+  
+  const abc = getaddress.find((a:any) => a.id === checkaddress1);
 
   const checkout = JSON.parse(localStorage.getItem("checkout")!);
 
@@ -318,7 +305,7 @@ function Checkout() {
               <p className="text-xl font-semibold">Địa chỉ của tôi</p>
             </div>
             <div className="p-4 h-[500px] flex items-start flex-col gap-4 border border-y border-gray-200 ">
-              {Address.map((address, i) => (
+              {getaddress.map((address:any, i:number) => (
                 <div
                   key={i}
                   className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg"
@@ -335,7 +322,7 @@ function Checkout() {
                   <div className="flex flex-col w-full items-start gap-2.5">
                     <div className="flex justify-between w-full">
                       <div className="flex gap-5">
-                        <p className="text-base font-medium">{address.name}</p>
+                        <p className="text-base font-medium">{address.fullname}</p>
                         <p className="text-base font-normal">{address.phone}</p>
                       </div>
                       <p
