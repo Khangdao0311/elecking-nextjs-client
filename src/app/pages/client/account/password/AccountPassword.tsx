@@ -1,5 +1,5 @@
 "use client";
-import Sidebar from "@/app/components/client/sidebar_user";
+import Sidebar from "@/app/components/client/Sidebar_user";
 import { FaCircleUser } from "react-icons/fa6";
 
 function AccountPassword() {
