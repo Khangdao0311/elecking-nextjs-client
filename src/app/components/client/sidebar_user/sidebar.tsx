@@ -59,7 +59,7 @@ function Sidebar() {
       <Link
         href={config.routes.client.accountVoucher}
         className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex hover:pl-7 items-center gap-5 hover:bg-primary rounded-lg ${
-          pathname == config.routes.client.accountOrder ? "pl-7 bg-primary" : ""
+          pathname == config.routes.client.accountVoucher ? "pl-7 bg-primary" : ""
         } transition-all duration-300 rounded-md cursor-pointer select-none`}
       >
         <FaGift

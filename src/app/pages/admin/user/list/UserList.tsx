@@ -21,9 +21,9 @@ function UserList() {
               <th className="px-2 py-2.5 w-12 text-sm font-bold">STT</th>
               <th className=" min-w-16 px-2 py-2.5  text-sm font-bold">Ảnh</th>
               <th className="px-2 py-2.5 w-full text-left text-sm font-bold ">
-                <span className="w-full h-full line-clamp-1">Tên Người Dùng</span>
+                <span className="min-w-full">Tên Người Dùng</span>
               </th>
-              <th className="px-2 py-2.5 w-full text-left text-sm font-bold ">
+              <th className="px-2 py-2.5 min-w-full text-left text-sm font-bold ">
                 Email
               </th>
               <th className="px-2 py-2.5 w-[112px] text-center text-sm font-bold ">
@@ -50,10 +50,10 @@ function UserList() {
                   />
                 </div>
               </td>
-              <td className="px-2 w-full py-2.5">
+              <td className="px-2 min-w-full py-2.5">
                 <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
               </td>
-              <td className="px-2 w-full py-2">
+              <td className="px-2 min-w-full py-2">
               NguyenVanA@gmail.com
               </td>
               <td className="px-2 min-w-[112px] text-center py-2.5">0123456789</td>
