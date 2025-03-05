@@ -21,49 +21,49 @@ function Product(props: { product: IProduct }) {
           </div>
           <div className="text-xl text-red-500 font-bold w-full">
             {(
-              props.product.price +
-              props.product.variants[0].price_extra -
+              props.product.variants[0].price -
               props.product.variants[0].price_sale
             ).toLocaleString("vi-VN")}{" "}
             đ
           </div>
           <div className="flex gap-2.5">
-            {props.product.price +
-              props.product.variants[0].price_extra -
+            {
+              props.product.variants[0].price -
               props.product.variants[0].price_sale <
-              props.product.price + props.product.variants[0].price_extra && (
-              <del className="text-base font-extralight text-gray-400">
-                {(
-                  props.product.price + props.product.variants[0].price_extra
-                ).toLocaleString("vi-VN")}{" "}
-                đ
-              </del>
-            )}
+              props.product.variants[0].price && (
+                <del className="text-base font-extralight text-gray-400">
+                  {(
+                    props.product.variants[0].price
+                  ).toLocaleString("vi-VN")}{" "}
+                  đ
+                </del>
+              )}
             {Math.ceil(
               100 -
-                ((props.product.price +
-                  props.product.variants[0].price_extra -
-                  props.product.variants[0].price_sale) /
-                  (props.product.price +
-                    props.product.variants[0].price_extra)) *
-                  100
+              ((
+                props.product.variants[0].price -
+                props.product.variants[0].price_sale) /
+                (
+                  props.product.variants[0].price)) *
+              100
             ) > 0 && (
-              <div className="bg-primary text-white px-1.5 py-1 rounded-md text-xs font-bold">
-                {Math.ceil(
-                  100 -
-                    ((props.product.price +
-                      props.product.variants[0].price_extra -
+                <div className="bg-primary text-white px-1.5 py-1 rounded-md text-xs font-bold">
+                  {Math.ceil(
+                    100 -
+                    ((
+                      props.product.variants[0].price -
                       props.product.variants[0].price_sale) /
-                      (props.product.price +
-                        props.product.variants[0].price_extra)) *
-                      100
-                )}{" "}
-                %
-              </div>
-            )}
+                      (
+                        props.product.variants[0].price)) *
+                    100
+                  )}{" "}
+                  %
+                </div>
+              )}
           </div>
         </Link>
         <div className="flex justify-between w-full">
+            {props.product.rating}
           <div className="center-flex justify-start">
             <FaStar className="w-4.5 h-4.5 text-yellow-500" />
             <FaStar className="w-4.5 h-4.5 text-yellow-500" />

@@ -1,10 +1,8 @@
-interface IProduct{
+interface IProduct {
     id: string
     name: string
     images: string[]
-    price: number
-    sale: boolean
-    status: number
+    rating: number
     view: number
     description: string
     brand: IProductBrand
@@ -12,14 +10,19 @@ interface IProduct{
     variants: IProductVariant[]
 }
 
-interface IProductVariant{
-    properties: string[]
-    price_extra: number
+interface IProperty {
+    name: string
+    stye: string
+}
+
+interface IProductVariant {
+    properties: IProperty[]
+    price: number
     price_sale: number
     colors: IProductColor[]
 }
 
-interface IProductColor{
+interface IProductColor {
     name: string
     image: string
     price_extra: number
@@ -27,12 +30,12 @@ interface IProductColor{
     quantity: number
 }
 
-interface IProductCat{
-   id: string
-   name: string
+interface IProductCat {
+    id: string
+    name: string
 }
 
-interface IProductBrand{
+interface IProductBrand {
     id: string
     name: string
 }

@@ -98,10 +98,9 @@ function ProductDetail() {
                     product?.variants?.map((variant, index) => (
                       <div key={index}>
                         <ProductVariant
-                          name={variant.properties.join(" - ")}
+                          name={variant.properties.map(e => e.name).join(" - ")}
                           price={
-                            product.price +
-                            variant.price_extra -
+                            variant.price -
                             variant.price_sale
                           }
                           checked={index == iVariant}
@@ -121,8 +120,8 @@ function ProductDetail() {
                           image={color.image}
                           color={color.name}
                           price={
-                            product.price +
-                            product.variants[iVariant].price_extra -
+                        
+                            product.variants[iVariant].price -
                             product.variants[iVariant].price_sale +
                             color.price_extra
                           }
@@ -137,8 +136,8 @@ function ProductDetail() {
                   <p className="text-base font-medium w-[92px]">Giá</p>
                   <p className="text-3xl font-bold text-red-500 w-[204px]">
                     {(
-                      product!.price +
-                      product!.variants[iVariant].price_extra -
+                      
+                      product!.variants[iVariant].price -
                       product!.variants[iVariant].price_sale +
                       product!.variants[iVariant].colors[icolor].price_extra
                     ).toLocaleString("vi-VN")}{" "}
@@ -146,7 +145,7 @@ function ProductDetail() {
                   </p>
                   <del className="text-lg font-normal text-gray-500">
                     {(
-                      product!.variants[iVariant].price_extra + product!.price
+                      product!.variants[iVariant].price
                     ).toLocaleString("vi-VN")} đ
                   </del>
                   <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
@@ -155,20 +154,20 @@ function ProductDetail() {
                     </p> */}
                     {Math.ceil(
                       100 -
-                        ((product.price +
-                          product.variants[0].price_extra -
+                        ((
+                          product.variants[0].price-
                           product.variants[0].price_sale) /
-                          (product.price + product.variants[0].price_extra)) *
+                          ( product.variants[0].price)) *
                           100
                     ) > 0 && (
                       <div className="w-full text-center text-xs font-bold text-white">
                         {Math.ceil(
                           100 -
-                            ((product.price +
-                              product.variants[0].price_extra -
+                            ((
+                              product.variants[0].price -
                               product.variants[0].price_sale) /
-                              (product.price +
-                                product.variants[0].price_extra)) *
+                              (
+                                product.variants[0].price)) *
                               100
                         )}{" "}
                         %

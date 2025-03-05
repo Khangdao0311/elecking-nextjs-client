@@ -21,8 +21,8 @@ function AccountPassword() {
         </div>
         <div className="flex flex-col gap-4">
           <div className="text-sm font-medium">Nhập Mật Khẩu Mới<span className="text-primary"> *</span></div>
-          <input className="p-2 p-2 rounded shadow-md" placeholder="Nhập Mật Khẩu Mới" type="text" />
-          <input className="p-2 p-2 rounded shadow-md" placeholder="Xác Nhận Mật Khẩu" type="text" />
+          <input className="p-2 rounded shadow-md" placeholder="Nhập Mật Khẩu Mới" type="text" />
+          <input className="p-2 rounded shadow-md" placeholder="Xác Nhận Mật Khẩu" type="text" />
         </div>
         <div>
           <div className="px-24 py-4 bg-primary text-center font-text font-bold rounded-lg text-white">

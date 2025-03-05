@@ -12,23 +12,17 @@ import * as productServices from "@/app/services/productService";
 import { BsCartX } from "react-icons/bs";
 
 function Cart() {
-  const [productCart, setProductCart] = useState<any>([]);
+  const [productCart, setProductCart] = useState<IProduct[]>([]);
 
-  let cart = [
-    { product_id: "67b96ee667788c638a22e2c7", color: 0, quantity: 1, variant: 0 },
-    { product_id: "67b96ee667788c638a22e2cc", color: 0, quantity: 2, variant: 0 },
-    { product_id: "67b96ee667788c638a22e2c9", color: 0, quantity: 3, variant: 0 }
-  ];
+  const [load, setLoad] = useState(true)
 
-  localStorage.setItem('products', JSON.stringify(cart));
-
-  const products = JSON.parse(localStorage.getItem('products') || '[]');
+  const cart = JSON.parse(localStorage.getItem('cartJSON') || '[]');
 
   useEffect(() => {
     async function _() {
       const _: IProduct[] = [];
-      if (products?.length) {
-        for (const item of products) {
+      if (cart?.length) {
+        for (const item of cart) {
           await productServices.getProById(item.product_id).then((res: any) => {
             _.push(res.data);
           });
@@ -39,96 +33,121 @@ function Cart() {
     _();
   }, []);
 
-
-
   const [showVoucher, setVoucher] = useState(false);
-  const [isCheckedRams, setCheckedRams] = useState<(string | null)[]>(products.map(() => null));
-  const [isCheckedColor, setCheckedColor] = useState<(string | null)[]>(products.map(() => null));
-  const [showRams, setShowRams] = useState<number | null>(null);
-  const [showColor, setShowColor] = useState<number | null>(null);
-  const rams = productCart.map((item: any) =>
-    item.variants.map((ite: any) => (
-      ite.properties.join(" - ")
-    ))
-  );
-
-  console.log(rams);
+  const [showVariant, setShowVariant] = useState<number[]>([]);
+  const [showColor, setShowColor] = useState<number[]>([]);
 
 
+  const [quantities, setQuantities] = useState<number[]>(cart.map((product: { quantity: number }) => product.quantity));
 
-
-  const [quantities, setQuantities] = useState<number[]>(products.map((product: { quantity: number }) => product.quantity));
-  console.log(quantities);
-
-  const increaseQuantity = (index: any) => {
-    setQuantities((prevQuantities: number[]) => {
-      const newQuantities = [...prevQuantities];
-      newQuantities[index] += 1;
-      return newQuantities;
-    });
-  };
-
-  const decreaseQuantity = (index: any) => {
-    setQuantities((prevQuantities: number[]) => {
-      const newQuantities = [...prevQuantities];
-      if (newQuantities[index] > 1) {
-        newQuantities[index] -= 1;
+  const increaseQuantity = (index: number) => {
+    const quantity: number = productCart[index].variants[cart[index].variant].colors[cart[index].color].quantity
+    const cartNew = cart.map((e: any, i: number) => {
+      if (index === i) return {
+        ...e,
+        quantity: +e.quantity + 1 > quantity ? quantity : +e.quantity + 1
       }
-      return newQuantities;
-    });
+      return e
+    })
+    localStorage.setItem("cartJSON", JSON.stringify(cartNew))
+    setLoad(!load)
   };
-  const [checkedItems, setCheckedItems] = useState<boolean[]>(products.map(() => false));
+
+  const decreaseQuantity = (index: number) => {
+    const cartNew = cart.map((e: any, i: number) => {
+      if (index === i) return {
+        ...e,
+        quantity: +e.quantity - 1 <= 0 ? 1 : +e.quantity - 1
+      }
+      return e
+    })
+    localStorage.setItem("cartJSON", JSON.stringify(cartNew))
+    setLoad(!load)
+  };
+
+  function handlChangeVariant(index: number) {
+    if (showVariant.includes(index)) {
+      setShowVariant(showVariant.filter(e => e != index))
+    } else {
+      setShowVariant([...showVariant, index])
+    }
+  }
+
+  function handlChangeColor(index: number) {
+    if (showColor.includes(index)) {
+      setShowColor(showColor.filter(e => e != index))
+    } else {
+      setShowColor([...showColor, index])
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const [checkedItems, setCheckedItems] = useState<boolean[]>(cart.map(() => false));
   const [totalPrice, setTotalPrice] = useState(0);
   const calculateProductPrice = (product: IProduct, iProduct: number) => {
     return (
-      (product.price +
-        product.variants[products[iProduct].variant].price_extra -
-        product.variants[products[iProduct].variant].price_sale +
-        product.variants[products[iProduct].variant].colors[
-          products[iProduct].color
+      (
+        product.variants[cart[iProduct].variant].price -
+        product.variants[cart[iProduct].variant].price_sale +
+        product.variants[cart[iProduct].variant].colors[
+          cart[iProduct].color
         ].price_extra) * quantities[iProduct]
     );
   };
 
 
   const calculateTotalPrice = () => {
-    const total = productCart.reduce((sum: any, product: IProduct, index: any) => {
-      if (checkedItems[index]) {
-        return sum + calculateProductPrice(product, index);
-      }
-      return sum;
-    }, 0);
-    setTotalPrice(total);
+    // const total = productCart.reduce((sum: any, product: IProduct, index: any) => {
+    // if (checkedItems[index]) {
+    // return sum + calculateProductPrice(product, index);
+    // }
+    // return sum;
+    // }, 0);
+    // setTotalPrice(total);
   };
 
 
   const handleCheckAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = e.target.checked;
-    setCheckedItems(products.map(() => isChecked));
+    // const isChecked = e.target.checked;
+    // setCheckedItems(cart.map(() => isChecked));
   };
   const handleCheckItem = (index: number) => {
-    const newCheckedItems = [...checkedItems];
-    newCheckedItems[index] = !newCheckedItems[index];
-    setCheckedItems(newCheckedItems);
+    // const newCheckedItems = [...checkedItems];
+    // newCheckedItems[index] = !newCheckedItems[index];
+    // setCheckedItems(newCheckedItems);
   };
   useEffect(() => {
-    calculateTotalPrice();
+    // calculateTotalPrice();
   }, [checkedItems, quantities]);
 
   useEffect(() => {
-    const updatedProducts = products.map((product: any, index: number) => ({
-      ...product,
-      quantity: quantities[index],
-    }));
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    // const updatedProducts = cart.map((product: any, index: number) => ({
+    // ...product,
+    // quantity: quantities[index],
+    // }));
+    // localStorage.setItem("cart", JSON.stringify(updatedProducts));
   }, [quantities]);
 
   const handleRemoveItem = (index: number) => {
-    const updatedProducts = products.filter((_: any, iProduct: any) => iProduct !== index);
-    // localStorage.setItem("products", JSON.stringify(updatedProducts));
-    setProductCart(productCart.filter((_: any, iProduct: any) => iProduct !== index));
-    setCheckedItems(checkedItems.filter((_, iProduct) => iProduct !== index));
-    setQuantities(quantities.filter((_, iProduct) => iProduct !== index));
+    // const updatedProducts = cart.filter((_: any, iProduct: any) => iProduct !== index);
+    // // localStorage.setItem("cart", JSON.stringify(updatedProducts));
+    // setProductCart(productCart.filter((_: any, iProduct: any) => iProduct !== index));
+    // setCheckedItems(checkedItems.filter((_, iProduct) => iProduct !== index));
+    // setQuantities(quantities.filter((_, iProduct) => iProduct !== index));
   };
 
 
@@ -167,8 +186,8 @@ function Cart() {
                   <div className="w-[660px] flex gap-2.5">
                     <img
                       src={
-                        product.variants[products[iProduct].variant].colors[
-                          products[iProduct].color
+                        product.variants[cart[iProduct].variant].colors[
+                          cart[iProduct].color
                         ].image
                       }
                       alt="Sản Phẩm"
@@ -180,46 +199,46 @@ function Cart() {
                       </div>
                       <div className="text-primary text-base font-bold">
                         {(
-                          product.price +
-                          product.variants[cart[iProduct].variant].price_extra -
+
+                          product.variants[cart[iProduct].variant].price -
                           product.variants[cart[iProduct].variant].price_sale +
                           product.variants[cart[iProduct].variant].colors[
                             cart[iProduct].color
                           ].price_extra
                         ).toLocaleString("vi-VN")} đ <del className="text-black text-xs font-normal ">
-                          {(product.price).toLocaleString('vn-VN')}
+                          {(product.variants[cart[iProduct].variant].price).toLocaleString('vn-VN')}
                           đ</del>
                       </div>
                     </div>
 
-                    <div className="w-72 flex gap-2 items-center">
+                    <div className="w-72 flex gap-2 items-center select-none">
                       <div
                         onClick={() => {
-                          setShowRams(prev => prev === iProduct ? null : iProduct);
-                          setShowColor(null);
+                          // setShowVariant(prev => prev === iProduct ? null : iProduct);
+                          handlChangeVariant(iProduct)
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
-                        <div>{product.variants[cart[iProduct].variant].properties.join(" - ")}</div>
+                        <div>{product.variants[cart[iProduct].variant].properties.map(e => e.name).join(" - ")}</div>
                         <FaCaretDown />
 
-                        {showRams === iProduct && (
+                        {showVariant.includes(iProduct) && (
                           <div
                             className="z-10 w-[404px] flex flex-wrap gap-2 p-4 border border-gray-300 bg-white rounded-2xl absolute top-12 left-0"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {rams[iProduct].map((ram: any, iram: number) => (
+                            {product.variants.map((variant: any, ivariant: number) => (
                               <div
-                                key={iram}
+                                key={ivariant}
                                 onClick={() => {
-                                  setShowRams(null);
+                                  handlChangeVariant(iProduct)
                                 }}
 
-                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${iram == cart[iProduct].variant ? "border-primary" : "border-gray-300"
+                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${ivariant == cart[iProduct].variant ? "border-primary" : "border-gray-300"
                                   }`}
                               >
-                                {ram}
-                                {iram == cart[iProduct].variant && (
+                                {variant.properties.map((e: IProperty) => e.name).join(" - ")}
+                                {ivariant == cart[iProduct].variant && (
                                   <div className="absolute w-5 h-3 bg-primary top-0 left-0 rounded-tl-lg rounded-br-lg flex items-center justify-center">
                                     <IoMdCheckmark className="w-3 h-3 text-white" />
                                   </div>
@@ -232,15 +251,15 @@ function Cart() {
 
                       <div
                         onClick={() => {
-                          setShowColor(prev => prev === iProduct ? null : iProduct);
-                          setShowRams(null);
+                          // setShowColor(prev => prev === iProduct ? null : iProduct);
+                          handlChangeColor(iProduct)
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
                         <div>{product.variants[cart[iProduct].variant].colors[cart[iProduct].color].name}</div>
                         <FaCaretDown />
 
-                        {showColor === iProduct && (
+                        {showColor.includes(iProduct) && (
                           <div
                             className="z-10 w-[404px] flex flex-wrap gap-2 p-4 border border-gray-300 bg-white rounded-2xl absolute top-12 left-0"
                             onClick={(e) => e.stopPropagation()}
@@ -252,8 +271,7 @@ function Cart() {
                                   // const newCheckedColor = [...isCheckedColor];
                                   // newCheckedColor[iProduct] = colorItem;
                                   // setCheckedColor(newCheckedColor);
-
-                                  setShowColor(null);
+                                  handlChangeColor(iProduct)
                                 }}
                                 className={`relative px-4 py-2 border rounded-lg cursor-pointer ${icolor === cart[iProduct].color ? "border-primary" : "border-gray-300"
                                   }`}
@@ -277,7 +295,7 @@ function Cart() {
                       <button onClick={() => decreaseQuantity(iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
                         <FaMinus className="w-4 h-4" />
                       </button>
-                      <input type="text" value={quantities[iProduct]} readOnly className="w-16 h-9 text-center font-base font-bold border-l border-r" />
+                      <input type="text" value={cart[iProduct].quantity} readOnly className="w-16 h-9 text-center font-base font-bold border-l border-r" />
                       <button onClick={() => increaseQuantity(iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
                         <FaPlus className="w-4 h-4" />
                       </button>
@@ -308,7 +326,7 @@ function Cart() {
                   <div className="flex items-center gap-2">
                     <input onChange={handleCheckAll} checked={checkedItems.every(item => item)} type="checkbox" className="mr-2 w-6 h-6" />
                     <span className="text-base font-medium">Chọn tất cả <span>
-                   (3)
+                      (3)
                     </span></span>
                   </div>
                   <div>

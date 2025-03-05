@@ -30,7 +30,7 @@ function Home() {
 
   // Lấy Sản Phẩm Hot
   const [productHot, setProductHot] = useState([]);
-  useEffect(() => {
+  useEffect(() => { 
     const query = { orderby: "view-desc" };
     productServices.getQuery(query).then((res) => setProductHot(res.data));
   }, []);
@@ -157,7 +157,7 @@ function Home() {
             <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
           </div>
         </div>
-        <div className="grid grid-cols-5 container-custom gap-2.5">
+        <div className="grid grid-cols-5 container-custom gap-4"> 
           {productHot.map((product: IProduct) => (
             <Fragment key={product.id}>
               <Product product={product} />

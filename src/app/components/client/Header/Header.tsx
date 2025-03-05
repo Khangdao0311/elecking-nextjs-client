@@ -23,7 +23,6 @@ import { usePathname } from 'next/navigation'
 
 function Header() {
   let pathname = usePathname()
-  console.log(pathname);
   let breadCrumb: any[] = []
   switch (pathname) {
     case '/products':
@@ -81,9 +80,6 @@ function Header() {
 
   const [showMenu, setShowMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  breadCrumb.map((e, i) => (
-    console.log(e.name)
-  ))
   return (
     <>
       <header className="sticky top-0 w-full z-30">
