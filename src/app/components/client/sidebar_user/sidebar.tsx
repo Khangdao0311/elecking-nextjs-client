@@ -57,21 +57,21 @@ function Sidebar() {
         </p>
       </Link>
       <Link
-        href={config.routes.client.accountOrder}
+        href={config.routes.client.accountVoucher}
         className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex hover:pl-7 items-center gap-5 hover:bg-primary rounded-lg ${
           pathname == config.routes.client.accountOrder ? "pl-7 bg-primary" : ""
         } transition-all duration-300 rounded-md cursor-pointer select-none`}
       >
         <FaGift
           className={`group-hover:text-white w-[24px] h-[24px] ${
-            pathname == config.routes.client.accountOrder
+            pathname == config.routes.client.accountVoucher
               ? "text-white" 
               : "text-black"
           }`}
         />
         <p
           className={`text-sm group-hover:text-white font-bold text-black w-[132px] ${
-            pathname == config.routes.client.accountOrder ? "text-white" : "text-black"
+            pathname == config.routes.client.accountVoucher ? "text-white" : "text-black"
             }
             `}
         >

@@ -28,13 +28,13 @@ function ProductList() {
               <th className="px-2 py-2.5 w-[128px] text-left text-sm font-bold ">
                 Giá Sản Phẩm
               </th>
-              <th className="px-2 py-2.5 w-[96px] text-left text-sm font-bold ">
+              <th className="px-2 py-2.5 w-[96px] text-center text-sm font-bold ">
                 Số Lượng
               </th>
-              <th className="px-2 py-2.5 w-[112px] text-left text-sm font-bold ">
+              <th className="px-2 py-2.5 w-[200px] text-center  text-sm font-bold ">
                 Biến Thể
               </th>
-              <th className="px-2 py-2.5 w-[112px] text-left text-sm font-bold ">
+              <th className="px-2 py-2.5 w-[112px] text-center text-sm font-bold ">
                 Màu Sắc
               </th>
               <th className="px-2 py-2.5 w-[144px] text-sm font-bold">
@@ -56,19 +56,22 @@ function ProductList() {
                 </div>
               </td>
               <td className="px-2 w-full py-2.5">
-                <span className="line-clamp-1">NVD123124</span>
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
               </td>
-              <td className="px-2 min-w-[128px] py-2">vbuivbusiuv</td>
-              <td className="px-2 min-w-[96px] py-2.5">NVD123124</td>
-              <td className="px-2 min-w-[112px] py-2.5">
-                <span>Điện thoại</span>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
               </td>
-              <td className="px-2 min-w-[112px] py-2.5">
-                <span>Điện thoại</span>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
               </td>
               <td className="px-2 min-w-[144px] py-2.5 text-center">
                 <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-                  Đang hoạt động
+                  Còn hàng
                 </span>
               </td>
               <td className="p-2">
@@ -82,39 +85,9 @@ function ProductList() {
                 </div>
               </td>
             </tr>
-            {/* <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">2</td>
-              <td className="px-2 py-2.5"><span>EEFG48465</span></td>
-              <td className="px-2 py-1 text-center">
-                <div className="flex items-center justify-center">
-                  <img
-                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch_9_.jpg"
-                    alt="Điện thoại"
-                    className="w-8 h-8 rounded"
-                  />
-                </div>
-              </td>
-              <td className="px-2 py-2.5"><span>Máy tính bảng</span></td>
-              <td className="px-2 py-2.5 text-center">
-                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg">
-                  Ngừng hoạt động
-                </span>
-              </td>
-              <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
-                  <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
-                  </button>
-                  <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
-                  </button>
-                </div>
-              </td>
-            </tr>
             <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">1</td>
-              <td className="px-2 py-2.5"><span className="line-clamp-1">NVD123124</span></td>
-              <td className="px-2 py-1 text-center">
+              <td className="px-2 py-2.5 w-12 text-center">2</td>
+              <td className="px-2 min-w-12 py-1 text-center">
                 <div className="flex items-center justify-center">
                   <img
                     src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
@@ -123,56 +96,39 @@ function ProductList() {
                   />
                 </div>
               </td>
-              <td className="px-2 py-2.5"><span>Điện thoại</span></td>
-              <td className="px-2 py-2.5 text-center">
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
                 <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-                  Đang hoạt động
+                  Còn hàng
                 </span>
               </td>
               <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
                   <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
+                    <FiEdit className="w-5 h-5" />
                   </button>
                   <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
+                    <MdDeleteForever className="w-5 h-5" />
                   </button>
                 </div>
               </td>
             </tr>
             <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">2</td>
-              <td className="px-2 py-2.5"><span>EEFG48465</span></td>
-              <td className="px-2 py-1 text-center">
-                <div className="flex items-center justify-center">
-                  <img
-                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch_9_.jpg"
-                    alt="Điện thoại"
-                    className="w-8 h-8 rounded"
-                  />
-                </div>
-              </td>
-              <td className="px-2 py-2.5"><span>Máy tính bảng</span></td>
-              <td className="px-2 py-2.5 text-center">
-                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg">
-                  Ngừng hoạt động
-                </span>
-              </td>
-              <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
-                  <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
-                  </button>
-                  <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">1</td>
-              <td className="px-2 py-2.5"><span className="line-clamp-1">NVD123124</span></td>
-              <td className="px-2 py-1 text-center">
+              <td className="px-2 py-2.5 w-12 text-center">3</td>
+              <td className="px-2 min-w-12 py-1 text-center">
                 <div className="flex items-center justify-center">
                   <img
                     src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
@@ -181,56 +137,39 @@ function ProductList() {
                   />
                 </div>
               </td>
-              <td className="px-2 py-2.5"><span>Điện thoại</span></td>
-              <td className="px-2 py-2.5 text-center">
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
                 <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-                  Đang hoạt động
+                  Còn hàng
                 </span>
               </td>
               <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
                   <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
+                    <FiEdit className="w-5 h-5" />
                   </button>
                   <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
+                    <MdDeleteForever className="w-5 h-5" />
                   </button>
                 </div>
               </td>
             </tr>
             <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">2</td>
-              <td className="px-2 py-2.5"><span>EEFG48465</span></td>
-              <td className="px-2 py-1 text-center">
-                <div className="flex items-center justify-center">
-                  <img
-                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch_9_.jpg"
-                    alt="Điện thoại"
-                    className="w-8 h-8 rounded"
-                  />
-                </div>
-              </td>
-              <td className="px-2 py-2.5"><span>Máy tính bảng</span></td>
-              <td className="px-2 py-2.5 text-center">
-                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg">
-                  Ngừng hoạt động
-                </span>
-              </td>
-              <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
-                  <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
-                  </button>
-                  <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">1</td>
-              <td className="px-2 py-2.5"><span className="line-clamp-1">NVD123124</span></td>
-              <td className="px-2 py-1 text-center">
+              <td className="px-2 py-2.5 w-12 text-center">4</td>
+              <td className="px-2 min-w-12 py-1 text-center">
                 <div className="flex items-center justify-center">
                   <img
                     src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
@@ -239,56 +178,39 @@ function ProductList() {
                   />
                 </div>
               </td>
-              <td className="px-2 py-2.5"><span>Điện thoại</span></td>
-              <td className="px-2 py-2.5 text-center">
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
                 <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-                  Đang hoạt động
+                  Còn hàng
                 </span>
               </td>
               <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
                   <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
+                    <FiEdit className="w-5 h-5" />
                   </button>
                   <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
+                    <MdDeleteForever className="w-5 h-5" />
                   </button>
                 </div>
               </td>
             </tr>
             <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">2</td>
-              <td className="px-2 py-2.5"><span>EEFG48465</span></td>
-              <td className="px-2 py-1 text-center">
-                <div className="flex items-center justify-center">
-                  <img
-                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch_9_.jpg"
-                    alt="Điện thoại"
-                    className="w-8 h-8 rounded"
-                  />
-                </div>
-              </td>
-              <td className="px-2 py-2.5"><span>Máy tính bảng</span></td>
-              <td className="px-2 py-2.5 text-center">
-                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg">
-                  Ngừng hoạt động
-                </span>
-              </td>
-              <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
-                  <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
-                  </button>
-                  <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">1</td>
-              <td className="px-2 py-2.5"><span className="line-clamp-1">NVD123124</span></td>
-              <td className="px-2 py-1 text-center">
+              <td className="px-2 py-2.5 w-12 text-center">5</td>
+              <td className="px-2 min-w-12 py-1 text-center">
                 <div className="flex items-center justify-center">
                   <img
                     src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
@@ -297,56 +219,39 @@ function ProductList() {
                   />
                 </div>
               </td>
-              <td className="px-2 py-2.5"><span>Điện thoại</span></td>
-              <td className="px-2 py-2.5 text-center">
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
                 <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-                  Đang hoạt động
+                  Còn hàng
                 </span>
               </td>
               <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
                   <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
+                    <FiEdit className="w-5 h-5" />
                   </button>
                   <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
+                    <MdDeleteForever className="w-5 h-5" />
                   </button>
                 </div>
               </td>
             </tr>
             <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">2</td>
-              <td className="px-2 py-2.5"><span>EEFG48465</span></td>
-              <td className="px-2 py-1 text-center">
-                <div className="flex items-center justify-center">
-                  <img
-                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch_9_.jpg"
-                    alt="Điện thoại"
-                    className="w-8 h-8 rounded"
-                  />
-                </div>
-              </td>
-              <td className="px-2 py-2.5"><span>Máy tính bảng</span></td>
-              <td className="px-2 py-2.5 text-center">
-                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg">
-                  Ngừng hoạt động
-                </span>
-              </td>
-              <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
-                  <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
-                  </button>
-                  <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">1</td>
-              <td className="px-2 py-2.5"><span className="line-clamp-1">NVD123124</span></td>
-              <td className="px-2 py-1 text-center">
+              <td className="px-2 py-2.5 w-12 text-center">6</td>
+              <td className="px-2 min-w-12 py-1 text-center">
                 <div className="flex items-center justify-center">
                   <img
                     src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
@@ -355,52 +260,200 @@ function ProductList() {
                   />
                 </div>
               </td>
-              <td className="px-2 py-2.5"><span>Điện thoại</span></td>
-              <td className="px-2 py-2.5 text-center">
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
                 <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-                  Đang hoạt động
+                  Còn hàng
                 </span>
               </td>
               <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
                   <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
+                    <FiEdit className="w-5 h-5" />
                   </button>
                   <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
+                    <MdDeleteForever className="w-5 h-5" />
                   </button>
                 </div>
               </td>
             </tr>
             <tr className="even:bg-gray-100">
-              <td className="px-2 py-2.5 text-center">2</td>
-              <td className="px-2 py-2.5"><span>EEFG48465</span></td>
-              <td className="px-2 py-1 text-center">
+              <td className="px-2 py-2.5 w-12 text-center">7</td>
+              <td className="px-2 min-w-12 py-1 text-center">
                 <div className="flex items-center justify-center">
                   <img
-                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch_9_.jpg"
+                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
                     alt="Điện thoại"
                     className="w-8 h-8 rounded"
                   />
                 </div>
               </td>
-              <td className="px-2 py-2.5"><span>Máy tính bảng</span></td>
-              <td className="px-2 py-2.5 text-center">
-                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg">
-                  Ngừng hoạt động
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
+                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
+                  Còn hàng
                 </span>
               </td>
               <td className="p-2">
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
                   <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                  <FiEdit className="w-5 h-5"/>
+                    <FiEdit className="w-5 h-5" />
                   </button>
                   <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                  <MdDeleteForever className="w-5 h-5"/>
+                    <MdDeleteForever className="w-5 h-5" />
                   </button>
                 </div>
               </td>
-            </tr> */}
+            </tr>
+            <tr className="even:bg-gray-100">
+              <td className="px-2 py-2.5 w-12 text-center">8</td>
+              <td className="px-2 min-w-12 py-1 text-center">
+                <div className="flex items-center justify-center">
+                  <img
+                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
+                    alt="Điện thoại"
+                    className="w-8 h-8 rounded"
+                  />
+                </div>
+              </td>
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
+                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
+                  Còn hàng
+                </span>
+              </td>
+              <td className="p-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
+                  <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
+                    <FiEdit className="w-5 h-5" />
+                  </button>
+                  <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
+                    <MdDeleteForever className="w-5 h-5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr className="even:bg-gray-100">
+              <td className="px-2 py-2.5 w-12 text-center">9</td>
+              <td className="px-2 min-w-12 py-1 text-center">
+                <div className="flex items-center justify-center">
+                  <img
+                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
+                    alt="Điện thoại"
+                    className="w-8 h-8 rounded"
+                  />
+                </div>
+              </td>
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
+                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
+                  Còn hàng
+                </span>
+              </td>
+              <td className="p-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
+                  <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
+                    <FiEdit className="w-5 h-5" />
+                  </button>
+                  <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
+                    <MdDeleteForever className="w-5 h-5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr className="even:bg-gray-100">
+              <td className="px-2 py-2.5 w-12 text-center">10</td>
+              <td className="px-2 min-w-12 py-1 text-center">
+                <div className="flex items-center justify-center">
+                  <img
+                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
+                    alt="Điện thoại"
+                    className="w-8 h-8 rounded"
+                  />
+                </div>
+              </td>
+              <td className="px-2 w-full py-2.5">
+                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+              </td>
+              <td className="px-2 min-w-[128px] py-2">
+                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
+                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+              </td>
+              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">
+                256 GB
+              </td>
+              <td className="px-2 min-w-[112px] text-center py-2.5">
+                Xám
+              </td>
+              <td className="px-2 min-w-[144px] py-2.5 text-center">
+                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
+                  Còn hàng
+                </span>
+              </td>
+              <td className="p-2">
+                <div className="flex min-w-24 items-center justify-center gap-2">
+                  <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
+                    <FiEdit className="w-5 h-5" />
+                  </button>
+                  <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
+                    <MdDeleteForever className="w-5 h-5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
         <div className="flex w-full justify-end">
