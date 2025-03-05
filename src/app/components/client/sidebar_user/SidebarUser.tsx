@@ -8,7 +8,7 @@ import config from "@/app/config";
 import { FaGift, FaUser } from "react-icons/fa6";
 import { CiLock, CiLogout } from "react-icons/ci";
 
-function Sidebar() {
+function SidebarUser() {
   const pathname = usePathname();
   return (
     <div className="flex flex-col w-3/12 items-center bg-white border border-gray-200 min-h-[550px] shadow-md rounded-lg gap-4 p-4">
@@ -169,4 +169,4 @@ function Sidebar() {
     </div>
   );
 }
-export default Sidebar;
+export default SidebarUser;
