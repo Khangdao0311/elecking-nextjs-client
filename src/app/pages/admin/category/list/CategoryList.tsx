@@ -17,7 +17,7 @@ function CategoryList() {
         <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
           <thead className="bg-stone-100">
             <tr>
-              <th className="px-2 py-2.5 w-12 text-sm font-bold">STT</th>
+              <th className="px-2 py-2.5 min-w-12 text-sm font-bold">STT</th>
               <th className=" min-w-[300px] px-2 py-2.5  text-sm font-bold">Ảnh</th>
               <th className="px-2 py-2.5 w-[353px] text-left text-sm font-bold line-clamp-1">
                 Tên Danh Mục
