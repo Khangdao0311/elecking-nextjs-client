@@ -108,7 +108,7 @@ function Checkout() {
   ];
 
   
-  const abc = getaddress.find((a:any) => a.id === checkaddress1);
+  // const abc = getaddress.find((a:any) => a.id === checkaddress1);
 
   const checkout = JSON.parse(localStorage.getItem("checkout")!);
 
@@ -139,11 +139,11 @@ function Checkout() {
         <div className="flex items-center gap-10 w-full place-content-between">
           <div className="flex gap-6 items-center">
             <div className="flex gap-4 text-xl font-semibold">
-              <p>{abc?.name}</p>
-              <p>{abc?.phone}</p>
+              {/* <p>{abc?.name}</p> */}
+              {/* <p>{abc?.phone}</p> */}
             </div>
             <p className="text-base font-normal w-[812px]">
-              {abc?.description}, {abc?.ward}, {abc?.district}, {abc?.province}
+              {/* {abc?.description}, {abc?.ward}, {abc?.district}, {abc?.province} */}
             </p>
           </div>
           <p

@@ -102,7 +102,7 @@ function ProductList() {
       </div>
       {productdetail && (
         <>
-        <div className="bg-white w-[600px] center-fixed flex-col gap-5 rounded-lg shadow-xl z-50">
+        <div className="bg-white w-[600px] center-fixed flex flex-col gap-2.5 rounded-lg shadow-xl z-50">
           <div className="h-[64px] flex items-center px-4">
             <p className="text-xl font-semibold w-full">Thông tin sản phẩm</p>
           </div>
@@ -113,15 +113,15 @@ function ProductList() {
             </div>
           </div>
           <div className="flex-col gap-3 px-4 py-1">
-            <div className="flex-col gap-2 py-2 px-3">
+            <div className="flex flex-col gap-2 py-2 px-3 border shadow-lg rounded">
               <div className="flex">
                 <p className="min-w-[64px]">Hình ảnh</p>
                 <p className="w-full text-center">Màu</p>
                 <p className="w-full text-center">Dung lượng</p>
                 <p className="min-w-[64px]">Số lượng</p>
               </div>
-              <div className="flex">
-                <div className="min-w-[64px]">
+              <div className="flex border-t">
+                <div className="min-w-[64px] flex items-center">
                   <img src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16e-128gb.png" alt=""  className="w-16 h-16"/>
                 </div>
                 <div className="w-full text-center flex items-center">
@@ -132,10 +132,15 @@ function ProductList() {
                   <p className="text-sm text-center font-normal border-b border-gray-200">512 GB</p>
                   <p className="text-sm text-center font-normal ">1 TB</p>
                 </div>
-                <div className="min-w-[64px]">
+                <div className="min-w-[64px] flex-col py-1.5 gap-1.5">
+                  <p className="text-sm text-center font-normal border-b border-gray-200">10</p>
+                  <p className="text-sm text-center font-normal border-b border-gray-200">10</p>
                   <p className="text-sm text-center font-normal">10</p>
                 </div>
               </div>
+            </div>
+            <div className=" flex gap-4 justify-end h-[64px] items-center">
+              <p className="px-6 bg-red-100 text-red-800 h-10 flex items-center rounded text-sm font-bold cursor-pointer" onClick={closeproductdetail}>Trở lại</p>
             </div>
           </div>
         </div>
