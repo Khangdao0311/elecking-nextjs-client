@@ -310,7 +310,6 @@ function CategoryList() {
           </tbody>
         </table>
         <div className="flex w-full justify-end"><Pagination defaultCurrent={1} align="end" total={500} showSizeChanger={false}/></div>
-
       </div>
     </>
   );
