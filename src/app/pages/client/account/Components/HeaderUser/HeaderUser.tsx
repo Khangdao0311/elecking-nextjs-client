@@ -12,14 +12,14 @@ function HeaderUser() {
                     <p className="text-sm font-semibold">0976232323</p>
                 </div>
             </div>
-            <div className="py-4 flex border-gray-200 border shadow-md ">
+            <div className="py-4 flex border-gray-200 border shadow-md rounded-lg">
                 <div className="w-[478px] border-r-[1px] border-r-gray-200">
                     <p className="text-xl font-bold w-full text-center">3</p>
                     <p className="text-base font-normal w-full text-center">
                         đơn hàng
                     </p>
                 </div>
-                <div className="w-[478px] ">
+                <div className="w-[478px]">
                     <p className="text-xl font-bold w-full text-center">
                         65.580.000 đ
                     </p>
