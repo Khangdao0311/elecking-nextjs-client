@@ -1,16 +1,30 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { GoPlus } from "react-icons/go";
 import { Pagination } from "antd";
 import { CiCircleMore } from "react-icons/ci";
+import * as productServices from "@/app/services/productService";
+import Statusproduct from "@/app/pages/admin/Components/Status"
 function ProductList() {
   const [productdetail, setProductdetail] = useState(false)
-
   const showproductdetail = () => setProductdetail(true)
   const closeproductdetail = () => setProductdetail(false)
+  const [products, setProducts] = useState([]);
+  const [limit, setLimit] = useState(50);
+  const [search, setSearch] = useState();
+  useEffect(()=> {
+    const query: any ={};
+    query.limit = limit;
+    if(0){
+      query.search = search;
+    }
+    productServices.getQuery(query).then((res)=> setProducts(res.data))
+  },[])
+  console.log(products);
+  
   return (
     <>
       <TitleAdmin title="Danh Sách Sản Phẩm" />
@@ -47,35 +61,50 @@ function ProductList() {
             </tr>
           </thead>
           <tbody>
-            <tr className="even:bg-gray-100">
+            {products.map((product: IProduct) =>{
+              let text = ""
+              switch (product.variants[0].colors[0].status) {
+                case 0:
+                  text = "Hết hàng"
+                  break;
+                case 1:
+                  text = "Còn hàng"
+                  break;
+                case 2:
+                  text = "Ẩn"
+                  break;
+                case 3:
+                  text = "Đang nhập hàng"
+                default:
+                  break;
+              }
+              return(
+              <tr key={product.id} className="even:bg-gray-100">
               <td className="px-2 py-2.5 w-12 text-center">1</td>
               <td className="px-2 min-w-12 py-1 text-center">
                 <div className="flex items-center justify-center">
                   <img
-                    src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png"
+                    src={product.variants[0].colors[0].image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQegZDhYp7xib4Rc4ZxRGe_cHEH5WrGL1wupA&s"}
                     alt="Điện thoại"
                     className="w-8 h-8 rounded"
                   />
                 </div>
               </td>
               <td className="px-2 w-full py-2.5">
-                <span className="line-clamp-1">Samsung Galaxy S25 Ultra</span>
+                <span className="line-clamp-1">{product.name}</span>
               </td>
               <td className="px-2 max-h-[40px] min-w-[128px] py-1 flex flex-col gap-0">
-                <div className="text-xs font-medium text-red-500"> 30.990.000 đ</div>
-                <del className="text-xs font-light text-gray-500">33.990.000 đ</del>
+                <div className="text-xs font-medium text-red-500">{product.variants[0].price.toLocaleString("vi-VN")} đ</div>
+                <del className="text-xs font-light text-gray-500">{product.variants[0].price_sale.toLocaleString("vi-VN")} đ</del>
               </td>
-              <td className="px-2 min-w-[96px] text-center py-2.5">10</td>
-              <td className="px-2 min-w-[200px] py-2.5 text-center">
-                256 GB
+              <td className="px-2 min-w-[96px] text-center py-2.5">{product.variants[0].colors[0].quantity}</td>
+              <td className="px-2 min-w-[200px] py-2.5 text-center">{(product.variants[0].properties[0]?.name) ? (product.variants[0].properties[0].name): " "}
               </td>
               <td className="px-2 min-w-[112px] text-center py-2.5">
-                Xám
+                {product.variants[0].colors[0].name}
               </td>
               <td className="px-2 min-w-[144px] py-2.5 text-center">
-                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-                  Còn hàng
-                </span>
+              <Statusproduct status={product.variants[0].colors[0].status} text={text}/>
               </td>
               <td className="p-2">
                 <div className="flex min-w-24 items-center justify-center gap-2">
@@ -87,7 +116,10 @@ function ProductList() {
                   </button>
                 </div>
               </td>
-            </tr>
+            </tr>)
+              
+})}
+            
             
           </tbody>
         </table>

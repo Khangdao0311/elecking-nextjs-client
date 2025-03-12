@@ -31,7 +31,7 @@ function AccountOrder() {
           <OrderStatus status={3}/>
           <OrderStatus status={2} />
           <OrderStatus status={1} />
-          <OrderStatus status={0} />
+          <OrderStatus status={0}   />
         </div>
       </div>
     </div>

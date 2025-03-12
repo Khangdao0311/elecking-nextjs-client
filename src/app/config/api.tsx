@@ -9,6 +9,8 @@ const api = {
   voucher: `${url}/voucher`,
   payment: `${url}/payment`,
   address: `${url}/address`,
+  brand: `${url}/brand`,
+  order: `${url}/order`
 };
 
 export default api;

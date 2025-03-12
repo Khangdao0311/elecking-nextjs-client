@@ -33,6 +33,11 @@ const routes = {
       add: "/admin/voucher/add",
       edit: "/admin/voucher/edit/",
     },
+    brand: {
+      list: "/admin/brand/list",
+      add: "/admin/brand/add",
+      edit: "/admin/brand/edit/",
+    },
     user: {
       list: "/admin/user/list",
       add: "/admin/user/add",

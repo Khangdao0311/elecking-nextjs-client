@@ -3,9 +3,9 @@ interface ICategory {
     name: string
     image: string
     status: number
-    propertype: IPropertype[]
+    propertype: IProptype[]
+    description: string
 }
-interface IPropertype {
+interface IProptype {
     id: string
-    name: string
 }

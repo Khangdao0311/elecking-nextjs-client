@@ -2,17 +2,32 @@
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import { Pagination } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { Select } from "antd";
+import * as orderServices from "@/app/services/orderService";
+import Statusorder from "@/app/pages/admin/Components/Status"
 const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
 
 function OrderList() {
+  
   const [editorder, setEditorder] = useState(false);
   const showeditorder = () => setEditorder(true);
   const closeeditorder = () => setEditorder(false);
+  const [limit, setLimit] = useState();
+  const [search, setSearch] = useState();
+   const [orders, setOrders] = useState([]);
+   useEffect(()=> {
+         const query: any ={};
+         query.limit = limit;
+         if(0){
+           query.search = search;
+         }
+         orderServices.getQuery(query).then((res)=> setOrders(res.data))
+       },[])
+       console.log(orders);
   return (
     <>
       <TitleAdmin title="Quản lý đơn hàng" />
@@ -58,11 +73,13 @@ function OrderList() {
             </tr>
           </thead>
           <tbody>
-            <tr className="even:bg-gray-100">
+            {orders.map((order:IOrder)=>{
+              return(
+                <tr key={order.id} className="even:bg-gray-100">
               <td className="px-2 py-2.5 w-12 text-center">1</td>
-              <td className="px-2 py-2.5 w-[128px]">DH321313</td>
+              <td className="px-2 py-2.5 w-[128px]">{order.id}</td>
               <td className="px-2 py-2.5 w-[128px]">10/02/2025</td>
-              <td className="px-2 flex-1 py-2">Nguyễn Đặng Hưng</td>
+              <td className="px-2 flex-1 py-2">{order.user_id}</td>
               <td className="px-2 flex-1 py-2 w-[150px]">23.200.000 đ</td>
               <td className="px-2 min-w-[112px] max-w-[112px] text-center py-2.5">
                 <span className="line-clamp-1">DSFSDFSDAVA</span>
@@ -86,6 +103,9 @@ function OrderList() {
                 </div>
               </td>
             </tr>
+              )
+            })}
+            
           </tbody>
         </table>
         <div className="flex w-full justify-end">

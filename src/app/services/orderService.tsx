@@ -3,6 +3,6 @@ import config from "../config";
 
 export async function getQuery(params: any) {
   return axios
-    .get(`${config.api.category}`, { params })
+    .get(`${config.api.order}`, { params })
     .then((response: any) => response.data);
 }

@@ -10,6 +10,7 @@ import { TbLogout2 } from "react-icons/tb";
 import { VscTag } from "react-icons/vsc";
 
 import config from "@/app/config";
+import { SiBrandfolder } from "react-icons/si";
 
 function Sidebar() {
   const pathname = usePathname();
@@ -99,6 +100,25 @@ function Sidebar() {
             } text-sm font-bold`}
           >
             Quản lý người dùng
+          </p>
+        </Link>
+        <Link
+          href={config.routes.admin.brand.list}
+          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
+            pathname.startsWith("/admin/brand") ? "pl-7 bg-white" : ""
+          } transition-all duration-300	rounded-md cursor-pointer select-none`}
+        >
+          <SiBrandfolder
+            className={`group-hover:text-primary ${
+              pathname.startsWith("/admin/brand") ? "text-primary" : "text-white"
+            } w-6 h-6`}
+          />
+          <p
+            className={`group-hover:text-primary ${
+              pathname.startsWith("/admin/brand") ? "text-primary" : "text-white"
+            } text-sm font-bold`}
+          >
+            Quản lý thương hiệu
           </p>
         </Link>
         <Link
