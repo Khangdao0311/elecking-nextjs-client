@@ -47,7 +47,7 @@ function ProductDetail() {
   }, [id]);
 
   const cartUser = localStorage.getItem("cartUser");
-  const cart = JSON.parse(cartUser);
+  const cart = JSON.parse(cartUser!);
   const user = localStorage.getItem("user");
   const userJSON = JSON.parse(user!);
 
@@ -74,6 +74,7 @@ function ProductDetail() {
     console.log(cart);
     authServices.cart(userJSON.id, cart);
   }
+  
 
   // console.log(cartUserJSON);
   // function addCart() {

@@ -12,18 +12,20 @@ import { Pagination } from "antd";
 
 function BrandList() {
   const [limit, setLimit] = useState(5);
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState("");
   const [brands, setBrands] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
 
+
+  
   console.log(page);
 
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
     query.page = page;
-    if (0) {
+    if (search != "") {
       query.search = search;
     }
     brandServices.getQuery(query).then((res) => {
@@ -35,7 +37,10 @@ function BrandList() {
   return (
     <>
       <TitleAdmin title="Danh Sách Thương Hiệu" />
-      <Boxsearchlimit title="thương hiệu" onLimitChange={(newLimit:any) =>{setLimit(newLimit); setPage(1)}}/>
+      <Boxsearchlimit title="thương hiệu" onLimitChange={(newLimit:any) =>{setLimit(newLimit); setPage(1)}} onSearch={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}/>
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
