@@ -10,13 +10,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper/core";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import { FaRegHeart, FaStar } from "react-icons/fa6";
+import { FaAngleLeft, FaAngleRight, FaRegHeart, FaStar } from "react-icons/fa6";
 import { Pagination } from "antd";
 import Product from "@/app/components/client/Product";
 import ModalAddProduct from "@/app/components/client/ModalAddProduct";
 import ProductColor from "./ProductColor";
 import { useParams, useSearchParams } from "next/navigation";
 import * as productServices from "@/app/services/productService";
+import * as authServices from "@/app/services/authService";
 import ModalLogin from "@/app/components/client/ModalLogin";
 // import Swiper core and required modules
 
@@ -34,9 +35,6 @@ function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [showLogin, setShowLogin] = useState(false);
 
-  const userJSON = localStorage.getItem("user");
-  console.log(product);
-
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => {
       setProduct(res.data);
@@ -47,30 +45,72 @@ function ProductDetail() {
     const query = { id: id, limit: 5 };
     productServices.getSame(query).then((res) => setProductSame(res.data));
   }, [id]);
-  console.log(productSame);
 
+  const cartUser = localStorage.getItem("cartUser");
+  const cart = JSON.parse(cartUser);
+  const user = localStorage.getItem("user");
+  const userJSON = JSON.parse(user!);
+
+  function handleAddToCart() {
+    // const cart = {
+    //   product : {
+    //     id: product?.id,
+    //     variant: iVariant,'
+    //     color: icolor
+    //   },
+    //   quantity: quantity
+    // }
+    console.log(cart);
+    const cartItem = {
+      product: {
+        id: product?.id,
+        variant: iVariant,
+        color: icolor,
+      },
+      quantity: quantity,
+    };
+
+    cart.push(cartItem);
+    console.log(cart);
+    authServices.cart(userJSON.id, cart);
+  }
+
+  // console.log(cartUserJSON);
+  // function addCart() {
+  //   s
+  // }
   return (
     <>
       {product && (
         <>
           {/* Chi tiết sản phẩm, giá và type */}
-          <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+          <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
             <div className="text-lg font-extrabold">{product?.name}</div>
             <hr className="my-4" />
+
             <div className="flex gap-4">
               {/* hình ảnh */}
               <div className="w-7/12 flex flex-wrap gap-2.5">
                 <Swiper
                   spaceBetween={10}
-                  navigation={true}
+                  navigation={{
+                    nextEl: ".custom-next",
+                    prevEl: ".custom-prev",
+                  }}
                   thumbs={{ swiper: thumbsSwiper }}
-                  className="w-full h-[340px] border border-gray-200 rounded-2xl"
+                  className="w-full h-[340px] border border-gray-200 rounded-2xl relative"
                 >
                   {product?.images.map((img, index) => (
                     <SwiperSlide key={index}>
                       <img className="w-full h-full object-contain" src={img} />
                     </SwiperSlide>
                   ))}
+                  <button className="custom-prev absolute w-[38px] h-16 py-[20px] pr-2.5 pl-1 bg-black/30 z-10 top-[50%] -translate-y-1/2 left-0 rounded-r-full flex items-center justify-center">
+                    <FaAngleLeft className="w-7 h-7 text-white" />
+                  </button>
+                  <button className="custom-next absolute w-[38px] h-16 py-[20px] pl-2.5 pr-1 bg-black/30 z-10 top-[50%] -translate-y-1/2 right-0 rounded-l-full flex items-center justify-center">
+                    <FaAngleRight className="w-6 h-6 text-white" />
+                  </button>
                 </Swiper>
                 <Swiper
                   onSwiper={(e) => setThumbsSwiper(e)}
@@ -98,11 +138,10 @@ function ProductDetail() {
                     product?.variants?.map((variant, index) => (
                       <div key={index}>
                         <ProductVariant
-                          name={variant.properties.map(e => e.name).join(" - ")}
-                          price={
-                            variant.price -
-                            variant.price_sale
-                          }
+                          name={variant.properties
+                            .map((e) => e.name)
+                            .join(" - ")}
+                          price={variant.price - variant.price_sale}
                           checked={index == iVariant}
                           onClick={() => {
                             setIVariant(index);
@@ -120,7 +159,6 @@ function ProductDetail() {
                           image={color.image}
                           color={color.name}
                           price={
-                        
                             product.variants[iVariant].price -
                             product.variants[iVariant].price_sale +
                             color.price_extra
@@ -136,7 +174,6 @@ function ProductDetail() {
                   <p className="text-base font-medium w-[92px]">Giá</p>
                   <p className="text-3xl font-bold text-red-500 w-[204px]">
                     {(
-                      
                       product!.variants[iVariant].price -
                       product!.variants[iVariant].price_sale +
                       product!.variants[iVariant].colors[icolor].price_extra
@@ -144,9 +181,8 @@ function ProductDetail() {
                     đ
                   </p>
                   <del className="text-lg font-normal text-gray-500">
-                    {(
-                      product!.variants[iVariant].price
-                    ).toLocaleString("vi-VN")} đ
+                    {product!.variants[iVariant].price.toLocaleString("vi-VN")}{" "}
+                    đ
                   </del>
                   <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
                     {/* <p className="w-full text-center text-xs font-bold text-white">
@@ -154,20 +190,17 @@ function ProductDetail() {
                     </p> */}
                     {Math.ceil(
                       100 -
-                        ((
-                          product.variants[0].price-
+                        ((product.variants[0].price -
                           product.variants[0].price_sale) /
-                          ( product.variants[0].price)) *
+                          product.variants[0].price) *
                           100
                     ) > 0 && (
                       <div className="w-full text-center text-xs font-bold text-white">
                         {Math.ceil(
                           100 -
-                            ((
-                              product.variants[0].price -
+                            ((product.variants[0].price -
                               product.variants[0].price_sale) /
-                              (
-                                product.variants[0].price)) *
+                              product.variants[0].price) *
                               100
                         )}{" "}
                         %
@@ -194,7 +227,13 @@ function ProductDetail() {
                       {quantity}
                     </div>
                     <div
-                      onClick={() => setQuantity(quantity + 1)}
+                      onClick={() => {
+                        if (
+                          quantity <
+                          product?.variants[iVariant].colors[icolor].quantity
+                        )
+                          setQuantity(quantity + 1);
+                      }}
                       className="w-10 h-10 border rounded-r-lg flex items-center justify-center cursor-pointer"
                     >
                       +
@@ -208,13 +247,14 @@ function ProductDetail() {
                       if (!userJSON) {
                         setShowLogin(true);
                       } else {
+                        handleAddToCart();
                         setShowModal(true);
                         setTimeout(() => setShowModal(false), 1000);
                       }
                     }}
                     className="cursor-pointer flex gap-1.5 p-1 rounded-lg w-[200px] h-[60px] items-center justify-center border border-primary "
                   >
-                    <AiOutlineShoppingCart className="w-[30px] h-[30px] text-primary shadow-lg" />
+                    <AiOutlineShoppingCart className="w-[30px] h-[30p ] text-primary shadow-lg" />
                     <p className="text-primary text-sm font-normal">
                       Thêm vào giỏ hàng
                     </p>

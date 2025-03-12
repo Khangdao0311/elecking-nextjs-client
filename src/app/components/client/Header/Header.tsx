@@ -19,59 +19,83 @@ import LogoMobile from "@/app/assets/LogoMobile";
 import MenuCategory from "../MenuCategory";
 import ModalLogin from "../ModalLogin";
 import { IoIosArrowForward } from "react-icons/io";
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from "next/navigation";
 
 function Header() {
-  let pathname = usePathname()
-  let breadCrumb: any[] = []
+  const userJSON = localStorage.getItem("user");
+  const user = JSON.parse(userJSON!);
+  const userCart = localStorage.getItem('cartUser')
+  const userCartJSON = JSON.parse(userCart!)
+  const userCartQuantity = userCartJSON?.length
+  
+  const router = useRouter();
+
+  let pathname = usePathname();
+  let breadCrumb: any[] = [];
   switch (pathname) {
-    case '/products':
-      breadCrumb = [{
-        name: 'Trang Chủ',
-        link: config.routes.client.home
-      }, {
-        name: 'Sản phẩm',
-        link: config.routes.client.products
-      }]
+    case "/products":
+      breadCrumb = [
+        {
+          name: "Trang Chủ",
+          link: config.routes.client.home,
+        },
+        {
+          name: "Sản phẩm",
+          link: config.routes.client.products,
+        },
+      ];
       break;
-    case '/cart':
-      breadCrumb = [{
-        name: 'Trang Chủ',
-        link: config.routes.client.home
-      }, {
-        name: 'Giỏ hàng',
-        link: config.routes.client.cart
-      }]
+    case "/cart":
+      breadCrumb = [
+        {
+          name: "Trang Chủ",
+          link: config.routes.client.home,
+        },
+        {
+          name: "Giỏ hàng",
+          link: config.routes.client.cart,
+        },
+      ];
       break;
-    case '/login':
-      breadCrumb = [{
-        name: 'Trang Chủ',
-        link: config.routes.client.home
-      }, {
-        name: 'Sản phẩm',
-        link: config.routes.client.login
-      }]
+    case "/login":
+      breadCrumb = [
+        {
+          name: "Trang Chủ",
+          link: config.routes.client.home,
+        },
+        {
+          name: "Sản phẩm",
+          link: config.routes.client.login,
+        },
+      ];
       break;
-    case '/register':
-      breadCrumb = [{
-        name: 'Trang Chủ',
-        link: config.routes.client.home
-      }, {
-        name: 'Sản phẩm',
-        link: config.routes.client.register
-      }]
+    case "/register":
+      breadCrumb = [
+        {
+          name: "Trang Chủ",
+          link: config.routes.client.home,
+        },
+        {
+          name: "Sản phẩm",
+          link: config.routes.client.register,
+        },
+      ];
       break;
-    case '/checkout':
-      breadCrumb = [{
-        name: 'Trang Chủ',
-        link: config.routes.client.home
-      }, {
-        name: 'Giỏ hàng',
-        link: config.routes.client.cart
-      }, {
-        name: 'Chi tiết giỏ hàng',
-        link: config.routes.client.checkout
-      }]
+    case "/checkout":
+      breadCrumb = [
+        {
+          name: "Trang Chủ",
+          link: config.routes.client.home,
+        },
+        {
+          name: "Giỏ hàng",
+          link: config.routes.client.cart,
+        },
+        {
+          name: "Chi tiết giỏ hàng",
+          link: config.routes.client.checkout,
+        },
+      ];
       break;
 
     default:
@@ -92,11 +116,7 @@ function Header() {
               delay: 2000,
               disableOnInteraction: false,
             }}
-            navigation={true}
-            // navigation={{
-            //   nextEl: ".custom-next",
-            //   prevEl: ".custom-prev",
-            // }}
+          
             modules={[Autoplay, Navigation]}
             breakpoints={{
               1024: { slidesPerView: 3 },
@@ -143,7 +163,10 @@ function Header() {
         <div className="bg-primary py-3 px-3 md:px-3.5 md:py-3.5 lg:px-4 lg:py-4 xl:px-0 ">
           <div className="container-custom flex gap-4">
             {/* Logo elecking */}
-            <Link href={config.routes.client.home} className=" w-12 md:w-[200px] h-12">
+            <Link
+              href={config.routes.client.home}
+              className=" w-12 md:w-[200px] h-12"
+            >
               <Logo className="hidden md:block" />
               <LogoMobile className="block md:hidden" />
             </Link>
@@ -177,19 +200,30 @@ function Header() {
               <div className="w-[92px] h-12 center-flex">
                 <div className="relative">
                   <AiOutlineShoppingCart className="w-9 h-9 text-white" />
-                  <div className="absolute w-7 h-7 border border-white font-semibold text-base center-flex bg-secondary center-flex rounded-full top-0 right-0 translate-x-1/2	-translate-y-1/3 md:-translate-y-1/2	">
-                    1
-                  </div>
+                  {userCartQuantity && (
+                     <div className="absolute w-7 h-7 border border-white font-semibold text-base center-flex bg-secondary center-flex rounded-full top-0 right-0 translate-x-1/2	-translate-y-1/3 md:-translate-y-1/2	">
+                     {userCartQuantity}
+                     </div>
+                  )}
+                 
                 </div>
               </div>
             </Link>
             {/* Icon login / register */}
             <div
               className="hidden w-[92px] h-12 bg-white rounded-lg md:center-flex flex-col cursor-pointer select-none"
-              onClick={() => setShowLogin(true)}
+              onClick={() => {
+                if (userJSON) {
+                  router.push(config.routes.client.account);
+                } else {
+                  setShowLogin(true);
+                }
+              }}
             >
               <FaCircleUser className="text-base w-6 h-6" />
-              <p className="text-black text-xs font-medium">Emember</p>
+              <p className="text-black text-xs font-medium">
+                {user! ? user.fullname : "Emember"}
+              </p>
             </div>
           </div>
         </div>
@@ -197,9 +231,11 @@ function Header() {
           <div className="bg-white">
             <div className="container-custom flex py-2 items-center gap-2.5 ">
               {breadCrumb.map((e, i) => (
-                <Fragment key={i} >
+                <Fragment key={i}>
                   {i != 0 && <IoIosArrowForward />}
-                  <Link href={e.link} className="text-xs font-normal">{e.name}</Link>
+                  <Link href={e.link} className="text-xs font-normal">
+                    {e.name}
+                  </Link>
                 </Fragment>
               ))}
             </div>
@@ -213,7 +249,6 @@ function Header() {
         </>
       )}
       {showMenu && (
-        // <Link href={config.routes.client.}></Link>
         <div
           onClick={() => setShowMenu(false)}
           className="bg-black/30 fixed inset-0 z-20 cursor-pointer"

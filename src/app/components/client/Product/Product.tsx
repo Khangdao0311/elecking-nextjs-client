@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { FaRegHeart, FaStar } from "react-icons/fa6";
+import { FaRegHeart, FaStar, FaRegStar  } from "react-icons/fa6";
 import config from "@/app/config";
+import { BsStar, BsStarFill } from "react-icons/bs";
 function Product(props: { product: IProduct }) {
   return (
     <>
@@ -27,49 +28,51 @@ function Product(props: { product: IProduct }) {
             đ
           </div>
           <div className="flex gap-2.5">
-            {
-              props.product.variants[0].price -
+            {props.product.variants[0].price -
               props.product.variants[0].price_sale <
               props.product.variants[0].price && (
-                <del className="text-base font-extralight text-gray-400">
-                  {(
-                    props.product.variants[0].price
-                  ).toLocaleString("vi-VN")}{" "}
-                  đ
-                </del>
-              )}
+              <del className="text-base font-extralight text-gray-400">
+                {props.product.variants[0].price.toLocaleString("vi-VN")} đ
+              </del>
+            )}
             {Math.ceil(
               100 -
-              ((
-                props.product.variants[0].price -
-                props.product.variants[0].price_sale) /
-                (
-                  props.product.variants[0].price)) *
-              100
+                ((props.product.variants[0].price -
+                  props.product.variants[0].price_sale) /
+                  props.product.variants[0].price) *
+                  100
             ) > 0 && (
-                <div className="bg-primary text-white px-1.5 py-1 rounded-md text-xs font-bold">
-                  {Math.ceil(
-                    100 -
-                    ((
-                      props.product.variants[0].price -
+              <div className="bg-primary text-white px-1.5 py-1 rounded-md text-xs font-bold">
+                {Math.ceil(
+                  100 -
+                    ((props.product.variants[0].price -
                       props.product.variants[0].price_sale) /
-                      (
-                        props.product.variants[0].price)) *
-                    100
-                  )}{" "}
-                  %
-                </div>
-              )}
+                      props.product.variants[0].price) *
+                      100
+                )}{" "}
+                %
+              </div>
+            )}
           </div>
         </Link>
         <div className="flex justify-between w-full">
-            {props.product.rating}
+          {/* {props.product.rating}   */}
           <div className="center-flex justify-start">
+            {/* <FaStar className="w-4.5 h-4.5 text-yellow-500" />
             <FaStar className="w-4.5 h-4.5 text-yellow-500" />
             <FaStar className="w-4.5 h-4.5 text-yellow-500" />
             <FaStar className="w-4.5 h-4.5 text-yellow-500" />
-            <FaStar className="w-4.5 h-4.5 text-yellow-500" />
-            <FaStar className="w-4.5 h-4.5 text-yellow-500" />
+            <FaStar className="w-4.5 h-4.5 text-yellow-500" /> */}
+            {Array.from({ length: props.product.rating }).map((_, i: number) => (
+              <FaStar 
+              className="w-4.5 h-4.5 text-yellow-500"
+              key={i} />
+            ))}
+            {Array.from({ length: 5 - props.product.rating }).map(
+              (_, i: number) => (
+                <FaRegStar key={i}  className="w-4.5 h-4.5 text-yellow-500" />
+              )
+            )}
           </div>
           <div className="center-flex gap-1">
             <p>Yêu thích</p>

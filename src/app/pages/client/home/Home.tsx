@@ -10,10 +10,11 @@ import Product from "@/app/components/client/Product";
 import * as productServices from "@/app/services/productService";
 import config from "@/app/config";
 import { Fragment, useEffect, useState } from "react";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 const imageSlide = [
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/16-pro-max-AfterValentine.jpg",
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/samsung-s25-gia-chuan-19-2.jpg",
-  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/tecno-camon-30-pro-tai-nghe-home.jpg",
+  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/a56-a36-dkntt-home.jpg",
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/BUds-6-Pro-sliding-home.jpg",
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/vivo-nghim-thu-t2-25.jpg",
   "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/dong-ho-thong-minh-huawei-watch-gt-5-milanese-13-02-home.jpg",
@@ -30,7 +31,7 @@ function Home() {
 
   // Lấy Sản Phẩm Hot
   const [productHot, setProductHot] = useState([]);
-  useEffect(() => { 
+  useEffect(() => {
     const query = { orderby: "view-desc" };
     productServices.getQuery(query).then((res) => setProductHot(res.data));
   }, []);
@@ -66,7 +67,7 @@ function Home() {
   return (
     <>
       {/* Slide */}
-      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 relative">
         <Swiper
           spaceBetween={30}
           centeredSlides={true}
@@ -77,11 +78,10 @@ function Home() {
           pagination={{
             clickable: true,
           }}
-          navigation={true}
-          // navigation={{
-          //   nextEl: ".custom-next",
-          //   prevEl: ".custom-prev",
-          // }}
+          navigation={{
+            nextEl: ".custom-next",
+            prevEl: ".custom-prev",
+          }}
           modules={[Autoplay, Pagination, Navigation]}
           className="mySwiper h-96 w-full"
         >
@@ -91,10 +91,16 @@ function Home() {
             </SwiperSlide>
           ))}
         </Swiper>
+        <button className="custom-prev absolute w-[38px] h-16 py-[20px] pr-2.5 pl-1 bg-black/30 z-10 top-[30.5%] rounded-r-full flex items-center justify-center">
+          <FaAngleLeft className="w-7 h-7 text-white" />
+        </button>
+        <button className="custom-next absolute w-[38px] h-16 py-[20px] pl-2.5 pr-1 bg-black/30 z-10 top-[30.5%] right-0 rounded-l-full flex items-center justify-center">
+          <FaAngleRight className="w-6 h-6 text-white" />
+        </button>
         <div className="grid grid-cols-3 gap-4 mt-4">
           <img
             className="rounded-lg h-36 w-full"
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/m55-14-02.png"
+            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/m55-9190-9-3-25-right-banner.png"
             alt=""
           />
           <img
@@ -157,7 +163,7 @@ function Home() {
             <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
           </div>
         </div>
-        <div className="grid grid-cols-5 container-custom gap-4"> 
+        <div className="grid grid-cols-5 container-custom gap-4">
           {productHot.map((product: IProduct) => (
             <Fragment key={product.id}>
               <Product product={product} />
@@ -228,7 +234,7 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-        {headPhone.map((product: IProduct) => (
+          {headPhone.map((product: IProduct) => (
             <Fragment key={product.id}>
               <Product product={product} />
             </Fragment>

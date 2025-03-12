@@ -10,6 +10,7 @@ import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
 import * as productServices from "@/app/services/productService";
 import { IoCloseCircle, IoCloseOutline } from "react-icons/io5";
 import { MdRemoveRedEye } from "react-icons/md";
+import { useParams, useSearchParams } from "next/navigation";
 
 function Products() {
   const [activePopup, setActivePopup] = useState("");
@@ -59,14 +60,17 @@ function Products() {
     );
   };
 
-  // lấy tất cả sản phẩm limit 20
+  const query = useSearchParams();
+  const categoryId = query.get('category'); 
+
   const [products, setProducts] = useState<IProduct[]>([]);
   useEffect(() => {
     productServices
-      .getQuery({ limit: 20 })
+      .getQuery({ categoryid: categoryId})
       .then((res) => setProducts(res.data));
-  }, []);
-
+  }, [categoryId]);
+  console.log(products);
+  
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
       {/* Lọc sản phẩm */}
@@ -376,7 +380,7 @@ function Products() {
       {/* Show sản phẩm */}
       <section className="py-4">
         <div className="grid grid-cols-5 gap-2.5 flex-wrap">
-          {products.map((product:IProduct) => (
+          {products.map((product: IProduct) => (
             <Fragment key={product.id}>
               <Product product={product} />
             </Fragment>
