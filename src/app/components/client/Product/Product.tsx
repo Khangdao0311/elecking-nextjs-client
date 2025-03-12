@@ -1,8 +1,20 @@
+"use client";
 import Link from "next/link";
-import { FaRegHeart, FaStar, FaRegStar  } from "react-icons/fa6";
+import { FaRegHeart, FaStar, FaRegStar, FaHeart } from "react-icons/fa6";
 import config from "@/app/config";
-import { BsStar, BsStarFill } from "react-icons/bs";
+import { useState } from "react";
+
 function Product(props: { product: IProduct }) {
+  const user = localStorage.getItem("user");
+  const userJSON = JSON.parse(user!); 
+  let Tim = (<FaHeart />)
+  if (user) {
+    const wishUser = userJSON.wish;
+    const isInCart = wishUser.some((item: any) => {
+      console.log(item.id);
+      item.product.id === props.product.id});
+  }
+
   return (
     <>
       <div className="border rounded-2xl shadow-lg p-4 w-full bg-white flex flex-wrap gap-3">
@@ -56,27 +68,22 @@ function Product(props: { product: IProduct }) {
           </div>
         </Link>
         <div className="flex justify-between w-full">
-          {/* {props.product.rating}   */}
           <div className="center-flex justify-start">
-            {/* <FaStar className="w-4.5 h-4.5 text-yellow-500" />
-            <FaStar className="w-4.5 h-4.5 text-yellow-500" />
-            <FaStar className="w-4.5 h-4.5 text-yellow-500" />
-            <FaStar className="w-4.5 h-4.5 text-yellow-500" />
-            <FaStar className="w-4.5 h-4.5 text-yellow-500" /> */}
-            {Array.from({ length: props.product.rating }).map((_, i: number) => (
-              <FaStar 
-              className="w-4.5 h-4.5 text-yellow-500"
-              key={i} />
-            ))}
+            {Array.from({ length: props.product.rating }).map(
+              (_, i: number) => (
+                <FaStar className="w-4.5 h-4.5 text-yellow-500" key={i} />
+              )
+            )}
             {Array.from({ length: 5 - props.product.rating }).map(
               (_, i: number) => (
-                <FaRegStar key={i}  className="w-4.5 h-4.5 text-yellow-500" />
+                <FaRegStar key={i} className="w-4.5 h-4.5 text-yellow-500" />
               )
             )}
           </div>
-          <div className="center-flex gap-1">
+          <div className="center-flex gap-1 cursor-pointer">
             <p>Yêu thích</p>
             <FaRegHeart />
+            {/* {isInCart ? <FaHeart /> : <FaRegHeart />} */}
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { IoCloseSharp } from "react-icons/io5";
 const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
+
 function CategoryAdd() {
   return (
     <>

@@ -9,6 +9,7 @@ import { MdArrowForwardIos } from "react-icons/md";
 import Product from "@/app/components/client/Product";
 import * as productServices from "@/app/services/productService";
 import config from "@/app/config";
+import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 const imageSlide = [
@@ -91,10 +92,10 @@ function Home() {
             </SwiperSlide>
           ))}
         </Swiper>
-        <button className="custom-prev absolute w-[38px] h-16 py-[20px] pr-2.5 pl-1 bg-black/30 z-10 top-[30.5%] rounded-r-full flex items-center justify-center">
+        <button className="custom-prev absolute w-[38px] h-16 py-[20px] pr-2.5 pl-1 bg-black/30 z-10 top-[30.5%] rounded-r-full flex items-center justify-center ">
           <FaAngleLeft className="w-7 h-7 text-white" />
         </button>
-        <button className="custom-next absolute w-[38px] h-16 py-[20px] pl-2.5 pr-1 bg-black/30 z-10 top-[30.5%] right-0 rounded-l-full flex items-center justify-center">
+        <button className="custom-next absolute w-[38px] h-16 py-[20px] pl-2.5 pr-1 bg-black/30 z-10 top-[30.5%] right-0 rounded-l-full flex items-center justify-center ">
           <FaAngleRight className="w-6 h-6 text-white" />
         </button>
         <div className="grid grid-cols-3 gap-4 mt-4">
@@ -123,12 +124,14 @@ function Home() {
             <ImFire className="w-12 h-12 text-white" />
             <p className="text-4xl font-bold text-white">HOT SALE</p>
           </div>
-          <div className="flex gap-1 items-center">
+          <Link
+          href={`${config.routes.client.products}?orderby=sale-decs`}
+          className="flex gap-1 items-center cursor-pointer">
             <em className="underline text-white text-base font-medium">
               Xem tất cả{" "}
             </em>
             <MdArrowForwardIos className="text-white w-5 h-5" />
-          </div>
+          </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
           {productSale.map((product: IProduct) => (
@@ -156,12 +159,14 @@ function Home() {
               SẢN PHẨM NỔI BẬT NHẤT
             </p>
           </div>
-          <div className="flex gap-1 items-center">
+          <Link
+          href={`${config.routes.client.products}?orderby=view-desc`}
+          className="flex gap-1 items-center cursor-pointer">
             <em className="underline text-gray-500 drop-shadow-md text-base font-medium">
               Xem tất cả{" "}
             </em>
             <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
-          </div>
+          </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-4">
           {productHot.map((product: IProduct) => (
@@ -180,12 +185,14 @@ function Home() {
               ĐiỆN THOẠI, MÁY TÍNH BẢNG
             </p>
           </div>
-          <div className="flex gap-1 items-center">
+          <Link
+          href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578`}
+          className="flex gap-1 items-center cursor-pointer">
             <em className="underline text-gray-500 drop-shadow-md text-base font-medium">
               Xem tất cả{" "}
             </em>
             <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
-          </div>
+          </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
           {productTablet.map((product: IProduct) => (
@@ -204,12 +211,14 @@ function Home() {
               LAPTOP, MÀN HÌNH, TIVI
             </p>
           </div>
-          <div className="flex gap-1 items-center">
+          <Link
+          href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574`}
+          className="flex gap-1 items-center cursor-pointer">
             <em className="underline text-gray-500 drop-shadow-md text-base font-medium">
               Xem tất cả{" "}
             </em>
             <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
-          </div>
+          </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
           {productLaptop.map((product: IProduct) => (
@@ -226,12 +235,14 @@ function Home() {
           <div className="flex gap-1.5 ">
             <p className="text-4xl font-bold text-black">TAI NGHE, LOA</p>
           </div>
-          <div className="flex gap-1 items-center">
+          <Link
+          href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a`}
+          className="flex gap-1 items-center cursor-pointer">
             <em className="underline text-gray-500 drop-shadow-md text-base font-medium">
               Xem tất cả{" "}
             </em>
             <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
-          </div>
+          </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
           {headPhone.map((product: IProduct) => (
