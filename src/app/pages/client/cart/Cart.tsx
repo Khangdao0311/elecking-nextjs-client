@@ -37,11 +37,8 @@ function Cart() {
   const [showVariant, setShowVariant] = useState<number[]>([]);
   const [showColor, setShowColor] = useState<number[]>([]);
 
-
-  const [quantities, setQuantities] = useState<number[]>(cart.map((product: { quantity: number }) => product.quantity));
-
   const increaseQuantity = (index: number) => {
-    const quantity: number = productCart[index].variants[cart[index].variant].colors[cart[index].color].quantity
+    const quantity: number = productCart[index].variants[cart[index].variant].colors[cart[index].color].quantity;
     const cartNew = cart.map((e: any, i: number) => {
       if (index === i) return {
         ...e,
@@ -50,7 +47,7 @@ function Cart() {
       return e
     })
     localStorage.setItem("cartJSON", JSON.stringify(cartNew))
-    setLoad(!load)
+    setLoad(!load);
   };
 
   const decreaseQuantity = (index: number) => {
@@ -62,10 +59,10 @@ function Cart() {
       return e
     })
     localStorage.setItem("cartJSON", JSON.stringify(cartNew))
-    setLoad(!load)
+    setLoad(!load);
   };
 
-  function handlChangeVariant(index: number) {
+  function handlChangeShowVariant(index: number) {
     if (showVariant.includes(index)) {
       setShowVariant(showVariant.filter(e => e != index))
     } else {
@@ -73,7 +70,21 @@ function Cart() {
     }
   }
 
-  function handlChangeColor(index: number) {
+  function handlChangeVariant(index: number, variant: number) {
+    const cartNew = cart.map((e: any, i: number) => {
+      if (index == i) {
+        return {
+          ...e,
+          variant: variant
+        }
+      }
+      return e
+    })
+    localStorage.setItem("cartJSON", JSON.stringify(cartNew))
+    setLoad(!load)
+  }
+
+  function handlChangeShowColor(index: number) {
     if (showColor.includes(index)) {
       setShowColor(showColor.filter(e => e != index))
     } else {
@@ -81,23 +92,23 @@ function Cart() {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  function handlChangeColor(index: number, color: number) {
+    const cartNew = cart.map((e: any, i: number) => {
+      if (index == i) {
+        return {
+          ...e,
+          color: color
+        }
+      }
+      return e
+    })
+    localStorage.setItem("cartJSON", JSON.stringify(cartNew))
+    setLoad(!load)
+  }
 
   const [checkedItems, setCheckedItems] = useState<boolean[]>(cart.map(() => false));
   const [totalPrice, setTotalPrice] = useState(0);
+  const totalCheckedItems = checkedItems.filter(Boolean).length;
   const calculateProductPrice = (product: IProduct, iProduct: number) => {
     return (
       (
@@ -105,61 +116,56 @@ function Cart() {
         product.variants[cart[iProduct].variant].price_sale +
         product.variants[cart[iProduct].variant].colors[
           cart[iProduct].color
-        ].price_extra) * quantities[iProduct]
+        ].price_extra) * cart[iProduct].quantity
     );
   };
 
-
   const calculateTotalPrice = () => {
-    // const total = productCart.reduce((sum: any, product: IProduct, index: any) => {
-    // if (checkedItems[index]) {
-    // return sum + calculateProductPrice(product, index);
-    // }
-    // return sum;
-    // }, 0);
-    // setTotalPrice(total);
+    const total = productCart.reduce((sum: any, product: IProduct, index: any) => {
+      if (checkedItems[index]) {
+        return sum + calculateProductPrice(product, index);
+      }
+      return sum;
+    }, 0);
+    setTotalPrice(total);
   };
-
 
   const handleCheckAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // const isChecked = e.target.checked;
-    // setCheckedItems(cart.map(() => isChecked));
+    const isChecked = e.target.checked;
+    setCheckedItems(cart.map(() => isChecked));
   };
   const handleCheckItem = (index: number) => {
-    // const newCheckedItems = [...checkedItems];
-    // newCheckedItems[index] = !newCheckedItems[index];
-    // setCheckedItems(newCheckedItems);
+    const newCheckedItems = [...checkedItems];
+    newCheckedItems[index] = !newCheckedItems[index];
+    setCheckedItems(newCheckedItems);
   };
-  useEffect(() => {
-    // calculateTotalPrice();
-  }, [checkedItems, quantities]);
+
+  function buyNow() {
+    const checkedCartItems = cart.filter((_: any, i: any) => checkedItems[i]);
+    if (checkedCartItems.length === 0) {
+      console.log("Không có sản phẩm nào được chọn.");
+      return;
+    }
+    localStorage.setItem("checkout", JSON.stringify(checkedCartItems));
+  }
 
   useEffect(() => {
-    // const updatedProducts = cart.map((product: any, index: number) => ({
-    // ...product,
-    // quantity: quantities[index],
-    // }));
-    // localStorage.setItem("cart", JSON.stringify(updatedProducts));
-  }, [quantities]);
+    calculateTotalPrice();
+  }, [cart]);
 
   const handleRemoveItem = (index: number) => {
-    // const updatedProducts = cart.filter((_: any, iProduct: any) => iProduct !== index);
-    // // localStorage.setItem("cart", JSON.stringify(updatedProducts));
-    // setProductCart(productCart.filter((_: any, iProduct: any) => iProduct !== index));
-    // setCheckedItems(checkedItems.filter((_, iProduct) => iProduct !== index));
-    // setQuantities(quantities.filter((_, iProduct) => iProduct !== index));
+    const cartNew = cart.filter((_:any, i:any) => i !== index);
+    localStorage.setItem("cartJSON", JSON.stringify(cartNew));
+    setProductCart(productCart.filter((_, i) => i !== index));
   };
-
-
-
-
+  
 
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
       {productCart.length > 0 ? (
         <div>
           <section>
-            <div className="flex flex-col items-center min-h-[678px] gap-5">
+            <div className="flex flex-col items-center min-h-[678px] gap-5 mb-40">
               <div className="flex items-center border rounded-xl shadow-[0_4px_6px_rgba(209,213,219,0.5)] p-4 gap-2.5 ">
                 <div className="w-16 flex justify-center">
                   <input onChange={handleCheckAll} checked={checkedItems.every(item => item)} type="checkbox" className="w-6 h-6" />
@@ -195,11 +201,12 @@ function Cart() {
                     />
                     <div className="flex w-64 flex-col gap-3">
                       <div className="font-bold text-base">
-                        {product.name}
+                        <Link href={`${config.routes.client.productDetail}/${product.id}`}>
+                          {product.name}
+                        </Link>
                       </div>
                       <div className="text-primary text-base font-bold">
                         {(
-
                           product.variants[cart[iProduct].variant].price -
                           product.variants[cart[iProduct].variant].price_sale +
                           product.variants[cart[iProduct].variant].colors[
@@ -215,7 +222,7 @@ function Cart() {
                       <div
                         onClick={() => {
                           // setShowVariant(prev => prev === iProduct ? null : iProduct);
-                          handlChangeVariant(iProduct)
+                          handlChangeShowVariant(iProduct)
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
@@ -231,7 +238,7 @@ function Cart() {
                               <div
                                 key={ivariant}
                                 onClick={() => {
-                                  handlChangeVariant(iProduct)
+                                  handlChangeShowVariant(iProduct), handlChangeVariant(iProduct, ivariant)
                                 }}
 
                                 className={`relative px-4 py-2 border rounded-lg cursor-pointer ${ivariant == cart[iProduct].variant ? "border-primary" : "border-gray-300"
@@ -252,7 +259,7 @@ function Cart() {
                       <div
                         onClick={() => {
                           // setShowColor(prev => prev === iProduct ? null : iProduct);
-                          handlChangeColor(iProduct)
+                          handlChangeShowColor(iProduct)
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
@@ -271,7 +278,7 @@ function Cart() {
                                   // const newCheckedColor = [...isCheckedColor];
                                   // newCheckedColor[iProduct] = colorItem;
                                   // setCheckedColor(newCheckedColor);
-                                  handlChangeColor(iProduct)
+                                  handlChangeShowColor(iProduct), handlChangeColor(iProduct, icolor)
                                 }}
                                 className={`relative px-4 py-2 border rounded-lg cursor-pointer ${icolor === cart[iProduct].color ? "border-primary" : "border-gray-300"
                                   }`}
@@ -312,25 +319,21 @@ function Cart() {
                   </button>
                 </div>
               ))}
-
-
-
-
             </div>
           </section>
 
-          <section>
-            <div className="w-full p-4 bg-white border border-gray-300 rounded-2xl shadow-xl">
+          <section className=" fixed left-0 right-0 bottom-0 w-full">
+            <div className="container-custom  p-4 bg-white border border-gray-300 rounded-2xl shadow-xl">
               <div className="flex justify-between items-center  border-t border-b p-2 border-dotted mb-2 ">
                 <div className="flex items-center gap-5">
                   <div className="flex items-center gap-2">
                     <input onChange={handleCheckAll} checked={checkedItems.every(item => item)} type="checkbox" className="mr-2 w-6 h-6" />
                     <span className="text-base font-medium">Chọn tất cả <span>
-                      (3)
+                      ({totalCheckedItems})
                     </span></span>
                   </div>
                   <div>
-                    <p>Xóa các sản phẩm đã chọn</p>
+                    <p className="cursor-pointer">Xóa các sản phẩm đã chọn</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-60">
@@ -344,7 +347,7 @@ function Cart() {
               <div className="flex justify-between items-center relative">
                 <div className="flex items-center gap-2.5">
                   <span className="text-base">
-                    Tổng thanh toán (<span> 1</span> sản phẩm ) :
+                  Tổng thanh toán (<span>{totalCheckedItems}</span> sản phẩm):
                   </span>
 
                   <span className="text-primary text-lg font-bold cursor-pointer relative group">
@@ -373,9 +376,9 @@ function Cart() {
 
                 </div>
                 <Link href={config.routes.client.checkout}>
-                  <button className="bg-primary text-white px-24 py-4 rounded-lg font-bold text-xl">
-                    Mua Hàng
-                  </button>
+                <button onClick={() => buyNow()} className="bg-primary text-white px-24 py-4 rounded-lg font-bold text-xl">
+                  Mua Hàng
+                </button>
                 </Link>
               </div>
             </div>

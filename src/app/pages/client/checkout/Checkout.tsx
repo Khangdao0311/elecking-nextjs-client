@@ -17,11 +17,11 @@ function Checkout() {
   const query = useSearchParams();
 
   const onChange = (value: string) => {
-    console.log(`selected ${value}`);
+    // console.log(`selected ${value}`);
   };
 
   const onSearch = (value: string) => {
-    console.log("search:", value);
+    // console.log("search:", value);
   };
 
   const [modal, setModal] = useState(false);
@@ -39,7 +39,6 @@ function Checkout() {
   useEffect(() => {
     addressServices.getAll().then((res)=>setGetaddress(res));
   },[]);
-  console.log(getaddress);
   
 
   const showAdress = () => setAddress(true);
@@ -108,8 +107,6 @@ function Checkout() {
   ];
 
   
-  // const abc = getaddress.find((a:any) => a.id === checkaddress1);
-
   const checkout = JSON.parse(localStorage.getItem("checkout")!);
 
   useEffect(() => {
@@ -127,8 +124,9 @@ function Checkout() {
     _();
     
   }, []);
+  console.log(productCheckout);
+  
 
-  // console.log(totalProducts);
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 flex flex-col gap-6">
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
@@ -165,12 +163,19 @@ function Checkout() {
             Thành tiền
           </p>
         </div>
-      
+
+
+
+
+
+
+
+
 
         {productCheckout.map((product: any, index: number) => {
           totalProducts +=
-            (product.price +
-              product.variants[checkout[index].variant].price_extra -
+            (
+              product.variants[checkout[index].variant].price -
               product.variants[checkout[index].variant].price_sale +
               product.variants[checkout[index].variant].colors[
                 checkout[index].color
@@ -201,8 +206,7 @@ function Checkout() {
               <div className="text-center w-[160px] ">
                 <p className="text-base font-medium text-primary">
                   {(
-                    product.price +
-                    product.variants[checkout[index].variant].price_extra -
+                    product.variants[checkout[index].variant].price -
                     product.variants[checkout[index].variant].price_sale +
                     product.variants[checkout[index].variant].colors[
                       checkout[index].color
@@ -215,8 +219,8 @@ function Checkout() {
               </p>
               <p className="text-base font-bold text-primary w-[160px] text-center">
                 {(
-                  (product.price +
-                    product.variants[checkout[index].variant].price_extra -
+                  (
+                    product.variants[checkout[index].variant].price -
                     product.variants[checkout[index].variant].price_sale +
                     product.variants[checkout[index].variant].colors[
                       checkout[index].color
@@ -227,6 +231,14 @@ function Checkout() {
             </div>
           );
         })}
+
+
+
+
+
+
+
+
 
       </div>
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
