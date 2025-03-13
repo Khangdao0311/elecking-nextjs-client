@@ -12,3 +12,19 @@ export async function cart(id: string, cart: any) {
     .post(`${config.api.auth}/cart/${id}`, { cart: JSON.stringify(cart) })
     .then((response: any) => response.data);
 }
+
+export async function register(
+  fullname: string,
+  email: string,
+  username: string,
+  password: string
+) {
+  return axios
+    .post(`${config.api.auth}/register`, {
+      fullname,
+      email,
+      username,
+      password,
+    })
+    .then((response: any) => response.data);
+}

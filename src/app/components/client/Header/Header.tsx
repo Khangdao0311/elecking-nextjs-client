@@ -24,10 +24,10 @@ import { usePathname, useRouter } from "next/navigation";
 function Header() {
   const userJSON = localStorage.getItem("user");
   const user = JSON.parse(userJSON!);
-  const userCart = localStorage.getItem('cartUser')
-  const userCartJSON = JSON.parse(userCart!)
-  const userCartQuantity = userCartJSON?.length
-  
+  const userCart = localStorage.getItem("cartUser");
+  const userCartJSON = JSON.parse(userCart!);
+  const userCartQuantity = userCartJSON?.length;
+
   const router = useRouter();
 
   let pathname = usePathname();
@@ -116,7 +116,6 @@ function Header() {
               delay: 2000,
               disableOnInteraction: false,
             }}
-          
             modules={[Autoplay, Navigation]}
             breakpoints={{
               1024: { slidesPerView: 3 },
@@ -201,11 +200,10 @@ function Header() {
                 <div className="relative">
                   <AiOutlineShoppingCart className="w-9 h-9 text-white" />
                   {userCartQuantity && (
-                     <div className="absolute w-7 h-7 border border-white font-semibold text-base center-flex bg-secondary center-flex rounded-full top-0 right-0 translate-x-1/2	-translate-y-1/3 md:-translate-y-1/2	">
-                     {userCartQuantity}
-                     </div>
+                    <div className="absolute w-7 h-7 border border-white font-semibold text-base center-flex bg-secondary center-flex rounded-full top-0 right-0 translate-x-1/2	-translate-y-1/3 md:-translate-y-1/2	">
+                      {userCartQuantity}
+                    </div>
                   )}
-                 
                 </div>
               </div>
             </Link>
@@ -222,7 +220,7 @@ function Header() {
             >
               <FaCircleUser className="text-base w-6 h-6" />
               <p className="text-black text-xs font-medium">
-                {user! ? user.fullname : "Emember"}
+                {user ? user.fullname : "Emember"}
               </p>
             </div>
           </div>
