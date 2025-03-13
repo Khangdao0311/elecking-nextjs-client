@@ -2,7 +2,7 @@
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEye, FaFacebook } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -36,6 +36,7 @@ function Login() {
       }
     });
   }
+
 
   console.log(user);
 

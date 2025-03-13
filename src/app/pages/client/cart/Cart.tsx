@@ -10,20 +10,30 @@ import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
 import config from "@/app/config";
 import * as productServices from "@/app/services/productService";
 import { BsCartX } from "react-icons/bs";
+import * as userServices from "@/app/services/userService";
+import * as authServices from "@/app/services/authService";
+import { log } from "console";
+
 
 function Cart() {
   const [productCart, setProductCart] = useState<IProduct[]>([]);
 
   const [load, setLoad] = useState(true)
 
-  const cart = JSON.parse(localStorage.getItem('cartJSON') || '[]');
+  const userJSON = JSON.parse(localStorage.getItem('user') || '[]');
+
+  const [user, setUser] = useState<IUser>()
+  useEffect(() => {
+    userServices.getById(userJSON.id).then((res: any) => setUser(res.data))
+  }, [])
+
 
   useEffect(() => {
     async function _() {
       const _: IProduct[] = [];
-      if (cart?.length) {
-        for (const item of cart) {
-          await productServices.getProById(item.product_id).then((res: any) => {
+      if (user?.cart?.length) {
+        for (const item of user.cart) {
+          await productServices.getProById(item.product.id).then((res: any) => {
             _.push(res.data);
           });
         }
@@ -31,36 +41,59 @@ function Cart() {
       setProductCart(_);
     }
     _();
-  }, []);
+  }, [user]);
 
   const [showVoucher, setVoucher] = useState(false);
   const [showVariant, setShowVariant] = useState<number[]>([]);
   const [showColor, setShowColor] = useState<number[]>([]);
 
-  const increaseQuantity = (index: number) => {
-    const quantity: number = productCart[index].variants[cart[index].variant].colors[cart[index].color].quantity;
-    const cartNew = cart.map((e: any, i: number) => {
-      if (index === i) return {
-        ...e,
-        quantity: +e.quantity + 1 > quantity ? quantity : +e.quantity + 1
-      }
-      return e
-    })
-    localStorage.setItem("cartJSON", JSON.stringify(cartNew))
-    setLoad(!load);
+  const increaseQuantity = async (product: IProduct, index: number) => {
+    if (!user) return;
+
+    const maxProductQuantity =
+      product?.variants[user?.cart[index]?.product?.variant as number]
+        ?.colors[user?.cart[index]?.product?.color as number]?.quantity ?? Infinity;
+
+    const cart = [...user.cart];
+    const item = cart[index];
+    if (!item) return;
+    if (item.quantity >= maxProductQuantity) return;
+    const updatedCartItem = {
+      ...item,
+      quantity: item.quantity + 1,
+    };
+    cart[index] = updatedCartItem;
+    try {
+      await authServices.cart(user.id, cart);
+      setUser((prevUser) =>
+        prevUser ? { ...prevUser, cart } : prevUser
+      );
+    } catch (error) {
+      console.error("Lỗi khi cập nhật giỏ hàng:", error);
+    }
   };
 
-  const decreaseQuantity = (index: number) => {
-    const cartNew = cart.map((e: any, i: number) => {
-      if (index === i) return {
-        ...e,
-        quantity: +e.quantity - 1 <= 0 ? 1 : +e.quantity - 1
-      }
-      return e
-    })
-    localStorage.setItem("cartJSON", JSON.stringify(cartNew))
-    setLoad(!load);
+  const decreaseQuantity = async (index: number) => {
+    if (!user) return;
+    const cart = [...user.cart];
+    const item = cart[index];
+    if (!item) return;
+    if (item.quantity <= 1) return;
+    const updatedCartItem = {
+      ...item,
+      quantity: item.quantity - 1,
+    };
+    cart[index] = updatedCartItem;
+    try {
+      await authServices.cart(user.id, cart);
+      setUser((prevUser) =>
+        prevUser ? { ...prevUser, cart } : prevUser
+      );
+    } catch (error) {
+      console.error("Lỗi khi cập nhật giỏ hàng:", error);
+    }
   };
+
 
   function handlChangeShowVariant(index: number) {
     if (showVariant.includes(index)) {
@@ -70,19 +103,35 @@ function Cart() {
     }
   }
 
-  function handlChangeVariant(index: number, variant: number) {
-    const cartNew = cart.map((e: any, i: number) => {
-      if (index == i) {
-        return {
-          ...e,
-          variant: variant
-        }
-      }
-      return e
-    })
-    localStorage.setItem("cartJSON", JSON.stringify(cartNew))
-    setLoad(!load)
-  }
+  const handlChangeVariant = async (index: number, variant: number) => {
+    if (!user) return;
+  
+    const cart = [...user.cart];
+    const item = cart[index];
+  
+    if (!item) return;
+  
+    const updatedCartItem = {
+      ...item,
+      product: {
+        ...item.product,
+        variant: variant, // Cập nhật biến thể sản phẩm
+      },
+    };
+  
+    cart[index] = updatedCartItem; // Cập nhật lại giỏ hàng
+  
+    try {
+      await authServices.cart(user.id, cart); // Gửi API cập nhật giỏ hàng
+      setUser((prevUser) =>
+        prevUser ? { ...prevUser, cart } : prevUser
+      );
+    } catch (error) {
+      console.error("Lỗi khi cập nhật giỏ hàng:", error);
+    }
+  };
+  
+
 
   function handlChangeShowColor(index: number) {
     if (showColor.includes(index)) {
@@ -92,32 +141,41 @@ function Cart() {
     }
   }
 
-  function handlChangeColor(index: number, color: number) {
-    const cartNew = cart.map((e: any, i: number) => {
-      if (index == i) {
-        return {
-          ...e,
-          color: color
-        }
-      }
-      return e
-    })
-    localStorage.setItem("cartJSON", JSON.stringify(cartNew))
-    setLoad(!load)
-  }
+  const handlChangeColor = async (index: number, color: number) => {
+    if (!user) return;
+    const cart = [...user.cart];
+    const item = cart[index];
+    if (!item) return;
+    const updatedCartItem = {
+      ...item,
+      product: {
+        ...item.product,
+        color: color,
+      },
+    };
+    cart[index] = updatedCartItem;
+    try {
+      await authServices.cart(user.id, cart);
+      setUser((prevUser) =>
+        prevUser ? { ...prevUser, cart } : prevUser
+      );
+    } catch (error) {
+      console.error("Lỗi khi cập nhật giỏ hàng:", error);
+    }
+  };
+  
 
-  const [checkedItems, setCheckedItems] = useState<boolean[]>(cart.map(() => false));
+  const [checkedItems, setCheckedItems] = useState<boolean[]>((user?.cart ?? []).map(() => false));
   const [totalPrice, setTotalPrice] = useState(0);
   const totalCheckedItems = checkedItems.filter(Boolean).length;
   const calculateProductPrice = (product: IProduct, iProduct: number) => {
     return (
-      (
-        product.variants[cart[iProduct].variant].price -
-        product.variants[cart[iProduct].variant].price_sale +
-        product.variants[cart[iProduct].variant].colors[
-          cart[iProduct].color
-        ].price_extra) * cart[iProduct].quantity
-    );
+      (product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price -
+        product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price_sale +
+        (product?.variants[(user?.cart[iProduct]?.product?.variant as number)]
+          ?.colors[(user?.cart[iProduct]?.product?.color as number)]?.price_extra)
+      ) * ((user?.cart[iProduct]?.quantity as number))
+    )
   };
 
   const calculateTotalPrice = () => {
@@ -132,33 +190,58 @@ function Cart() {
 
   const handleCheckAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
-    setCheckedItems(cart.map(() => isChecked));
-  };
-  const handleCheckItem = (index: number) => {
-    const newCheckedItems = [...checkedItems];
-    newCheckedItems[index] = !newCheckedItems[index];
-    setCheckedItems(newCheckedItems);
+    setCheckedItems(new Array(user?.cart.length).fill(isChecked));
   };
 
-  function buyNow() {
-    const checkedCartItems = cart.filter((_: any, i: any) => checkedItems[i]);
+
+  const handleCheckItem = (index: number) => {
+    setCheckedItems(prev => {
+      const newCheckedItems = [...prev];
+      newCheckedItems[index] = !newCheckedItems[index];
+      return newCheckedItems;
+    });
+  };
+
+  const buyNow = async () => {
+    if (!user) return;
+    const checkedCartItems = (user?.cart ?? []).filter((_, i) => checkedItems[i]);
     if (checkedCartItems.length === 0) {
       console.log("Không có sản phẩm nào được chọn.");
       return;
     }
-    localStorage.setItem("checkout", JSON.stringify(checkedCartItems));
-  }
+    try {
+      await authServices.cart(user.id, checkedCartItems);
+      console.log("Đã gửi đơn hàng thành công!", checkedCartItems);
+    } catch (error) {
+      console.error("Lỗi khi gửi đơn hàng:", error);
+    }
+  };
+  
+
+  useEffect(() => {
+    setCheckedItems((user?.cart ?? []).map(() => false));
+  }, [user?.cart]);
 
   useEffect(() => {
     calculateTotalPrice();
-  }, [cart]);
+  }, [checkedItems, productCart]);
 
-  const handleRemoveItem = (index: number) => {
-    const cartNew = cart.filter((_:any, i:any) => i !== index);
-    localStorage.setItem("cartJSON", JSON.stringify(cartNew));
-    setProductCart(productCart.filter((_, i) => i !== index));
+
+  const handleRemoveItem = async (index: number) => {
+    if (!user) return;
+    const cart = (user?.cart ?? []).filter((_, i) => i !== index);
+    try {
+      await authServices.cart(user.id, cart);
+      setUser((prevUser) =>
+        prevUser ? { ...prevUser, cart } : prevUser
+      );
+    } catch (error) {
+      console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
+    }
   };
   
+
+
 
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
@@ -192,9 +275,9 @@ function Cart() {
                   <div className="w-[660px] flex gap-2.5">
                     <img
                       src={
-                        product.variants[cart[iProduct].variant].colors[
-                          cart[iProduct].color
-                        ].image
+                        product.variants[user?.cart[iProduct]?.product?.variant as number].colors[
+                          user?.cart[iProduct]?.product?.color as number
+                        ].image // cần xem
                       }
                       alt="Sản Phẩm"
                       className="w-24 h-24 object-cover rounded"
@@ -207,13 +290,13 @@ function Cart() {
                       </div>
                       <div className="text-primary text-base font-bold">
                         {(
-                          product.variants[cart[iProduct].variant].price -
-                          product.variants[cart[iProduct].variant].price_sale +
-                          product.variants[cart[iProduct].variant].colors[
-                            cart[iProduct].color
-                          ].price_extra
+                          product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price -
+                          product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price_sale +
+                          (product?.variants[(user?.cart[iProduct]?.product?.variant as number)]
+                            ?.colors[(user?.cart[iProduct]?.product?.color as number)]?.price_extra)
+                          * ((user?.cart[iProduct]?.quantity as number))
                         ).toLocaleString("vi-VN")} đ <del className="text-black text-xs font-normal ">
-                          {(product.variants[cart[iProduct].variant].price).toLocaleString('vn-VN')}
+                          {(product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price).toLocaleString('vn-VN')}
                           đ</del>
                       </div>
                     </div>
@@ -226,7 +309,7 @@ function Cart() {
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
-                        <div>{product.variants[cart[iProduct].variant].properties.map(e => e.name).join(" - ")}</div>
+                        <div>{product.variants[user?.cart[iProduct]?.product?.variant as number].properties.map(e => e.name).join(" - ")}</div>
                         <FaCaretDown />
 
                         {showVariant.includes(iProduct) && (
@@ -241,11 +324,11 @@ function Cart() {
                                   handlChangeShowVariant(iProduct), handlChangeVariant(iProduct, ivariant)
                                 }}
 
-                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${ivariant == cart[iProduct].variant ? "border-primary" : "border-gray-300"
+                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${ivariant == user?.cart[iProduct]?.product?.variant as number ? "border-primary" : "border-gray-300"
                                   }`}
                               >
                                 {variant.properties.map((e: IProperty) => e.name).join(" - ")}
-                                {ivariant == cart[iProduct].variant && (
+                                {ivariant == user?.cart[iProduct]?.product?.variant as number && (
                                   <div className="absolute w-5 h-3 bg-primary top-0 left-0 rounded-tl-lg rounded-br-lg flex items-center justify-center">
                                     <IoMdCheckmark className="w-3 h-3 text-white" />
                                   </div>
@@ -255,7 +338,6 @@ function Cart() {
                           </div>
                         )}
                       </div>
-
                       <div
                         onClick={() => {
                           // setShowColor(prev => prev === iProduct ? null : iProduct);
@@ -263,7 +345,8 @@ function Cart() {
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
-                        <div>{product.variants[cart[iProduct].variant].colors[cart[iProduct].color].name}</div>
+                        <div>{(product?.variants[(user?.cart[iProduct]?.product?.variant as number)]
+                          ?.colors[(user?.cart[iProduct]?.product?.color as number)]?.name)}</div>
                         <FaCaretDown />
 
                         {showColor.includes(iProduct) && (
@@ -271,7 +354,7 @@ function Cart() {
                             className="z-10 w-[404px] flex flex-wrap gap-2 p-4 border border-gray-300 bg-white rounded-2xl absolute top-12 left-0"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {product.variants[cart[iProduct].variant].colors.map((color, icolor: number) => (
+                            {product?.variants[(user?.cart[iProduct]?.product?.variant as number)].colors.map((color, icolor: number) => (
                               <div
                                 key={icolor}
                                 onClick={() => {
@@ -280,11 +363,11 @@ function Cart() {
                                   // setCheckedColor(newCheckedColor);
                                   handlChangeShowColor(iProduct), handlChangeColor(iProduct, icolor)
                                 }}
-                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${icolor === cart[iProduct].color ? "border-primary" : "border-gray-300"
+                                className={`relative px-4 py-2 border rounded-lg cursor-pointer ${icolor === user?.cart[iProduct].product.color ? "border-primary" : "border-gray-300"
                                   }`}
                               >
                                 {color.name}
-                                {icolor === cart[iProduct].color && (
+                                {icolor === user?.cart[iProduct].product.color && (
                                   <div className="absolute w-5 h-3 bg-primary top-0 left-0 rounded-tl-lg rounded-br-lg flex items-center justify-center">
                                     <IoMdCheckmark className="w-3 h-3 text-white" />
                                   </div>
@@ -302,8 +385,8 @@ function Cart() {
                       <button onClick={() => decreaseQuantity(iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
                         <FaMinus className="w-4 h-4" />
                       </button>
-                      <input type="text" value={cart[iProduct].quantity} readOnly className="w-16 h-9 text-center font-base font-bold border-l border-r" />
-                      <button onClick={() => increaseQuantity(iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
+                      <input type="text" value={user?.cart[iProduct].quantity} readOnly className="w-16 h-9 text-center font-base font-bold border-l border-r" />
+                      <button onClick={() => increaseQuantity(product, iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
                         <FaPlus className="w-4 h-4" />
                       </button>
                     </div>
@@ -347,7 +430,7 @@ function Cart() {
               <div className="flex justify-between items-center relative">
                 <div className="flex items-center gap-2.5">
                   <span className="text-base">
-                  Tổng thanh toán (<span>{totalCheckedItems}</span> sản phẩm):
+                    Tổng thanh toán (<span>{totalCheckedItems}</span> sản phẩm):
                   </span>
 
                   <span className="text-primary text-lg font-bold cursor-pointer relative group">
@@ -376,9 +459,9 @@ function Cart() {
 
                 </div>
                 <Link href={config.routes.client.checkout}>
-                <button onClick={() => buyNow()} className="bg-primary text-white px-24 py-4 rounded-lg font-bold text-xl">
-                  Mua Hàng
-                </button>
+                  <button onClick={() => buyNow()} className="bg-primary text-white px-24 py-4 rounded-lg font-bold text-xl">
+                    Mua Hàng
+                  </button>
                 </Link>
               </div>
             </div>

@@ -13,15 +13,18 @@ interface IUser {
   wish: IWish[];
 }
 interface ICart {
-  id: string;
-  variant: number;
+  product: {
+    id: string;
+    variant: number;
+    color: number;
+  }
   quantity: number;
-  color: number;
 }
 
 interface IWish {
-  id: string;
-  variant: number;
-  quantity: number;
-  color: number;
+  product: {
+    id: string;
+    variant: number;
+    color: number;
+  }
 }
