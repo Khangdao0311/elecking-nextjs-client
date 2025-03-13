@@ -11,7 +11,7 @@ const BoxSearchLimit = (props: {
   const [searchValue, setSearchValue] = useState("");
 
   const handleSearch = () => {
-    props.onSearch(searchValue); // Gọi hàm tìm kiếm khi nhấn nút hoặc Enter
+    props.onSearch(searchValue); 
   };
 
   return (
@@ -24,11 +24,11 @@ const BoxSearchLimit = (props: {
           allowClear
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
-          onPressEnter={handleSearch} // Tìm kiếm khi nhấn Enter
+          onPressEnter={handleSearch} 
           addonAfter={
             <SearchOutlined
               className="cursor-pointer text-gray-500 hover:text-blue-500"
-              onClick={handleSearch} // Tìm kiếm khi nhấn vào icon
+              onClick={handleSearch} 
             />
           }
         />

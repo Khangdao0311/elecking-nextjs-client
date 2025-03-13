@@ -11,24 +11,30 @@ import Statususer from "@/app/pages/admin/Components/Status"
 function UserList() {
   const [users, setUsers] = useState([]);
   const [limit, setLimit] = useState(5);
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState("");
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
   useEffect(() => {
     const query: any = {};
 
     query.limit = limit;
+    query.page = page;
 
-    if (0) {
+    if (search != "") {
       query.search = search;
     }
 
-    userServices.getQuery(query).then((res) => setUsers(res.data));
-  }, []);
+    userServices.getQuery(query).then((res) => {setUsers(res.data); setTotalPages(res.total);});
+  }, [limit, page, search]);
   console.log(users);
   
   return (
     <>
       <TitleAdmin title="Quản lý người dùng" />
-      <Boxsearchlimit title="người dùng" />
+      <Boxsearchlimit title="người dùng" onLimitChange={(newLimit:any) =>{setLimit(newLimit); setPage(1)}} onSearch={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}/>
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
@@ -69,7 +75,7 @@ function UserList() {
             </tr>
           </thead>
           <tbody>
-            {users.map((getuser: IUser) => {
+            {users.map((getuser: IUser, index: number) => {
               let content = "";
               switch (getuser.status) {
                 case 0:
@@ -88,7 +94,7 @@ function UserList() {
               }
               return (
                 <tr key={getuser.id} className="even:bg-gray-100">
-                  <td className="px-2 py-2.5 w-12 text-center">1</td>
+                  <td className="px-2 py-2.5 w-12 text-center">{(page - 1) * limit + index + 1}</td>
                   <td className="px-2 w-16 py-1 text-center">
                     <div className="flex items-center justify-center">
                       <img
@@ -168,14 +174,19 @@ function UserList() {
             // </tr> */}
           </tbody>
         </table>
-        <div className="flex w-full justify-end">
+        {totalPages > limit &&(
+            <div className="flex w-full justify-end">
           <Pagination
+          current={page}
+            onChange={(e) => setPage(e)}
             defaultCurrent={1}
             align="end"
-            total={500}
+            pageSize={limit}
+            total={totalPages}
             showSizeChanger={false}
           />
         </div>
+        )}
       </div>
     </>
   );
