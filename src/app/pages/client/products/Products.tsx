@@ -1,173 +1,212 @@
 "use client";
 
 import Product from "@/app/components/client/Product";
-import { Pagination } from "antd";
-import { Fragment, useEffect, useState } from "react";
+import { Pagination, Popover, Slider } from "antd";
+import { Fragment, use, useEffect, useMemo, useState } from "react";
 import { AiOutlinePercentage } from "react-icons/ai";
 import { BsSortDown, BsSortDownAlt } from "react-icons/bs";
 import { FaMinus, FaMoneyBill } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
 import * as productServices from "@/app/services/productService";
+import * as categoryServices from "@/app/services/categoryService";
+import * as brandServices from "@/app/services/brandService";
 import { IoCloseCircle, IoCloseOutline } from "react-icons/io5";
 import { MdRemoveRedEye } from "react-icons/md";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 function Products() {
-  const [activePopup, setActivePopup] = useState("");
-  const togglePopup = (popupName: string) => {
-    setActivePopup(activePopup === popupName ? "" : popupName);
-  };
-  const [isCheckedPrice, setCheckedPrice] = useState(false);
-  const [isCheckedCategory, setCheckedCategory] = useState(false);
-  const isAllChecked = isCheckedPrice && isCheckedCategory;
-  const [selectedButton, setSelectedButton] = useState(null);
-  const handleButtonClick = (buttonName: any) => {
-    if (selectedButton === buttonName) {
-      setSelectedButton(null);
-    } else {
-      setSelectedButton(buttonName);
-    }
-  };
-  const category = [
-    "Điện Thoại",
-    "Máy Tính Bảng",
-    "Laptop",
-    "Tai Nghe",
-    "Loa",
-    "Màn Hình",
-    "TiVi",
-    "Đồng Hồ Thông Minh",
-    "Đồ Gia Dụng",
-  ];
-  const brand = ["Apple", "Samsung", "Oppo", "Asus", "Acer", "Lenovo"];
-  const [checkedCategories, setCheckedCategories] = useState<string[]>([]);
-  const [checkedBrand, setCheckedBrand] = useState<string[]>([]);
-  const handleCategoryClick = (category: string) => {
-    setCheckedCategories(
-      (prev) =>
-        prev.includes(category)
-          ? prev.filter((item) => item !== category) // Bỏ chọn nếu đã có
-          : [...prev, category] // Thêm nếu chưa có
-    );
-  };
-
-  const handleBrandClick = (brand: string) => {
-    setCheckedBrand(
-      (prev) =>
-        prev.includes(brand)
-          ? prev.filter((item) => item !== brand) // Bỏ chọn nếu đã có
-          : [...prev, brand] // Thêm nếu chưa có
-    );
-  };
-
-  const query = useSearchParams();
-  const categoryId = query.get('category'); 
-
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [brands, setBrands] = useState<IBrand[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [popup, setPopup] = useState({
+    price: false,
+    category: false,
+    brand: false,
+  });
+  const [filter, setFilter] = useState<any>({
+    priceMin: 0,
+    priceMax: 100000000,
+    categoryid: [],
+    brandid: [],
+  });
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const query: any = {};
+
+  query.page = searchParams.get("page") || 1;
+  query.limit = searchParams.get("limit") || 15;
+  query.orderby = searchParams.get("orderby") || "view-desc";
+
+  if (searchParams.get("search")) query.search = searchParams.get("search");
+  if (searchParams.get("categoryid")) query.categoryid = searchParams.get("categoryid");
+  if (searchParams.get("brandid")) query.brandid = searchParams.get("brandid");
+  if (searchParams.get("price")) query.price = searchParams.get("price");
+
   useEffect(() => {
-    productServices
-      .getQuery({ categoryid: categoryId})
-      .then((res) => setProducts(res.data));
-  }, [categoryId]);
-  console.log(products);
-  
+    // if (searchParams.search) {
+    //   dispatch(actions.setValueSearch(searchParams.search));
+    // }
+
+    if (query.categoryid) {
+      setFilter({ ...filter, categoryid: query.categoryid.split("-") });
+    }
+
+    if (query.brandid) {
+      setFilter({ ...filter, brandid: query.brandid.split("-") });
+    }
+
+    if (query.price) {
+      const [min, max] = query.price.split("-");
+      setFilter({ ...filter, priceMin: +min, priceMax: +max });
+    }
+
+    router.push(`?${new URLSearchParams(query).toString()}`);
+    productServices.getQuery(query).then((res) => {
+      setProducts(res.data);
+      setTotalPages(res.total);
+    });
+  }, [searchParams]);
+
+  // Lấy danh sách danh mục và thương hiệu
+  useEffect(() => {
+    categoryServices
+      .getQuery({ limit: 0, orderby: "id-asc" })
+      .then((res) => setCategories(res.data));
+    brandServices.getQuery({ limit: 0, orderby: "id-asc" }).then((res) => setBrands(res.data));
+  }, []);
+
+  console.log(filter);
+
+  function handleSelectChange(key: string, value: string) {
+    if (filter[key].includes(value)) {
+      setFilter({
+        ...filter,
+        [key]: filter[key].filter((e: string) => e !== value),
+      });
+    } else {
+      setFilter({
+        ...filter,
+        [key]: [...filter[key], value],
+      });
+    }
+  }
+
   return (
-    <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+    <div className="container-custom py-3 px-2 md:px-2.5 lg:px3 xl:px-0">
       {/* Lọc sản phẩm */}
-      <section className="flex flex-col gap-4 py-4">
+      <section className="flex flex-col gap-4">
         <div className="flex flex-col gap-3.5">
-          <h3 className="text-xl font-bold">Chọn theo tiêu chí</h3>
+          <h3 className="text-lg font-bold">Chọn theo tiêu chí</h3>
           <div className="flex gap-4">
             {/* Giá */}
-            <div
-              className={`flex items-center gap-1.5 px-2.5 py-2 relative border ${
-                activePopup === "price"
-                  ? "border-red-500 bg-red-50"
-                  : "border-black bg-white"
-              } rounded-lg cursor-pointer`}
-            >
-              <p
-                onClick={() => togglePopup("price")}
-                className={`text-base ${
-                  activePopup === "price" ? "text-red-500" : "text-black"
-                }`}
-              >
-                Giá
-              </p>
-              <FaMoneyBill
-                className={`w-6 h-6 ${
-                  activePopup === "price" ? "text-red-500" : "text-black"
-                }`}
-              />
-
-              {activePopup === "price" && (
-                <div className="absolute left-0 bottom-0 translate-y-[calc(100%+10px)] bg-white p-4 rounded-2xl border border-gray-300 flex flex-col items-center gap-4">
+            <Popover
+              placement="bottomLeft"
+              title={null}
+              trigger="click"
+              open={popup.price}
+              onOpenChange={(e) => setPopup({ ...popup, price: e })}
+              zIndex={20}
+              content={
+                <div className=" bg-white rounded-2xl flex flex-col items-center gap-4">
                   <div className="w-[416px] flex items-center justify-between">
-                    <input
-                      type="text"
-                      placeholder="Từ"
-                      className="border w-36 h-11 px-3 py-2 rounded-md"
-                    />
-                    <FaMinus className="text-gray-500" />
-                    <input
-                      type="text"
-                      placeholder="Đến"
-                      className="border w-36 h-11 px-3 py-2 rounded-md"
+                    <span className="text-lg font-medium text-primary">
+                      {filter.priceMin.toLocaleString("vi-VN")} đ
+                    </span>
+                    <span className="text-lg font-medium text-primary">
+                      {filter.priceMax.toLocaleString("vi-VN")} đ
+                    </span>
+                  </div>
+                  <div className="w-full">
+                    <Slider
+                      range
+                      min={0}
+                      max={90000000}
+                      value={[+filter.priceMin, +filter.priceMax]}
+                      onChange={(value) => {
+                        console.log(value);
+                        const [min, max] = value;
+                        setFilter({ ...filter, priceMin: min, priceMax: max });
+                      }}
+                      tooltip={{ open: false }}
+                      trackStyle={[{ backgroundColor: "#D70018" }]}
+                      handleStyle={[
+                        {
+                          borderColor: "#D70018",
+                          backgroundColor: "#D70018",
+                        },
+                        {
+                          borderColor: "#D70018",
+                          backgroundColor: "#D70018",
+                        },
+                      ]}
                     />
                   </div>
                   <div className="flex gap-4 w-full">
                     <button
                       className="border w-full border-red-500 text-red-500 px-4 py-2 rounded-md"
-                      onClick={() => setActivePopup("")}
+                      onClick={() => {
+                        if (query.price) {
+                          const [min, max] = query.price.split("-");
+                          setFilter({ ...filter, page: 1, priceMin: +min, priceMax: +max });
+                        } else {
+                          setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 100000000 });
+                        }
+                        setPopup({ ...popup, price: false });
+                      }}
                     >
                       Đóng
                     </button>
-                    <button className="bg-red-500 w-full text-white px-4 py-2 rounded-md">
+                    <button
+                      onClick={() => {
+                        const searchParamsNew = new URLSearchParams(searchParams.toString());
+                        searchParamsNew.set("price", `${filter.priceMin}-${filter.priceMax}`);
+                        searchParamsNew.set("page", `1`);
+                        router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                        setPopup({ ...popup, price: false });
+                      }}
+                      className="bg-red-500 w-full text-white px-4 py-2 rounded-md"
+                    >
                       Xem kết quả
                     </button>
                   </div>
                 </div>
-              )}
-            </div>
+              }
+            >
+              <div
+                className={`flex items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer
+                ${popup.price || query.price ? "border-primary text-primary" : "text-gray-700"}
+                `}
+              >
+                <FaMoneyBill className={`w-6 h-6`} />
+                <p className={`text-base `}>Giá</p>
+              </div>
+            </Popover>
 
             {/* Danh mục */}
-            <div
-              className={`flex items-center gap-1.5 px-2.5 py-2 relative border ${
-                activePopup === "category"
-                  ? "border-red-500 bg-red-50"
-                  : "border-black bg-white"
-              } rounded-lg cursor-pointer`}
-            >
-              <p
-                onClick={() => togglePopup("category")}
-                className={`text-base ${
-                  activePopup === "category" ? "text-red-500" : "text-black"
-                }`}
-              >
-                Danh mục
-              </p>
-              <IoMdArrowDropdown
-                className={`w-6 h-6 ${
-                  activePopup === "category" ? "text-red-500" : "text-black"
-                }`}
-              />
-
-              {activePopup === "category" && (
-                <div className="absolute left-0 bottom-0 translate-y-[calc(100%+10px)] bg-white p-4 rounded-2xl border border-gray-300 flex flex-col items-center gap-4">
+            <Popover
+              placement="bottomLeft"
+              title={null}
+              trigger="click"
+              open={popup.category}
+              onOpenChange={(e) => setPopup({ ...popup, category: e })}
+              zIndex={20}
+              content={
+                <div className=" bg-white rounded-2xl flex flex-col items-center gap-4">
                   <div className="w-[416px] flex flex-wrap gap-2">
-                    {category.map((item) => (
+                    {categories.map((category: ICategory, iCategory: number) => (
                       <div
-                        key={item}
-                        onClick={() => handleCategoryClick(item)}
-                        className={`px-4 py-2 border rounded-lg cursor-pointer relative ${
-                          checkedCategories.includes(item)
-                            ? "border-red-500 bg-red-50"
-                            : "border-black bg-white"
+                        key={iCategory}
+                        onClick={() => handleSelectChange("categoryid", category.id)}
+                        className={`px-4 py-2 border rounded-lg select-none cursor-pointer shadow hover:shadow-lg relative transition-all  ${
+                          filter.categoryid.includes(category.id) ? "border-primary bg-red-50" : ""
                         }`}
                       >
-                        {item}
-                        {checkedCategories.includes(item) && (
-                          <div className="absolute top-0 left-0 w-5 h-3 bg-red-500 rounded-tl-lg rounded-br-lg flex items-center justify-center">
+                        {category.name}
+                        {filter.categoryid.includes(category.id) && (
+                          <div className="absolute top-0 left-0 w-5 h-3 bg-primary rounded-tl-lg rounded-br-lg flex items-center justify-center">
                             <IoMdCheckmark className="w-3 h-3 text-white" />
                           </div>
                         )}
@@ -176,57 +215,74 @@ function Products() {
                   </div>
                   <div className="flex gap-4 w-full">
                     <button
-                      className="border w-full border-red-500 text-red-500 px-4 py-2 rounded-md"
-                      onClick={() => setActivePopup("")}
+                      className="border w-full border-primary text-primary px-4 py-2 rounded-md"
+                      onClick={() => {
+                        if (query.categoryid) {
+                          setFilter({
+                            ...filter,
+                            page: 1,
+                            categoryid: query.categoryid.split("-"),
+                          });
+                        } else {
+                          setFilter({ ...filter, page: 1, categoryid: [] });
+                        }
+                        setPopup({ ...popup, category: false });
+                      }}
                     >
                       Đóng
                     </button>
-                    <button className="bg-red-500 w-full text-white px-4 py-2 rounded-md">
+                    <button
+                      onClick={() => {
+                        const searchParamsNew = new URLSearchParams(searchParams.toString());
+                        searchParamsNew.set("categoryid", `${filter.categoryid.join("-")}`);
+                        searchParamsNew.set("page", `1`);
+                        router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                        setPopup({ ...popup, category: false });
+                      }}
+                      className="bg-primary w-full text-white px-4 py-2 rounded-md"
+                    >
                       Xem kết quả
                     </button>
                   </div>
                 </div>
-              )}
-            </div>
+              }
+            >
+              <div
+                className={`flex items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer
+                ${
+                  popup.category || query.categoryid
+                    ? "border-primary text-primary"
+                    : "text-gray-700"
+                }
+                `}
+              >
+                <p className={`text-base`}>Danh mục</p>
+                <IoMdArrowDropdown className={`w-6 h-6`} />
+              </div>
+            </Popover>
 
             {/* Thương hiệu */}
-            <div
-              className={`flex items-center gap-1.5 px-2.5 py-2 relative border ${
-                activePopup === "brand"
-                  ? "border-red-500 bg-red-50"
-                  : "border-black bg-white"
-              } rounded-lg cursor-pointer`}
-            >
-              <p
-                onClick={() => togglePopup("brand")}
-                className={`text-base ${
-                  activePopup === "brand" ? "text-red-500" : "text-black"
-                }`}
-              >
-                Thương hiệu
-              </p>
-              <IoMdArrowDropdown
-                className={`w-6 h-6 ${
-                  activePopup === "brand" ? "text-red-500" : "text-black"
-                }`}
-              />
-
-              {activePopup === "brand" && (
-                <div className="absolute left-0 bottom-0 translate-y-[calc(100%+10px)] bg-white p-4 rounded-2xl border border-gray-300 flex flex-col items-center gap-4">
+            <Popover
+              placement="bottomLeft"
+              title={null}
+              trigger="click"
+              open={popup.brand}
+              onOpenChange={(e) => setPopup({ ...popup, brand: e })}
+              zIndex={20}
+              content={
+                <div className=" bg-white rounded-2xl flex flex-col items-center gap-4">
                   <div className="w-[416px] flex flex-wrap gap-2">
-                    {brand.map((item) => (
+                    {brands.map((brand: IBrand, iBrand: number) => (
                       <div
-                        key={item}
-                        onClick={() => handleBrandClick(item)}
-                        className={`px-4 py-2 border rounded-lg cursor-pointer relative ${
-                          checkedBrand.includes(item)
-                            ? "border-red-500 bg-red-50"
-                            : "border-black bg-white"
+                        key={iBrand}
+                        onClick={() => handleSelectChange("brandid", brand.id)}
+                        className={`px-4 py-2 border rounded-lg select-none cursor-pointer shadow hover:shadow-lg relative transition-all ${
+                          filter.brandid.includes(brand.id) ? "border-primary bg-red-50" : ""
                         }`}
                       >
-                        {item}
-                        {checkedBrand.includes(item) && (
-                          <div className="absolute top-0 left-0 w-5 h-3 bg-red-500 rounded-tl-lg rounded-br-lg flex items-center justify-center">
+                        {brand.name}
+                        {filter.brandid.includes(brand.id) && (
+                          <div className="absolute top-0 left-0 w-5 h-3 bg-primary rounded-tl-lg rounded-br-lg flex items-center justify-center">
                             <IoMdCheckmark className="w-3 h-3 text-white" />
                           </div>
                         )}
@@ -235,142 +291,210 @@ function Products() {
                   </div>
                   <div className="flex gap-4 w-full">
                     <button
-                      className="border w-full border-red-500 text-red-500 px-4 py-2 rounded-md"
-                      onClick={() => setActivePopup("")}
+                      className="border w-full border-primary text-primary px-4 py-2 rounded-md"
+                      onClick={() => {
+                        if (query.brandid) {
+                          setFilter({ ...filter, page: 1, brandid: query.brandid.split("-") });
+                        } else {
+                          setFilter({ ...filter, page: 1, brandid: [] });
+                        }
+                        setPopup({ ...popup, brand: false });
+                      }}
                     >
                       Đóng
                     </button>
-                    <button className="bg-red-500 w-full text-white px-4 py-2 rounded-md">
+                    <button
+                      onClick={() => {
+                        const searchParamsNew = new URLSearchParams(searchParams.toString());
+                        searchParamsNew.set("brandid", `${filter.brandid.join("-")}`);
+                        searchParamsNew.set("page", `1`);
+                        router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                        setPopup({ ...popup, brand: false });
+                      }}
+                      className="bg-primary w-full text-white px-4 py-2 rounded-md"
+                    >
                       Xem kết quả
                     </button>
                   </div>
                 </div>
-              )}
-            </div>
+              }
+            >
+              <div
+                className={`flex items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer
+                ${popup.brand || query.brandid ? "border-primary text-primary" : "text-gray-700"}
+                `}
+              >
+                <p className={`text-base`}>Thương hiệu</p>
+                <IoMdArrowDropdown className={`w-6 h-6`} />
+              </div>
+            </Popover>
           </div>
         </div>
-
-        {!isAllChecked && (
+        {(!!query.price || !!query.categoryid || !!query.brandid) && (
           <div className="flex flex-col gap-3.5">
-            <h3 className="text-xl font-bold">Đang lọc theo</h3>
+            <h3 className="text-lg font-bold">Đang lọc theo</h3>
             <div className="flex gap-4">
-              {/* Giá */}
-              {!isCheckedPrice && (
-                <div className="flex items-center gap-1.5 px-2.5 py-2 border border-red-500 bg-red-50 rounded-lg">
-                  <IoCloseCircle
-                    onClick={() => setCheckedPrice(true)}
-                    className="w-6 h-6 text-red-500 cursor-pointer"
-                  />
+              {!!query.price && (
+                <div
+                  onClick={() => {
+                    const searchParamsNew = new URLSearchParams(searchParams.toString());
+                    searchParamsNew.delete("price");
+                    searchParamsNew.set("page", `1`);
+                    router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                    setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 100000000 });
+                  }}
+                  className="flex items-center select-none cursor-pointer gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
+                >
+                  <IoCloseCircle className="w-6 h-6 text-red-500 cursor-pointer" />
                   <p className="text-base text-red-500">
-                    Giá: <span className="inline">100.000 đ</span> -{" "}
-                    <span className="inline">500.000 đ</span>
+                    Giá: <span className="inline">{filter.priceMin.toLocaleString("vi-VN")} đ</span>{" "}
+                    - <span className="inline">{filter.priceMax.toLocaleString("vi-VN")} đ</span>
                   </p>
                 </div>
               )}
 
-              {/* Danh mục */}
-              {!isCheckedCategory && (
-                <div className="flex items-center gap-1.5 px-2.5 py-2 border border-red-500 bg-red-50 rounded-lg">
-                  <IoCloseCircle
-                    onClick={() => setCheckedCategory(true)}
-                    className="w-6 h-6 text-red-500 cursor-pointer"
-                  />
+              {!!query.categoryid && (
+                <div
+                  onClick={() => {
+                    const searchParamsNew = new URLSearchParams(searchParams.toString());
+                    searchParamsNew.delete("categoryid");
+                    searchParamsNew.set("page", `1`);
+                    router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                    setFilter({ ...filter, categoryid: [] });
+                  }}
+                  className="flex items-center select-none cursor-pointer  gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
+                >
+                  <IoCloseCircle className="w-6 h-6 text-red-500 cursor-pointer" />
                   <p className="text-base text-red-500">
-                    Danh mục: <span className="inline">Điện thoại</span>,{" "}
-                    <span className="inline">Tablet</span>
+                    Danh mục:{" "}
+                    <span className="inline">
+                      {categories
+                        .filter((category: ICategory) => query.categoryid.includes(category.id))
+                        .map((category: ICategory) => category.name)
+                        .join(", ")}
+                    </span>
                   </p>
                 </div>
               )}
-
-              {/* Bỏ chọn tất cả */}
-              <div
-                onClick={() => {
-                  setCheckedPrice(true);
-                  setCheckedCategory(true);
-                }}
-                className="flex items-center gap-1.5 px-2.5 py-2 cursor-pointer border border-red-500 bg-red-50 rounded-lg"
-              >
-                <IoCloseOutline className="w-6 h-6 text-red-500" />
-                <p className="text-base text-red-500">Bỏ chọn tất cả</p>
-              </div>
+              {!!query.brandid && (
+                <div
+                  onClick={() => {
+                    const searchParamsNew = new URLSearchParams(searchParams.toString());
+                    searchParamsNew.delete("brandid");
+                    searchParamsNew.set("page", `1`);
+                    router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                    setFilter({ ...filter, page: 1, brandid: [] });
+                  }}
+                  className="flex items-center select-none cursor-pointer  gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
+                >
+                  <IoCloseCircle className="w-6 h-6 text-red-500 cursor-pointer" />
+                  <p className="text-base text-red-500">
+                    Danh mục:{" "}
+                    <span className="inline">
+                      {brands
+                        .filter((brand: IBrand) => query.brandid.includes(brand.id))
+                        .map((brand: IBrand) => brand.name)
+                        .join(", ")}
+                    </span>
+                  </p>
+                </div>
+              )}
+              {(!!query.price || !!query.categoryid || !!query.brandid) && (
+                <div
+                  onClick={() => {
+                    const searchParamsNew = new URLSearchParams(searchParams.toString());
+                    searchParamsNew.delete("price");
+                    searchParamsNew.delete("categoryid");
+                    searchParamsNew.delete("brandid");
+                    searchParamsNew.set("page", `1`);
+                    router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                    setFilter({
+                      ...filter,
+                      page: 1,
+                      priceMin: 0,
+                      priceMax: 100000000,
+                      categoryid: [],
+                      brandid: [],
+                    });
+                  }}
+                  className="flex items-center  select-none gap-1.5 px-2.5 py-2 shadow-lg cursor-pointer border border-red-500 bg-red-50 rounded-lg"
+                >
+                  <IoCloseOutline className="w-6 h-6 text-red-500" />
+                  <p className="text-base text-red-500">Bỏ chọn tất cả</p>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         <div className="flex flex-col gap-3.5">
-          <h3 className="text-xl font-bold">Sắp xếp theo</h3>
+          <h3 className="text-lg font-bold">Sắp xếp theo</h3>
           <div className="flex gap-4">
             {/* Giá cao - Thấp */}
             <div
-              onClick={() => handleButtonClick("highToLow")}
-              className={`flex items-center gap-1.5 px-2.5 py-2 border rounded-lg cursor-pointer ${
-                selectedButton === "highToLow"
-                  ? "border-red-500 bg-red-50 text-red-500"
-                  : "border-black bg-white text-black"
+              onClick={() => {
+                const searchParamsNew = new URLSearchParams(searchParams.toString());
+                searchParamsNew.set("orderby", `price-desc`);
+                searchParamsNew.set("page", `1`);
+                router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-2 shadow-lg border select-none hover:shadow-xl transition-all rounded-lg cursor-pointer ${
+                query.orderby === "price-desc" ? "border-primary text-primary" : "text-gray-700"
               }`}
             >
-              <BsSortDown
-                className={`w-6 h-6 ${
-                  selectedButton === "highToLow" ? "text-red-500" : "text-black"
-                }`}
-              />
+              <BsSortDown className={`w-6 h-6 `} />
               <p>
-                Giá: <span className="inline">Giá cao</span> -{" "}
-                <span className="inline">Thấp</span>
+                Giá: <span className="inline">Giá cao</span> - <span className="inline">Thấp</span>
               </p>
             </div>
 
             {/* Giá thấp - Cao */}
             <div
-              onClick={() => handleButtonClick("lowToHigh")}
-              className={`flex items-center gap-1.5 px-2.5 py-2 border rounded-lg cursor-pointer ${
-                selectedButton === "lowToHigh"
-                  ? "border-red-500 bg-red-50 text-red-500"
-                  : "border-black bg-white text-black"
+              onClick={() => {
+                const searchParamsNew = new URLSearchParams(searchParams.toString());
+                searchParamsNew.set("orderby", `price-asc`);
+                searchParamsNew.set("page", `1`);
+                router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-2 shadow-lg border select-none hover:shadow-xl transition-all rounded-lg cursor-pointer ${
+                query.orderby === "price-asc" ? "border-primary text-primary" : "text-gray-700"
               }`}
             >
-              <BsSortDownAlt
-                className={`w-6 h-6 ${
-                  selectedButton === "lowToHigh" ? "text-red-500" : "text-black"
-                }`}
-              />
+              <BsSortDownAlt className={`w-6 h-6 `} />
               <p>
-                Giá: <span className="inline">Giá thấp</span> -{" "}
-                <span className="inline">Cao</span>
+                Giá: <span className="inline">Giá thấp</span> - <span className="inline">Cao</span>
               </p>
             </div>
 
             {/* Khuyến mãi */}
             <div
-              onClick={() => handleButtonClick("promotion")}
-              className={`flex items-center gap-1.5 px-2.5 py-2 border rounded-lg cursor-pointer ${
-                selectedButton === "promotion"
-                  ? "border-red-500 bg-red-50 text-red-500"
-                  : "border-black bg-white text-black"
+              onClick={() => {
+                const searchParamsNew = new URLSearchParams(searchParams.toString());
+                searchParamsNew.set("orderby", `sale-desc`);
+                searchParamsNew.set("page", `1`);
+                router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-2 shadow-lg border select-none hover:shadow-xl transition-all rounded-lg cursor-pointer ${
+                query.orderby === "sale-desc" ? "border-primary text-primary" : "text-gray-700"
               }`}
             >
-              <AiOutlinePercentage
-                className={`w-6 h-6 ${
-                  selectedButton === "promotion" ? "text-red-500" : "text-black"
-                }`}
-              />
+              <AiOutlinePercentage className={`w-6 h-6 `} />
               <p>Khuyến mãi</p>
             </div>
 
             {/* Xem nhiều */}
             <div
-              onClick={() => handleButtonClick("viewCount")}
-              className={`flex items-center gap-1.5 px-2.5 py-2 border rounded-lg cursor-pointer ${
-                selectedButton === "viewCount"
-                  ? "border-red-500 bg-red-50 text-red-500"
-                  : "border-black bg-white text-black"
+              onClick={() => {
+                const searchParamsNew = new URLSearchParams(searchParams.toString());
+                searchParamsNew.set("orderby", `view-desc`);
+                searchParamsNew.set("page", `1`);
+                router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-2 shadow-lg border select-none hover:shadow-xl transition-all rounded-lg cursor-pointer ${
+                query.orderby === "view-desc" ? "border-primary text-primary" : "text-gray-700"
               }`}
             >
-              <MdRemoveRedEye
-                className={`w-6 h-6 ${
-                  selectedButton === "viewCount" ? "text-red-500" : "text-black"
-                }`}
-              />
+              <MdRemoveRedEye className={`w-6 h-6 x`} />
               <p>Xem nhiều</p>
             </div>
           </div>
@@ -378,7 +502,7 @@ function Products() {
       </section>
 
       {/* Show sản phẩm */}
-      <section className="py-4">
+      <section className="py-4 pt-8">
         <div className="grid grid-cols-5 gap-2.5 flex-wrap">
           {products.map((product: IProduct) => (
             <Fragment key={product.id}>
@@ -387,7 +511,18 @@ function Products() {
           ))}
         </div>
         <div className="flex items-center justify-center  mt-4">
-          <Pagination defaultCurrent={1} total={50} />
+          {totalPages > query.limit && (
+            <Pagination
+              onChange={(page) => {
+                const searchParamsNew = new URLSearchParams(searchParams.toString());
+                searchParamsNew.set("page", `${page}`);
+                router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+              }}
+              defaultCurrent={query.page}
+              pageSize={query.limit}
+              total={totalPages}
+            />
+          )}
         </div>
       </section>
     </div>
