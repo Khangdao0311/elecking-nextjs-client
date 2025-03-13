@@ -95,10 +95,10 @@ function UserAdd() {
           </div>
           <div className="p-1.5 flex gap-2.5 border border-gray-100 rounded shadow-md">
             <p className="text-sm font-normal min-w-[101px] px-5 py-2.5 bg-gray-300 rounded">Chọn tệp</p>
-            <p className="min-w-full text-gray-400 flex items-center text-sm font-normal">Không có tệp được chọn</p>
+            <p className="w-full text-gray-400 flex items-center text-sm font-normal">Không có tệp được chọn</p>
           </div>
         </div>
-        <ButtonAdmin/>
+        <ButtonAdmin back="user/list"/>
     </div>
     </>
   )

@@ -16,22 +16,31 @@ function OrderList() {
   const [editorder, setEditorder] = useState(false);
   const showeditorder = () => setEditorder(true);
   const closeeditorder = () => setEditorder(false);
-  const [limit, setLimit] = useState();
-  const [search, setSearch] = useState();
-   const [orders, setOrders] = useState([]);
+  const [limit, setLimit] = useState(5);
+  const [search, setSearch] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
    useEffect(()=> {
          const query: any ={};
          query.limit = limit;
-         if(0){
+         query.page = page;
+         if(search != ""){
            query.search = search;
          }
-         orderServices.getQuery(query).then((res)=> setOrders(res.data))
-       },[])
+         orderServices.getQuery(query).then((res)=> {
+          setOrders(res.data)
+          setTotalPages(res.total);
+         })
+       },[limit, page, search])
        console.log(orders);
   return (
     <>
       <TitleAdmin title="Quản lý đơn hàng" />
-      <Boxsearchlimit title="đơn hàng" />
+      <Boxsearchlimit title="đơn hàng" onLimitChange={(newLimit:any) =>{setLimit(newLimit); setPage(1)}} onSearch={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}/>
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
           <thead className="bg-stone-100">
@@ -73,24 +82,43 @@ function OrderList() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order:IOrder)=>{
+            {orders.map((order:IOrder, index:number)=>{
+              let text = "";
+              switch (order.status) {
+                case 0:
+                  text = "Đã hủy";
+                  break;
+                case 1:
+                  text = "Đã giao hàng";
+                  break;
+                case 2:
+                  text = "Chờ xác nhận";
+                  break;
+                case 3:
+                  text = "Đang vận chuyển";
+                default:
+                  break;
+              }
               return(
                 <tr key={order.id} className="even:bg-gray-100">
-              <td className="px-2 py-2.5 w-12 text-center">1</td>
+              <td className="px-2 py-2.5 w-12 text-center">{(page - 1) * limit + index + 1}</td>
               <td className="px-2 py-2.5 w-[128px]">{order.id}</td>
-              <td className="px-2 py-2.5 w-[128px]">10/02/2025</td>
+              <td className="px-2 py-2.5 w-[128px]">{order.ordered_at}</td>
               <td className="px-2 flex-1 py-2">{order.user_id}</td>
-              <td className="px-2 flex-1 py-2 w-[150px]">23.200.000 đ</td>
+              <td className="px-2 flex-1 py-2 w-[150px]">{(+order.total).toLocaleString("vi-VN")} đ</td>
               <td className="px-2 min-w-[112px] max-w-[112px] text-center py-2.5">
-                <span className="line-clamp-1">DSFSDFSDAVA</span>
+                <span className="line-clamp-1">{order.transaction_code || "không có"}</span>
               </td>
               <td className="px-2 min-w-[230px] py-2.5">
-                Thanh toán khi nhận hàng
+                {order.payment_method_id}
               </td>
               <td className="px-2 min-w-[112px] py-2.5 text-center">
-                <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-                  Chờ xác nhận
-                </span>
+                
+
+              <Statusorder status={order.status} text={text}/>
+
+
+
               </td>
               <td className="p-2 w-24">
                 <div className="flex min-w-24 items-center justify-center gap-2">
@@ -108,14 +136,19 @@ function OrderList() {
             
           </tbody>
         </table>
-        <div className="flex w-full justify-end">
+        {totalPages > limit &&(
+            <div className="flex w-full justify-end">
           <Pagination
+          current={page}
+            onChange={(e) => setPage(e)}
             defaultCurrent={1}
             align="end"
-            total={500}
+            pageSize={limit}
+            total={totalPages}
             showSizeChanger={false}
           />
         </div>
+        )}
       </div>
       {editorder && (
         <>

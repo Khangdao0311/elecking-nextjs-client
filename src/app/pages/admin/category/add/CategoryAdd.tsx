@@ -57,7 +57,7 @@ function CategoryAdd() {
             </div>
           </div>
         </div>
-        <Button />
+        <Button back="category/list"/>
       </div>
     </>
   );

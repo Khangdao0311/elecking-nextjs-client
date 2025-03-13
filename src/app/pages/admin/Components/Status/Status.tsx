@@ -14,7 +14,7 @@ function Status(props: { status: number; text: string }) {
       );
     case 3:
       return (
-        <p className="px-3 py-1 text-xs font-normal text-blue-800 bg-blue-100 rounded-lg ">
+        <p className="px-3 py-1 w-[95px] text-xs font-normal text-blue-800 bg-blue-100 rounded-lg ">
           {props.text}
         </p>
       );

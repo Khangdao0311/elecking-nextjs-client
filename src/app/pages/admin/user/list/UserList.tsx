@@ -8,6 +8,8 @@ import { GoPlus } from "react-icons/go";
 import { MdDeleteForever } from "react-icons/md";
 import { useEffect, useState } from "react";
 import Statususer from "@/app/pages/admin/Components/Status" 
+import Link from "next/link";
+import config from "@/app/config";
 function UserList() {
   const [users, setUsers] = useState([]);
   const [limit, setLimit] = useState(5);
@@ -36,10 +38,10 @@ function UserList() {
           setPage(1);
         }}/>
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <div className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
+        <Link href={config.routes.admin.user.add} className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo người dùng mới</p>
-        </div>
+        </Link>
         <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
           <thead className="bg-stone-100">
             <tr>
@@ -124,9 +126,9 @@ function UserList() {
                   </td>
                   <td className="p-2 w-24">
                     <div className="flex min-w-24 items-center justify-center gap-2">
-                      <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
+                      <Link href={`${config.routes.admin.user.edit}/${getuser.id}`} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
                         <FiEdit className="w-5 h-5" />
-                      </button>
+                      </Link>
                       <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
                         <MdDeleteForever className="w-5 h-5" />
                       </button>
@@ -135,43 +137,6 @@ function UserList() {
                 </tr>
               );
             })}
-            {/* // <tr className="even:bg-gray-100">
-            //   <td className="px-2 py-2.5 w-12 text-center">1</td>
-            //   <td className="px-2 w-16 py-1 text-center">
-            //     <div className="flex items-center justify-center">
-            //       <img
-            //         src="https://static.vecteezy.com/system/resources/previews/043/900/708/non_2x/user-profile-icon-illustration-vector.jpg"
-            //         alt="Điện thoại"
-            //         className="w-8 h-8 rounded"
-            //       />
-            //     </div>
-            //   </td>
-            //   <td className="px-2 py-2.5">
-            //     <span className="line-clamp-1">Nguyễn văn admin</span>
-            //   </td>
-            //   <td className="px-2 flex-1 py-2">
-            //   NguyenVanA@gmail.com
-            //   </td>
-            //   <td className="px-2 min-w-[112px] text-center py-2.5">0123456789</td>
-            //   <td className="px-2 min-w-[112px] py-2.5 text-center">
-            //     Admin
-            //   </td>
-            //   <td className="px-2 min-w-[112px] py-2.5 text-center">
-            //     <span className="px-3 py-1 text-xs font-normal text-green-800 bg-green-100 rounded-lg ">
-            //       Hoạt động
-            //     </span>
-            //   </td>
-            //   <td className="p-2 w-24">
-            //     <div className="flex min-w-24 items-center justify-center gap-2">
-            //       <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-            //         <FiEdit className="w-5 h-5" />
-            //       </button>
-            //       <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-            //         <MdDeleteForever className="w-5 h-5" />
-            //       </button>
-            //     </div>
-            //   </td>
-            // </tr> */}
           </tbody>
         </table>
         {totalPages > limit &&(

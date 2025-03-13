@@ -3,7 +3,6 @@ import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import { Input, Select } from "antd";
 import React from "react";
-import { FaChevronRight } from "react-icons/fa6";
 import { GrFormNext } from "react-icons/gr";
 import { IoIosClose } from "react-icons/io";
 import { IoCloseSharp } from "react-icons/io5";
@@ -20,7 +19,7 @@ function ProductAdd() {
         <div className="w-full flex flex-col gap-6">
           <div className="w-full">
             <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">
-              Tạo Mới Sản Phẩm
+              Sửa Sản Phẩm
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -179,6 +178,7 @@ function ProductAdd() {
               </div>
             </div>
           </div>
+          <Button back="product/list"/>
         </div>
       </div>
     </>

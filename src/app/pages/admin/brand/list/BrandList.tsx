@@ -1,7 +1,6 @@
 "use client";
 
 import { FiEdit } from "react-icons/fi";
-import { MdDeleteForever } from "react-icons/md";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import Statusbrand from "@/app/pages/admin/Components/Status";
@@ -9,15 +8,14 @@ import { GoPlus } from "react-icons/go";
 import { useEffect, useState } from "react";
 import * as brandServices from "@/app/services/brandService";
 import { Pagination } from "antd";
-
+import config from "@/app/config";
+import Link from "next/link";
 function BrandList() {
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [brands, setBrands] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
-
-
   
   console.log(page);
 
@@ -42,10 +40,10 @@ function BrandList() {
           setPage(1);
         }}/>
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <div className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
+        <Link href={config.routes.admin.brand.add} className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
-          <p className="text-sm font-bold">Tạo danh mục mới</p>
-        </div>
+          <p className="text-sm font-bold">Tạo thương hiệu mới</p>
+        </Link>
         <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
           <thead className="bg-stone-100">
             <tr>
@@ -92,7 +90,7 @@ function BrandList() {
                 <tr key={brand.id} className="even:bg-gray-100">
                   <td className="px-2 py-2.5 w-12 text-center">
                     {(page - 1) * limit + iBrand + 1}
-                  </td>
+                  </td> 
                   <td className="px-2 py-2.5 w-[240px]">
                     <span>{brand.name}</span>
                   </td>
@@ -130,9 +128,9 @@ function BrandList() {
                   </td>
                   <td className="p-2 w-[96px]">
                     <div className="flex items-center justify-center gap-2">
-                      <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
+                      <Link href={`${config.routes.admin.brand.edit}/${brand.id}`} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
                         <FiEdit className="w-5 h-5" />
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>

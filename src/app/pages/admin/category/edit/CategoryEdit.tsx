@@ -66,7 +66,7 @@ function CategoryEdit() {
               </div>
             </div>
           </div>
-          <Button/>
+          <Button back="category/list"/>
         </div>
       </div>
     </>

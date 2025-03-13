@@ -8,6 +8,8 @@ import { Pagination } from "antd";
 import { useEffect, useState } from "react";
 import * as categoryServices from "@/app/services/categoryService";
 import Statuscategory from "@/app/pages/admin/Components/Status";
+import Link from "next/link";
+import config from "@/app/config";
 
 function CategoryList() {
   const [limit, setLimit] = useState(5);
@@ -45,10 +47,10 @@ function CategoryList() {
         }}
       />
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <div className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
+        <Link href={config.routes.admin.category.add} className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo danh mục mới</p>
-        </div>
+        </Link>
         <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
           <thead className="bg-stone-100">
             <tr>
@@ -107,9 +109,9 @@ function CategoryList() {
                   </td>
                   <td className="p-2 w-full">
                     <div className="flex items-center justify-center gap-2">
-                      <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
+                      <Link href={`${config.routes.admin.category.edit}/${category.id}`} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
                         <FiEdit className="w-5 h-5" />
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>

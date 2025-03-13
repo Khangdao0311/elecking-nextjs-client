@@ -89,7 +89,7 @@ function UserEdit() {
             <p className="min-w-full text-gray-400 flex items-center text-sm font-normal">Không có tệp được chọn</p>
           </div>
         </div>
-        <ButtonAdmin/>
+        <ButtonAdmin back="user/list"/>
     </div>
         </>
     );

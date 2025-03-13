@@ -15,7 +15,15 @@ import {
 import { FiEdit } from "react-icons/fi";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 const data = {
-  labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6","Tháng 12"],
+  labels: [
+    "Tháng 1",
+    "Tháng 2",
+    "Tháng 3",
+    "Tháng 4",
+    "Tháng 5",
+    "Tháng 6",
+    "Tháng 12",
+  ],
   datasets: [
     {
       label: "Doanh Thu",
@@ -48,14 +56,54 @@ function DashBoard() {
     { id: "AL3947", customer: "Nguyễn Đặng H...", total: "19.770.000 đ" },
   ];
   const users = [
-    { id: "AL3947", customer: "Phạm Thị Ngọc", email: "Khang@gmail.com", phone : "031665884" },
-    { id: "ER3835", customer: "Nguyễn Thị Mỹ Y...", email: "Khang@gmail.com", phone : "031665884" },
-    { id: "MD0837", customer: "Triệu Thanh Phú", email: "Khang@gmail.com", phone : "031665884" },
-    { id: "MT9835", customer: "Đặng Hoàng Phúc", email: "Khang@gmail.com", phone : "031665884" },
-    { id: "MT9835", customer: "Nguyễn Đặng H...", email: "Khang@gmail.com", phone : "031665884" },
-    { id: "MD0837", customer: "Nguyễn Đặng N...", email: "Khang@gmail.com", phone : "031665884" },
-    { id: "ER3835", customer: "Nguyễn Đặng H...", email: "Khang@gmail.com", phone : "031665884" },
-    { id: "AL3947", customer: "Nguyễn Đặng H...", email: "Khang@gmail.com", phone : "031665884" },
+    {
+      id: "AL3947",
+      customer: "Phạm Thị Ngọc",
+      email: "Khang@gmail.com",
+      phone: "031665884",
+    },
+    {
+      id: "ER3835",
+      customer: "Nguyễn Thị Mỹ Y...",
+      email: "Khang@gmail.com",
+      phone: "031665884",
+    },
+    {
+      id: "MD0837",
+      customer: "Triệu Thanh Phú",
+      email: "Khang@gmail.com",
+      phone: "031665884",
+    },
+    {
+      id: "MT9835",
+      customer: "Đặng Hoàng Phúc",
+      email: "Khang@gmail.com",
+      phone: "031665884",
+    },
+    {
+      id: "MT9835",
+      customer: "Nguyễn Đặng H...",
+      email: "Khang@gmail.com",
+      phone: "031665884",
+    },
+    {
+      id: "MD0837",
+      customer: "Nguyễn Đặng N...",
+      email: "Khang@gmail.com",
+      phone: "031665884",
+    },
+    {
+      id: "ER3835",
+      customer: "Nguyễn Đặng H...",
+      email: "Khang@gmail.com",
+      phone: "031665884",
+    },
+    {
+      id: "AL3947",
+      customer: "Nguyễn Đặng H...",
+      email: "Khang@gmail.com",
+      phone: "031665884",
+    },
   ];
   return (
     <>
@@ -113,46 +161,46 @@ function DashBoard() {
           <Bar data={data} options={options} />
         </div>
         <div className="flex w-full gap-4">
-          <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg overflow-scroll">
+          <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
             <p className="text-xl font-bold">Đơn hàng chờ xử lý</p>
             <div className="border border-zinc-300"></div>
-
-            <table className="w-ful">
-              <thead className="bg-stone-100 text-sm font-normal text-left">
-                <tr>
-                  <th className="px-2 py-2.5">ID Đơn Hàng</th>
-                  <th className="px-2 py-2.5">Tên Khách Hàng</th>
-                  <th className="px-2 py-2.5">Tổng Tiền</th>
-                  <th className="px-2 py-2.5 min-w-24 text-center">
-                    Trạng Thái
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {orders.map((order, index) => (
-                  <tr
-                    key={index}
-                    className="text-sm font-normal even:bg-gray-100"
-                  >
-                    <td className="px-2 py-2.5">{order.id}</td>
-                    <td className="px-2 py-2.5">{order.customer}</td>
-                    <td className="px-2 py-2.5">{order.total}</td>
-                    <td className="px-2 py-2.5 w-[96px] max-w-[96px] text-center">
-                      <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800">
-                        <FiEdit className="w-5 h-5 text-center" />
-                      </button>
-                    </td>
+            <div className="overflow-scroll">
+              <table className="w-full">
+                <thead className="bg-stone-100 text-sm font-normal text-left">
+                  <tr>
+                    <th className="px-2 py-2.5">ID Đơn Hàng</th>
+                    <th className="px-2 py-2.5">Tên Khách Hàng</th>
+                    <th className="px-2 py-2.5">Tổng Tiền</th>
+                    <th className="px-2 py-2.5 min-w-24 text-center">
+                      Trạng Thái
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {orders.map((order, index) => (
+                    <tr
+                      key={index}
+                      className="text-sm font-normal even:bg-gray-100"
+                    >
+                      <td className="px-2 py-2.5">{order.id}</td>
+                      <td className="px-2 py-2.5">{order.customer}</td>
+                      <td className="px-2 py-2.5">{order.total}</td>
+                      <td className="px-2 py-2.5 w-[96px] max-w-[96px] text-center">
+                        <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800">
+                          <FiEdit className="w-5 h-5 text-center" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg overflow-scroll">
+          <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
             <p className="text-xl font-bold">Khách hàng mới</p>
             <div className="border border-zinc-300"></div>
-
-            <table className="w-ful">
+            <div className="overflow-scroll"><table className="w-full">
               <thead className="bg-stone-100 text-sm font-normal text-left">
                 <tr>
                   <th className="px-2 py-2.5">ID</th>
@@ -175,7 +223,8 @@ function DashBoard() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
+            
           </div>
         </div>
       </div>
