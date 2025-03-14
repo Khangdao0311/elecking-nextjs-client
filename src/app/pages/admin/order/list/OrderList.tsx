@@ -6,41 +6,85 @@ import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { Select } from "antd";
 import * as orderServices from "@/app/services/orderService";
-import Statusorder from "@/app/pages/admin/Components/Status"
+import * as userServices from "@/app/services/userService";
+import * as paymentServices from "@/app/services/paymentService";
+import Statusorder from "@/app/pages/admin/Components/Status";
+import moment from "moment";
 const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
 
 function OrderList() {
-  
   const [editorder, setEditorder] = useState(false);
   const showeditorder = () => setEditorder(true);
   const closeeditorder = () => setEditorder(false);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<IOrder[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
-   useEffect(()=> {
-         const query: any ={};
-         query.limit = limit;
-         query.page = page;
-         if(search != ""){
-           query.search = search;
-         }
-         orderServices.getQuery(query).then((res)=> {
-          setOrders(res.data)
-          setTotalPages(res.total);
-         })
-       },[limit, page, search])
-       console.log(orders);
+  const [users, setUsers] = useState<{ [key: string]: IUser }>({});
+  const [payments, setPayments] = useState<{ [key: string]: IPaymment}>({});
+  useEffect(() => {
+    const query: any = {};
+    query.limit = limit;
+    query.page = page;
+    if (search != "") {
+      query.search = search;
+    }
+    orderServices.getQuery(query).then((res) => {
+      setOrders(res.data);
+      setTotalPages(res.total);
+    });
+  }, [limit, page, search]);
+  console.log(orders);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const usersData: { [key: string]: IUser } = {};
+      for (const order of orders) {
+        if (!users[order.user_id]) {
+          const getuser = await userServices.getById(order.user_id);
+          usersData[order.user_id] = getuser.data;
+        }
+      }
+      setUsers((prev) => ({ ...prev, ...usersData }));
+    };
+
+    if (orders.length) fetchUsers();
+  }, [orders]);
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      const paymentData: { [key: string]: IPaymment } = {};
+      for (const order of orders) {
+        if (!payments[order.payment_method_id]) {
+          const getpayment = await paymentServices.getById(order.payment_method_id);
+          paymentData[order.payment_method_id] = getpayment.data;
+          console.log(getpayment);
+          
+        }
+      }
+      setPayments((prev) => ({ ...prev, ...paymentData }));
+    };
+
+    if (orders.length) fetchPayments();
+  }, [orders]);
+
   return (
     <>
       <TitleAdmin title="Quản lý đơn hàng" />
-      <Boxsearchlimit title="đơn hàng" onLimitChange={(newLimit:any) =>{setLimit(newLimit); setPage(1)}} onSearch={(value) => {
+      <Boxsearchlimit
+        title="đơn hàng"
+        onLimitChange={(newLimit: any) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
+        onSearch={(value) => {
           setSearch(value);
           setPage(1);
-        }}/>
+        }}
+      />
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
           <thead className="bg-stone-100">
@@ -82,7 +126,7 @@ function OrderList() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order:IOrder, index:number)=>{
+            {orders.map((order: IOrder, index: number) => {
               let text = "";
               switch (order.status) {
                 case 0:
@@ -99,55 +143,57 @@ function OrderList() {
                 default:
                   break;
               }
-              return(
+              return (
                 <tr key={order.id} className="even:bg-gray-100">
-              <td className="px-2 py-2.5 w-12 text-center">{(page - 1) * limit + index + 1}</td>
-              <td className="px-2 py-2.5 w-[128px]">{order.id}</td>
-              <td className="px-2 py-2.5 w-[128px]">{order.ordered_at}</td>
-              <td className="px-2 flex-1 py-2">{order.user_id}</td>
-              <td className="px-2 flex-1 py-2 w-[150px]">{(+order.total).toLocaleString("vi-VN")} đ</td>
-              <td className="px-2 min-w-[112px] max-w-[112px] text-center py-2.5">
-                <span className="line-clamp-1">{order.transaction_code || "không có"}</span>
-              </td>
-              <td className="px-2 min-w-[230px] py-2.5">
-                {order.payment_method_id}
-              </td>
-              <td className="px-2 min-w-[112px] py-2.5 text-center">
-                
-
-              <Statusorder status={order.status} text={text}/>
-
-
-
-              </td>
-              <td className="p-2 w-24">
-                <div className="flex min-w-24 items-center justify-center gap-2">
-                  <button
-                    onClick={showeditorder}
-                    className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
-                  >
-                    <FiEdit className="w-5 h-5" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-              )
+                  <td className="px-2 py-2.5 w-12 text-center">
+                    {(page - 1) * limit + index + 1}
+                  </td>
+                  <td className="px-2 py-2.5 w-[128px]">{order.id}</td>
+                  <td className="px-2 py-2.5 w-[128px]">{moment(order.ordered_at, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm")}</td>
+                  <td className="px-2 flex-1 py-2">
+                    {users[order.user_id]?.fullname}
+                  </td>
+                  <td className="px-2 flex-1 py-2 w-[150px]">
+                    {(+order.total).toLocaleString("vi-VN")} đ
+                  </td>
+                  <td className="px-2 min-w-[112px] max-w-[112px] text-center py-2.5">
+                    <span className="line-clamp-1">
+                      {order.transaction_code || "không có"}
+                    </span>
+                  </td>
+                  <td className="px-2 min-w-[230px] py-2.5">
+                    {payments[order.payment_method_id]?.name}
+                  </td>
+                  <td className="px-2 min-w-[112px] py-2.5 text-center">
+                    <Statusorder status={order.status} text={text} />
+                  </td>
+                  <td className="p-2 w-24">
+                    <div className="flex min-w-24 items-center justify-center gap-2">
+                      <button
+                        onClick={showeditorder}
+                        className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
+                      >
+                        <FiEdit className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
             })}
-            
           </tbody>
         </table>
-        {totalPages > limit &&(
-            <div className="flex w-full justify-end">
-          <Pagination
-          current={page}
-            onChange={(e) => setPage(e)}
-            defaultCurrent={1}
-            align="end"
-            pageSize={limit}
-            total={totalPages}
-            showSizeChanger={false}
-          />
-        </div>
+        {totalPages > limit && (
+          <div className="flex w-full justify-end">
+            <Pagination
+              current={page}
+              onChange={(e) => setPage(e)}
+              defaultCurrent={1}
+              align="end"
+              pageSize={limit}
+              total={totalPages}
+              showSizeChanger={false}
+            />
+          </div>
         )}
       </div>
       {editorder && (
@@ -315,14 +361,20 @@ function OrderList() {
                     32.790.000 đ
                   </p>
                 </div>
-                
               </div>
             </div>
             <div className="px-4 h-[64px] items-center justify-end flex gap-4">
-                <div className="flex gap-4">
-                  <p onClick={closeeditorder} className="cursor-pointer px-6 w-[114px] h-[40px] bg-red-100 text-red-800 text-sm font-bold flex items-center justify-center rounded">Trở lại</p>
-                  <p className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded">Lưu</p>
-                </div>
+              <div className="flex gap-4">
+                <p
+                  onClick={closeeditorder}
+                  className="cursor-pointer px-6 w-[114px] h-[40px] bg-red-100 text-red-800 text-sm font-bold flex items-center justify-center rounded"
+                >
+                  Trở lại
+                </p>
+                <p className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded">
+                  Lưu
+                </p>
+              </div>
             </div>
           </div>
           <div className="overlay"></div>
