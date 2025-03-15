@@ -14,11 +14,6 @@ function AccountAddress() {
           <div
             className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg"
           >
-            <input
-              type="radio"
-              className="accent-primary w-5 h-5"
-              readOnly
-            />
             <div className="flex flex-col w-full items-start gap-2.5">
               <div className="flex justify-between w-full">
                 <div className="flex gap-5">

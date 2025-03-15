@@ -52,15 +52,6 @@ function ProductDetail() {
   const userJSON = JSON.parse(user!);
 
   function handleAddToCart() {
-    // const cart = {
-    //   product : {
-    //     id: product?.id,
-    //     variant: iVariant,'
-    //     color: icolor
-    //   },
-    //   quantity: quantity
-    // }
-    console.log(cart);
     const cartItem = {
       product: {
         id: product?.id,
@@ -69,17 +60,25 @@ function ProductDetail() {
       },
       quantity: quantity,
     };
-
-    cart.push(cartItem);
-    console.log(cart);
+  
+    const existingItem = cart.find(
+      (item:any) =>
+        item.product.id === cartItem.product.id &&
+        item.product.variant === cartItem.product.variant &&
+        item.product.color === cartItem.product.color
+    );
+  
+    if (existingItem) {
+      existingItem.quantity += quantity;
+    } else {
+      cart.push(cartItem);
+    }
+  
+    localStorage.setItem("cart", JSON.stringify(cart));
     authServices.cart(userJSON.id, cart);
   }
   
 
-  // console.log(cartUserJSON);
-  // function addCart() {
-  //   s
-  // }
   return (
     <>
       {product && (
