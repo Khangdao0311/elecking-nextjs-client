@@ -30,8 +30,10 @@ function Login() {
     authServices.login(account, password).then((res) => {
       if (res.status === 200) {
         setUser(res.data);
-        localStorage.setItem('user', JSON.stringify(res.data))
-        localStorage.setItem('cartUser', JSON.stringify(res.data?.cart))
+        localStorage.setItem('user_id', JSON.stringify(res.data?.user.id))
+        localStorage.setItem('fullname', JSON.stringify(res.data?.user.fullname))
+        localStorage.setItem('access_token', JSON.stringify(res.data?.access_token))
+        localStorage.setItem('refresh_token', JSON.stringify(res.data?.refresh_token))
         router.push("/home")
       }
     });

@@ -25,7 +25,7 @@ import Logo from "@/app/assets/Logo";
 function Header() {
   const userJSON = localStorage.getItem("user");
   const user = JSON.parse(userJSON!);
-  const userCart =  localStorage.getItem("cartUser");
+  const userCart = localStorage.getItem("cartUser");
   const userCartJSON = JSON.parse(userCart!);
   const userCartQuantity = userCartJSON?.length;
 
