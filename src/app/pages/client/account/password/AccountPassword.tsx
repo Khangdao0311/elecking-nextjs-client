@@ -1,6 +1,8 @@
 "use client";
 import Sidebar from "@/app/components/client/Sidebar_user";
+import { Input } from 'antd';
 import { FaCircleUser } from "react-icons/fa6";
+import React from 'react';
 
 function AccountPassword() {
   return <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
@@ -17,12 +19,12 @@ function AccountPassword() {
         </div>
         <div className="flex flex-col gap-4">
           <div className="text-sm font-medium">Nhập Mật Khẩu Cũ<span className="text-primary"> *</span></div>
-          <input className="p-2 rounded shadow-md" placeholder="Nhập Mật Khẩu Hiện Tại" type="text" />
+          <Input className="p-2 rounded shadow-md" placeholder="Nhập Mật Khẩu Hiện Tại" />
         </div>
         <div className="flex flex-col gap-4">
           <div className="text-sm font-medium">Nhập Mật Khẩu Mới<span className="text-primary"> *</span></div>
-          <input className="p-2 rounded shadow-md" placeholder="Nhập Mật Khẩu Mới" type="text" />
-          <input className="p-2 rounded shadow-md" placeholder="Xác Nhận Mật Khẩu" type="text" />
+          <Input className="p-2 rounded shadow-md" placeholder="Mật khẩu mới" />
+          <Input className="p-2 rounded shadow-md" placeholder="Xác nhận mật khẩu" />
         </div>
         <div>
           <div className="px-24 py-4 bg-primary text-center font-text font-bold rounded-lg text-white">

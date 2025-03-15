@@ -12,6 +12,9 @@ import { FaCheckCircle } from "react-icons/fa";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Modal from "./modal";
 import * as productServices from "@/app/services/productService";
+import * as userServices from "@/app/services/userService";
+import { Address } from "cluster";
+
 function Checkout() {
   var totalProducts = 0;
   const query = useSearchParams();
@@ -34,12 +37,43 @@ function Checkout() {
   const [checkaddress2, setCheckaddress2] = useState("1");
   const [productCheckout, setProductCheckOut] = useState<any>([]);
   const [showVoucher, setVoucher] = useState(false);
+  {
+    cart{
+      
+    }
+  }
+
   //Lấy địa chỉ address
-  const [getaddress,setGetaddress] = useState([]);
+  const [getaddress, setGetaddress] = useState<IAddress[]>([]);
+  const userJSON = JSON.parse(localStorage.getItem('user') || '[]');
+  const [user, setUser] = useState<IUser>();
   useEffect(() => {
-    addressServices.getAll().then((res)=>setGetaddress(res));
-  },[]);
-  
+    userServices.getById(userJSON.id).then((res: any) => setUser(res.data))
+  }, [])
+  useEffect(() => {
+    async function _() {
+      const _: IProduct[] = [];
+      if (user?.cart?.length) {
+        for (const item of user.cart) {
+          await productServices.getProById(item.product.id).then((res: any) => {
+            _.push(res.data);
+          });
+        }
+      }
+      setProductCheckOut(_);
+    }
+    _();
+  }, [user]);
+
+  productCheckout.map((e: any) => {
+    console.log(e.variants[user?.cart[0].product.variant as number].colors[user?.cart[0].product.color as number].name);
+  })
+
+
+  useEffect(() => {
+    const query = { limit: 7 }
+    addressServices.getQuery(query).then((res) => setGetaddress(res.data));
+  }, []);
 
   const showAdress = () => setAddress(true);
   const showpayment = () => setPayment(true);
@@ -61,8 +95,16 @@ function Checkout() {
     setNewAddress(false);
     setAddress(true);
   };
+  const calculateProductPrice = (product: IProduct, iProduct: number) => {
+    return (
+      (product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price -
+        product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price_sale +
+        (product?.variants[(user?.cart[iProduct]?.product?.variant as number)]
+          ?.colors[(user?.cart[iProduct]?.product?.color as number)]?.price_extra)
+      ) * ((user?.cart[iProduct]?.quantity as number))
+    )
+  };
 
-  // Xét trang thái thanh toán có thành công hay không
   useEffect(() => {
     if (query.get("vnp_TransactionStatus")) {
       setModal(true);
@@ -106,7 +148,7 @@ function Checkout() {
     },
   ];
 
-  
+
   const checkout = JSON.parse(localStorage.getItem("checkout")!);
 
   useEffect(() => {
@@ -122,36 +164,38 @@ function Checkout() {
       setProductCheckOut(_);
     }
     _();
-    
+
   }, []);
-  console.log(productCheckout);
-  
 
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 flex flex-col gap-6">
-      <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
-        <div className="flex gap-4 items-center">
-          <TfiLocationPin className="w-10 h-10" />
-          <p className="text-2xl font-bold text-primary">Địa chỉ nhận hàng</p>
-        </div>
-        <div className="flex items-center gap-10 w-full place-content-between">
-          <div className="flex gap-6 items-center">
-            <div className="flex gap-4 text-xl font-semibold">
-              {/* <p>{abc?.name}</p> */}
-              {/* <p>{abc?.phone}</p> */}
+      {getaddress
+        .filter((address) => address.user_id === user?.id && address.setDefault === true)
+        .map((address, i) => (
+          <div key={i} className="bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
+            <div className="flex gap-4 items-center">
+              <TfiLocationPin className="w-10 h-10" />
+              <p className="text-2xl font-bold text-primary">Địa chỉ nhận hàng</p>
             </div>
-            <p className="text-base font-normal w-[812px]">
-              {/* {abc?.description}, {abc?.ward}, {abc?.district}, {abc?.province} */}
-            </p>
+            <div className="flex items-center gap-10 w-full place-content-between">
+              <div className="flex gap-6 items-center">
+                <div className="flex gap-4 text-xl font-semibold">
+                  <p>{address.fullname}</p>
+                  <p>{address.phone}</p>
+                </div>
+                <p className="text-base font-normal w-[812px]">
+                  {address.description}, {address.ward}, {address.district}, {address.province}
+                </p>
+              </div>
+              <p
+                className="text-base font-semibold text-blue-500 p-2.5 gap-2.5 cursor-pointer"
+                onClick={showAdress}
+              >
+                Thay đổi
+              </p>
+            </div>
           </div>
-          <p
-            className="text-base font-semibold text-blue-500 p-2.5 gap-2.5 cursor-pointer"
-            onClick={showAdress}
-          >
-            Thay đổi
-          </p>
-        </div>
-      </div>
+        ))}
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
         <div className="flex gap-2.5 pb-4 border-b-[1px] border-gray-300">
           <p className="w-[730px] text-base font-medium">Sản phẩm</p>
@@ -163,83 +207,60 @@ function Checkout() {
             Thành tiền
           </p>
         </div>
-
-
-
-
-
-
-
-
-
         {productCheckout.map((product: any, index: number) => {
           totalProducts +=
             (
-              product.variants[checkout[index].variant].price -
-              product.variants[checkout[index].variant].price_sale +
-              product.variants[checkout[index].variant].colors[
-                checkout[index].color
-              ].price_extra) *
-            checkout[index].quantity;
+              product?.variants[user?.cart[index]?.product?.variant as number]?.price -
+              product?.variants[user?.cart[index]?.product?.variant as number]?.price_sale +
+              (product?.variants[(user?.cart[index]?.product?.variant as number)]
+                ?.colors[(user?.cart[index]?.product?.color as number)]?.price_extra)
+              * ((user?.cart[index]?.quantity as number))
+            );
           return (
             <div key={index} className="flex gap-2.5 items-center">
               <div className="flex gap-2.5 items-center w-[730px]">
                 <img
                   src={
-                    product.variants[checkout[index].variant].colors[
-                      checkout[index].color
-                    ].image
+                    product.variants?.[user?.cart?.[index]?.product?.variant as number]
+                      ?.colors?.[user?.cart?.[index]?.product?.color as number]
+                      ?.image || "default-image.jpg"
                   }
                   alt="Ảnh"
                   className="w-24 h-24"
                 />
-                <p className="text-base font-medium">{`${
-                  product.name
-                } - ${product.variants[checkout[index].variant].properties.join(
-                  " - "
-                )} - ${
-                  product.variants[checkout[index].variant].colors[
-                    checkout[index].color
-                  ].name
-                }`}</p>
+                <p className="text-base font-medium">
+                  {`${product.name
+                    } - ${product.variants[user?.cart[0].product.variant as number].properties[user?.cart[0].product.variant as number]?.name}
+                 - ${product.variants[user?.cart[0].product.variant as number].colors[user?.cart[0].product.color as number].name}
+                  `}
+                </p>
               </div>
               <div className="text-center w-[160px] ">
                 <p className="text-base font-medium text-primary">
                   {(
-                    product.variants[checkout[index].variant].price -
-                    product.variants[checkout[index].variant].price_sale +
-                    product.variants[checkout[index].variant].colors[
-                      checkout[index].color
-                    ].price_extra
-                  ).toLocaleString("vi", "VN")}
+                    product?.variants[user?.cart[index]?.product?.variant as number]?.price -
+                    product?.variants[user?.cart[index]?.product?.variant as number]?.price_sale +
+                    (product?.variants[(user?.cart[index]?.product?.variant as number)]
+                      ?.colors[(user?.cart[index]?.product?.color as number)]?.price_extra)
+                    * ((user?.cart[index]?.quantity as number))
+                  ).toLocaleString('vn-VN')} đ
                 </p>
+                <del className="text-black text-xs font-normal ">
+                  {(product?.variants?.[user?.cart?.[index]?.product?.variant as number]
+                    ?.price || 0).toLocaleString('vi-VN')} đ
+                  đ</del>
               </div>
               <p className="text-base font-normal w-[160px] text-center">
-                {checkout[index].quantity}
+                {user?.cart?.[index]?.quantity !== undefined ? user?.cart?.[index]?.quantity : 0}
               </p>
               <p className="text-base font-bold text-primary w-[160px] text-center">
-                {(
-                  (
-                    product.variants[checkout[index].variant].price -
-                    product.variants[checkout[index].variant].price_sale +
-                    product.variants[checkout[index].variant].colors[
-                      checkout[index].color
-                    ].price_extra) *
-                  checkout[index].quantity
-                ).toLocaleString("vi-VN")}
+                {calculateProductPrice(product, index)
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")} đ
               </p>
             </div>
           );
         })}
-
-
-
-
-
-
-
-
-
       </div>
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
         <p className="text-xl font-bold w-full ">Lời nhắn</p>
@@ -309,51 +330,52 @@ function Checkout() {
           </button>
         </div>
       </div>
-
       {address && (
         <>
           <div className="bg-white center-fixed w-[524px] flex-col gap-5 rounded-lg shadow-xl z-50">
             <div className="px-5 flex text-justify items-center h-20">
               <p className="text-xl font-semibold">Địa chỉ của tôi</p>
             </div>
-            <div className="p-4 h-[500px] flex items-start flex-col gap-4 border border-y border-gray-200 ">
-              {getaddress.map((address:any, i:number) => (
-                <div
-                  key={i}
-                  className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg"
-                  onClick={() => {
-                    setCheckaddress2(address.id);
-                  }}
-                >
-                  <input
-                    type="radio"
-                    className="accent-primary w-5 h-5"
-                    readOnly
-                    checked={address.id == checkaddress2}
-                  />
-                  <div className="flex flex-col w-full items-start gap-2.5">
-                    <div className="flex justify-between w-full">
-                      <div className="flex gap-5">
-                        <p className="text-base font-medium">{address.fullname}</p>
-                        <p className="text-base font-normal">{address.phone}</p>
+            <div className="p-4 h-[500px] flex items-start flex-col gap-4 border border-y border-gray-200 overflow-y-scroll">
+              {getaddress
+                .filter((address) => address.user_id === user?.id)
+                .map((address, i) => (
+                  <div
+                    key={i}
+                    className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg"
+                    onClick={() => {
+                      setCheckaddress2(address.id);
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      className="accent-primary w-5 h-5"
+                      readOnly
+                      checked={address.id == checkaddress2}
+                    />
+                    <div className="flex flex-col w-full items-start gap-2.5">
+                      <div className="flex justify-between w-full">
+                        <div className="flex gap-5">
+                          <p className="text-base font-medium">{address.fullname}</p>
+                          <p className="text-base font-normal">{address.phone}</p>
+                        </div>
+                        <p
+                          className="text-sm font-semibold text-blue-500 cursor-pointer"
+                          onClick={showEditAddress}
+                        >
+                          Cập nhật
+                        </p>
                       </div>
-                      <p
-                        className="tetx-sm font-semibold text-blue-500 cursor-pointer"
-                        onClick={showEditAddress}
-                      >
-                        Cập nhật
+                      <p>{address.description}</p>
+                      <p>
+                        {address.ward}, {address.district}, {address.province}
+                      </p>
+                      <p className="text-primary text-xs font-normal border border-primary rounded-sm px-1">
+                        Mặc định
                       </p>
                     </div>
-                    <p>{address.description}</p>
-                    <p>
-                      {address.ward}, {address.district}, {address.province}
-                    </p>
-                    <p className="text-primary text-xs font-normal border border-primary rounded-sm px-1 ">
-                      Mặc định
-                    </p>
                   </div>
-                </div>
-              ))}
+                ))}
 
               <div
                 className="flex cursor-pointer  gap-2 px-6 py-3 items-center shadow-md border border-gray-200 rounded-lg"

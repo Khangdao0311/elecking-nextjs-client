@@ -17,16 +17,20 @@ import { log } from "console";
 
 function Cart() {
   const [productCart, setProductCart] = useState<IProduct[]>([]);
-
+  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+  const [showVoucher, setVoucher] = useState(false);
+  const [showVariant, setShowVariant] = useState<number[]>([]);
+  const [showColor, setShowColor] = useState<number[]>([]);
   const [load, setLoad] = useState(true)
-
   const userJSON = JSON.parse(localStorage.getItem('user') || '[]');
-
   const [user, setUser] = useState<IUser>()
+  const [checkedItems, setCheckedItems] = useState<boolean[]>((user?.cart ?? []).map(() => false));
+  const [totalPrice, setTotalPrice] = useState(0);
+  const totalCheckedItems = checkedItems.filter(Boolean).length;
+
   useEffect(() => {
     userServices.getById(userJSON.id).then((res: any) => setUser(res.data))
   }, [])
-
 
   useEffect(() => {
     async function _() {
@@ -42,10 +46,26 @@ function Cart() {
     }
     _();
   }, [user]);
+  console.log(productCart);
+  
 
-  const [showVoucher, setVoucher] = useState(false);
-  const [showVariant, setShowVariant] = useState<number[]>([]);
-  const [showColor, setShowColor] = useState<number[]>([]);
+  useEffect(() => {
+    setCheckedItems((user?.cart ?? []).map(() => false));
+  }, [user?.cart]);
+
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [selectedVoucher, productCart, checkedItems]);
+
+  useEffect(() => {
+    if (selectedVoucher && totalPrice < selectedVoucher?.min_order_value) {
+      setSelectedVoucher(null);
+    }
+  }, [totalPrice, selectedVoucher]);
+
+  const handleVoucherSelect = (voucher: any) => {
+    setSelectedVoucher(voucher);
+  };
 
   const increaseQuantity = async (product: IProduct, index: number) => {
     if (!user) return;
@@ -94,7 +114,6 @@ function Cart() {
     }
   };
 
-
   function handlChangeShowVariant(index: number) {
     if (showVariant.includes(index)) {
       setShowVariant(showVariant.filter(e => e != index))
@@ -105,24 +124,24 @@ function Cart() {
 
   const handlChangeVariant = async (index: number, variant: number) => {
     if (!user) return;
-  
+
     const cart = [...user.cart];
     const item = cart[index];
-  
+
     if (!item) return;
-  
+
     const updatedCartItem = {
       ...item,
       product: {
         ...item.product,
-        variant: variant, // Cập nhật biến thể sản phẩm
+        variant: variant,
       },
     };
-  
-    cart[index] = updatedCartItem; // Cập nhật lại giỏ hàng
-  
+
+    cart[index] = updatedCartItem;
+
     try {
-      await authServices.cart(user.id, cart); // Gửi API cập nhật giỏ hàng
+      await authServices.cart(user.id, cart);
       setUser((prevUser) =>
         prevUser ? { ...prevUser, cart } : prevUser
       );
@@ -130,8 +149,6 @@ function Cart() {
       console.error("Lỗi khi cập nhật giỏ hàng:", error);
     }
   };
-  
-
 
   function handlChangeShowColor(index: number) {
     if (showColor.includes(index)) {
@@ -163,11 +180,7 @@ function Cart() {
       console.error("Lỗi khi cập nhật giỏ hàng:", error);
     }
   };
-  
 
-  const [checkedItems, setCheckedItems] = useState<boolean[]>((user?.cart ?? []).map(() => false));
-  const [totalPrice, setTotalPrice] = useState(0);
-  const totalCheckedItems = checkedItems.filter(Boolean).length;
   const calculateProductPrice = (product: IProduct, iProduct: number) => {
     return (
       (product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price -
@@ -179,12 +192,16 @@ function Cart() {
   };
 
   const calculateTotalPrice = () => {
-    const total = productCart.reduce((sum: any, product: IProduct, index: any) => {
+    let total = productCart.reduce((sum: any, product: IProduct, index: any) => {
       if (checkedItems[index]) {
         return sum + calculateProductPrice(product, index);
       }
       return sum;
     }, 0);
+    if (selectedVoucher) {
+      total -= selectedVoucher.discount_value;
+    }
+
     setTotalPrice(total);
   };
 
@@ -192,7 +209,6 @@ function Cart() {
     const isChecked = e.target.checked;
     setCheckedItems(new Array(user?.cart.length).fill(isChecked));
   };
-
 
   const handleCheckItem = (index: number) => {
     setCheckedItems(prev => {
@@ -216,16 +232,6 @@ function Cart() {
       console.error("Lỗi khi gửi đơn hàng:", error);
     }
   };
-  
-
-  useEffect(() => {
-    setCheckedItems((user?.cart ?? []).map(() => false));
-  }, [user?.cart]);
-
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [checkedItems, productCart]);
-
 
   const handleRemoveItem = async (index: number) => {
     if (!user) return;
@@ -239,9 +245,6 @@ function Cart() {
       console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
     }
   };
-  
-
-
 
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
@@ -270,14 +273,15 @@ function Cart() {
               {productCart.map((product: IProduct, iProduct: number) => (
                 <div key={iProduct} className="flex items-center border rounded-xl shadow-[0_4px_6px_rgba(209,213,219,0.5)] p-4 gap-2.5 cursor-pointer w-full">
                   <div className="w-16 flex justify-center">
-                    <input onChange={() => handleCheckItem(iProduct)} checked={checkedItems[iProduct]} type="checkbox" className="w-5 h-5 text-red-600 focus:ring-0" />
+                    <input onChange={() => handleCheckItem(iProduct)}
+                      checked={checkedItems[iProduct] ?? false} type="checkbox" className="w-5 h-5 text-red-600 focus:ring-0" />
                   </div>
                   <div className="w-[660px] flex gap-2.5">
                     <img
                       src={
-                        product.variants[user?.cart[iProduct]?.product?.variant as number].colors[
-                          user?.cart[iProduct]?.product?.color as number
-                        ].image // cần xem
+                        product.variants?.[user?.cart?.[iProduct]?.product?.variant as number]
+                          ?.colors?.[user?.cart?.[iProduct]?.product?.color as number]
+                          ?.image || "default-image.jpg"
                       }
                       alt="Sản Phẩm"
                       className="w-24 h-24 object-cover rounded"
@@ -296,7 +300,8 @@ function Cart() {
                             ?.colors[(user?.cart[iProduct]?.product?.color as number)]?.price_extra)
                           * ((user?.cart[iProduct]?.quantity as number))
                         ).toLocaleString("vi-VN")} đ <del className="text-black text-xs font-normal ">
-                          {(product?.variants[user?.cart[iProduct]?.product?.variant as number]?.price).toLocaleString('vn-VN')}
+                          {(product?.variants?.[user?.cart?.[iProduct]?.product?.variant as number]
+                            ?.price || 0).toLocaleString('vi-VN')} đ
                           đ</del>
                       </div>
                     </div>
@@ -304,12 +309,12 @@ function Cart() {
                     <div className="w-72 flex gap-2 items-center select-none">
                       <div
                         onClick={() => {
-                          // setShowVariant(prev => prev === iProduct ? null : iProduct);
                           handlChangeShowVariant(iProduct)
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
                       >
-                        <div>{product.variants[user?.cart[iProduct]?.product?.variant as number].properties.map(e => e.name).join(" - ")}</div>
+                        <div>{product?.variants?.[user?.cart?.[iProduct]?.product?.variant as number]
+                          ?.properties?.map(e => e.name).join(" - ") || ""}</div>
                         <FaCaretDown />
 
                         {showVariant.includes(iProduct) && (
@@ -340,7 +345,6 @@ function Cart() {
                       </div>
                       <div
                         onClick={() => {
-                          // setShowColor(prev => prev === iProduct ? null : iProduct);
                           handlChangeShowColor(iProduct)
                         }}
                         className="border rounded-md px-1.5 py-1.5 text-base font-normal h-10 flex items-center gap-1.5 relative"
@@ -358,9 +362,6 @@ function Cart() {
                               <div
                                 key={icolor}
                                 onClick={() => {
-                                  // const newCheckedColor = [...isCheckedColor];
-                                  // newCheckedColor[iProduct] = colorItem;
-                                  // setCheckedColor(newCheckedColor);
                                   handlChangeShowColor(iProduct), handlChangeColor(iProduct, icolor)
                                 }}
                                 className={`relative px-4 py-2 border rounded-lg cursor-pointer ${icolor === user?.cart[iProduct].product.color ? "border-primary" : "border-gray-300"
@@ -379,13 +380,12 @@ function Cart() {
                       </div>
                     </div>
                   </div>
-                  {/* // ))} */}
                   <div className="w-40 flex justify-center items-center">
                     <div className="w-[136px] flex justify-center items-center border rounded-lg">
                       <button onClick={() => decreaseQuantity(iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
                         <FaMinus className="w-4 h-4" />
                       </button>
-                      <input type="text" value={user?.cart[iProduct].quantity} readOnly className="w-16 h-9 text-center font-base font-bold border-l border-r" />
+                      <input type="text" value={user?.cart?.[iProduct]?.quantity !== undefined ? user?.cart?.[iProduct]?.quantity : 0} readOnly className="w-16 h-9 text-center font-base font-bold border-l border-r" />
                       <button onClick={() => increaseQuantity(product, iProduct)} className="w-9 h-9 text-lg flex justify-center items-center">
                         <FaPlus className="w-4 h-4" />
                       </button>
@@ -410,7 +410,8 @@ function Cart() {
               <div className="flex justify-between items-center  border-t border-b p-2 border-dotted mb-2 ">
                 <div className="flex items-center gap-5">
                   <div className="flex items-center gap-2">
-                    <input onChange={handleCheckAll} checked={checkedItems.every(item => item)} type="checkbox" className="mr-2 w-6 h-6" />
+                    <input onChange={handleCheckAll}
+                      checked={checkedItems.length > 0 && checkedItems.every(item => item)} type="checkbox" className="mr-2 w-6 h-6" />
                     <span className="text-base font-medium">Chọn tất cả <span>
                       ({totalCheckedItems})
                     </span></span>
@@ -447,7 +448,7 @@ function Cart() {
                       </div>
                       <div className="border-t border-gray-300 py-4 px-1 flex justify-between">
                         <span className="text-gray-600 text-lg font-normal">Voucher</span>
-                        <span className="text-black text-lg font-normal">100.000 ₫</span>
+                        <span className="text-black text-lg font-normal">{selectedVoucher ? `- ${selectedVoucher.discount_value.toLocaleString()} ₫` : "0 ₫"}</span>
                       </div>
                       <div className="border-t py-5 px-1 border-gray-300 mt-2 pt-2 flex justify-between">
                         <span className="font-medium text-xl">Tổng số tiền thanh toán</span>
@@ -469,7 +470,7 @@ function Cart() {
 
           {showVoucher && (
             <>
-              <Voucher onClick={() => setVoucher(false)} />
+              <Voucher totalPrice={totalPrice} selectedVoucher={selectedVoucher} onSelect={handleVoucherSelect} onClick={() => setVoucher(false)} />
               <div className="overlay"></div>
             </>
           )}

@@ -5,4 +5,4 @@ export async function getVoucher(params: any) {
     return axios
       .get(`${config.api.voucher}`, { params })
       .then((response: any) => response.data);
-  }
+}
