@@ -9,6 +9,6 @@ export default function StartPage() {
   const router = useRouter();
   useEffect(() => {
     router.push(config.routes.client.home);
-  }, []);
+  });
   return <body></body>;
 }

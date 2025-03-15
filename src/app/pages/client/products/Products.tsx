@@ -1,7 +1,7 @@
 "use client";
 
 import Product from "@/app/components/client/Product";
-import { Pagination, Popover, Slider } from "antd";
+import { ConfigProvider, Pagination, Popover, Slider } from "antd";
 import { Fragment, use, useEffect, useMemo, useState } from "react";
 import { AiOutlinePercentage } from "react-icons/ai";
 import { BsSortDown, BsSortDownAlt } from "react-icons/bs";
@@ -124,6 +124,7 @@ function Products() {
                       range
                       min={0}
                       max={90000000}
+                      step={1000}
                       value={[+filter.priceMin, +filter.priceMax]}
                       onChange={(value) => {
                         console.log(value);
@@ -518,7 +519,8 @@ function Products() {
                 searchParamsNew.set("page", `${page}`);
                 router.push(`?${searchParamsNew.toString()}`, { scroll: false });
               }}
-              defaultCurrent={query.page}
+              current={query.page}
+              defaultCurrent={1}
               pageSize={query.limit}
               total={totalPages}
             />

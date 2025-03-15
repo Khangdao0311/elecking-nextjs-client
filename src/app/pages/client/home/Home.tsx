@@ -1,32 +1,42 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
-// import required modules
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Autoplay, Pagination, Navigation, Grid } from "swiper/modules";
 import { ImFire } from "react-icons/im";
-import { MdArrowForwardIos } from "react-icons/md";
-import Product from "@/app/components/client/Product";
-import * as productServices from "@/app/services/productService";
-import config from "@/app/config";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import Product from "@/app/components/client/Product";
+
+import * as productServices from "@/app/services/productService";
+import * as categoryServices from "@/app/services/categoryService";
+import * as brandServices from "@/app/services/brandService";
+import config from "@/app/config";
+
 const imageSlide = [
-  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/16-pro-max-AfterValentine.jpg",
-  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/samsung-s25-gia-chuan-19-2.jpg",
-  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/a56-a36-dkntt-home.jpg",
-  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/BUds-6-Pro-sliding-home.jpg",
-  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/vivo-nghim-thu-t2-25.jpg",
-  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/dong-ho-thong-minh-huawei-watch-gt-5-milanese-13-02-home.jpg",
-  "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/mlkk-lg.jpg",
+  "https://mainguyen.sgp1.digitaloceanspaces.com/231474/banner-samsung.jpg",
+  "https://www.homecredit.vn/static/cdf3446968e365f4f8fbc9266010e77a/ab7c8/mua_tra_gop_iphone_16_banner_74273b74f0.webp",
+  "https://mainguyen.sgp1.digitaloceanspaces.com/231652/MASS-Pre-Order---Galaxy-Watch6-Combo-KV--.jpg",
+  "https://cuonganhpc.vn/hinhanh/quangcao/man-hinh-1.jpg",
+  "https://phonghoa.vn/wp-content/uploads/2023/09/Banner-CTKM-TV.png",
+  "https://www.homepaylater.vn/static/b551d25f15763d30e744f2e3cf7eb8e4/dong_ho_thong_minh_banner_518c452056.jpg",
 ];
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 function Home() {
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [brands, setBrands] = useState<IBrand[]>([]);
+
+  useEffect(() => {
+    categoryServices
+      .getQuery({ limit: 0, orderby: "id-asc" })
+      .then((res) => setCategories(res.data));
+    brandServices.getQuery({ limit: 0, orderby: "id-asc" }).then((res) => setBrands(res.data));
+  }, []);
+
   // Lấy Sản Phẩm Sale
   const [productSale, setProductSale] = useState([]);
   useEffect(() => {
-    const query = { orderby: "sale" };
+    const query = { orderby: "sale-desc" };
     productServices.getQuery(query).then((res) => setProductSale(res.data));
   }, []);
 
@@ -41,8 +51,7 @@ function Home() {
   const [productLaptop, setProductLaptop] = useState([]);
   useEffect(() => {
     const query = {
-      categoryid:
-        "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
+      categoryid: "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
     };
     productServices.getQuery(query).then((res) => setProductLaptop(res.data));
   }, []);
@@ -68,9 +77,8 @@ function Home() {
   return (
     <>
       {/* Slide */}
-      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 relative">
+      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
         <Swiper
-          spaceBetween={30}
           centeredSlides={true}
           autoplay={{
             delay: 2500,
@@ -83,54 +91,60 @@ function Home() {
             nextEl: ".custom-next",
             prevEl: ".custom-prev",
           }}
+          loop={true}
           modules={[Autoplay, Pagination, Navigation]}
-          className="mySwiper h-96 w-full"
+          className="!h-96 w-full relative group rounded-lg shadow-xl border border-gray-300"
         >
           {imageSlide.map((e, index) => (
-            <SwiperSlide key={index + 1}>
+            <SwiperSlide className="h-full" key={index + 1}>
               <img className="w-full h-full object-cover" src={e} alt="" />
             </SwiperSlide>
           ))}
+          <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <FaAngleLeft className="w-8 h-8 text-white" />
+          </button>
+          <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+            <FaAngleRight className="w-8 h-8 text-white" />
+          </button>
         </Swiper>
-        <button className="custom-prev absolute w-[38px] h-16 py-[20px] pr-2.5 pl-1 bg-black/30 z-10 top-[30.5%] rounded-r-full flex items-center justify-center ">
-          <FaAngleLeft className="w-7 h-7 text-white" />
-        </button>
-        <button className="custom-next absolute w-[38px] h-16 py-[20px] pl-2.5 pr-1 bg-black/30 z-10 top-[30.5%] right-0 rounded-l-full flex items-center justify-center ">
-          <FaAngleRight className="w-6 h-6 text-white" />
-        </button>
         <div className="grid grid-cols-3 gap-4 mt-4">
-          <img
-            className="rounded-lg h-36 w-full"
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/m55-9190-9-3-25-right-banner.png"
-            alt=""
-          />
-          <img
-            className="rounded-lg h-36 w-full"
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/right-imac-m4-30-12.jpg"
-            alt=""
-          />
-          <img
-            className="rounded-lg h-36 w-full"
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/s-edu-2-0-right-laptop.jpg"
-            alt=""
-          />
+          <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
+            <img
+              className="w-full h-full"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/m55-9190-9-3-25-right-banner.png"
+              alt="Banner"
+            />
+          </div>
+          <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
+            <img
+              className="w-full h-full"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/right-imac-m4-30-12.jpg"
+              alt="Banner"
+            />
+          </div>
+          <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
+            <img
+              className="w-full h-full"
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/s-edu-2-0-right-laptop.jpg"
+              alt="Banner"
+            />
+          </div>
         </div>
       </section>
 
       {/* Product Sale */}
-      <section className="w-full bg-primary h-[500] py-5">
+      <section className="w-full bg-gradient-to-r from-primaryDark to-primary py-5">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
             <ImFire className="w-12 h-12 text-white" />
             <p className="text-4xl font-bold text-white">HOT SALE</p>
           </div>
           <Link
-          href={`${config.routes.client.products}?orderby=sale-decs`}
-          className="flex gap-1 items-center cursor-pointer">
-            <em className="underline text-white text-base font-medium">
-              Xem tất cả{" "}
-            </em>
-            <MdArrowForwardIos className="text-white w-5 h-5" />
+            href={`${config.routes.client.products}?orderby=sale-decs`}
+            className="flex gap-1 items-center cursor-pointer relative group "
+          >
+            <em className="text-white text-sm font-base px-1">Xem tất cả </em>
+            <hr className="w-[0%] group-hover:w-[100%] transition-all duration-300 border-white absolute bottom-0" />
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
@@ -145,7 +159,7 @@ function Home() {
       {/* Promot*/}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <img
-          className="w-full rounded-lg"
+          className="w-full rounded-lg borer border-gray-200 shadow-lg"
           src="https://cdn2.cellphones.com.vn/insecure/rs:fill:1200:75/q:90/plain/https://dashboard.cellphones.com.vn/storage/s-edu-2-0-special-desk.gif"
           alt=""
         />
@@ -155,17 +169,16 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-4xl font-bold text-black">
+            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
               SẢN PHẨM NỔI BẬT NHẤT
             </p>
           </div>
           <Link
-          href={`${config.routes.client.products}?orderby=view-desc`}
-          className="flex gap-1 items-center cursor-pointer">
-            <em className="underline text-gray-500 drop-shadow-md text-base font-medium">
-              Xem tất cả{" "}
-            </em>
-            <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
+            href={`${config.routes.client.products}?orderby=view-desc`}
+            className="flex gap-1 items-center cursor-pointer relative group "
+          >
+            <em className="text-gray-700 text-sm font-base px-1">Xem tất cả </em>
+            <hr className="w-[0%] group-hover:w-[100%] transition-all duration-300 border-gray-700 absolute bottom-0" />
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-4">
@@ -181,17 +194,16 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-4xl font-bold text-black">
+            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
               ĐiỆN THOẠI, MÁY TÍNH BẢNG
             </p>
           </div>
           <Link
-          href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578`}
-          className="flex gap-1 items-center cursor-pointer">
-            <em className="underline text-gray-500 drop-shadow-md text-base font-medium">
-              Xem tất cả{" "}
-            </em>
-            <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
+            href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578`}
+            className="flex gap-1 items-center cursor-pointer relative group "
+          >
+            <em className="text-gray-700 text-sm font-base px-1">Xem tất cả </em>
+            <hr className="w-[0%] group-hover:w-[100%] transition-all duration-300 border-gray-700 absolute bottom-0" />
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
@@ -207,17 +219,16 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-4xl font-bold text-black">
+            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
               LAPTOP, MÀN HÌNH, TIVI
             </p>
           </div>
           <Link
-          href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574`}
-          className="flex gap-1 items-center cursor-pointer">
-            <em className="underline text-gray-500 drop-shadow-md text-base font-medium">
-              Xem tất cả{" "}
-            </em>
-            <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
+            href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574`}
+            className="flex gap-1 items-center cursor-pointer relative group "
+          >
+            <em className="text-gray-700 text-sm font-base px-1">Xem tất cả </em>
+            <hr className="w-[0%] group-hover:w-[100%] transition-all duration-300 border-gray-700 absolute bottom-0" />
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
@@ -233,15 +244,16 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-4xl font-bold text-black">TAI NGHE, LOA</p>
+            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
+              TAI NGHE, LOA
+            </p>
           </div>
           <Link
-          href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a`}
-          className="flex gap-1 items-center cursor-pointer">
-            <em className="underline text-gray-500 drop-shadow-md text-base font-medium">
-              Xem tất cả{" "}
-            </em>
-            <MdArrowForwardIos className="text-gray-500 drop-shadow-md w-5 h-5" />
+            href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a`}
+            className="flex gap-1 items-center cursor-pointer relative group "
+          >
+            <em className="text-gray-700 text-sm font-base px-1">Xem tất cả </em>
+            <hr className="w-[0%] group-hover:w-[100%] transition-all duration-300 border-gray-700 absolute bottom-0" />
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
@@ -257,120 +269,22 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-3xl font-medium text-black">DANH MỤC</p>
+            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
+              DANH MỤC
+            </p>
           </div>
         </div>
         <div className="grid grid-cols-9 container-custom gap-3.5">
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Điện thoại
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/i/p/ip-14-hp-cu.png"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Máy tính bảng
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-cate-cu.png"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Laptop
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-392.svg"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Tai nghe
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-tai-nghe_1.png"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Màn hình
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-man-hinh.png"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              TiVi
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-man-hinh.png"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Đồng hồ thông minh
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-451.svg"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Loa
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/catalog/product/c/a/cate-loa_1.png"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Đồ gia dụng
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-846.svg"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Cáp sạc
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-114.svg"
-              alt=""
-            />
-          </div>
-          <div className="bg-primary rounded-lg w-32 h-32 shadow-lg p-1">
-            <p className="absolute p-1 w-32 text-white text-sm font-bold">
-              Sạc dự phòng
-            </p>
-            <img
-              className="w-full  h-full object-contain"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:70/plain/https://cellphones.com.vn/media/icons/category/cate-122.svg"
-              alt=""
-            />
-          </div>
+          {categories.map((category: ICategory, iCategory: number) => (
+            <Link
+              href={`${config.routes.client.products}?categoryid=${category.id}`}
+              key={iCategory}
+              className="relative bg-primary rounded-lg w-32 h-32 shadow-lg p-1"
+            >
+              <p className="p-1 w-full absolute text-white text-sm font-bold">{category.name}</p>
+              <img className="w-full h-full  pt-8 object-contain" src={category.image} alt="" />
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -378,31 +292,49 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-3xl font-medium text-black">THƯƠNG HIỆU</p>
+            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
+              THƯƠNG HIỆU
+            </p>
           </div>
         </div>
-        <div className="grid grid-cols-4 container-custom gap-4">
-          <img
-            className="rounded-lg shadow-xl"
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/apple-chinh-hang-home.jpg"
-            alt=""
-          />
-          <img
-            className="rounded-lg shadow-xl"
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/SIS%20asus.png"
-            alt=""
-          />
-          <img
-            className="rounded-lg shadow-xl"
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/gian-hang-samsung-home.png"
-            alt=""
-          />
-          <img
-            className="rounded-lg shadow-xl"
-            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/xiaomi.png"
-            alt=""
-          />
-        </div>
+        <Swiper
+          spaceBetween={16}
+          slidesPerView={4}
+          autoplay={{
+            delay: 2500,
+            disableOnInteraction: false,
+          }}
+          pagination={{
+            clickable: true,
+          }}
+          navigation={{
+            nextEl: ".custom-next-banner",
+            prevEl: ".custom-prev-banner",
+          }}
+          modules={[Autoplay, Pagination, Navigation]}
+          className="!h-36 w-full relative group overflow-auto"
+        >
+          {brands.map((brand: IBrand, iBrand: number) => (
+            <SwiperSlide key={iBrand} className="overflow-hidden rounded-lg shadow-xl">
+              <Link
+                href={`${config.routes.client.products}?brandid=${brand.id}`}
+                className="h-36 select-none "
+              >
+                <img
+                  className="w-full h-full object-cover"
+                  src={brand.banner}
+                  alt={`Banner ${brand.name}`}
+                />
+              </Link>
+            </SwiperSlide>
+          ))}
+          <button className="custom-prev-banner absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <FaAngleLeft className="w-8 h-8 text-white" />
+          </button>
+          <button className="custom-next-banner absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+            <FaAngleRight className="w-8 h-8 text-white" />
+          </button>
+        </Swiper>
       </section>
     </>
   );
