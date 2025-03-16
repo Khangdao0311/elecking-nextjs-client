@@ -39,38 +39,6 @@ function OrderList() {
   }, [limit, page, search]);
   console.log(orders);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const usersData: { [key: string]: IUser } = {};
-      for (const order of orders) {
-        if (!users[order.user_id]) {
-          const getuser = await userServices.getById(order.user_id);
-          usersData[order.user_id] = getuser.data;
-        }
-      }
-      setUsers((prev) => ({ ...prev, ...usersData }));
-    };
-
-    if (orders.length) fetchUsers();
-  }, [orders]);
-
-  useEffect(() => {
-    const fetchPayments = async () => {
-      const paymentData: { [key: string]: IPaymment } = {};
-      for (const order of orders) {
-        if (!payments[order.payment_method_id]) {
-          const getpayment = await paymentServices.getById(order.payment_method_id);
-          paymentData[order.payment_method_id] = getpayment.data;
-          console.log(getpayment);
-          
-        }
-      }
-      setPayments((prev) => ({ ...prev, ...paymentData }));
-    };
-
-    if (orders.length) fetchPayments();
-  }, [orders]);
-
   return (
     <>
       <TitleAdmin title="Quản lý đơn hàng" />
@@ -151,7 +119,7 @@ function OrderList() {
                   <td className="px-2 py-2.5 w-[128px]">{order.id}</td>
                   <td className="px-2 py-2.5 w-[128px]">{moment(order.ordered_at, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm")}</td>
                   <td className="px-2 flex-1 py-2">
-                    {users[order.user_id]?.fullname}
+                    {order.user.fullname}
                   </td>
                   <td className="px-2 flex-1 py-2 w-[150px]">
                     {(+order.total).toLocaleString("vi-VN")} đ
@@ -162,7 +130,7 @@ function OrderList() {
                     </span>
                   </td>
                   <td className="px-2 min-w-[230px] py-2.5">
-                    {payments[order.payment_method_id]?.name}
+                    {order.payment_method.name}
                   </td>
                   <td className="px-2 min-w-[112px] py-2.5 text-center">
                     <Statusorder status={order.status} text={text} />

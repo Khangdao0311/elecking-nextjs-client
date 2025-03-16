@@ -10,6 +10,8 @@ import * as categoryServices from "@/app/services/categoryService";
 import Statuscategory from "@/app/pages/admin/Components/Status";
 import Link from "next/link";
 import config from "@/app/config";
+import { Space, Table, Tag } from 'antd';
+import type { TableProps } from 'antd';
 
 function CategoryList() {
   const [limit, setLimit] = useState(5);
@@ -31,7 +33,78 @@ function CategoryList() {
   }, [limit, page, search]);
 
   console.log(typeof limit);
-  
+
+  const columns: TableProps<ICategory>['columns'] = [
+    {
+      title: 'STT',
+      align: 'center',
+      dataIndex: 'index',
+      width: 100,
+      key: 'index',
+      render: (_, __, index) => (page - 1) * limit + index + 1,
+    },
+    {
+      title: 'Ảnh',
+      dataIndex: 'image',
+      align:'center',
+      key: 'image',
+      render: (image) => (
+        <div className="flex items-center justify-center">
+          <img src={image} alt="Danh mục" className="w-8 max-w-8 h-8 rounded" />
+        </div>
+        
+      ),
+    },
+    {
+      title: 'Tên Danh Mục',
+      dataIndex: 'name',
+      width: 450,
+      key: 'name',
+    },
+    {
+      title: <span className="w-6 text-center">Trạng thái</span>,
+      align: 'center',
+      dataIndex: 'status',
+      width: 290,
+      key: 'status',
+      render: (status) => {
+        let text = "";
+        switch (status) {
+          case 0:
+            text = "Ngưng hoạt động";
+            break;
+          case 1:
+            text = "Đang hoạt động";
+            break;
+          case 2:
+            text = "Chờ xác nhận";
+            break;
+          case 3:
+            text = "Đang vận chuyển";
+            break;
+        }
+        return <div className="flex items-center justify-center"><Statuscategory status={status} text={text} /></div>
+      },
+    },
+    {
+      title: 'Chức năng',
+      width: 200,
+      align: 'center',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          <Link
+            href={`${config.routes.admin.category.edit}/${record.id}`}
+            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
+          >
+            <FiEdit className="w-5 h-5" />
+          </Link>
+        </Space>
+      ),
+    },
+  ];
+
+
   return (
     <>
       <TitleAdmin title="Danh Sách Danh Mục" />
@@ -51,7 +124,14 @@ function CategoryList() {
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo danh mục mới</p>
         </Link>
-        <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
+        <Table<ICategory> columns={columns} dataSource={categories} rowKey="id" className="w-full min-h-full"  pagination={totalPages > limit ? {
+    current: page,
+    pageSize: limit,
+    total: totalPages,
+    onChange: (newPage) => setPage(newPage),
+    showSizeChanger: false,
+  } : false}/>
+        {/* <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
           <thead className="bg-stone-100">
             <tr>
               <th className="px-2 py-2.5 min-w-12 text-sm font-bold">STT</th>
@@ -118,8 +198,8 @@ function CategoryList() {
               );
             })}
           </tbody>
-        </table>
-        {totalPages > limit && (
+        </table> */}
+        {/* {totalPages > limit && (
           <div className="flex w-full justify-end">
             <Pagination
               current={page}
@@ -131,7 +211,7 @@ function CategoryList() {
               showSizeChanger={false}
             />
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

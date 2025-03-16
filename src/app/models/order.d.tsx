@@ -8,9 +8,9 @@ interface IOrder {
     transaction_code: string
     price_ship: number
     products: IProducts
-    user_id: string
+    user: IUsers
     voucher_id: null
-    payment_method_id: string
+    payment_method: IPaymment_methods
     address_id: string
 }
 interface IProducts{
@@ -20,4 +20,12 @@ interface IProducts{
     quantity: number
     price: number
     reviewed: boolean
+}
+interface IUsers{
+    id: string
+    fullname: string
+}
+interface IPaymment_methods{
+    id: string
+    name: string
 }

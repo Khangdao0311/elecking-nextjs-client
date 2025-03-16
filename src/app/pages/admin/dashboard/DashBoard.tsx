@@ -3,6 +3,10 @@ import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import { FaBasketShopping, FaTicketSimple, FaUser } from "react-icons/fa6";
 import { HiCash } from "react-icons/hi";
 import { Bar } from "react-chartjs-2";
+import * as orderServices from "@/app/services/orderService";
+import * as userServices from "@/app/services/userService";
+import * as voucherServices from "@/app/services/voucherService";
+import moment from "moment";
 import {
   Chart as ChartJS,
   BarElement,
@@ -13,6 +17,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import { FiEdit } from "react-icons/fi";
+import { useEffect, useState } from "react";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 const data = {
   labels: [
@@ -45,66 +50,41 @@ const options: ChartOptions<"bar"> = {
   },
 };
 function DashBoard() {
-  const orders = [
-    { id: "AL3947", customer: "Phạm Thị Ngọc", total: "19.770.000 đ" },
-    { id: "ER3835", customer: "Nguyễn Thị Mỹ Y...", total: "19.770.000 đ" },
-    { id: "MD0837", customer: "Triệu Thanh Phú", total: "19.770.000 đ" },
-    { id: "MT9835", customer: "Đặng Hoàng Phúc", total: "19.770.000 đ" },
-    { id: "MT9835", customer: "Nguyễn Đặng H...", total: "19.770.000 đ" },
-    { id: "MD0837", customer: "Nguyễn Đặng N...", total: "19.770.000 đ" },
-    { id: "ER3835", customer: "Nguyễn Đặng H...", total: "19.770.000 đ" },
-    { id: "AL3947", customer: "Nguyễn Đặng H...", total: "19.770.000 đ" },
-  ];
-  const users = [
-    {
-      id: "AL3947",
-      customer: "Phạm Thị Ngọc",
-      email: "Khang@gmail.com",
-      phone: "031665884",
-    },
-    {
-      id: "ER3835",
-      customer: "Nguyễn Thị Mỹ Y...",
-      email: "Khang@gmail.com",
-      phone: "031665884",
-    },
-    {
-      id: "MD0837",
-      customer: "Triệu Thanh Phú",
-      email: "Khang@gmail.com",
-      phone: "031665884",
-    },
-    {
-      id: "MT9835",
-      customer: "Đặng Hoàng Phúc",
-      email: "Khang@gmail.com",
-      phone: "031665884",
-    },
-    {
-      id: "MT9835",
-      customer: "Nguyễn Đặng H...",
-      email: "Khang@gmail.com",
-      phone: "031665884",
-    },
-    {
-      id: "MD0837",
-      customer: "Nguyễn Đặng N...",
-      email: "Khang@gmail.com",
-      phone: "031665884",
-    },
-    {
-      id: "ER3835",
-      customer: "Nguyễn Đặng H...",
-      email: "Khang@gmail.com",
-      phone: "031665884",
-    },
-    {
-      id: "AL3947",
-      customer: "Nguyễn Đặng H...",
-      email: "Khang@gmail.com",
-      phone: "031665884",
-    },
-  ];
+  const [getorders, setGetorders] = useState<IOrder[]>([]);
+  const [vouchers, setVoucher] = useState()
+  const [users, setUsers] = useState<{ [key: string]: IUser }>({});
+  const [limit, setLimit] = useState(1000);
+  const [totalorder, setTotalorder] = useState()
+  useEffect(() => {
+    const query: any = {};
+
+    query.limit = limit;
+
+    voucherServices.getQuery(query).then((res) => {
+      setVoucher(res.total);  
+    });
+  }, []);
+  console.log(vouchers);
+  
+  useEffect(() => {
+    const query: any = {};
+
+    query.limit = limit;
+
+    userServices.getQuery(query).then((res) => {
+      setUsers(res.data);
+    });
+  }, []);
+  // console.log(users);
+  useEffect(() => {
+    const query: any = {};
+    query.limit = limit;
+    orderServices.getQuery(query).then((res) => {
+      setGetorders(res.data);
+      setTotalorder(res.total);
+    });
+  }, []);
+  // console.log(getorders);
   return (
     <>
       <TitleAdmin title="Bảng điều khiển" />
@@ -128,7 +108,7 @@ function DashBoard() {
               <p className="text-base font-bold text-red-500">
                 Tổng khách hàng
               </p>
-              <p className="text-base font-bold">56</p>
+              <p className="text-base font-bold">{Object.keys(users).length}</p>
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>
@@ -138,7 +118,7 @@ function DashBoard() {
             </div>
             <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
               <p className="text-base font-bold text-red-500">Tổng voucher</p>
-              <p className="text-base font-bold">18</p>
+              <p className="text-base font-bold">{vouchers}</p>
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>
@@ -148,7 +128,7 @@ function DashBoard() {
             </div>
             <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
               <p className="text-base font-bold text-red-500">Tổng đơn hàng</p>
-              <p className="text-base font-bold">227</p>
+              <p className="text-base font-bold">{totalorder}</p>
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>
@@ -178,21 +158,27 @@ function DashBoard() {
                 </thead>
 
                 <tbody>
-                  {orders.map((order, index) => (
-                    <tr
-                      key={index}
-                      className="text-sm font-normal even:bg-gray-100"
-                    >
-                      <td className="px-2 py-2.5">{order.id}</td>
-                      <td className="px-2 py-2.5">{order.customer}</td>
-                      <td className="px-2 py-2.5">{order.total}</td>
-                      <td className="px-2 py-2.5 w-[96px] max-w-[96px] text-center">
-                        <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800">
-                          <FiEdit className="w-5 h-5 text-center" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {getorders
+                    .filter((order: IOrder) => order.status === 2)
+                    .map((order: IOrder, index: number) => (
+                      <tr
+                        key={index}
+                        className="text-sm font-normal even:bg-gray-100"
+                      >
+                        <td className="px-2 py-2.5">{order.id}</td>
+                        <td className="px-2 py-2.5">
+                          {order.user.fullname}
+                        </td>
+                        <td className="px-2 py-2.5">
+                          {(+order.total).toLocaleString("vi-VN")}
+                        </td>
+                        <td className="px-2 py-2.5 w-[96px] max-w-[96px] text-center">
+                          <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800">
+                            <FiEdit className="w-5 h-5 text-center" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -200,31 +186,44 @@ function DashBoard() {
           <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
             <p className="text-xl font-bold">Khách hàng mới</p>
             <div className="border border-zinc-300"></div>
-            <div className="overflow-scroll"><table className="w-full">
-              <thead className="bg-stone-100 text-sm font-normal text-left">
-                <tr>
-                  <th className="px-2 py-2.5">ID</th>
-                  <th className="px-2 py-2.5">Tên Khách Hàng</th>
-                  <th className="px-2 py-2.5">Email</th>
-                  <th className="px-2 py-2.5">Số Điện Thoại</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {users.map((user, index) => (
-                  <tr
-                    key={index}
-                    className="text-sm font-normal even:bg-gray-100"
-                  >
-                    <td className="px-2 py-2.5">{user.id}</td>
-                    <td className="px-2 py-2.5">{user.customer}</td>
-                    <td className="px-2 py-2.5">{user.email}</td>
-                    <td className="px-2 py-2.5">{user.phone}</td>
+            <div className="overflow-scroll">
+              <table className="w-full">
+                <thead className="bg-stone-100 text-sm font-normal text-left">
+                  <tr>
+                    <th className="px-2 py-2.5">ID</th>
+                    <th className="px-2 py-2.5">Tên Khách Hàng</th>
+                    <th className="px-2 py-2.5">Email</th>
+                    <th className="px-2 py-2.5">Số Điện Thoại</th>
                   </tr>
-                ))}
-              </tbody>
-            </table></div>
-            
+                </thead>
+
+                <tbody>
+                  {Object.values(users)
+                    .sort((a, b) => {
+                      const dateA = moment(
+                        a.register_date,
+                        "YYYYMMDD"
+                      ).valueOf();
+                      const dateB = moment(
+                        b.register_date,
+                        "YYYYMMDD"
+                      ).valueOf();
+                      return dateB - dateA;
+                    })
+                    .map((user: IUser, index: number) => (
+                      <tr
+                        key={index}
+                        className="text-sm font-normal even:bg-gray-100"
+                      >
+                        <td className="px-2 py-2.5">{user.id}</td>
+                        <td className="px-2 py-2.5">{user.fullname}</td>
+                        <td className="px-2 py-2.5">{user.email}</td>
+                        <td className="px-2 py-2.5">{user.phone}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ function Voucher({ onClick, onSelect, totalPrice, selectedVoucher }: any) {
   const [disabledIndex] = useState<number[]>([1, 3]);
   const [vouchers, setVouchers] = useState<any[]>([]);
   useEffect(() => {
-    voucherService.getVoucher({}).then((res: any) => setVouchers(res.data));
+    voucherService.getQuery({}).then((res: any) => setVouchers(res.data));
   }, []);
 
   useEffect(() => {

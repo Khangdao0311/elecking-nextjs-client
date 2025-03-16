@@ -29,7 +29,10 @@ const routes = {
       edit: "/admin/category/edit/",
     },
     voucher: {
-      list: "/admin/voucher/list",
+      list: {
+        expired: "/admin/voucher/list/expired",
+        stillexpired: "/admin/voucher/list/stillexpired"
+      },
       add: "/admin/voucher/add",
       edit: "/admin/voucher/edit/",
     },
