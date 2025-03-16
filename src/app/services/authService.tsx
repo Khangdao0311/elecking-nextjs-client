@@ -7,12 +7,6 @@ export async function login(account: string, password: string) {
     .then((response: any) => response.data);
 }
 
-export async function cart(id: string, cart: any) {
-  return axios
-    .post(`${config.api.auth}/cart/${id}`, { cart: JSON.stringify(cart) })
-    .then((response: any) => response.data);
-}
-
 export async function register(
   fullname: string,
   email: string,
@@ -26,5 +20,17 @@ export async function register(
       username,
       password,
     })
+    .then((response: any) => response.data);
+}
+
+export async function cart(id: string, cart: any) {
+  return axios
+    .post(`${config.api.auth}/cart/${id}`, { cart: JSON.stringify(cart) })
+    .then((response: any) => response.data);
+}
+
+export async function wish(id: string, product_id: string) {
+  return axios
+    .post(`${config.api.auth}/wish/${id}`, { product_id: product_id })
     .then((response: any) => response.data);
 }

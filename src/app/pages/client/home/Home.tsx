@@ -7,10 +7,11 @@ import { Fragment, useEffect, useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import Product from "@/app/components/client/Product";
 
+import config from "@/app/config";
 import * as productServices from "@/app/services/productService";
 import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
-import config from "@/app/config";
+import * as userServices from "@/app/services/userService";
 
 const imageSlide = [
   "https://mainguyen.sgp1.digitaloceanspaces.com/231474/banner-samsung.jpg",
@@ -25,6 +26,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 function Home() {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
+  const [load, setLoad] = useState<Boolean>(false);
 
   useEffect(() => {
     categoryServices
@@ -52,6 +54,7 @@ function Home() {
   useEffect(() => {
     const query = {
       categoryid: "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
+      limit: 10,
     };
     productServices.getQuery(query).then((res) => setProductLaptop(res.data));
   }, []);
@@ -61,6 +64,7 @@ function Home() {
   useEffect(() => {
     const query = {
       categoryid: "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
+      limit: 10,
     };
     productServices.getQuery(query).then((res) => setProductTablet(res.data));
   }, []);
@@ -70,9 +74,25 @@ function Home() {
   useEffect(() => {
     const query = {
       categoryid: "67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a",
+      limit: 10,
     };
     productServices.getQuery(query).then((res) => setHeadPhone(res.data));
   }, []);
+
+  const [userId, setUserId] = useState<string>("");
+  const [wish, setwish] = useState<string[]>([]);
+
+  useEffect(() => {
+    const userJSON = localStorage.getItem("user");
+    const user = JSON.parse(userJSON!);
+
+    if (user) {
+      userServices.getById(user.id).then((res) => {
+        setUserId(res.data.id);
+        setwish(res.data.wish);
+      });
+    }
+  }, [load]);
 
   return (
     <>
@@ -150,7 +170,12 @@ function Home() {
         <div className="grid grid-cols-5 container-custom gap-2.5">
           {productSale.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} />
+              <Product
+                product={product}
+                onLoad={() => setLoad((prev) => !prev)}
+                userId={userId}
+                wish={wish}
+              />
             </Fragment>
           ))}
         </div>
@@ -184,7 +209,12 @@ function Home() {
         <div className="grid grid-cols-5 container-custom gap-4">
           {productHot.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} />
+              <Product
+                product={product}
+                onLoad={() => setLoad((prev) => !prev)}
+                userId={userId}
+                wish={wish}
+              />
             </Fragment>
           ))}
         </div>
@@ -209,7 +239,12 @@ function Home() {
         <div className="grid grid-cols-5 container-custom gap-2.5">
           {productTablet.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} />
+              <Product
+                product={product}
+                onLoad={() => setLoad((prev) => !prev)}
+                userId={userId}
+                wish={wish}
+              />
             </Fragment>
           ))}
         </div>
@@ -234,7 +269,12 @@ function Home() {
         <div className="grid grid-cols-5 container-custom gap-2.5">
           {productLaptop.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} />
+              <Product
+                product={product}
+                onLoad={() => setLoad((prev) => !prev)}
+                userId={userId}
+                wish={wish}
+              />
             </Fragment>
           ))}
         </div>
@@ -259,7 +299,12 @@ function Home() {
         <div className="grid grid-cols-5 container-custom gap-2.5">
           {headPhone.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} />
+              <Product
+                product={product}
+                onLoad={() => setLoad((prev) => !prev)}
+                userId={userId}
+                wish={wish}
+              />
             </Fragment>
           ))}
         </div>
@@ -279,7 +324,7 @@ function Home() {
             <Link
               href={`${config.routes.client.products}?categoryid=${category.id}`}
               key={iCategory}
-              className="relative bg-primary rounded-lg w-32 h-32 shadow-lg p-1"
+              className="relative bg-primary rounded-lg w-32 h-32 shadow-lg p-1 hover:scale-110 hover:shadow-2xl transition-all duration-200"
             >
               <p className="p-1 w-full absolute text-white text-sm font-bold">{category.name}</p>
               <img className="w-full h-full  pt-8 object-contain" src={category.image} alt="" />

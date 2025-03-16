@@ -21,13 +21,20 @@ import LogoMobile from "@/app/assets/LogoMobile";
 import MenuCategory from "../MenuCategory";
 import ModalLogin from "../ModalLogin";
 import Logo from "@/app/assets/Logo";
+import * as userServices from "@/app/services/userService";
 
 function Header() {
-  const userJSON = localStorage.getItem("user");
-  const user = JSON.parse(userJSON!);
-  const userCart = localStorage.getItem("cartUser");
-  const userCartJSON = JSON.parse(userCart!);
-  const userCartQuantity = userCartJSON?.length;
+  const [user, setUser] = useState<any>(null);
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    const userJSON = localStorage.getItem("user");
+    const user = JSON.parse(userJSON!);
+    if (user) {
+      setUser(user);
+      userServices.getById(user.id).then((res) => setCart(res.data.cart));
+    }
+  }, []);
 
   const [showMenu, setShowMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -231,8 +238,8 @@ function Header() {
             <div
               className="w-[92px] h-12 center-flex rounded-lg hover:bg-white/20 transition-all duration-300"
               onClick={() => {
-                if (!!userJSON) {
-                  router.push(config.routes.client.account);
+                if (!!user) {
+                  router.push(config.routes.client.cart);
                 } else {
                   setShowLogin(true);
                 }
@@ -240,9 +247,9 @@ function Header() {
             >
               <div className="relative">
                 <AiOutlineShoppingCart className="w-9 h-9 text-white" />
-                {!!userCartQuantity && (
+                {!!cart.length && (
                   <div className="absolute w-7 h-7 border border-white font-semibold text-base center-flex bg-secondary center-flex rounded-full top-0 right-0 translate-x-1/2	-translate-y-1/3 md:-translate-y-1/2	">
-                    {userCartQuantity}
+                    {cart.length}
                   </div>
                 )}
               </div>
@@ -252,7 +259,7 @@ function Header() {
             <div
               className="hidden w-[92px] h-12 bg-white rounded-lg md:center-flex flex-col cursor-pointer select-none"
               onClick={() => {
-                if (userJSON) {
+                if (!!user) {
                   router.push(config.routes.client.account);
                 } else {
                   setShowLogin(true);
@@ -261,7 +268,7 @@ function Header() {
             >
               <FaCircleUser className="text-base w-6 h-6 text-gray-800" />
               <p className="text-gray-800 text-xs font-medium">
-                {user ? user.fullname : "Emember"}
+                {!!user ? user.username : "Emember"}
               </p>
             </div>
           </div>

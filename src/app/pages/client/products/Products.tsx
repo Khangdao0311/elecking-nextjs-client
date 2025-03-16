@@ -1,18 +1,20 @@
 "use client";
 
-import Product from "@/app/components/client/Product";
-import { ConfigProvider, Pagination, Popover, Slider } from "antd";
-import { Fragment, use, useEffect, useMemo, useState } from "react";
+import { Pagination, Popover, Slider } from "antd";
+import { Fragment, useEffect, useState } from "react";
 import { AiOutlinePercentage } from "react-icons/ai";
 import { BsSortDown, BsSortDownAlt } from "react-icons/bs";
-import { FaMinus, FaMoneyBill } from "react-icons/fa6";
+import { FaMoneyBill } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
+import { IoCloseCircle, IoCloseOutline } from "react-icons/io5";
+import { MdRemoveRedEye } from "react-icons/md";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import Product from "@/app/components/client/Product";
 import * as productServices from "@/app/services/productService";
 import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
-import { IoCloseCircle, IoCloseOutline } from "react-icons/io5";
-import { MdRemoveRedEye } from "react-icons/md";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import * as userServices from "@/app/services/userService";
 
 function Products() {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -46,10 +48,6 @@ function Products() {
   if (searchParams.get("price")) query.price = searchParams.get("price");
 
   useEffect(() => {
-    // if (searchParams.search) {
-    //   dispatch(actions.setValueSearch(searchParams.search));
-    // }
-
     if (query.categoryid) {
       setFilter({ ...filter, categoryid: query.categoryid.split("-") });
     }
@@ -78,8 +76,6 @@ function Products() {
     brandServices.getQuery({ limit: 0, orderby: "id-asc" }).then((res) => setBrands(res.data));
   }, []);
 
-  console.log(filter);
-
   function handleSelectChange(key: string, value: string) {
     if (filter[key].includes(value)) {
       setFilter({
@@ -93,6 +89,22 @@ function Products() {
       });
     }
   }
+
+  const [load, setLoad] = useState(true);
+  const [userId, setUserId] = useState<string>("");
+  const [wish, setwish] = useState<string[]>([]);
+
+  useEffect(() => {
+    const userJSON = localStorage.getItem("user");
+    const user = JSON.parse(userJSON!);
+
+    if (user) {
+      userServices.getById(user.id).then((res) => {
+        setUserId(res.data.id);
+        setwish(res.data.wish);
+      });
+    }
+  }, [load]);
 
   return (
     <div className="container-custom py-3 px-2 md:px-2.5 lg:px3 xl:px-0">
@@ -507,7 +519,12 @@ function Products() {
         <div className="grid grid-cols-5 gap-2.5 flex-wrap">
           {products.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} />
+              <Product
+                product={product}
+                onLoad={() => setLoad((prev) => !prev)}
+                userId={userId}
+                wish={wish}
+              />
             </Fragment>
           ))}
         </div>
