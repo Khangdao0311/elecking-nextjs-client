@@ -19,6 +19,8 @@ import { useParams, useSearchParams } from "next/navigation";
 import * as productServices from "@/app/services/productService";
 import * as authServices from "@/app/services/authService";
 import ModalLogin from "@/app/components/client/ModalLogin";
+import { Modal } from "antd";
+import * as userService from "@/app/services/userService";
 // import Swiper core and required modules
 
 SwiperCore.use([Navigation, Thumbs]);
@@ -34,7 +36,7 @@ function ProductDetail() {
   const [icolor, setIColor] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [showLogin, setShowLogin] = useState(false);
-
+  const [cart, setCart] = useState([]);
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => {
       setProduct(res.data);
@@ -46,11 +48,14 @@ function ProductDetail() {
     productServices.getSame(query).then((res) => setProductSame(res.data));
   }, [id]);
 
-  const cartUser = localStorage.getItem("cartUser");
-  const cart = JSON.parse(cartUser!);
-  const user = localStorage.getItem("user");
-  const userJSON = JSON.parse(user!);
-
+  const userId = localStorage.getItem("user_id");
+  const userIdJSON = JSON.parse(userId!);
+  useEffect(() => {
+    userService.getById(userIdJSON).then((res) => {
+      setCart(res.data.cart)
+    });
+  }, [userIdJSON]);
+  
   function handleAddToCart() {
     const cartItem = {
       product: {
@@ -60,24 +65,24 @@ function ProductDetail() {
       },
       quantity: quantity,
     };
-  
+    console.log(cartItem);
+    
     const existingItem = cart.find(
-      (item:any) =>
+      (item: any) =>
         item.product.id === cartItem.product.id &&
         item.product.variant === cartItem.product.variant &&
         item.product.color === cartItem.product.color
     );
-  
+
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
       cart.push(cartItem);
     }
-  
-    localStorage.setItem("cart", JSON.stringify(cart));
-    authServices.cart(userJSON.id, cart);
+
+    console.log(cart)
+    authServices.cart(userIdJSON, cart);
   }
-  
 
   return (
     <>
@@ -244,7 +249,7 @@ function ProductDetail() {
                 <div className="flex gap-4 py-2.5">
                   <div
                     onClick={() => {
-                      if (!userJSON) {
+                      if (!userIdJSON) {
                         setShowLogin(true);
                       } else {
                         handleAddToCart();
@@ -454,12 +459,16 @@ function ProductDetail() {
             </div>
           )}
 
-          {showLogin && (
-            <div onClick={() => setShowLogin(false)}>
-              <ModalLogin />
-              <div className="overlay"></div>
-            </div>
-          )}
+          <Modal
+            open={showLogin}
+            onCancel={() => setShowLogin(false)}
+            footer={null}
+            title={null}
+            centered
+            maskClosable={false}
+          >
+            <ModalLogin onClick={() => setShowLogin(false)} />
+          </Modal>
         </>
       )}
     </>
