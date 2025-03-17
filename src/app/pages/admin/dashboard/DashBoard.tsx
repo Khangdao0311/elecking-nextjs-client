@@ -7,6 +7,7 @@ import * as orderServices from "@/app/services/orderService";
 import * as userServices from "@/app/services/userService";
 import * as voucherServices from "@/app/services/voucherService";
 import moment from "moment";
+import { Select, Space } from 'antd';
 import {
   Chart as ChartJS,
   BarElement,
@@ -27,12 +28,17 @@ const data = {
     "Tháng 4",
     "Tháng 5",
     "Tháng 6",
+    "Tháng 7",
+    "Tháng 8",
+    "Tháng 9",
+    "Tháng 10",
+    "Tháng 11",
     "Tháng 12",
   ],
   datasets: [
     {
       label: "Doanh Thu",
-      data: [4000, 3000, 5000, 7000, 6000, 8000, 12000],
+      data: [4000, 3000, 5000, 7000, 6000, 8000, 12000,8000,8000,8000,8000,8000],
       backgroundColor: "#4F46E5",
       borderRadius: 6,
     },
@@ -55,6 +61,10 @@ function DashBoard() {
   const [users, setUsers] = useState<{ [key: string]: IUser }>({});
   const [limit, setLimit] = useState(1000);
   const [totalorder, setTotalorder] = useState()
+  const [selectedYear, setSelectedYear] = useState("Tổng doanh thu");
+  const handleChange = (value: string) => {
+    setSelectedYear(`Tổng doanh thu ${value}`); // Cập nhật label khi chọn
+  };
   useEffect(() => {
     const query: any = {};
 
@@ -75,7 +85,6 @@ function DashBoard() {
       setUsers(res.data);
     });
   }, []);
-  // console.log(users);
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
@@ -90,17 +99,30 @@ function DashBoard() {
       <TitleAdmin title="Bảng điều khiển" />
       <div className="bg-white shadow-lg rounded-lg p-4 flex items-start flex-col gap-4">
         <div className="flex gap-4 justify-between w-full  max-w-full">
-          <div className="p-2.5 flex gap-2.5 w-1/4 h-[160px] rounded-lg border shadow-md">
+          <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
             <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
               <HiCash className="w-[60px] h-[60px] text-amber-600" />
             </div>
             <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
               <p className="text-base font-bold text-red-500">Tổng doanh thu</p>
+              <Select
+      value={selectedYear}
+      style={{ width: "100%", color: "red", fontWeight: "bold" }}
+      onChange={handleChange}
+      options={[
+        { value: "2021", label: "2021" },
+        { value: "2022", label: "2022" },
+        { value: "2023", label: "2023" },
+        { value: "2024", label: "2024" },
+        { value: "2025", label: "2025" },
+      ]}
+      variant="borderless"
+    />
               <p className="text-base font-bold">2.100.000 đ</p>
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>
-          <div className="p-2.5 flex gap-2.5 w-1/4 h-[160px] rounded-lg border shadow-md">
+          <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
             <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
               <FaUser className="w-[50px] h-[50px] text-amber-600" />
             </div>
@@ -112,7 +134,7 @@ function DashBoard() {
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>
-          <div className="p-2.5 flex gap-2.5 w-1/4 h-[160px] rounded-lg border shadow-md">
+          <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
             <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
               <FaTicketSimple className="w-[50px] h-[50px] text-amber-600" />
             </div>
@@ -122,7 +144,7 @@ function DashBoard() {
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>
-          <div className="p-2.5 flex gap-2.5 w-1/4 h-[160px] rounded-lg border shadow-md">
+          <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
             <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
               <FaBasketShopping className="w-[50px] h-[50px] text-amber-600" />
             </div>
@@ -134,7 +156,7 @@ function DashBoard() {
           </div>
         </div>
 
-        <div className="min-w-full max-w-2xl px-60 bg-white flex flex-col gap-2.5 py-5 shadow-lg border rounded-xl">
+        <div className="min-w-full p-64  bg-white flex flex-col gap-2.5 py-5 shadow-lg border rounded-xl">
           <h2 className="text-xl font-bold text-center mb-4">
             Doanh Thu Hàng Tháng
           </h2>

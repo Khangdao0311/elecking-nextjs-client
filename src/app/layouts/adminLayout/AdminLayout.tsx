@@ -13,7 +13,7 @@ export default function DefaultLayout({
       <Sidebar />
       <div className="pl-64 h-screen">
         <HeaderAdmin />
-        <main className="p-4 flex flex-col gap-4 h-[calc(100%-48px)] bg-orange-200">{children}</main>
+        <main className="p-4 flex flex-col gap-4 h-[calc(100%-48px)]">{children}</main>
       </div>
     </Fragment>
   );

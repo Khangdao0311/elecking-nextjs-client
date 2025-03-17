@@ -10,8 +10,8 @@ import * as categoryServices from "@/app/services/categoryService";
 import Statuscategory from "@/app/pages/admin/Components/Status";
 import Link from "next/link";
 import config from "@/app/config";
-import { Space, Table, Tag } from 'antd';
-import type { TableProps } from 'antd';
+import { Space, Table, Tag } from "antd";
+import type { TableProps } from "antd";
 
 function CategoryList() {
   const [limit, setLimit] = useState(5);
@@ -34,39 +34,38 @@ function CategoryList() {
 
   console.log(typeof limit);
 
-  const columns: TableProps<ICategory>['columns'] = [
+  const columns: TableProps<ICategory>["columns"] = [
     {
-      title: 'STT',
-      align: 'center',
-      dataIndex: 'index',
+      title: "STT",
+      align: "center",
+      dataIndex: "index",
       width: 100,
-      key: 'index',
+      key: "index",
       render: (_, __, index) => (page - 1) * limit + index + 1,
     },
     {
-      title: 'Ảnh',
-      dataIndex: 'image',
-      align:'center',
-      key: 'image',
+      title: "Ảnh",
+      dataIndex: "image",
+      align: "center",
+      key: "image",
       render: (image) => (
         <div className="flex items-center justify-center">
           <img src={image} alt="Danh mục" className="w-8 max-w-8 h-8 rounded" />
         </div>
-        
       ),
     },
     {
-      title: 'Tên Danh Mục',
-      dataIndex: 'name',
+      title: "Tên Danh Mục",
+      dataIndex: "name",
       width: 450,
-      key: 'name',
+      key: "name",
     },
     {
       title: <span className="w-6 text-center">Trạng thái</span>,
-      align: 'center',
-      dataIndex: 'status',
+      align: "center",
+      dataIndex: "status",
       width: 290,
-      key: 'status',
+      key: "status",
       render: (status) => {
         let text = "";
         switch (status) {
@@ -83,14 +82,18 @@ function CategoryList() {
             text = "Đang vận chuyển";
             break;
         }
-        return <div className="flex items-center justify-center"><Statuscategory status={status} text={text} /></div>
+        return (
+          <div className="flex items-center justify-center">
+            <Statuscategory status={status} text={text} />
+          </div>
+        );
       },
     },
     {
-      title: 'Chức năng',
+      title: "Chức năng",
       width: 200,
-      align: 'center',
-      key: 'action',
+      align: "center",
+      key: "action",
       render: (_, record) => (
         <Space size="middle">
           <Link
@@ -103,7 +106,14 @@ function CategoryList() {
       ),
     },
   ];
-
+  console.log(
+    "Products:",
+    categories.length,
+    "Limit:",
+    limit,
+    "Total:",
+    totalPages
+  );
 
   return (
     <>
@@ -119,87 +129,25 @@ function CategoryList() {
           setPage(1);
         }}
       />
-      <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <Link href={config.routes.admin.category.add} className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
+      <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex h-full items-start flex-col gap-4">
+        <Link
+          href={config.routes.admin.category.add}
+          className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
+        >
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo danh mục mới</p>
         </Link>
-        <Table<ICategory> columns={columns} dataSource={categories} rowKey="id" className="w-full min-h-full"  pagination={totalPages > limit ? {
-    current: page,
-    pageSize: limit,
-    total: totalPages,
-    onChange: (newPage) => setPage(newPage),
-    showSizeChanger: false,
-  } : false}/>
-        {/* <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
-          <thead className="bg-stone-100">
-            <tr>
-              <th className="px-2 py-2.5 min-w-12 text-sm font-bold">STT</th>
-              <th className=" min-w-[300px] px-2 py-2.5  text-sm font-bold">
-                Ảnh
-              </th>
-              <th className="px-2 py-2.5 w-[353px] text-left text-sm font-bold line-clamp-1">
-                Tên Danh Mục
-              </th>
-              <th className="px-2 py-2.5 min-w-[300px] text-sm font-bold">
-                Trạng Thái
-              </th>
-              <th className="px-2 py-2.5  w-full text-sm font-bold">
-                Chức năng
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((category: ICategory, iCategory: number) => {
-              let text = "";
-              switch (category.status) {
-                case 0:
-                  text = "Ngưng hoạt động";
-                  break;
-                case 1:
-                  text = "Đang hoạt động";
-                  break;
-                case 2:
-                  text = "Chờ xác nhận";
-                  break;
-                case 3:
-                  text = "Đang vận chuyển";
-                default:
-                  break;
-              }
-              return (
-                <tr key={category.id} className="even:bg-gray-100">
-                  <td className="px-2 py-2.5 w-12 text-center">
-                    {(page - 1) * limit + iCategory + 1}
-                  </td>
-                  <td className="px-2 py-1 min-w-[300px] text-center">
-                    <div className="flex items-center min-w-[300px] justify-center">
-                      <img
-                        src={category.image}
-                        alt="Điện thoại"
-                        className="w-8 h-8 rounded"
-                      />
-                    </div>
-                  </td>
-                  <td className="px-2 py-2.5 w-[353px]">
-                    <span>{category.name}</span>
-                  </td>
-                  <td className="px-20  py-2.5 text-center">
-                    <Statuscategory status={category.status} text={text} />
-                  </td>
-                  <td className="p-2 w-full">
-                    <div className="flex items-center justify-center gap-2">
-                      <Link href={`${config.routes.admin.category.edit}/${category.id}`} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                        <FiEdit className="w-5 h-5" />
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table> */}
-        {/* {totalPages > limit && (
+        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
+          <Table<ICategory>
+            columns={columns}
+            dataSource={categories}
+            rowKey="id"
+            scroll={{ x: 1000, y: 400 }} 
+            pagination={false}
+            tableLayout="auto"
+          />
+        </div>
+        {totalPages > limit && (
           <div className="flex w-full justify-end">
             <Pagination
               current={page}
@@ -211,7 +159,7 @@ function CategoryList() {
               showSizeChanger={false}
             />
           </div>
-        )} */}
+        )}
       </div>
     </>
   );

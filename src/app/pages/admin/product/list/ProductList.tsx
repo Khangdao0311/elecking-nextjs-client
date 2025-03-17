@@ -10,8 +10,8 @@ import * as productServices from "@/app/services/productService";
 import Statusproduct from "@/app/pages/admin/Components/Status";
 import Link from "next/link";
 import config from "@/app/config";
-import { Space, Table, Tag } from 'antd';
-import type { TableProps } from 'antd';
+import { Space, Table, Tag } from "antd";
+import type { TableProps } from "antd";
 function ProductList() {
   const [productdetail, setProductdetail] = useState(false);
   const showproductdetail = () => setProductdetail(true);
@@ -33,25 +33,35 @@ function ProductList() {
       setTotalPages(res.total);
     });
   }, [limit, page, search]);
+  // console.log(products);
+  console.log(
+    "Products:",
+    products.length,
+    "Limit:",
+    limit,
+    "Total:",
+    totalPages
+  );
   console.log(products);
 
-  const columns: TableProps<IProduct>['columns'] = [
+  const columns: TableProps<IProduct>["columns"] = [
     {
-      title: 'STT',
-      align: 'center',
-      dataIndex: 'index',
+      title: "STT",
+      align: "center",
+      dataIndex: "index",
       width: 80,
-      key: 'index',
+      key: "index",
       render: (_, __, index) => (page - 1) * limit + index + 1,
     },
     {
-      title: 'Ảnh',
-      dataIndex: 'variants',
-      align: 'center',
+      title: "Ảnh",
+      dataIndex: "variants",
+      align: "center",
       width: 96,
-      key: 'image',
+      key: "image",
       render: (variants) => {
-        const image = variants?.[0]?.colors?.[0]?.image || 
+        const image =
+          variants?.[0]?.colors?.[0]?.image ||
           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQegZDhYp7xib4Rc4ZxRGe_cHEH5WrGL1wupA&s";
         return (
           <div className="flex items-center justify-center">
@@ -61,20 +71,21 @@ function ProductList() {
       },
     },
     {
-      title: 'Tên Sản Phẩm',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Tên Sản Phẩm",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Giá Sản Phẩm',
-      align: 'center',
-      dataIndex: 'variants',
+      title: "Giá Sản Phẩm",
+      align: "center",
+      dataIndex: "variants",
       width: 130,
-      key: 'price',
+      key: "price",
       render: (variants) => {
         const variant = variants[0];
-        const finalPrice = variant.price + variant.colors[0].price_extra - variant.price_sale;
-        
+        const finalPrice =
+          variant.price + variant.colors[0].price_extra - variant.price_sale;
+
         return (
           <div className="text-xs font-medium text-red-500">
             {finalPrice.toLocaleString("vi-VN")} đ
@@ -88,35 +99,35 @@ function ProductList() {
       },
     },
     {
-      title: 'Số Lượng',
-      align: 'center',
-      dataIndex: 'variants',
+      title: "Số Lượng",
+      align: "center",
+      dataIndex: "variants",
       width: 130,
-      key: 'quantity',
+      key: "quantity",
       render: (variants) => variants?.[0]?.colors?.[0]?.quantity || 0,
     },
     {
-      title: 'Biến Thể',
-      align: 'center',
-      dataIndex: 'variants',
+      title: "Biến Thể",
+      align: "center",
+      dataIndex: "variants",
       width: 130,
-      key: 'variant',
+      key: "variant",
       render: (variants) => variants?.[0]?.properties?.[0]?.name || "-",
     },
     {
-      title: 'Màu Sắc',
-      align: 'center',
-      dataIndex: 'variants',
+      title: "Màu Sắc",
+      align: "center",
+      dataIndex: "variants",
       width: 130,
-      key: 'color',
+      key: "color",
       render: (variants) => variants?.[0]?.colors?.[0]?.name || "-",
     },
     {
-      title: 'Trạng thái',
-      align: 'center',
-      dataIndex: 'variants',
+      title: "Trạng thái",
+      align: "center",
+      dataIndex: "variants",
       width: 130,
-      key: 'status',
+      key: "status",
       render: (variants) => {
         const status = variants?.[0]?.colors?.[0]?.status;
         let text = "";
@@ -144,9 +155,9 @@ function ProductList() {
       },
     },
     {
-      title: 'Chức năng',
-      align: 'center',
-      key: 'action',
+      title: "Chức năng",
+      align: "center",
+      key: "action",
       width: 150,
       render: (_, record) => (
         <Space size="middle">
@@ -166,7 +177,6 @@ function ProductList() {
       ),
     },
   ];
-  
 
   return (
     <>
@@ -182,7 +192,7 @@ function ProductList() {
           setPage(1);
         }}
       />
-      <div className=" bg-red-200 shadow-xl rounded-lg px-4 py-4 flex  items-start flex-col gap-4">
+      <div className=" shadow-xl bg-white rounded-lg px-4 py-4 flex h-full items-start flex-col gap-4">
         <Link
           href={config.routes.admin.product.add}
           className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
@@ -190,17 +200,34 @@ function ProductList() {
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo sản phẩm mới</p>
         </Link>
-        <Table<IProduct> columns={columns} dataSource={products} rowKey="id" className="w-full min-h-full"  pagination={totalPages > limit ? {
-    current: page,
-    pageSize: limit,
-    total: totalPages,
-    onChange: (newPage) => setPage(newPage),
-    showSizeChanger: false,
-  } : false}/>
+        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" ,}}>
+          <Table<IProduct>
+            columns={columns}
+            dataSource={products}
+            rowKey="id"
+            scroll={{ x: 1000, y: 400 }}  
+            pagination={false}
+            tableLayout="auto"
+          />
+          
+        </div>
+        {totalPages > limit &&(
+            <div className="flex w-full justify-end">
+          <Pagination
+          current={page}
+            onChange={(e) => setPage(e)}
+            defaultCurrent={1}
+            align="end"
+            pageSize={limit}
+            total={totalPages}
+            showSizeChanger={false}
+          />
+        </div>
+        )}
       </div>
       {productdetail && (
         <>
-          <div className="bg-white w-[600px] center-fixed flex flex-col gap-2.5 rounded-lg shadow-xl z-50">
+          <div className="bg-white w-[600px] center-fixed flex flex-col gap-2.5  rounded-lg shadow-xl z-50">
             <div className="h-[64px] flex items-center px-4">
               <p className="text-xl font-semibold w-full">Thông tin sản phẩm</p>
             </div>

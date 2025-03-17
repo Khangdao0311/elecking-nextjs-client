@@ -292,7 +292,9 @@ function Sidebar() {
           :global(.ant-menu-item-only-child) {
             margin: 0 !important;
             padding: 10px !important;
-            background-color: 
+            background-color: rgb(
+              30 41 59 / var(--tw-bg-opacity, 1)
+            ) !important;
           }
         `}</style>
         <style jsx>{`

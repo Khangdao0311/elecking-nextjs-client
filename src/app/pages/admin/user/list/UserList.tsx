@@ -1,7 +1,7 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
-import { Pagination } from "antd";
+import { Pagination, TabPaneProps } from "antd";
 import * as userServices from "@/app/services/userService";
 import { FiEdit } from "react-icons/fi";
 import { GoPlus } from "react-icons/go";
@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import Statususer from "@/app/pages/admin/Components/Status" 
 import Link from "next/link";
 import config from "@/app/config";
+import { Space, Table, Tag } from "antd";
+import type { TableProps } from "antd";
 function UserList() {
   const [users, setUsers] = useState([]);
   const [limit, setLimit] = useState(5);
@@ -21,7 +23,6 @@ function UserList() {
 
     query.limit = limit;
     query.page = page;
-
     if (search != "") {
       query.search = search;
     }
@@ -29,7 +30,100 @@ function UserList() {
     userServices.getQuery(query).then((res) => {setUsers(res.data); setTotalPages(res.total);});
   }, [limit, page, search]);
   console.log(users);
-  
+  const columns: TableProps<IUser>["columns"] = [
+    {
+      title: "STT",
+      dataIndex: "index",
+      align: "center",
+      width: 80,
+      render: (_, __, index) => (page - 1) * limit + index + 1,
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "avatar",
+      align: "center",
+      width: 96,
+      render: (avatar) => (
+        <div className="flex items-center justify-center">
+          <img
+            src={avatar || "https://img.myloview.com/stickers/default-avatar-profile-icon-vector-social-media-user-image-700-205124837.jpg"}
+            alt="Avatar"
+            className="w-8 h-8 rounded-full"
+          />
+        </div>
+      ),
+    },
+    {
+      title: "Tên Người Dùng",
+      dataIndex: "fullname",
+      width: 260,
+      key: "fullname",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Số Điện Thoại",
+      dataIndex: "phone",
+      align: "center",
+      width: 180,
+    },
+    {
+      title: "Vai Trò",
+      dataIndex: "role",
+      align: "center",
+      width: 160,
+      render: (role) => (role ? "Admin" : "Khách hàng"),
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      align: "center",
+      width: 160,
+      render: (status) => {
+        let text = "";
+        switch (status) {
+          case 0:
+            text = "Ngưng hoạt động";
+            break;
+          case 1:
+            text = "Đang hoạt động";
+            break;
+          case 2:
+            text = "Chờ xác nhận";
+            break;
+          case 3:
+            text = "Đang vận chuyển";
+            break;
+        };
+        return (
+          <div className="flex items-center justify-center">
+            <Statususer status={status} text={text} />
+          </div>
+        )
+      },
+    },
+    {
+      title: "Chức năng",
+      align: "center",
+      width: 150,
+      render: (_, record) => (
+        <Space size="middle">
+          <Link
+            href={`${config.routes.admin.user.edit}/${record.id}`}
+            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
+          >
+            <FiEdit className="w-5 h-5" />
+          </Link>
+          <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
+            <MdDeleteForever className="w-5 h-5" />
+          </button>
+        </Space>
+      ),
+    },
+  ];
   return (
     <>
       <TitleAdmin title="Quản lý người dùng" />
@@ -42,103 +136,17 @@ function UserList() {
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo người dùng mới</p>
         </Link>
-        <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
-          <thead className="bg-stone-100">
-            <tr>
-              <th className="px-2 py-2.5 min-w-12 text-sm font-bold">STT</th>
-
-              <th className=" min-w-16 w-16 max-w-16  px-2 py-2.5  text-sm font-bold">
-                Ảnh
-              </th>
-
-              <th className="px-2 py-2.5 w-1/2 text-left text-sm font-bold ">
-                <span className="">Tên Người Dùng</span>
-              </th>
-
-              <th className="px-2 py-2.5 w-1/2 text-left text-sm font-bold ">
-                Email
-              </th>
-
-              <th className="px-2 py-2.5  w-[112px] min-w-[112px] max-w-[112px] text-center text-sm font-bold ">
-                Số Điện Thoại
-              </th>
-
-              <th className="px-2 py-2.5  w-[112px] min-w-[112px] max-w-[112px] text-center  text-sm font-bold ">
-                Vai Trò
-              </th>
-
-              <th className="px-2 py-2.5  w-[140px] min-w-[140px] max-w-[140px] text-sm font-bold">
-                Trạng Thái
-              </th>
-
-              <th className="px-2 py-2.5 w-[112px] min-w-[112px] max-w-[112px] text-sm font-bold">
-                Chức năng
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((getuser: IUser, index: number) => {
-              let content = "";
-              switch (getuser.status) {
-                case 0:
-                  content = "Ngưng hoạt động"
-                  break;
-                case 1:
-                  content = "Đang hoạt động"
-                  break;
-                case 2:
-                  content = "Chờ xác nhận"
-                  break;
-                case 3:
-                  content = "Đang vận chuyển"
-                default:
-                  break;
-              }
-              return (
-                <tr key={getuser.id} className="even:bg-gray-100">
-                  <td className="px-2 py-2.5 w-12 text-center">{(page - 1) * limit + index + 1}</td>
-                  <td className="px-2 w-16 py-1 text-center">
-                    <div className="flex items-center justify-center">
-                      <img
-                        src={
-                          getuser.avatar ||
-                          "https://img.myloview.com/stickers/default-avatar-profile-icon-vector-social-media-user-image-700-205124837.jpg"
-                        }
-                        alt="Điện thoại"
-                        className="w-8 h-8 rounded-full"
-                      />
-                    </div>
-                  </td>
-                  <td className="px-2 py-2.5">
-                    <span className="line-clamp-1">{getuser.fullname}</span>
-                  </td>
-                  <td className="px-2 flex-1 py-2">{getuser.email}</td>
-                  <td className="px-2 min-w-[112px] text-center py-2.5">
-                    {getuser.phone}
-                  </td>
-                  <td className="px-2 min-w-[112px] py-2.5 text-center">
-                    {getuser.role ? "Amin" : "Khách hàng"}
-                  </td>
-                  <td className="px-2 min-w-[140px] py-2.5 text-center">
-
-
-                    <Statususer status={getuser.status} text= {content}/>
-                  </td>
-                  <td className="p-2 w-24">
-                    <div className="flex min-w-24 items-center justify-center gap-2">
-                      <Link href={`${config.routes.admin.user.edit}/${getuser.id}`} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex">
-                        <FiEdit className="w-5 h-5" />
-                      </Link>
-                      <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-                        <MdDeleteForever className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" ,}}>
+          <Table<IUser>
+            columns={columns}
+            dataSource={users}
+            rowKey="id"
+            scroll={{ x: 1000, y: 400 }}  
+            pagination={false}
+            tableLayout="auto"
+          />
+          
+        </div>
         {totalPages > limit &&(
             <div className="flex w-full justify-end">
           <Pagination
@@ -152,6 +160,7 @@ function UserList() {
           />
         </div>
         )}
+        
       </div>
     </>
   );

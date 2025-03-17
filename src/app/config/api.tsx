@@ -12,6 +12,7 @@ const api = {
   brand: `${url}/brand`,
   order: `${url}/order`,
   payment_method: `${url}/payment_method`,
+  stats: `${url}/stats`
 };
 
 export default api;

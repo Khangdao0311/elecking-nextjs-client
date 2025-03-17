@@ -1,4 +1,4 @@
-interface IOrder {
+interface IOrder{
     id: string
     total: string
     status: number

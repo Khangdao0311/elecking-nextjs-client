@@ -10,6 +10,9 @@ import * as userServices from "@/app/services/userService";
 import * as paymentServices from "@/app/services/paymentService";
 import Statusorder from "@/app/pages/admin/Components/Status";
 import moment from "moment";
+import { Space, Table, Tag } from "antd";
+import type { TableProps } from "antd";
+
 const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
@@ -23,8 +26,7 @@ function OrderList() {
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
-  const [users, setUsers] = useState<{ [key: string]: IUser }>({});
-  const [payments, setPayments] = useState<{ [key: string]: IPaymment}>({});
+
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
@@ -38,7 +40,99 @@ function OrderList() {
     });
   }, [limit, page, search]);
   console.log(orders);
-
+  const columns: TableProps<IOrder>["columns"]  = [
+    {
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      width: 60,
+      align: "center",
+      render: (_, __, index) => (page - 1) * limit + index + 1,
+    },
+    {
+      title: "Mã Đơn Hàng",
+      dataIndex: "id",
+      key: "id",
+      width: 140,
+    },
+    {
+      title: "Ngày Đặt Hàng",
+      dataIndex: "ordered_at",
+      key: "ordered_at",
+      width: 160,
+      render: (date) => moment(date, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm"),
+    },
+    {
+      title: "Khách Hàng",
+      dataIndex: "user",
+      key: "user",
+      width: 200,
+      render: (user) => user.fullname,
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "total",
+      key: "total",
+      width: 150,
+      render: (total) => `${(+total).toLocaleString("vi-VN")} đ`,
+    },
+    {
+      title: "Mã giao dịch",
+      dataIndex: "transaction_code",
+      key: "transaction_code",
+      width: 120,
+      align: "center",
+      render: (code) => <span className="line-clamp-1">{code || "Không có"}</span>,
+    },
+    {
+      title: "Phương Thức Thanh Toán",
+      dataIndex: "payment_method",
+      key: "payment_method",
+      align: 'center',
+      width: 230,
+      render: (payment) => payment.name || "N/A",
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
+      width: 128,
+      align: "center",
+      render: (status) => {
+        let text = "";
+        switch (status) {
+          case 0:
+            text = "Đã hủy";
+            break;
+          case 1:
+            text = "Đã giao hàng";
+            break;
+          case 2:
+            text = "Chờ xác nhận";
+            break;
+          case 3:
+            text = "Đang vận chuyển";
+            break;
+          default:
+            text = "Không xác định";
+        }
+        return <Statusorder status={status} text={text} />;
+      },
+    },
+    {
+      title: "Chức năng",
+      key: "action",
+      width: 120,
+      align: "center",
+      render: (_, record) => (
+        <Space size="middle">
+          <button onClick={showeditorder} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
+            <FiEdit className="w-5 h-5" />
+          </button>
+        </Space>
+      ),
+    },
+  ];
   return (
     <>
       <TitleAdmin title="Quản lý đơn hàng" />
@@ -54,102 +148,17 @@ function OrderList() {
         }}
       />
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal">
-          <thead className="bg-stone-100">
-            <tr>
-              <th className="px-2 py-2.5 w-12 min-w-12 text-sm font-bold">
-                STT
-              </th>
-
-              <th className=" min-w-[128px]  px-2 py-2.5 text-left  text-sm font-bold">
-                Mã Đơn Hàng
-              </th>
-              <th className=" min-w-[128px] text-left px-2 py-2.5  text-sm font-bold">
-                Ngày Đặt Hàng
-              </th>
-
-              <th className="px-2 py-2.5 w-full text-left text-sm font-bold ">
-                Khách Hàng
-              </th>
-
-              <th className="px-2 py-2.5 min-w-[150px] text-left text-sm font-bold ">
-                Tổng tiền
-              </th>
-
-              <th className="px-2 py-2.5  w-[112px] min-w-[112px] max-w-[112px] text-center text-sm font-bold ">
-                Mã giao dịch
-              </th>
-
-              <th className="px-2 py-2.5  w-[230px] min-w-[230px] max-w-[230px] text-left text-sm font-bold ">
-                Phương Thức Thanh Toán
-              </th>
-
-              <th className="px-2 py-2.5  w-[128px] min-w-[128px] max-w-[128px] text-sm font-bold">
-                Trạng Thái
-              </th>
-
-              <th className="px-2 py-2.5 w-[96px] min-w-[96px] max-w-[96px] text-sm font-bold">
-                Chức năng
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order: IOrder, index: number) => {
-              let text = "";
-              switch (order.status) {
-                case 0:
-                  text = "Đã hủy";
-                  break;
-                case 1:
-                  text = "Đã giao hàng";
-                  break;
-                case 2:
-                  text = "Chờ xác nhận";
-                  break;
-                case 3:
-                  text = "Đang vận chuyển";
-                default:
-                  break;
-              }
-              return (
-                <tr key={order.id} className="even:bg-gray-100">
-                  <td className="px-2 py-2.5 w-12 text-center">
-                    {(page - 1) * limit + index + 1}
-                  </td>
-                  <td className="px-2 py-2.5 w-[128px]">{order.id}</td>
-                  <td className="px-2 py-2.5 w-[128px]">{moment(order.ordered_at, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm")}</td>
-                  <td className="px-2 flex-1 py-2">
-                    {order.user.fullname}
-                  </td>
-                  <td className="px-2 flex-1 py-2 w-[150px]">
-                    {(+order.total).toLocaleString("vi-VN")} đ
-                  </td>
-                  <td className="px-2 min-w-[112px] max-w-[112px] text-center py-2.5">
-                    <span className="line-clamp-1">
-                      {order.transaction_code || "không có"}
-                    </span>
-                  </td>
-                  <td className="px-2 min-w-[230px] py-2.5">
-                    {order.payment_method.name}
-                  </td>
-                  <td className="px-2 min-w-[112px] py-2.5 text-center">
-                    <Statusorder status={order.status} text={text} />
-                  </td>
-                  <td className="p-2 w-24">
-                    <div className="flex min-w-24 items-center justify-center gap-2">
-                      <button
-                        onClick={showeditorder}
-                        className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
-                      >
-                        <FiEdit className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        
+        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
+          <Table<IOrder>
+            columns={columns}
+            dataSource={orders}
+            rowKey="id"
+            scroll={{ x: 1000, y: 400 }} 
+            pagination={false}
+            tableLayout="auto"
+          />
+        </div>
         {totalPages > limit && (
           <div className="flex w-full justify-end">
             <Pagination
