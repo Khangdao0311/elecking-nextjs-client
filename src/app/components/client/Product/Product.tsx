@@ -5,17 +5,20 @@ import { Fragment, useEffect, useState } from "react";
 
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
+import { useStore, actions } from "@/app/store";
 
-function Product(props: { product: IProduct; onLoad: any; userId: string; wish: string[] }) {
+function Product(props: { product: IProduct; userId: string }) {
+  const [state, dispatch] = useStore();
+
   function handleAddToWish(id: string) {
     authServices.wish(props.userId, id).then((res) => {
-      props.onLoad();
+      dispatch(actions.load());
     });
   }
 
   function handleRemoveFromWish(id: string) {
     authServices.wish(props.userId, id).then((res) => {
-      props.onLoad();
+      dispatch(actions.load());
     });
   }
 
@@ -83,7 +86,7 @@ function Product(props: { product: IProduct; onLoad: any; userId: string; wish: 
         </div>
         <div className="center-flex gap-1 cursor-pointer">
           <p className="text-gray-700">Yêu thích</p>
-          {props.wish.includes(props.product.id) ? (
+          {state.wish.includes(props.product.id) ? (
             <div className="group relative" onClick={() => handleRemoveFromWish(props.product.id)}>
               <FaHeart className="text-primary group-hover:scale-125 transition-all duration-300" />
               <FaHeart className="hidden absolute inset-0 animate-ping group-hover:block text-primary" />
