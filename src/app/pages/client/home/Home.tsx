@@ -311,7 +311,7 @@ function Home() {
       </section>
 
       {/* DANH MỤC */}
-      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+      {/* <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
             <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
@@ -331,7 +331,7 @@ function Home() {
             </Link>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* THƯƠNG HIỆU */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">

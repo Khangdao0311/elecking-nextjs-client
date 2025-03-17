@@ -6,7 +6,6 @@ import { TbTicket } from "react-icons/tb";
 import * as voucherService from "@/app/services/voucherService";
 import moment from "moment";
 
-
 function Voucher({ onClick, onSelect, totalPrice, selectedVoucher }: any) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [disabledIndex] = useState<number[]>([1, 3]);
@@ -32,6 +31,12 @@ function Voucher({ onClick, onSelect, totalPrice, selectedVoucher }: any) {
     }
   };
 
+  const handleCancelVoucher = () => {
+    setSelectedIndex(null);
+    onSelect?.(null);
+    onClick?.();
+  };
+  
 
 
   return (
@@ -95,7 +100,11 @@ function Voucher({ onClick, onSelect, totalPrice, selectedVoucher }: any) {
         <div className="flex justify-end gap-2.5 p-2.5">
           <div
             className="px-10 text-base font-normal py-2.5 border rounded-lg text-primary border-primary cursor-pointer"
-            onClick={onClick}
+            onClick={() => {
+              handleCancelVoucher();
+              onClick?.();
+            }}
+            
           >
             Hủy
           </div>

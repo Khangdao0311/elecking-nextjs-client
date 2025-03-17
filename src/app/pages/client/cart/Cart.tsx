@@ -46,8 +46,6 @@ function Cart() {
     }
     _();
   }, [user]);
-  console.log(productCart);
-  
 
   useEffect(() => {
     setCheckedItems((user?.cart ?? []).map(() => false));
@@ -65,8 +63,9 @@ function Cart() {
 
   const handleVoucherSelect = (voucher: any) => {
     setSelectedVoucher(voucher);
+    localStorage.setItem("Voucher", JSON.stringify(voucher));
   };
-
+  
   const increaseQuantity = async (product: IProduct, index: number) => {
     if (!user) return;
 
@@ -124,12 +123,9 @@ function Cart() {
 
   const handlChangeVariant = async (index: number, variant: number) => {
     if (!user) return;
-
     const cart = [...user.cart];
     const item = cart[index];
-
     if (!item) return;
-
     const updatedCartItem = {
       ...item,
       product: {
@@ -139,7 +135,6 @@ function Cart() {
     };
 
     cart[index] = updatedCartItem;
-
     try {
       await authServices.cart(user.id, cart);
       setUser((prevUser) =>
@@ -201,7 +196,6 @@ function Cart() {
     if (selectedVoucher) {
       total -= selectedVoucher.discount_value;
     }
-
     setTotalPrice(total);
   };
 

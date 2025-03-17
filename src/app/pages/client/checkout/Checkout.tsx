@@ -7,6 +7,7 @@ import TextArea from "antd/es/input/TextArea";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import { LuTicket } from "react-icons/lu";
 import * as addressServices from "@/app/services/addressService";
+import * as paymentService from "@/app/services/paymentService";
 import { TfiLocationPin } from "react-icons/tfi";
 import { FaCheckCircle } from "react-icons/fa";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -16,6 +17,7 @@ import * as userServices from "@/app/services/userService";
 import { Address } from "cluster";
 
 function Checkout() {
+
   var totalProducts = 0;
   const query = useSearchParams();
 
@@ -26,24 +28,24 @@ function Checkout() {
   const onSearch = (value: string) => {
     // console.log("search:", value);
   };
-
+  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const [modal, setModal] = useState(false);
   const [editAddress, seteditAddress] = useState(false);
   const [newAddress, setNewAddress] = useState(false);
   const [address, setAddress] = useState(false);
   const [payment, setPayment] = useState(false);
-  const [checkPayment, setCheckPayment] = useState("");
+  const [showPayment, setShowPayment] = useState<IPaymment[]>([]);
   const [checkaddress1, setCheckaddress1] = useState("1");
   const [checkaddress2, setCheckaddress2] = useState("1");
   const [productCheckout, setProductCheckOut] = useState<any>([]);
   const [showVoucher, setVoucher] = useState(false);
-  {
-    cart{
-      
-    }
-  }
+  const [voucherSelect, setVoucherSelect] = useState<any>(null);
+  const [checkPayment, setCheckPayment] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [tempSelectedPayment, setTempSelectedPayment] = useState<any>(null);
+  const [selectedAddress, setSlectedAddress] = useState<any>(null);
 
-  //Lấy địa chỉ address
+
   const [getaddress, setGetaddress] = useState<IAddress[]>([]);
   const userJSON = JSON.parse(localStorage.getItem('user') || '[]');
   const [user, setUser] = useState<IUser>();
@@ -65,14 +67,13 @@ function Checkout() {
     _();
   }, [user]);
 
-  productCheckout.map((e: any) => {
-    console.log(e.variants[user?.cart[0].product.variant as number].colors[user?.cart[0].product.color as number].name);
-  })
-
-
   useEffect(() => {
     const query = { limit: 7 }
     addressServices.getQuery(query).then((res) => setGetaddress(res.data));
+  }, []);
+
+  useEffect(() => {
+    paymentService.getQuery().then((res) => setShowPayment(res.data));
   }, []);
 
   const showAdress = () => setAddress(true);
@@ -105,6 +106,36 @@ function Checkout() {
     )
   };
 
+  const calculateTotalPrice = () => {
+    if (!user?.cart?.length || !productCheckout?.length) return 0;
+    return user.cart.reduce((total, cartItem, index) => {
+      const product = productCheckout[index];
+      if (!product) return total;
+      const variant = product.variants?.[cartItem.product.variant as number];
+      const color = variant?.colors?.[cartItem.product.color as number];
+      const price = variant?.price || 0;
+      const priceSale = variant?.price_sale || 0;
+      const priceExtra = color?.price_extra || 0;
+      const quantity = cartItem.quantity || 0;
+      return total + (price - priceSale + priceExtra) * quantity;
+    }, 0);
+  };
+
+  const totalPrice = calculateTotalPrice();
+  const handleVoucherSelect = (voucher: any) => {
+    setSelectedVoucher(voucher);
+  };
+
+  useEffect(() => {
+    const storedVoucher = localStorage.getItem("Voucher");
+    if (storedVoucher) {
+      const parsedVoucher = JSON.parse(storedVoucher);
+      setVoucherSelect(parsedVoucher);
+      setSelectedVoucher(parsedVoucher);
+    }
+  }, []);
+
+
   useEffect(() => {
     if (query.get("vnp_TransactionStatus")) {
       setModal(true);
@@ -114,39 +145,71 @@ function Checkout() {
     }
   }, [query]);
 
+  useEffect(() => {
+    if (!selectedAddress) {
+      const defaultAddress = getaddress.find(
+        (address) => address.user_id === user?.id && address.setDefault === true
+      );
+      if (defaultAddress) {
+        setSlectedAddress(defaultAddress);
+      }
+    }
+  }, [getaddress, user]);
+
+  const handleAddressSelection = (newAddress: any) => {
+    setSlectedAddress(newAddress);
+  };
+
+  const handleSelectAddress = (address: IAddress) => {
+    setSlectedAddress(address);
+    setCheckaddress2(address.id);
+  };
+
   function handleOrder() {
-    const order = {
-      order_id: "hjohgcfgvhjklkjhgf",
-      total: "1000000",
-      bankCode: "",
+    if (!user || !user.cart.length) {
+      console.log("Không có sản phẩm để đặt hàng!");
+      return;
+    }
+
+    if (!selectedAddress) {
+      alert("Bạn chưa có địa chỉ!");
+      return;
+    }
+
+    if (!selectedPayment) {
+      alert("Bạn chưa chọn phương thức thanh toán!");
+      return;
+    }
+
+    const orderData: any = {
+      address_id: selectedAddress.id,
+      user_id: user.id,
+      products: user?.cart
+        .map((cartItem, index) => {
+          const product = productCheckout[index];
+          if (!product) return null;
+
+          return {
+            id: cartItem.product.id,
+            variant: cartItem.product.variant,
+            color: cartItem.product.color,
+            price: calculateProductPrice(product, index),
+            quantity: cartItem.quantity,
+          };
+        })
+        .filter(Boolean),
+      total: calculateTotalPrice(),
+      payment_method_id: selectedPayment.id,
+      price_ship: 0,
+      ...(selectedVoucher && { voucher_id: selectedVoucher.id }),
     };
 
-    fetch("http://localhost:8000/checkout/create_payment_url", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(order),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.paymentUrl) window.location.href = data.paymentUrl;
-      })
-      .catch((error) => console.error("Error:", error));
+    localStorage.setItem("orderData", JSON.stringify(orderData));
+    console.log("Đơn hàng đã được lưu vào localStorage:", orderData);
   }
 
-  const Payments = [
-    {
-      id: "1",
-      name: "Thanh Toán Khi Nhận Hàng",
-      image:
-        "https://bacsicayxanh.vn/images/info-policy/payment-policy/cod.png",
-    },
-    {
-      id: "2",
-      name: "VNPAY",
-      image:
-        "https://ee3v7pn43nm.exactdn.com/wp-content/uploads/2022/03/Vi-Vnpay.png?strip=all&lossy=1&ssl=1",
-    },
-  ];
+
+
 
 
   const checkout = JSON.parse(localStorage.getItem("checkout")!);
@@ -166,11 +229,43 @@ function Checkout() {
     _();
 
   }, []);
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [selectedVoucher, productCheckout]);
+
+  useEffect(() => {
+    if (selectedVoucher && totalPrice < selectedVoucher?.min_order_value) {
+      setSelectedVoucher(null);
+    }
+  }, [totalPrice, selectedVoucher]);
+
+  const handleSelectPayment = (payment: any) => {
+    setTempSelectedPayment(payment);
+  };
+
+  const handleCancelPayment = () => {
+    setSelectedPayment(null); 
+    setTempSelectedPayment(null);
+    closepayment()
+  }
+  
+
+  const handleConfirmPayment = () => {
+    if (tempSelectedPayment) {
+      setSelectedPayment(tempSelectedPayment);
+      closepayment();
+    }
+  };
 
   return (
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 flex flex-col gap-6">
       {getaddress
-        .filter((address) => address.user_id === user?.id && address.setDefault === true)
+        .filter(
+          (address) =>
+            address.user_id === user?.id &&
+            (address.id === checkaddress1 || address.setDefault === true)
+        )
+        .slice(0, 1)
         .map((address, i) => (
           <div key={i} className="bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
             <div className="flex gap-4 items-center">
@@ -189,13 +284,17 @@ function Checkout() {
               </div>
               <p
                 className="text-base font-semibold text-blue-500 p-2.5 gap-2.5 cursor-pointer"
-                onClick={showAdress}
+                onClick={() => {
+                  showAdress();
+                  handleAddressSelection(address);
+                }}
               >
                 Thay đổi
               </p>
             </div>
           </div>
         ))}
+
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
         <div className="flex gap-2.5 pb-4 border-b-[1px] border-gray-300">
           <p className="w-[730px] text-base font-medium">Sản phẩm</p>
@@ -230,7 +329,8 @@ function Checkout() {
                 />
                 <p className="text-base font-medium">
                   {`${product.name
-                    } - ${product.variants[user?.cart[0].product.variant as number].properties[user?.cart[0].product.variant as number]?.name}
+                    } - ${(productCheckout[0]?.variants[user?.cart[index].product.variant as number].properties.map((e: any) => e.name
+                    ).join(" - ") || "")}
                  - ${product.variants[user?.cart[0].product.variant as number].colors[user?.cart[0].product.color as number].name}
                   `}
                 </p>
@@ -279,16 +379,21 @@ function Checkout() {
         >
           <div className="flex gap-6 items-center">
             <img
-              src="https://www.shutterstock.com/image-vector/credit-card-cartoon-vector-illustration-600nw-2472976831.jpg"
+              src={
+                selectedPayment
+                  ? selectedPayment.image
+                  : "https://www.shutterstock.com/image-vector/credit-card-cartoon-vector-illustration-600nw-2472976831.jpg"
+              }
               alt="payment"
               className="w-24 h-24"
             />
             <p className="text-2xl font-bold text-primary">
-              Chọn phương thức thanh toán
+              {selectedPayment ? selectedPayment.name : "Chọn phương thức thanh toán"}
             </p>
           </div>
           <FaChevronRight className="w-[30px] h-[30px] " />
         </div>
+
       </div>
       <div className=" bg-white shadow-xl rounded-2xl p-5 grid">
         <div className="flex items-center place-content-between px-5 py-2.5">
@@ -311,10 +416,21 @@ function Checkout() {
             <p className="text-2xl font-medium">Tổng số tiền</p>
           </div>
           <div className="flex flex-col gap-7 text-end">
-            <p className="text-lg font-normal">{totalProducts.toLocaleString("vi-VN")} đ</p>
-            <p className="text-lg font-normal">2.200.000 đ</p>
-            <p className="text-lg font-normal">100.000 đ</p>
-            <p className="text-2xl font-bold text-primary">32.690.000 đ</p>
+            <p className="text-lg font-normal">{totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} đ</p>
+            <p className="text-lg font-normal">0 đ</p>
+            <p className="text-lg font-normal">
+              {selectedVoucher
+                ? `- ${selectedVoucher.discount_value.toLocaleString()} ₫`
+                : voucherSelect
+                  ? `- ${voucherSelect.discount_value.toLocaleString()} ₫`
+                  : "0 ₫"}
+            </p>
+            <p className="text-2xl font-bold text-primary">
+              {((selectedVoucher ? totalPrice - selectedVoucher.discount_value : totalPrice)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, "."))} đ
+            </p>
+
           </div>
         </div>
         <div className="flex justify-between items-center py-4">
@@ -342,16 +458,17 @@ function Checkout() {
                 .map((address, i) => (
                   <div
                     key={i}
-                    className="flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg"
+                    className={`flex w-full p-4 gap-4 shadow-md border border-gray-200 rounded-lg ${checkaddress2 === address.id ? "border-blue-500" : ""
+                      }`}
                     onClick={() => {
-                      setCheckaddress2(address.id);
+                      setCheckaddress2(address.id), handleSelectAddress(address);
                     }}
                   >
                     <input
                       type="radio"
                       className="accent-primary w-5 h-5"
                       readOnly
-                      checked={address.id == checkaddress2}
+                      checked={address.id === checkaddress2}
                     />
                     <div className="flex flex-col w-full items-start gap-2.5">
                       <div className="flex justify-between w-full">
@@ -370,21 +487,24 @@ function Checkout() {
                       <p>
                         {address.ward}, {address.district}, {address.province}
                       </p>
-                      <p className="text-primary text-xs font-normal border border-primary rounded-sm px-1">
-                        Mặc định
-                      </p>
+                      {address.setDefault && (
+                        <p className="text-primary text-xs font-normal border border-primary rounded-sm px-1">
+                          Mặc định
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}
 
               <div
-                className="flex cursor-pointer  gap-2 px-6 py-3 items-center shadow-md border border-gray-200 rounded-lg"
+                className="flex cursor-pointer gap-2 px-6 py-3 items-center shadow-md border border-gray-200 rounded-lg"
                 onClick={showNewAddress}
               >
                 <FaPlus className="w-5 h-5" />
                 <p className="text-sm font-medium">Thêm Địa Chỉ Mới</p>
               </div>
             </div>
+
             <div className="flex gap-4 justify-end p-4">
               <p
                 className="px-10 border border-gray-300 py-2 rounded-lg cursor-pointer"
@@ -395,15 +515,18 @@ function Checkout() {
               >
                 Trở lại
               </p>
+
               <p
                 onClick={() => {
                   setCheckaddress1(checkaddress2);
                   closeAddress();
                 }}
-                className="px-5 bg-primary py-2 rounded-lg text-white"
+                className="px-5 bg-primary py-2 rounded-lg text-white cursor-pointer"
               >
                 Hoàn thành
               </p>
+
+
             </div>
           </div>
           <div className="overlay"></div>
@@ -684,11 +807,9 @@ function Checkout() {
               Chọn Phương Thức Thanh Toán
             </p>
             <div className="p-4 border-y border-gray-200 flex flex-col gap-4 h-[500px]">
-              {Payments.map((payment, i) => (
+              {showPayment.map((payment, i) => (
                 <div
-                  onClick={() => {
-                    setCheckPayment(payment.id);
-                  }}
+                  onClick={() => handleSelectPayment(payment)}
                   className="flex justify-between border border-gray-300 rounded-lg p-5 cursor-pointer"
                   key={i}
                 >
@@ -700,7 +821,7 @@ function Checkout() {
                     className="w-5 h-5 accent-primary"
                     type="radio"
                     readOnly
-                    checked={payment.id == checkPayment}
+                    checked={payment.id === tempSelectedPayment?.id} // Chỉ check radio tạm thời
                   />
                 </div>
               ))}
@@ -708,22 +829,28 @@ function Checkout() {
             <div className="flex gap-4 justify-end p-4">
               <p
                 className="px-10 border border-gray-300 py-2 rounded-lg cursor-pointer"
-                onClick={closepayment}
+                onClick={handleCancelPayment}
               >
                 Hủy
               </p>
-              <p className="px-5 bg-primary py-2 rounded-lg text-white">
+              <p
+                className="px-5 bg-primary py-2 rounded-lg text-white cursor-pointer"
+                onClick={handleConfirmPayment}
+              >
                 Xác nhận
               </p>
             </div>
           </div>
 
-          <div className="overlay" onClick={() => console.log("ada")}></div>
+          <div className="overlay" onClick={closepayment}></div>
         </>
       )}
+
+
+
       {showVoucher && (
         <>
-          <Voucher onClick={() => setVoucher(false)} />
+          <Voucher selectedVoucher={selectedVoucher} onSelect={handleVoucherSelect} onClick={() => setVoucher(false)} />
           <div className="overlay"></div>
         </>
       )}
