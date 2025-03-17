@@ -22,19 +22,27 @@ import MenuCategory from "../MenuCategory";
 import ModalLogin from "../ModalLogin";
 import Logo from "@/app/assets/Logo";
 import * as userServices from "@/app/services/userService";
+import { useStore, actions } from "@/app/store";
 
 function Header() {
+  const [state, dispatch] = useStore();
+
   const [user, setUser] = useState<any>(null);
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
+    console.log(state);
     const userJSON = localStorage.getItem("user");
     const user = JSON.parse(userJSON!);
+
     if (user) {
       setUser(user);
-      userServices.getById(user.id).then((res) => setCart(res.data.cart));
+      userServices.getById(user.id).then((res) => {
+        dispatch(actions.setWish(res.data.wish));
+        setCart(res.data.cart);
+      });
     }
-  }, []);
+  }, [state.load]);
 
   const [showMenu, setShowMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);

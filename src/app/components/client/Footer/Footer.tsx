@@ -63,7 +63,7 @@ function Footer() {
             </div>
           </div>
           <div className="text-base font-bold bg-gradient-to-r from-thirdaryDark to-thirdary text-transparent bg-clip-text py-3">
-            THANH TOÁN
+            PHƯƠNG THỨC VẬN CHUYỂN
           </div>
           <div className="flex flex-row gap-2 flex-wrap	">
             <div className="w-16 h-8 p-1 bg-white border border-thirdaryDark rounded-md">

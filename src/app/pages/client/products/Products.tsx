@@ -15,6 +15,7 @@ import * as productServices from "@/app/services/productService";
 import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
 import * as userServices from "@/app/services/userService";
+import ProductLoad from "@/app/components/client/ProductLoad/ProductLoad";
 
 function Products() {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -517,14 +518,15 @@ function Products() {
       {/* Show sản phẩm */}
       <section className="py-4 pt-8">
         <div className="grid grid-cols-5 gap-2.5 flex-wrap">
+          {products.length === 0 &&
+            Array.from({ length: query.limit }).map((_, i: number) => (
+              <Fragment key={i}>
+                <ProductLoad />
+              </Fragment>
+            ))}
           {products.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product
-                product={product}
-                onLoad={() => setLoad((prev) => !prev)}
-                userId={userId}
-                wish={wish}
-              />
+              <Product product={product} userId={userId} />
             </Fragment>
           ))}
         </div>

@@ -22,6 +22,9 @@ const imageSlide = [
   "https://www.homepaylater.vn/static/b551d25f15763d30e744f2e3cf7eb8e4/dong_ho_thong_minh_banner_518c452056.jpg",
 ];
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { Skeleton } from "antd";
+import ProductLoad from "@/app/components/client/ProductLoad/ProductLoad";
+import { BsCardImage } from "react-icons/bs";
 
 function Home() {
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -168,14 +171,15 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
+          {productSale.length === 0 &&
+            Array.from({ length: 5 }).map((_, i: number) => (
+              <Fragment key={i}>
+                <ProductLoad />
+              </Fragment>
+            ))}
           {productSale.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product
-                product={product}
-                onLoad={() => setLoad((prev) => !prev)}
-                userId={userId}
-                wish={wish}
-              />
+              <Product product={product} userId={userId} />
             </Fragment>
           ))}
         </div>
@@ -207,14 +211,15 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-4">
+          {productHot.length === 0 &&
+            Array.from({ length: 5 }).map((_, i: number) => (
+              <Fragment key={i}>
+                <ProductLoad />
+              </Fragment>
+            ))}
           {productHot.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product
-                product={product}
-                onLoad={() => setLoad((prev) => !prev)}
-                userId={userId}
-                wish={wish}
-              />
+              <Product product={product} userId={userId} />
             </Fragment>
           ))}
         </div>
@@ -237,14 +242,15 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
+          {productTablet.length === 0 &&
+            Array.from({ length: 5 }).map((_, i: number) => (
+              <Fragment key={i}>
+                <ProductLoad />
+              </Fragment>
+            ))}
           {productTablet.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product
-                product={product}
-                onLoad={() => setLoad((prev) => !prev)}
-                userId={userId}
-                wish={wish}
-              />
+              <Product product={product} userId={userId} />
             </Fragment>
           ))}
         </div>
@@ -267,14 +273,15 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
+          {productLaptop.length === 0 &&
+            Array.from({ length: 5 }).map((_, i: number) => (
+              <Fragment key={i}>
+                <ProductLoad />
+              </Fragment>
+            ))}
           {productLaptop.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product
-                product={product}
-                onLoad={() => setLoad((prev) => !prev)}
-                userId={userId}
-                wish={wish}
-              />
+              <Product product={product} userId={userId} />
             </Fragment>
           ))}
         </div>
@@ -297,14 +304,15 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
+          {headPhone.length === 0 &&
+            Array.from({ length: 5 }).map((_, i: number) => (
+              <Fragment key={i}>
+                <ProductLoad />
+              </Fragment>
+            ))}
           {headPhone.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product
-                product={product}
-                onLoad={() => setLoad((prev) => !prev)}
-                userId={userId}
-                wish={wish}
-              />
+              <Product product={product} userId={userId} />
             </Fragment>
           ))}
         </div>
@@ -320,6 +328,27 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-9 container-custom gap-3.5">
+          {categories.length === 0 &&
+            Array.from({ length: 9 }).map((_, i: number) => (
+              <div
+                key={i}
+                className="relative bg-white border border-gray-200 rounded-lg w-32 h-32 shadow-lg p-2 flex flex-col gap-2"
+              >
+                <div className="relative bg-gray-200 rounded shadow !w-full !h-1/5 overflow-hidden">
+                  <div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
+                      w-full h-full animate-[shimmer_1.5s_infinite]"
+                  ></div>
+                </div>
+                <div className="relative center-flex bg-gray-200 rounded-lg shadow !w-full h-4/5 aspect-square overflow-hidden">
+                  <div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
+                      w-full h-full animate-[shimmer_1.5s_infinite]"
+                  ></div>
+                  <BsCardImage className="!w-16 !h-16 text-gray-300 " />
+                </div>
+              </div>
+            ))}
           {categories.map((category: ICategory, iCategory: number) => (
             <Link
               href={`${config.routes.client.products}?categoryid=${category.id}`}
@@ -342,44 +371,63 @@ function Home() {
             </p>
           </div>
         </div>
-        <Swiper
-          spaceBetween={16}
-          slidesPerView={4}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false,
-          }}
-          pagination={{
-            clickable: true,
-          }}
-          navigation={{
-            nextEl: ".custom-next-banner",
-            prevEl: ".custom-prev-banner",
-          }}
-          modules={[Autoplay, Pagination, Navigation]}
-          className="!h-36 w-full relative group overflow-auto"
-        >
-          {brands.map((brand: IBrand, iBrand: number) => (
-            <SwiperSlide key={iBrand} className="overflow-hidden rounded-lg shadow-xl">
-              <Link
-                href={`${config.routes.client.products}?brandid=${brand.id}`}
-                className="h-36 select-none "
+
+        {categories.length === 0 && (
+          <div className="grid grid-cols-4 container-custom gap-4 !h-36">
+            {Array.from({ length: 4 }).map((_, i: number) => (
+              <div
+                key={i}
+                className="relative center-flex bg-gray-200 rounded-lg shadow !w-full h-full aspect-square overflow-hidden"
               >
-                <img
-                  className="w-full h-full object-cover"
-                  src={brand.banner}
-                  alt={`Banner ${brand.name}`}
-                />
-              </Link>
-            </SwiperSlide>
-          ))}
-          <button className="custom-prev-banner absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
-            <FaAngleLeft className="w-8 h-8 text-white" />
-          </button>
-          <button className="custom-next-banner absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
-            <FaAngleRight className="w-8 h-8 text-white" />
-          </button>
-        </Swiper>
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
+                      w-full h-full animate-[shimmer_1.5s_infinite]"
+                ></div>
+                <BsCardImage className="!w-16 !h-16 text-gray-300 " />
+              </div>
+            ))}
+          </div>
+        )}
+        {categories.length !== 0 && (
+          <Swiper
+            spaceBetween={16}
+            slidesPerView={4}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            pagination={{
+              clickable: true,
+            }}
+            navigation={{
+              nextEl: ".custom-next-banner",
+              prevEl: ".custom-prev-banner",
+            }}
+            modules={[Autoplay, Pagination, Navigation]}
+            className="!h-36 w-full relative group overflow-auto"
+          >
+            {brands.map((brand: IBrand, iBrand: number) => (
+              <SwiperSlide key={iBrand} className="overflow-hidden rounded-lg shadow-xl">
+                <Link
+                  href={`${config.routes.client.products}?brandid=${brand.id}`}
+                  className="h-36 select-none "
+                >
+                  <img
+                    className="w-full h-full object-cover"
+                    src={brand.banner}
+                    alt={`Banner ${brand.name}`}
+                  />
+                </Link>
+              </SwiperSlide>
+            ))}
+            <button className="custom-prev-banner absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+              <FaAngleLeft className="w-8 h-8 text-white" />
+            </button>
+            <button className="custom-next-banner absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+              <FaAngleRight className="w-8 h-8 text-white" />
+            </button>
+          </Swiper>
+        )}
       </section>
     </>
   );

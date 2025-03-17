@@ -1,14 +1,21 @@
-import { SET } from "./constants";
+import { LOAD, SET_WISH } from "./constants";
 
-const initState: IState = {
-  search: "",
+const initState: any = {
+  load: true,
+  wish: [],
 };
 
-function reduce(state: IState, action: IAction) {
+function reduce(state: any, action: any) {
   switch (action.type) {
-    case SET:
+    case LOAD:
       return {
         ...state,
+        load: !state.load,
+      };
+    case SET_WISH:
+      return {
+        ...state,
+        wish: action.payload,
       };
 
     default:
