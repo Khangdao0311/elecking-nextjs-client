@@ -1,6 +1,6 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation, Grid } from "swiper/modules";
+import { Autoplay, Navigation, Grid } from "swiper/modules";
 import { ImFire } from "react-icons/im";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
@@ -115,7 +115,7 @@ function Home() {
             prevEl: ".custom-prev",
           }}
           loop={true}
-          modules={[Autoplay, Pagination, Navigation]}
+          modules={[Autoplay, Navigation]}
           className="!h-96 w-full relative group rounded-lg shadow-xl border border-gray-300"
         >
           {imageSlide.map((e, index) => (
@@ -179,7 +179,7 @@ function Home() {
             ))}
           {productSale.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} userId={userId} />
+              <Product product={product} />
             </Fragment>
           ))}
         </div>
@@ -219,7 +219,7 @@ function Home() {
             ))}
           {productHot.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} userId={userId} />
+              <Product product={product} />
             </Fragment>
           ))}
         </div>
@@ -250,7 +250,7 @@ function Home() {
             ))}
           {productTablet.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} userId={userId} />
+              <Product product={product} />
             </Fragment>
           ))}
         </div>
@@ -281,7 +281,7 @@ function Home() {
             ))}
           {productLaptop.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} userId={userId} />
+              <Product product={product} />
             </Fragment>
           ))}
         </div>
@@ -312,14 +312,14 @@ function Home() {
             ))}
           {headPhone.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} userId={userId} />
+              <Product product={product} />
             </Fragment>
           ))}
         </div>
       </section>
 
       {/* DANH MỤC */}
-      {/* <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
             <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
@@ -360,7 +360,7 @@ function Home() {
             </Link>
           ))}
         </div>
-      </section> */}
+      </section>
 
       {/* THƯƠNG HIỆU */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
@@ -399,11 +399,12 @@ function Home() {
             pagination={{
               clickable: true,
             }}
+            loop
             navigation={{
               nextEl: ".custom-next-banner",
               prevEl: ".custom-prev-banner",
             }}
-            modules={[Autoplay, Pagination, Navigation]}
+            modules={[Autoplay, Navigation]}
             className="!h-36 w-full relative group overflow-auto"
           >
             {brands.map((brand: IBrand, iBrand: number) => (

@@ -10,20 +10,16 @@ import { LuEyeClosed } from "react-icons/lu";
 import * as authServices from "@/app/services/authService";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { HiCheckCircle } from "react-icons/hi";
 
 function Login() {
-  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
+
   const validationSchema = Yup.object().shape({
     account: Yup.string().required("Vui lòng nhập tài khoản"),
     password: Yup.string().required("Vui lòng nhập mật khẩu"),
   });
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [user, setUser] = useState<IUser>();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -33,21 +29,15 @@ function Login() {
     const { account, password } = await values;
     authServices.login(account, password).then((res) => {
       if (res.status === 200) {
-        setUser(res.data);
-        localStorage.setItem('user_id', JSON.stringify(res.data?.user.id))
-        localStorage.setItem('fullname', JSON.stringify(res.data?.user.fullname))
-        localStorage.setItem('access_token', JSON.stringify(res.data?.access_token))
-        localStorage.setItem('refresh_token', JSON.stringify(res.data?.refresh_token))
-        setLoginSuccess(true)
-        setTimeout(() => router.push("/home"), 1000)
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("access_token", JSON.stringify(res.data.access_token));
+        localStorage.setItem("refresh_token", JSON.stringify(res.data.refresh_token));
+        router.push(config.routes.client.home);
       }
     });
   }
 
-
-
   return (
-    <>
     <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
       <section>
         <div className="flex justify-center items-center my-20">
@@ -68,9 +58,7 @@ function Login() {
                   Đăng nhập
                 </h2>
                 <div className="w-full flex flex-col gap-2">
-                  <label className="block text-gray-700 font-medium text-base">
-                    Tên đăng nhập
-                  </label>
+                  <label className="block text-gray-700 font-medium text-base">Tên đăng nhập</label>
                   <Field
                     className="w-full px-4 py-4 text-sm font-normal border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-primary"
                     required
@@ -78,15 +66,10 @@ function Login() {
                     type="text"
                     placeholder="Nhập tên tài khoản"
                   />
-                    {errors.account && touched.account ? (
-                    <div className="text-red-500 py-2">{errors.account}</div>
-                  ) : null}
                 </div>
-              
+
                 <div className="relative w-full flex flex-col gap-2">
-                  <label className="block text-gray-700  font-medium text-base">
-                    Mật khẩu
-                  </label>
+                  <label className="block text-gray-700  font-medium text-base">Mật khẩu</label>
                   <Field
                     className="w-full px-4 py-4 text-sm font-normal border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-primary"
                     required
@@ -104,9 +87,6 @@ function Login() {
                       <LuEyeClosed className="w-6 h-6" />
                     )}
                   </span>
-                  {errors.password && touched.password ? (
-                    <div className="text-red-500 py-2">{errors.password}</div>
-                  ) : null}
                 </div>
 
                 <div className="text-right w-full">
@@ -124,9 +104,7 @@ function Login() {
 
                 <div className="gap-5 flex items-center justify-center text-center text-gray-500 relative w-full">
                   <div className="border-t absolute right-0 top-1/2 w-[180px] transform -translate-y-1/2 bg-gray-200"></div>
-                  <span className="bg-white text-gray-400 text-sm font-medium">
-                    HOẶC
-                  </span>
+                  <span className="bg-white text-gray-400 text-sm font-medium">HOẶC</span>
                   <div className="border-t absolute left-0 top-1/2  w-[180px] transform -translate-y-1/2 bg-gray-200"></div>
                 </div>
 
@@ -143,9 +121,9 @@ function Login() {
 
                 <div className="flex items-center justify-center w-full gap-1.5">
                   <div>Bạn mới đến ElecKing ?</div>
-                  <Link href={config.routes.client.register} className="text-primary font-semibold text-sm hover:underline cursor-pointer">
+                  <div className="text-primary font-semibold text-sm hover:underline cursor-pointer">
                     Đăng ký
-                  </Link>
+                  </div>
                 </div>
               </Form>
             )}
@@ -153,18 +131,6 @@ function Login() {
         </div>
       </section>
     </div>
-    {loginSuccess && (
-        <>
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-5 w-[519px] h-[250px] p-10 bg-white rounded-2xl z-50 items-center justify-center shadow-lg">
-            <div>
-              <HiCheckCircle className="w-24 h-24 fill-green-500 text-white" />
-            </div>
-            <div className="text-2xl font-bold">Đăng nhập thành công!</div>
-          </div>
-        </>
-      )}
-    </>
   );
 }
 

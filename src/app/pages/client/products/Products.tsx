@@ -526,7 +526,7 @@ function Products() {
             ))}
           {products.map((product: IProduct) => (
             <Fragment key={product.id}>
-              <Product product={product} userId={userId} />
+              <Product product={product} />
             </Fragment>
           ))}
         </div>

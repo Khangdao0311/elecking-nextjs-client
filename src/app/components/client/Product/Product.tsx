@@ -6,18 +6,19 @@ import { Fragment, useEffect, useState } from "react";
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
+import { Rate } from "antd";
 
-function Product(props: { product: IProduct; userId: string }) {
+function Product(props: { product: IProduct }) {
   const [state, dispatch] = useStore();
 
   function handleAddToWish(id: string) {
-    authServices.wish(props.userId, id).then((res) => {
+    authServices.wish(state.user.id, id).then((res) => {
       dispatch(actions.load());
     });
   }
 
   function handleRemoveFromWish(id: string) {
-    authServices.wish(props.userId, id).then((res) => {
+    authServices.wish(state.user.id, id).then((res) => {
       dispatch(actions.load());
     });
   }
@@ -70,29 +71,45 @@ function Product(props: { product: IProduct; userId: string }) {
           </div>
         )}
       </div>
-      <div className="flex justify-between w-full">
+      <div className="flex items-center justify-between w-full">
         <div className="center-flex justify-start ">
           {props.product.rating !== null && (
-            <Fragment>
-              {Array.from({ length: props.product.rating }).map((_, i: number) => (
-                <FaStar className="w-4 h-4 text-yellow-500" key={i} />
-              ))}
-              {Array.from({ length: 5 - props.product.rating }).map((_, i: number) => (
-                <FaRegStar key={i} className="w-4 h-4 text-yellow-500" />
-              ))}
-              <span className="text-xs">( {props.product.rating} )</span>
-            </Fragment>
+            <Rate
+              className="text-secondaryDark text-base"
+              defaultValue={props.product.rating}
+              allowHalf
+              disabled
+              characterRender={(char) => <span style={{ marginInlineEnd: "2px" }}>{char}</span>}
+            />
           )}
         </div>
         <div className="center-flex gap-1 cursor-pointer">
           <p className="text-gray-700">Yêu thích</p>
           {state.wish.includes(props.product.id) ? (
-            <div className="group relative" onClick={() => handleRemoveFromWish(props.product.id)}>
+            <div
+              className="group relative"
+              onClick={() => {
+                if (state.user) {
+                  handleRemoveFromWish(props.product.id);
+                } else {
+                  dispatch(actions.set({ show: { ...state.show, login: true } }));
+                }
+              }}
+            >
               <FaHeart className="text-primary group-hover:scale-125 transition-all duration-300" />
               <FaHeart className="hidden absolute inset-0 animate-ping group-hover:block text-primary" />
             </div>
           ) : (
-            <div className="group relative" onClick={() => handleAddToWish(props.product.id)}>
+            <div
+              className="group relative"
+              onClick={() => {
+                if (state.user) {
+                  handleAddToWish(props.product.id);
+                } else {
+                  dispatch(actions.set({ show: { ...state.show, login: true } }));
+                }
+              }}
+            >
               <FaRegHeart className="text-primary group-hover:scale-125 transition-all duration-300" />
               <FaHeart className="hidden absolute inset-0 animate-ping group-hover:block text-primary" />
             </div>

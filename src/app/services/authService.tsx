@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "../config";
+import config from "@/app/config";
 
 export async function login(account: string, password: string) {
   return axios
@@ -32,5 +32,19 @@ export async function cart(id: string, cart: any) {
 export async function wish(id: string, product_id: string) {
   return axios
     .post(`${config.api.auth}/wish/${id}`, { product_id: product_id })
+    .then((response: any) => response.data);
+}
+
+export function getAccessToken() {
+  return localStorage.getItem("access_token") || false;
+}
+
+export function getRefreshToken() {
+  return localStorage.getItem("access_token") || false;
+}
+
+export async function getToken(refresh_token: string) {
+  return axios
+    .post(`${config.api.auth}/get_token`, { refresh_token: refresh_token })
     .then((response: any) => response.data);
 }

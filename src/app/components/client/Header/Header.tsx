@@ -12,7 +12,7 @@ import { AiOutlineShoppingCart } from "react-icons/ai";
 import { FaAngleLeft, FaAngleRight, FaAnglesUp, FaCircleUser } from "react-icons/fa6";
 import { Fragment, useEffect, useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FloatButton, Modal, Popover } from "antd";
 import { useWindowScroll } from "@uidotdev/usehooks";
 
@@ -22,113 +22,154 @@ import MenuCategory from "../MenuCategory";
 import ModalLogin from "../ModalLogin";
 import Logo from "@/app/assets/Logo";
 import * as userServices from "@/app/services/userService";
-import { useStore, actions } from "@/app/store";
+import * as authServices from "@/app/services/authService";
+import * as productServices from "@/app/services/productService";
+import { useStore, actions, initState } from "@/app/store";
+import { useLifecycles } from "react-use";
 
 function Header() {
   const [state, dispatch] = useStore();
+  const [showMenu, setShowMenu] = useState(false);
+  const [search, setSearch] = useState("");
+  const [breadCrumb, setBreadCrumb] = useState<any>([]);
+  const [load, setLoad] = useState(true);
 
-  const [user, setUser] = useState<any>(null);
-  const [cart, setCart] = useState([]);
+  useLifecycles(() => setLoad(false));
+
+  const pathname = usePathname();
+  const { id }: any = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const [scroll] = useWindowScroll();
+  const { x, y } = scroll as { x: number; y: number };
 
   useEffect(() => {
-    console.log(state);
-    const userJSON = localStorage.getItem("user");
-    const user = JSON.parse(userJSON!);
+    const userJSON = localStorage.getItem("user") || "null";
+    const user = JSON.parse(userJSON);
 
     if (user) {
-      setUser(user);
-      userServices.getById(user.id).then((res) => {
-        dispatch(actions.setWish(res.data.wish));
-        setCart(res.data.cart);
-      });
+      userServices
+        .getById(user.id)
+        .then((res) => {
+          if (res.status === 200) {
+            const token = authServices.getAccessToken();
+            const refreshToken = authServices.getRefreshToken();
+
+            if (!token || !refreshToken) {
+              clear();
+            }
+
+            dispatch(actions.set({ user: user, wish: res.data.wish, cart: res.data.cart }));
+          } else {
+            clear();
+          }
+        })
+        .catch((err) => clear());
+    } else {
+      localStorage.clear();
+      dispatch(actions.set(initState));
     }
   }, [state.load]);
-
-  const [showMenu, setShowMenu] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [search, setSearch] = useState("");
-
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (searchParams.get("search")) setSearch(searchParams.get("search") || "");
   }, [searchParams]);
 
-  const router = useRouter();
-  const [scroll] = useWindowScroll();
-  const { x, y } = scroll as { x: number; y: number };
+  useEffect(() => {
+    switch (pathname) {
+      case "/products":
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Sản phẩm",
+            link: config.routes.client.products,
+          },
+        ]);
+        break;
+      case `/product-detail/${id}`:
+        productServices.getProById(id).then((res) => {
+          setBreadCrumb([
+            {
+              name: "Trang Chủ",
+              link: config.routes.client.home,
+            },
+            {
+              name: "Sản phẩm",
+              link: config.routes.client.products,
+            },
+            {
+              name: `${res.data.category.name}`,
+              link: `${config.routes.client.products}?categoryid=${res.data.category.id}`,
+            },
+            {
+              name: `${res.data.name}`,
+              link: `${config.routes.client.productDetail}/${id}`,
+            },
+          ]);
+        });
+        break;
+      case "/cart":
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Giỏ hàng",
+            link: config.routes.client.cart,
+          },
+        ]);
+        break;
+      case "/login":
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Sản phẩm",
+            link: config.routes.client.login,
+          },
+        ]);
+        break;
+      case "/register":
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Sản phẩm",
+            link: config.routes.client.register,
+          },
+        ]);
+        break;
+      case "/checkout":
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Giỏ hàng",
+            link: config.routes.client.cart,
+          },
+          {
+            name: "Chi tiết giỏ hàng",
+            link: config.routes.client.checkout,
+          },
+        ]);
+        break;
 
-  let pathname = usePathname();
-  let breadCrumb: any = [];
-  switch (pathname) {
-    case "/products":
-      breadCrumb = [
-        {
-          name: "Trang Chủ",
-          link: config.routes.client.home,
-        },
-        {
-          name: "Sản phẩm",
-          link: config.routes.client.products,
-        },
-      ];
-      break;
-    case "/cart":
-      breadCrumb = [
-        {
-          name: "Trang Chủ",
-          link: config.routes.client.home,
-        },
-        {
-          name: "Giỏ hàng",
-          link: config.routes.client.cart,
-        },
-      ];
-      break;
-    case "/login":
-      breadCrumb = [
-        {
-          name: "Trang Chủ",
-          link: config.routes.client.home,
-        },
-        {
-          name: "Sản phẩm",
-          link: config.routes.client.login,
-        },
-      ];
-      break;
-    case "/register":
-      breadCrumb = [
-        {
-          name: "Trang Chủ",
-          link: config.routes.client.home,
-        },
-        {
-          name: "Sản phẩm",
-          link: config.routes.client.register,
-        },
-      ];
-      break;
-    case "/checkout":
-      breadCrumb = [
-        {
-          name: "Trang Chủ",
-          link: config.routes.client.home,
-        },
-        {
-          name: "Giỏ hàng",
-          link: config.routes.client.cart,
-        },
-        {
-          name: "Chi tiết giỏ hàng",
-          link: config.routes.client.checkout,
-        },
-      ];
-      break;
-
-    default:
-      break;
-  }
+      default:
+        setBreadCrumb([]);
+        break;
+    }
+  }, [pathname]);
 
   function handleSearch() {
     const searchParamsNew = new URLSearchParams(searchParams.toString());
@@ -138,6 +179,12 @@ function Header() {
     });
   }
 
+  function clear() {
+    localStorage.clear();
+    dispatch(actions.set(initState));
+    router.push(config.routes.client.login);
+  }
+
   return (
     <>
       <header
@@ -145,60 +192,79 @@ function Header() {
           y < 100 ? "top-0" : "-top-11"
         } transition-all duration-200 w-full z-30 shadow-lg`}
       >
-        <div className="bg-[#E9EFFF] h-11 p-2 hidden md:block">
-          <Swiper
-            className="container-custom h-full relative "
-            slidesPerView={3}
-            spaceBetween={16}
-            autoplay={{
-              delay: 2000,
-              disableOnInteraction: false,
-            }}
-            modules={[Autoplay, Navigation]}
-            breakpoints={{
-              1024: { slidesPerView: 3 },
-              0: { slidesPerView: 2 },
-            }}
-          >
-            <SwiperSlide className="">
-              <img
-                className="w-full h-full object-cover px-10 "
-                src="https://cdn2.cellphones.com.vn/x/https://dashboard.cellphones.com.vn/storage/Top%20banner_Giao%20hang.svg"
-                alt="Benner"
-              />
-            </SwiperSlide>
-            <SwiperSlide className="">
-              <img
-                className="w-full h-full object-cover px-10 "
-                src="https://cdn2.cellphones.com.vn/x/https://dashboard.cellphones.com.vn/storage/Top%20banner_Chinh%20hang.svg"
-                alt="Benner"
-              />
-            </SwiperSlide>
-            <SwiperSlide className="">
-              <img
-                className="w-full h-full object-cover px-10 "
-                src="https://cdn2.cellphones.com.vn/x/https://dashboard.cellphones.com.vn/storage/Top%20banner_Thu%20cu.svg"
-                alt="Benner"
-              />
-            </SwiperSlide>
-            <SwiperSlide className="">
-              <img
-                className="w-full h-full object-cover px-10 "
-                src="https://cdn2.cellphones.com.vn/x/https://dashboard.cellphones.com.vn/storage/Top%20banner_Giao%20hang.svg"
-                alt="Benner"
-              />
-            </SwiperSlide>
-            {/* navigation custom */}
-            {/* <button className="custom-prev absolute left-0 top-1/2 -translate-y-1/2 z-10">
-              <FaAngleLeft className="w-7 h-7" />
-            </button>
-            <button className="custom-next absolute right-0 top-1/2 -translate-y-1/2 z-10">
-              <FaAngleRight className="w-7 h-7" />
-            </button> */}
-          </Swiper>
-        </div>
-        <div className="bg-primary py-3 px-3 md:px-3.5 md:py-3.5 lg:px-4 lg:py-4 xl:px-0 ">
-          <div className="container-custom flex gap-4">
+        {load ? (
+          <div className="bg-[#E9EFFF] h-11 p-2 hidden md:block">
+            <div className="container-custom h-full relative grid grid-cols-3 gap-4">
+              <div className="relative bg-gray-300 rounded-lg  shadow !w-full h-full overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
+                      w-full h-full animate-[shimmer_1.5s_infinite]"
+                ></div>
+              </div>
+              <div className="relative bg-gray-300 rounded-lg  shadow !w-full h-full overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
+                      w-full h-full animate-[shimmer_1.5s_infinite]"
+                ></div>
+              </div>
+              <div className="relative bg-gray-300 rounded-lg  shadow !w-full h-full overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
+                      w-full h-full animate-[shimmer_1.5s_infinite]"
+                ></div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-[#E9EFFF] h-11 p-2 hidden md:block">
+            <Swiper
+              className="container-custom h-full relative "
+              slidesPerView={3}
+              spaceBetween={16}
+              autoplay={{
+                delay: 2000,
+                disableOnInteraction: false,
+              }}
+              modules={[Autoplay, Navigation]}
+              breakpoints={{
+                1024: { slidesPerView: 3 },
+                0: { slidesPerView: 2 },
+              }}
+            >
+              <SwiperSlide className="">
+                <img
+                  className="w-full h-full object-cover px-10 "
+                  src="https://cdn2.cellphones.com.vn/x/https://dashboard.cellphones.com.vn/storage/Top%20banner_Giao%20hang.svg"
+                  alt="Benner"
+                />
+              </SwiperSlide>
+              <SwiperSlide className="">
+                <img
+                  className="w-full h-full object-cover px-10 "
+                  src="https://cdn2.cellphones.com.vn/x/https://dashboard.cellphones.com.vn/storage/Top%20banner_Chinh%20hang.svg"
+                  alt="Benner"
+                />
+              </SwiperSlide>
+              <SwiperSlide className="">
+                <img
+                  className="w-full h-full object-cover px-10 "
+                  src="https://cdn2.cellphones.com.vn/x/https://dashboard.cellphones.com.vn/storage/Top%20banner_Thu%20cu.svg"
+                  alt="Benner"
+                />
+              </SwiperSlide>
+              <SwiperSlide className="">
+                <img
+                  className="w-full h-full object-cover px-10 "
+                  src="https://cdn2.cellphones.com.vn/x/https://dashboard.cellphones.com.vn/storage/Top%20banner_Giao%20hang.svg"
+                  alt="Benner"
+                />
+              </SwiperSlide>
+            </Swiper>
+          </div>
+        )}
+
+        <div className="bg-primary  ">
+          <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
             {/* Logo elecking */}
             <Link href={config.routes.client.home} className=" w-12 md:w-[200px] h-12">
               <Logo className="hidden md:block" />
@@ -244,20 +310,20 @@ function Header() {
 
             {/* Icon Cart */}
             <div
-              className="w-[92px] h-12 center-flex rounded-lg hover:bg-white/20 transition-all duration-300"
+              className="w-[92px] h-12 center-flex rounded-lg hover:bg-white/20 transition-all duration-300 select-none cursor-pointer"
               onClick={() => {
-                if (!!user) {
+                if (!!state.user) {
                   router.push(config.routes.client.cart);
                 } else {
-                  setShowLogin(true);
+                  dispatch(actions.set({ show: { ...state.show, login: true } }));
                 }
               }}
             >
               <div className="relative">
                 <AiOutlineShoppingCart className="w-9 h-9 text-white" />
-                {!!cart.length && (
+                {!!state.cart.length && (
                   <div className="absolute w-7 h-7 border border-white font-semibold text-base center-flex bg-secondary center-flex rounded-full top-0 right-0 translate-x-1/2	-translate-y-1/3 md:-translate-y-1/2	">
-                    {cart.length}
+                    {state.cart.length}
                   </div>
                 )}
               </div>
@@ -267,16 +333,16 @@ function Header() {
             <div
               className="hidden w-[92px] h-12 bg-white rounded-lg md:center-flex flex-col cursor-pointer select-none"
               onClick={() => {
-                if (!!user) {
+                if (!!state.user) {
                   router.push(config.routes.client.account);
                 } else {
-                  setShowLogin(true);
+                  dispatch(actions.set({ show: { ...state.show, login: true } }));
                 }
               }}
             >
               <FaCircleUser className="text-base w-6 h-6 text-gray-800" />
               <p className="text-gray-800 text-xs font-medium">
-                {!!user ? user.username : "Emember"}
+                {!!state.user ? state.user.username : "Emember"}
               </p>
             </div>
           </div>
@@ -305,14 +371,16 @@ function Header() {
       />
       {/* modal login */}
       <Modal
-        open={showLogin}
-        onCancel={() => setShowLogin(false)}
+        open={state.show.login}
+        onCancel={() => dispatch(actions.set({ show: { ...state.show, login: false } }))}
         footer={null}
         title={null}
         centered
         maskClosable={false}
       >
-        <ModalLogin onClick={() => setShowLogin(false)} />
+        <ModalLogin
+          onClick={() => dispatch(actions.set({ show: { ...state.show, login: false } }))}
+        />
       </Modal>
 
       {/* overlay popup categpry menu */}
