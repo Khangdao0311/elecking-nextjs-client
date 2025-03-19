@@ -12,15 +12,19 @@ import Link from "next/link";
 import config from "@/app/config";
 import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
+import { Modal } from "antd";
+
 function ProductList() {
-  const [productdetail, setProductdetail] = useState(false);
-  const showproductdetail = () => setProductdetail(true);
-  const closeproductdetail = () => setProductdetail(false);
+  const [statusProductDetail, setStatusProductDetail] = useState(false);
+  const showproductdetail = () => setStatusProductDetail(true);
+  const closeproductdetail = () => setStatusProductDetail(false);
   const [products, setProducts] = useState([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
+  const [productDetail, setProductDetail] = useState<IProduct>();
+
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
@@ -33,16 +37,6 @@ function ProductList() {
       setTotalPages(res.total);
     });
   }, [limit, page, search]);
-  // console.log(products);
-  console.log(
-    "Products:",
-    products.length,
-    "Limit:",
-    limit,
-    "Total:",
-    totalPages
-  );
-  console.log(products);
 
   const columns: TableProps<IProduct>["columns"] = [
     {
@@ -162,13 +156,18 @@ function ProductList() {
       render: (_, record) => (
         <Space size="middle">
           <Link
-            href={`${config.routes.admin.product.edit}/${record.id}`}
+            href={`${config.routes.admin.product.edit}${record.id}`}
             className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
           >
             <FiEdit className="w-5 h-5" />
           </Link>
           <button
-            onClick={showproductdetail}
+            onClick={() => {
+              showproductdetail();
+              productServices
+                .getProById(record.id)
+                .then((res) => setProductDetail(res.data));
+            }}
             className="w-6 h-6 bg-red-100 rounded text-thirdary center-flex"
           >
             <CiCircleMore className="w-5 h-5" />
@@ -177,6 +176,7 @@ function ProductList() {
       ),
     },
   ];
+  console.log(productDetail);
 
   return (
     <>
@@ -200,94 +200,146 @@ function ProductList() {
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo sản phẩm mới</p>
         </Link>
-        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" ,}}>
+        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IProduct>
             columns={columns}
             dataSource={products}
             rowKey="id"
-            scroll={{ x: 1000, y: 400 }}  
+            scroll={{ x: 1000, y: 400 }}
             pagination={false}
             tableLayout="auto"
           />
-          
         </div>
-        {totalPages > limit &&(
-            <div className="flex w-full justify-end">
-          <Pagination
-          current={page}
-            onChange={(e) => setPage(e)}
-            defaultCurrent={1}
-            align="end"
-            pageSize={limit}
-            total={totalPages}
-            showSizeChanger={false}
-          />
-        </div>
+        {totalPages > limit && (
+          <div className="flex w-full justify-end">
+            <Pagination
+              current={page}
+              onChange={(e) => setPage(e)}
+              defaultCurrent={1}
+              align="end"
+              pageSize={limit}
+              total={totalPages}
+              showSizeChanger={false}
+            />
+          </div>
         )}
       </div>
-      {productdetail && (
+      {statusProductDetail && (
         <>
-          <div className="bg-white w-[600px] center-fixed flex flex-col gap-2.5  rounded-lg shadow-xl z-50">
-            <div className="h-[64px] flex items-center px-4">
+          <div className="bg-white w-[1200px] center-fixed flex flex-col gap-2.5 rounded-lg shadow-xl z-50">
+            <div className="h-[64px] flex items-center px-4 border-b border-gray-200">
               <p className="text-xl font-semibold w-full">Thông tin sản phẩm</p>
             </div>
-            <div className="px-4">
-              <div className="flex px-3 py-2.5 gap-2.5 border border-gray-200 rounded">
+
+            <div className="px-4 py-2">
+              <div className="flex px-3 py-2.5 gap-2.5 border border-gray-200 rounded bg-gray-50">
                 <p className="text-sm font-medium">Tên sản phẩm:</p>
-                <p className="text-sm font-medium">
-                  iphone 16 Pro Max | Chính hãng VN/A
+                <p className="text-sm font-medium text-gray-700">
+                  {productDetail?.name}
                 </p>
               </div>
             </div>
-            <div className="flex-col gap-3 px-4 py-1">
-              <div className="flex flex-col gap-2 py-2 px-3 border shadow-lg rounded">
-                <div className="flex">
-                  <p className="min-w-[64px]">Hình ảnh</p>
-                  <p className="w-full text-center">Màu</p>
-                  <p className="w-full text-center">Dung lượng</p>
-                  <p className="min-w-[64px]">Số lượng</p>
-                </div>
-                <div className="flex border-t">
-                  <div className="min-w-[64px] flex items-center">
-                    <img
-                      src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16e-128gb.png"
-                      alt=""
-                      className="w-16 h-16"
-                    />
-                  </div>
-                  <div className="w-full text-center flex items-center">
-                    <p className="w-full text-sm font-medium">Titan tự nhiên</p>
-                  </div>
-                  <div className="w-full flex-col py-1.5 gap-1.5">
-                    <p className="text-sm text-center font-normal border-b border-gray-200">
-                      256 GB
-                    </p>
-                    <p className="text-sm text-center font-normal border-b border-gray-200">
-                      512 GB
-                    </p>
-                    <p className="text-sm text-center font-normal ">1 TB</p>
-                  </div>
-                  <div className="min-w-[64px] flex-col py-1.5 gap-1.5">
-                    <p className="text-sm text-center font-normal border-b border-gray-200">
-                      10
-                    </p>
-                    <p className="text-sm text-center font-normal border-b border-gray-200">
-                      10
-                    </p>
-                    <p className="text-sm text-center font-normal">10</p>
-                  </div>
-                </div>
-              </div>
-              <div className=" flex gap-4 justify-end h-[64px] items-center">
-                <p
-                  className="px-6 bg-red-100 text-red-800 h-10 flex items-center rounded text-sm font-bold cursor-pointer"
-                  onClick={closeproductdetail}
-                >
-                  Trở lại
-                </p>
-              </div>
+
+            <div className="flex-col gap-3 px-4 py-1 overflow-y-auto max-h-[500px]">
+              <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal border-collapse">
+                <thead className="bg-stone-100 sticky top-0 z-10">
+                  <tr>
+                    <th className="px-3 py-3 w-12 text-center font-semibold text-gray-700">
+                      STT
+                    </th>
+                    <th className="w-24 px-3 py-3 text-left font-semibold text-gray-700">
+                      Hình ảnh
+                    </th>
+                    <th className="min-w-[140px] px-3 py-3 text-left font-semibold text-gray-700">
+                      Biến thể
+                    </th>
+                    <th className="min-w-[140px] px-3 py-3 text-left font-semibold text-gray-700">
+                      Màu sắc
+                    </th>
+                    <th className="min-w-[150px] px-3 py-3 text-left font-semibold text-gray-700">
+                      Giá bán
+                    </th>
+                    <th className="w-[140px] min-w-[140px] px-3 py-3 text-left font-semibold text-gray-700">
+                      Giá thêm
+                    </th>
+                    <th className="w-[144px] min-w-[144px] px-3 py-3 text-center font-semibold text-gray-700">
+                      Trạng Thái
+                    </th>
+                    <th className="w-[96px] min-w-[96px] px-3 py-3 text-center font-semibold text-gray-700">
+                      Số lượng
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {productDetail?.variants?.map((product, variantIndex) =>
+                    product.colors.map((color, colorIndex) => (
+                      <tr
+                        key={`${variantIndex}-${colorIndex}`}
+                        className="even:bg-gray-50 hover:bg-gray-100 transition-all duration-200"
+                      >
+                        <td className="px-3 py-3 text-center text-gray-700">
+                          {variantIndex * product.colors.length +
+                            colorIndex +
+                            1}
+                        </td>
+                        <td className="px-3 py-3">
+                          <img
+                            className="w-16 h-16 object-cover rounded-md border"
+                            src={color.image}
+                            alt="product"
+                          />
+                        </td>
+                        <td className="px-3 py-3 text-gray-700">
+                          {product.properties.length > 0
+                            ? product.properties[0]?.name
+                            : "Không có"}
+                        </td>
+                        <td className="px-3 py-3 text-gray-700">
+                          {color.name}
+                        </td>
+                        <td className="px-3 py-3 text-gray-700">
+                          {(
+                            product.price -
+                            product.price_sale +
+                            color.price_extra
+                          ).toLocaleString("vi-VN")}{" "}
+                          đ
+                        </td>
+                        <td className="px-3 py-3 text-gray-700">
+                          {color.price_extra.toLocaleString("vi-VN")} đ
+                        </td>
+                        <td className="px-3 py-3 text-center">
+                          <span
+                            className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${
+                              color.status === 1
+                                ? "text-green-800 bg-green-100"
+                                : "text-red-800 bg-red-100"
+                            }`}
+                          >
+                            {color.status === 1 ? "Hoạt động" : "Ngừng bán"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 text-center text-gray-700">
+                          {color.quantity}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex gap-4 justify-end h-[64px] items-center px-4 border-t border-gray-200 bg-gray-50">
+              <p
+                className="px-6 bg-red-100 text-red-800 h-10 flex items-center justify-center rounded text-sm font-bold cursor-pointer hover:bg-red-200 transition-all duration-200"
+                onClick={closeproductdetail}
+              >
+                Trở lại
+              </p>
             </div>
           </div>
+
           <div className="overlay"></div>
         </>
       )}
