@@ -216,21 +216,21 @@ function Sidebar() {
                       <Link
                         href={config.routes.admin.voucher.list.stillexpired}
                         className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${
-                          pathname.startsWith("/admin/voucher")
+                          pathname.startsWith("/admin/voucher/list/stillexpired")
                             ? "pl-7 bg-white"
                             : ""
                         } transition-all duration-300	rounded-lg cursor-pointer select-none`}
                       >
                         <VscTag
                           className={`group-hover:text-primary ${
-                            pathname.startsWith("/admin/voucher")
+                            pathname.startsWith("/admin/voucher/list/stillexpired")
                               ? "text-primary"
                               : "text-white"
                           } w-6 h-6`}
                         />
                         <p
                           className={`group-hover:text-primary ${
-                            pathname.startsWith("/admin/voucher")
+                            pathname.startsWith("/admin/voucher/list/stillexpired")
                               ? "text-primary"
                               : "text-white"
                           } text-sm font-bold`}
@@ -246,21 +246,21 @@ function Sidebar() {
                       <Link
                         href={config.routes.admin.voucher.list.expired}
                         className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${
-                          pathname.startsWith("/admin/voucher/2")
+                          pathname.startsWith("/admin/voucher/list/expired")
                             ? "pl-7 bg-white"
                             : ""
                         } transition-all duration-300	rounded-lg cursor-pointer select-none`}
                       >
                         <VscTag
                           className={`group-hover:text-primary ${
-                            pathname.startsWith("/admin/voucher/2")
+                            pathname.startsWith("/admin/voucher/list/expired")
                               ? "text-primary"
                               : "text-white"
                           } w-6 h-6`}
                         />
                         <p
                           className={`group-hover:text-primary ${
-                            pathname.startsWith("/admin/voucher/2")
+                            pathname.startsWith("/admin/voucher/list/expired")
                               ? "text-primary"
                               : "text-white"
                           } text-sm font-bold`}
@@ -291,7 +291,8 @@ function Sidebar() {
         <style jsx>{`
           :global(.ant-menu-item-only-child) {
             margin: 0 !important;
-            padding: 10px !important;
+            padding: 5px !important;
+            width: 100% !important;
             background-color: rgb(
               30 41 59 / var(--tw-bg-opacity, 1)
             ) !important;

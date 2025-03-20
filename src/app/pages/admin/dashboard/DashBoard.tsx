@@ -6,8 +6,11 @@ import { Bar } from "react-chartjs-2";
 import * as orderServices from "@/app/services/orderService";
 import * as userServices from "@/app/services/userService";
 import * as voucherServices from "@/app/services/voucherService";
+import * as statsServices from "@/app/services/statService";
 import moment from "moment";
-import { Select, Space } from 'antd';
+import { FiEdit } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { Space, Table, TableProps } from "antd";
 import {
   Chart as ChartJS,
   BarElement,
@@ -17,54 +20,22 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
-import { FiEdit } from "react-icons/fi";
-import { useEffect, useState } from "react";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
-const data = {
-  labels: [
-    "Tháng 1",
-    "Tháng 2",
-    "Tháng 3",
-    "Tháng 4",
-    "Tháng 5",
-    "Tháng 6",
-    "Tháng 7",
-    "Tháng 8",
-    "Tháng 9",
-    "Tháng 10",
-    "Tháng 11",
-    "Tháng 12",
-  ],
-  datasets: [
-    {
-      label: "Doanh Thu",
-      data: [4000, 3000, 5000, 7000, 6000, 8000, 12000,8000,8000,8000,8000,8000],
-      backgroundColor: "#4F46E5",
-      borderRadius: 6,
-    },
-  ],
+const handleChange = (value: string) => {
+  console.log(`selected ${value}`);
 };
-const options: ChartOptions<"bar"> = {
-  responsive: true,
-  plugins: {
-    legend: { display: true, position: "top" },
-    tooltip: { enabled: true },
-  },
-  scales: {
-    x: { grid: { display: false } },
-    y: { beginAtZero: true },
-  },
-};
+
 function DashBoard() {
   const [getorders, setGetorders] = useState<IOrder[]>([]);
   const [vouchers, setVoucher] = useState()
-  const [users, setUsers] = useState<{ [key: string]: IUser }>({});
+  const [users, setUsers] = useState< IUser[] >([]);
   const [limit, setLimit] = useState(1000);
   const [totalorder, setTotalorder] = useState()
-  const [selectedYear, setSelectedYear] = useState("Tổng doanh thu");
-  const handleChange = (value: string) => {
-    setSelectedYear(`Tổng doanh thu ${value}`); // Cập nhật label khi chọn
-  };
+  const [stats, setStats] = useState([])
+  const [year, setYear] = useState(new Date().getFullYear())
+  const [chartData, setChartData] = useState<number[]>(new Array(12).fill(0));
+  const [totalprice, setTotalprice] = useState()
+
   useEffect(() => {
     const query: any = {};
 
@@ -93,10 +64,138 @@ function DashBoard() {
       setTotalorder(res.total);
     });
   }, []);
-  // console.log(getorders);
+  useEffect(() => {
+    const query = {year : year};
+    console.log(query);
+    statsServices.getQuery(query).then((res) => {
+      setStats(res.data);
+      setTotalprice(res.data.totalPrice);
+      const updatedChartData = Array.from({ length: 12 }, (_, index) => {
+        return res.data[index + 1]?.price || 0;
+      });
+      setChartData(updatedChartData);
+    });
+  }, [year]);
+  console.log(getorders);
+  console.log(stats);
+  const data = {
+    labels: [
+      "Tháng 1",
+      "Tháng 2",
+      "Tháng 3",
+      "Tháng 4",
+      "Tháng 5",
+      "Tháng 6",
+      "Tháng 7",
+      "Tháng 8",
+      "Tháng 9",
+      "Tháng 10",
+      "Tháng 11",
+      "Tháng 12",
+    ],
+    datasets: [
+      {
+        label: "Doanh Thu",
+        data: chartData,
+        backgroundColor: "#4F46E5",
+        borderRadius: 6,
+      },
+    ],
+  };
+  const options: ChartOptions<"bar"> = {
+    responsive: true,
+    plugins: {
+      legend: { display: true, position: "top" },
+      tooltip: { enabled: true },
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true },
+    },
+  };
+  const ordercolumns: TableProps<IOrder>["columns"] = [
+    {
+      title: "ID Đơn Hàng",
+      dataIndex: "id",
+      key: "id",
+      width: 150,
+      align: "left",
+      render: (id) => (
+        <span className="line-clamp-1">{id.length > 10 ? `${id.slice(0,10)}...`: id}</span>
+      )
+    },
+    {
+      title: "Tên Khách Hàng",
+      dataIndex: "user",
+      key: "user",
+      width: 200,
+      align: "left",
+      render: (user) => user.fullname,
+    },
+    {
+      title: "Tổng Tiền",
+      dataIndex: "total",
+      key: "total",
+      width: 150,
+      align: "left",
+      render: (total) => `${(+total).toLocaleString("vi-VN")} đ`,
+    },
+    {
+      title: "Chức Năng",
+      key: "action",
+      width: 130,
+      align: "center",
+      render: (_, record) => (
+        <Space size="middle">
+          <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
+            <FiEdit className="w-5 h-5" />
+          </button>
+        </Space>
+      ),
+    },
+  ];
+  const usercolumns: TableProps<IUser>["columns"] = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      align: "left",
+      render: (id) => (
+        <span className="line-clamp-1">{id.length > 10 ? `${id.slice(0,10)}...`: id}</span>
+      )
+    },
+    {
+      title: "Tên Khách Hàng",
+      dataIndex: "fullname",
+      key: "fullname",
+      width: 220,
+      align: "left",
+      render: (fullname) => (
+        <span className="line-clamp-1">{fullname}</span>
+      )
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      width: 200,
+      align: "left",
+      render: (email) => (
+        <span className="line-clamp-1">{email}</span>
+      )
+    },
+    {
+      title: "Số Điện Thoại",
+      dataIndex: "phone",
+      key: "phone",
+      width: 180,
+      align: "left",
+    },
+  ];
+  
   return (
     <>
-      <TitleAdmin title="Bảng điều khiển" />
+      <TitleAdmin title="Bảng điều khiển" yearChange={(newYear: any)=>{setYear(newYear)}}/>
       <div className="bg-white shadow-lg rounded-lg p-4 flex items-start flex-col gap-4">
         <div className="flex gap-4 justify-between w-full  max-w-full">
           <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
@@ -105,20 +204,7 @@ function DashBoard() {
             </div>
             <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
               <p className="text-base font-bold text-red-500">Tổng doanh thu</p>
-              <Select
-      value={selectedYear}
-      style={{ width: "100%", color: "red", fontWeight: "bold" }}
-      onChange={handleChange}
-      options={[
-        { value: "2021", label: "2021" },
-        { value: "2022", label: "2022" },
-        { value: "2023", label: "2023" },
-        { value: "2024", label: "2024" },
-        { value: "2025", label: "2025" },
-      ]}
-      variant="borderless"
-    />
-              <p className="text-base font-bold">2.100.000 đ</p>
+              <p className="text-base font-bold">{(totalprice??0).toLocaleString("vi-VN")} đ</p>
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>
@@ -164,89 +250,33 @@ function DashBoard() {
         </div>
         <div className="flex w-full gap-4">
           <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
-            <p className="text-xl font-bold">Đơn hàng chờ xử lý</p>
+            <p className="text-xl font-bold">Đơn hàng chờ xác nhận</p>
             <div className="border border-zinc-300"></div>
-            <div className="overflow-scroll">
-              <table className="w-full">
-                <thead className="bg-stone-100 text-sm font-normal text-left">
-                  <tr>
-                    <th className="px-2 py-2.5">ID Đơn Hàng</th>
-                    <th className="px-2 py-2.5">Tên Khách Hàng</th>
-                    <th className="px-2 py-2.5">Tổng Tiền</th>
-                    <th className="px-2 py-2.5 min-w-24 text-center">
-                      Trạng Thái
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {getorders
-                    .filter((order: IOrder) => order.status === 2)
-                    .map((order: IOrder, index: number) => (
-                      <tr
-                        key={index}
-                        className="text-sm font-normal even:bg-gray-100"
-                      >
-                        <td className="px-2 py-2.5">{order.id}</td>
-                        <td className="px-2 py-2.5">
-                          {order.user.fullname}
-                        </td>
-                        <td className="px-2 py-2.5">
-                          {(+order.total).toLocaleString("vi-VN")}
-                        </td>
-                        <td className="px-2 py-2.5 w-[96px] max-w-[96px] text-center">
-                          <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800">
-                            <FiEdit className="w-5 h-5 text-center" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+            <div style={{ width: "100%", overflowY: "auto", maxWidth: "100%" }}>
+          <Table<IOrder>
+            columns={ordercolumns}
+            dataSource={getorders.filter(order => order.status === 2)}
+            rowKey="id"
+            scroll={{ x: 500, y: 230 }} 
+            pagination={false}
+            tableLayout="auto"
+          />
+        </div>
           </div>
           <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
             <p className="text-xl font-bold">Khách hàng mới</p>
             <div className="border border-zinc-300"></div>
-            <div className="overflow-scroll">
-              <table className="w-full">
-                <thead className="bg-stone-100 text-sm font-normal text-left">
-                  <tr>
-                    <th className="px-2 py-2.5">ID</th>
-                    <th className="px-2 py-2.5">Tên Khách Hàng</th>
-                    <th className="px-2 py-2.5">Email</th>
-                    <th className="px-2 py-2.5">Số Điện Thoại</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {Object.values(users)
-                    .sort((a, b) => {
-                      const dateA = moment(
-                        a.register_date,
-                        "YYYYMMDD"
-                      ).valueOf();
-                      const dateB = moment(
-                        b.register_date,
-                        "YYYYMMDD"
-                      ).valueOf();
-                      return dateB - dateA;
-                    })
-                    .map((user: IUser, index: number) => (
-                      <tr
-                        key={index}
-                        className="text-sm font-normal even:bg-gray-100"
-                      >
-                        <td className="px-2 py-2.5">{user.id}</td>
-                        <td className="px-2 py-2.5">{user.fullname}</td>
-                        <td className="px-2 py-2.5">{user.email}</td>
-                        <td className="px-2 py-2.5">{user.phone}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+            <div style={{ width: "100%", overflowY: "auto", maxWidth: "100%" }}>
+          <Table<IUser>
+            columns={usercolumns}
+            dataSource={users}
+            rowKey="id"
+            scroll={{ x: 500, y: 230 }} 
+            pagination={false}
+            tableLayout="auto"
+          />
+        </div>
             </div>
-          </div>
         </div>
       </div>
     </>

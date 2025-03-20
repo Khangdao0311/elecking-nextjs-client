@@ -10,8 +10,10 @@ import Statusvoucher from "@/app/pages/admin/Components/Status";
 import moment from "moment";
 import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
+import config from "@/app/config";
+import Link from "next/link";
 function VoucherStillexpired() {
-  const [vouchers, setVouchers] = useState([]);
+  const [vouchers, setVouchers] = useState<IVocher []>([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
@@ -120,9 +122,11 @@ function VoucherStillexpired() {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
-          <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
+          <Link
+          href={`${config.routes.admin.voucher.edit}/${record.id}`}
+          className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
             <FiEdit className="w-5 h-5" />
-          </button>
+          </Link>
         </Space>
       ),
     },
@@ -143,14 +147,16 @@ function VoucherStillexpired() {
         }}
       />
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <div className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
+        <Link 
+        href={config.routes.admin.voucher.add}
+        className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo voucher mới</p>
-        </div>
+        </Link>
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
                   <Table<IVocher>
                     columns={columns}
-                    dataSource={vouchers}
+                    dataSource={vouchers.filter(voucher => voucher.status === 1)}
                     rowKey="id"
                     scroll={{ x: 1000, y: 400 }} 
                     pagination={false}

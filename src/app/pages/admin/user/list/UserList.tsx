@@ -7,17 +7,20 @@ import { FiEdit } from "react-icons/fi";
 import { GoPlus } from "react-icons/go";
 import { MdDeleteForever } from "react-icons/md";
 import { useEffect, useState } from "react";
-import Statususer from "@/app/pages/admin/Components/Status" 
+import Statususer from "@/app/pages/admin/Components/Status";
 import Link from "next/link";
 import config from "@/app/config";
 import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
+import { FaEye } from "react-icons/fa6";
+import { LuEyeClosed } from "react-icons/lu";
 function UserList() {
   const [users, setUsers] = useState([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
+  const [eyeState, setEyeState] = useState<{ [key: string]: boolean }>({});
   useEffect(() => {
     const query: any = {};
 
@@ -27,8 +30,24 @@ function UserList() {
       query.search = search;
     }
 
-    userServices.getQuery(query).then((res) => {setUsers(res.data); setTotalPages(res.total);});
+    userServices.getQuery(query).then((res) => {
+      setUsers(res.data);
+      setTotalPages(res.total);
+      const initialEyeState = res.data.reduce((acc: any, user: any) => {
+        acc[user.id] = true;
+        return acc;
+      }, {});
+      setEyeState(initialEyeState);
+    });
   }, [limit, page, search]);
+
+  const toggleEye = (id: string) => {
+    setEyeState((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   console.log(users);
   const columns: TableProps<IUser>["columns"] = [
     {
@@ -46,7 +65,10 @@ function UserList() {
       render: (avatar) => (
         <div className="flex items-center justify-center">
           <img
-            src={avatar || "https://img.myloview.com/stickers/default-avatar-profile-icon-vector-social-media-user-image-700-205124837.jpg"}
+            src={
+              avatar ||
+              "https://img.myloview.com/stickers/default-avatar-profile-icon-vector-social-media-user-image-700-205124837.jpg"
+            }
             alt="Avatar"
             className="w-8 h-8 rounded-full"
           />
@@ -97,12 +119,12 @@ function UserList() {
           case 3:
             text = "Đang vận chuyển";
             break;
-        };
+        }
         return (
           <div className="flex items-center justify-center">
             <Statususer status={status} text={text} />
           </div>
-        )
+        );
       },
     },
     {
@@ -117,8 +139,11 @@ function UserList() {
           >
             <FiEdit className="w-5 h-5" />
           </Link>
-          <button className="w-6 h-6 bg-red-100 rounded text-red-800 center-flex">
-            <MdDeleteForever className="w-5 h-5" />
+          <button
+            className="w-6 h-6 bg-red-100 rounded text-red-800 flex items-center justify-center"
+            onClick={() => toggleEye(record.id)}
+          >
+            {eyeState[record.id] ? <FaEye className="w-5 h-5" /> : <LuEyeClosed className="w-5 h-5" />}
           </button>
         </Space>
       ),
@@ -127,40 +152,48 @@ function UserList() {
   return (
     <>
       <TitleAdmin title="Quản lý người dùng" />
-      <Boxsearchlimit title="người dùng" onLimitChange={(newLimit:any) =>{setLimit(newLimit); setPage(1)}} onSearch={(value) => {
+      <Boxsearchlimit
+        title="người dùng"
+        onLimitChange={(newLimit: any) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
+        onSearch={(value) => {
           setSearch(value);
           setPage(1);
-        }}/>
+        }}
+      />
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <Link href={config.routes.admin.user.add} className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
+        <Link
+          href={config.routes.admin.user.add}
+          className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
+        >
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo người dùng mới</p>
         </Link>
-        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" ,}}>
+        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IUser>
             columns={columns}
             dataSource={users}
             rowKey="id"
-            scroll={{ x: 1000, y: 400 }}  
+            scroll={{ x: 1000, y: 400 }}
             pagination={false}
             tableLayout="auto"
           />
-          
         </div>
-        {totalPages > limit &&(
-            <div className="flex w-full justify-end">
-          <Pagination
-          current={page}
-            onChange={(e) => setPage(e)}
-            defaultCurrent={1}
-            align="end"
-            pageSize={limit}
-            total={totalPages}
-            showSizeChanger={false}
-          />
-        </div>
+        {totalPages > limit && (
+          <div className="flex w-full justify-end">
+            <Pagination
+              current={page}
+              onChange={(e) => setPage(e)}
+              defaultCurrent={1}
+              align="end"
+              pageSize={limit}
+              total={totalPages}
+              showSizeChanger={false}
+            />
+          </div>
         )}
-        
       </div>
     </>
   );
