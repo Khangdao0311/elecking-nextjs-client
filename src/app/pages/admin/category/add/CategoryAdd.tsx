@@ -1,35 +1,52 @@
 "use client";
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Upload } from "antd";
-import React, {useState} from "react";
+import { Input, Select, Upload } from "antd";
+import React, { useState } from "react";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { IoCloseSharp } from "react-icons/io5";
 
-
 function CategoryAdd() {
+  const [name, setName] = useState();
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const OPTIONS = [
+    "ram",
+    "storege",
+    "cpu",
+    "gpu",
+    "ssd",
+    "hdd",
+    "screen_size",
+    "refresh_rate",
+    "resolution",
+  ];
+  const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
+  const handleChange = (value: string[]) => {
+    console.log("Các giá trị đã chọn:", value);
+    setSelectedItems(value);
+  };
   const [images, setImages] = useState<UploadFile[]>([]);
-  const beforeUpload = (file:File) => {
-     const newfile: UploadFile = {
-       uid: crypto.randomUUID(),
-       name: file.name,
-       status: "uploading",
-       originFileObj: file as RcFile,
-     }
-     setImages((prev)=>[...prev,newfile]);
-     setTimeout(() => {
-       setImages((prev) =>
-         prev.map((item) =>
-           item.uid === newfile.uid ? { ...item, status: "done" } : item
-     )
-   );
- }, 1000);
- 
- return false;
- }
- const removeimage = (file:UploadFile) =>{
-   setImages((prev) => prev.filter((item)=>item.uid!==file.uid))
- }
+  const beforeUpload = (file: File) => {
+    const newfile: UploadFile = {
+      uid: crypto.randomUUID(),
+      name: file.name,
+      status: "uploading",
+      originFileObj: file as RcFile,
+    };
+    setImages((prev) => [...prev, newfile]);
+    setTimeout(() => {
+      setImages((prev) =>
+        prev.map((item) =>
+          item.uid === newfile.uid ? { ...item, status: "done" } : item
+        )
+      );
+    }, 1000);
+
+    return false;
+  };
+  const removeimage = (file: UploadFile) => {
+    setImages((prev) => prev.filter((item) => item.uid !== file.uid));
+  };
   return (
     <>
       <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
@@ -42,13 +59,53 @@ function CategoryAdd() {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex gap-0.5 flex-col">
-              <div className="text-sm font-medium">Tên Danh Mục <span className="text-primary">*</span></div>
+              <div className="text-sm font-medium">
+                Tên Danh Mục <span className="text-primary">*</span>
+              </div>
               <Input
-                className="w-[268px] h-11 shadow-md"
+                onChange={(e: any) => console.log(e.target.value)}
+                className="w-[268px] h-11 "
                 placeholder="Nhập Tên Danh Mục"
               />
             </div>
-            
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium ">
+                Biến thể <span className="text-primary">*</span>
+              </div>
+              <Select
+                mode="multiple"
+                placeholder="Inserted are removed"
+                value={selectedItems}
+                onChange={handleChange}
+                className=" min-w-[268px] h-[44px] flex items-center justify-center"
+                options={filteredOptions.map((item) => ({
+                  value: item,
+                  label: item,
+                }))}
+              />
+              <style jsx>{`
+                :global(.ant-select-selection-overflow) {
+                  height: 44px !important;
+                  padding: 0 5px !important;
+                  margin-top: 0 !important;
+                }
+                :global(.ant-select-selection-item) {
+                  margin-top: 0 !important;
+                }
+              `}</style>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Mô Tả <span className="text-primary">*</span>
+              </div>
+              <Input.TextArea
+                onChange={(e) => console.log(e.target.value)}
+                className="w-[268px] h-11"
+                placeholder="Nhập Tên Danh Mục"
+              />
+            </div>
           </div>
           <div>
             <div className="text-sm font-medium">
@@ -64,10 +121,10 @@ function CategoryAdd() {
                 showUploadList={false}
               >
                 <style jsx>{`
-          :global(.ant-upload-select) {
-            width: 100%!important
-          }
-        `}</style>
+                  :global(.ant-upload-select) {
+                    width: 100% !important;
+                  }
+                `}</style>
                 <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
                   <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
                     Chọn tệp
@@ -111,7 +168,7 @@ function CategoryAdd() {
             </div>
           </div>
         </div>
-        <Button back="category/list"/>
+        <Button back="category/list" />
       </div>
     </>
   );

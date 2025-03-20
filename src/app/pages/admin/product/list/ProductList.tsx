@@ -224,125 +224,140 @@ function ProductList() {
           </div>
         )}
       </div>
-      {statusProductDetail && (
-        <>
-          <div className="bg-white w-[1200px] center-fixed flex flex-col gap-2.5 rounded-lg shadow-xl z-50">
-            <div className="h-[64px] flex items-center px-4 border-b border-gray-200">
-              <p className="text-xl font-semibold w-full">Thông tin sản phẩm</p>
-            </div>
+      <Modal
+        open={statusProductDetail}
+        onCancel={() => setStatusProductDetail(false)}
+        footer={null}
+        centered
+        closeIcon={<div className="hidden" />}
+      >
+        {statusProductDetail && (
+          <>
+            <div className="ant-modal-header hidden"></div>
+            <div className="ant-modal-close hidden"></div>
+            <div className="ant-modal-header hidden"></div>
+            <div className=" bg-white  h-[600px] center-fixed flex flex-col gap-2.5 rounded-lg shadow-xl z-50">
+              <div className="h-[64px] flex items-center px-4 border-b border-gray-200">
+                <p className="text-xl font-semibold w-full">
+                  Thông tin sản phẩm
+                </p>
+              </div>
 
-            <div className="px-4 py-2">
-              <div className="flex px-3 py-2.5 gap-2.5 border border-gray-200 rounded bg-gray-50">
-                <p className="text-sm font-medium">Tên sản phẩm:</p>
-                <p className="text-sm font-medium text-gray-700">
-                  {productDetail?.name}
+              <div className="px-4 py-2">
+                <div className="flex px-3 py-2.5 gap-2.5 border border-gray-200 rounded bg-gray-50">
+                  <p className="text-sm font-medium">Tên sản phẩm:</p>
+                  <p className="text-sm font-medium text-gray-700">
+                    {productDetail?.name}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex-col gap-3 px-4 py-1 overflow-y-auto max-h-[500px]">
+                <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal border-collapse">
+                  <thead className="bg-stone-100 sticky top-0 z-10">
+                    <tr>
+                      <th className="px-3 py-3 w-12 text-center font-semibold text-gray-700">
+                        STT
+                      </th>
+                      <th className="min-w-24 px-3 py-3 text-center font-semibold text-gray-700">
+                        Hình ảnh
+                      </th>
+                      <th className="min-w-[180px] px-3 py-3 text-center font-semibold text-gray-700">
+                        Biến thể
+                      </th>
+                      <th className="min-w-[140px] px-3 py-3 text-center font-semibold text-gray-700">
+                        Màu sắc
+                      </th>
+                      <th className="min-w-[150px] px-3 py-3 text-center font-semibold text-gray-700">
+                        Giá bán
+                      </th>
+                      <th className="w-[140px] min-w-[140px] px-3 py-3 text-center font-semibold text-gray-700">
+                        Giá thêm
+                      </th>
+                      <th className="w-[144px] min-w-[144px] px-3 py-3 text-center font-semibold text-gray-700">
+                        Trạng Thái
+                      </th>
+                      <th className="w-[96px] min-w-[96px] px-3 py-3 text-center font-semibold text-gray-700">
+                        Số lượng
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody className="max-h-[450px]">
+                    {productDetail?.variants?.map((product, variantIndex) =>
+                      product.colors.map((color, colorIndex) => (
+                        <tr
+                          key={`${variantIndex}-${colorIndex}`}
+                          className="even:bg-gray-50 hover:bg-gray-100 transition-all duration-200 h-[80px]"
+                        >
+                          <td className="px-3 py-3 text-center text-gray-700">
+                            {variantIndex * product.colors.length +
+                              colorIndex +
+                              1}
+                          </td>
+                          <td className="px-3 py-3">
+                            <img
+                              className="w-16 h-16 object-cover text-center rounded-md border"
+                              src={color.image}
+                              alt="product"
+                            />
+                          </td>
+                          <td className="px-3 py-3 text-center text-gray-700">
+                            {product.properties.length > 0
+                              ? product.properties
+                                  .map((prop) => prop.name)
+                                  .join(" - ")
+                              : "Không có"}
+                           
+                          </td>
+                          <td className="px-3 py-3 text-center text-gray-700">
+                            {color.name}
+                          </td>
+                          <td className="px-3 py-3 text-center text-gray-700 flex-col">
+                            {(
+                              product.price -
+                              product.price_sale +
+                              color.price_extra
+                            ).toLocaleString("vi-VN")}{" "}
+                            đ
+                            <div></div>
+                          </td>
+                          <td className="px-3 py-3 text-center text-gray-700">
+                            {color.price_extra.toLocaleString("vi-VN")} đ
+                          </td>
+                          <td className="px-3 py-3 text-center">
+                            <span
+                              className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${
+                                color.status === 1
+                                  ? "text-green-800 bg-green-100"
+                                  : "text-red-800 bg-red-100"
+                              }`}
+                            >
+                              {color.status === 1 ? "Hoạt động" : "Ngừng bán"}
+                            </span>
+                          </td>
+                          <td className="px-3 py-3 text-center text-gray-700">
+                            {color.quantity}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className=" py-3 bottom-0 flex gap-4 justify-end items-center px-4 border-t border-gray-200 bg-gray-50">
+                <p
+                  className="px-6 bg-red-100 text-red-800 h-10 flex items-center justify-center rounded text-sm font-bold cursor-pointer hover:bg-red-200 transition-all duration-200"
+                  onClick={closeproductdetail}
+                >
+                  Trở lại
                 </p>
               </div>
             </div>
-
-            <div className="flex-col gap-3 px-4 py-1 overflow-y-auto max-h-[500px]">
-              <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal border-collapse">
-                <thead className="bg-stone-100 sticky top-0 z-10">
-                  <tr>
-                    <th className="px-3 py-3 w-12 text-center font-semibold text-gray-700">
-                      STT
-                    </th>
-                    <th className="w-24 px-3 py-3 text-left font-semibold text-gray-700">
-                      Hình ảnh
-                    </th>
-                    <th className="min-w-[140px] px-3 py-3 text-left font-semibold text-gray-700">
-                      Biến thể
-                    </th>
-                    <th className="min-w-[140px] px-3 py-3 text-left font-semibold text-gray-700">
-                      Màu sắc
-                    </th>
-                    <th className="min-w-[150px] px-3 py-3 text-left font-semibold text-gray-700">
-                      Giá bán
-                    </th>
-                    <th className="w-[140px] min-w-[140px] px-3 py-3 text-left font-semibold text-gray-700">
-                      Giá thêm
-                    </th>
-                    <th className="w-[144px] min-w-[144px] px-3 py-3 text-center font-semibold text-gray-700">
-                      Trạng Thái
-                    </th>
-                    <th className="w-[96px] min-w-[96px] px-3 py-3 text-center font-semibold text-gray-700">
-                      Số lượng
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {productDetail?.variants?.map((product, variantIndex) =>
-                    product.colors.map((color, colorIndex) => (
-                      <tr
-                        key={`${variantIndex}-${colorIndex}`}
-                        className="even:bg-gray-50 hover:bg-gray-100 transition-all duration-200"
-                      >
-                        <td className="px-3 py-3 text-center text-gray-700">
-                          {variantIndex * product.colors.length +
-                            colorIndex +
-                            1}
-                        </td>
-                        <td className="px-3 py-3">
-                          <img
-                            className="w-16 h-16 object-cover rounded-md border"
-                            src={color.image}
-                            alt="product"
-                          />
-                        </td>
-                        <td className="px-3 py-3 text-gray-700">
-                          {product.properties.length > 0
-                            ? product.properties[0]?.name
-                            : "Không có"}
-                        </td>
-                        <td className="px-3 py-3 text-gray-700">
-                          {color.name}
-                        </td>
-                        <td className="px-3 py-3 text-gray-700">
-                          {(
-                            product.price -
-                            product.price_sale +
-                            color.price_extra
-                          ).toLocaleString("vi-VN")}{" "}
-                          đ
-                        </td>
-                        <td className="px-3 py-3 text-gray-700">
-                          {color.price_extra.toLocaleString("vi-VN")} đ
-                        </td>
-                        <td className="px-3 py-3 text-center">
-                          <span
-                            className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${
-                              color.status === 1
-                                ? "text-green-800 bg-green-100"
-                                : "text-red-800 bg-red-100"
-                            }`}
-                          >
-                            {color.status === 1 ? "Hoạt động" : "Ngừng bán"}
-                          </span>
-                        </td>
-                        <td className="px-3 py-3 text-center text-gray-700">
-                          {color.quantity}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex gap-4 justify-end h-[64px] items-center px-4 border-t border-gray-200 bg-gray-50">
-              <p
-                className="px-6 bg-red-100 text-red-800 h-10 flex items-center justify-center rounded text-sm font-bold cursor-pointer hover:bg-red-200 transition-all duration-200"
-                onClick={closeproductdetail}
-              >
-                Trở lại
-              </p>
-            </div>
-          </div>
-
-          <div className="overlay"></div>
-        </>
-      )}
+          </>
+        )}
+      </Modal>
     </>
   );
 }
