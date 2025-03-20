@@ -1,4 +1,4 @@
-interface IVocher{
+interface IVoucher{
     id: string
     code: string
     discount_type: number

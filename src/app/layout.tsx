@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { StoreProvider } from "@/app/store";
 
 export const metadata: Metadata = {

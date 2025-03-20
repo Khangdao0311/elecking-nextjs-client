@@ -16,8 +16,11 @@ import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
 import * as userServices from "@/app/services/userService";
 import ProductLoad from "@/app/components/client/ProductLoad/ProductLoad";
+import { useStore } from "@/app/store";
+import { TbMoodEmpty } from "react-icons/tb";
 
 function Products() {
+  const [state, dispatch] = useStore();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [brands, setBrands] = useState<IBrand[]>([]);
@@ -29,7 +32,7 @@ function Products() {
   });
   const [filter, setFilter] = useState<any>({
     priceMin: 0,
-    priceMax: 100000000,
+    priceMax: 50000000,
     categoryid: [],
     brandid: [],
   });
@@ -136,7 +139,7 @@ function Products() {
                     <Slider
                       range
                       min={0}
-                      max={90000000}
+                      max={50000000}
                       step={1000}
                       value={[+filter.priceMin, +filter.priceMax]}
                       onChange={(value) => {
@@ -166,7 +169,7 @@ function Products() {
                           const [min, max] = query.price.split("-");
                           setFilter({ ...filter, page: 1, priceMin: +min, priceMax: +max });
                         } else {
-                          setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 100000000 });
+                          setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 50000000 });
                         }
                         setPopup({ ...popup, price: false });
                       }}
@@ -355,7 +358,7 @@ function Products() {
                     searchParamsNew.delete("price");
                     searchParamsNew.set("page", `1`);
                     router.push(`?${searchParamsNew.toString()}`, { scroll: false });
-                    setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 100000000 });
+                    setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 50000000 });
                   }}
                   className="flex items-center select-none cursor-pointer gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
                 >
@@ -426,7 +429,7 @@ function Products() {
                       ...filter,
                       page: 1,
                       priceMin: 0,
-                      priceMax: 100000000,
+                      priceMax: 50000000,
                       categoryid: [],
                       brandid: [],
                     });
@@ -518,7 +521,14 @@ function Products() {
       {/* Show sản phẩm */}
       <section className="py-4 pt-8">
         <div className="grid grid-cols-5 gap-2.5 flex-wrap">
-          {products.length === 0 &&
+          {!state.load && products.length === 0 && (
+            <div className="col-span-5 h-[400px] center-flex flex-col gap-4">
+              <TbMoodEmpty className="w-36 h-36 text-gray-300" />
+              <p className="text-3xl text-gray-400 font-medium">Không tìm thấy sản phẩm !</p>
+            </div>
+          )}
+          {state.load &&
+            products.length === 0 &&
             Array.from({ length: query.limit }).map((_, i: number) => (
               <Fragment key={i}>
                 <ProductLoad />

@@ -13,13 +13,13 @@ function Product(props: { product: IProduct }) {
 
   function handleAddToWish(id: string) {
     authServices.wish(state.user.id, id).then((res) => {
-      dispatch(actions.load());
+      dispatch(actions.re_render());
     });
   }
 
   function handleRemoveFromWish(id: string) {
     authServices.wish(state.user.id, id).then((res) => {
-      dispatch(actions.load());
+      dispatch(actions.re_render());
     });
   }
 

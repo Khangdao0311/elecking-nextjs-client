@@ -10,7 +10,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import * as authServices from "@/app/services/authService";
 import { useRouter } from "next/navigation";
-import ModalAddProduct from "@/app/components/client/ModalAddProduct";
+import ModalAddProduct from "@/app/pages/client/productDetail/components/ModalAddProduct";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 
 function Register() {

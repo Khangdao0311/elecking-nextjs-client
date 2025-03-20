@@ -12,6 +12,9 @@ import * as productServices from "@/app/services/productService";
 import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
 import * as userServices from "@/app/services/userService";
+import ProductLoad from "@/app/components/client/ProductLoad/ProductLoad";
+import { BsCardImage } from "react-icons/bs";
+import { useStore } from "@/app/store";
 
 const imageSlide = [
   "https://mainguyen.sgp1.digitaloceanspaces.com/231474/banner-samsung.jpg",
@@ -21,12 +24,9 @@ const imageSlide = [
   "https://phonghoa.vn/wp-content/uploads/2023/09/Banner-CTKM-TV.png",
   "https://www.homepaylater.vn/static/b551d25f15763d30e744f2e3cf7eb8e4/dong_ho_thong_minh_banner_518c452056.jpg",
 ];
-import "bootstrap-icons/font/bootstrap-icons.css";
-import { Skeleton } from "antd";
-import ProductLoad from "@/app/components/client/ProductLoad/ProductLoad";
-import { BsCardImage } from "react-icons/bs";
 
 function Home() {
+  const [state, dispatch] = useStore();
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
   const [load, setLoad] = useState<Boolean>(false);
@@ -41,14 +41,14 @@ function Home() {
   // Lấy Sản Phẩm Sale
   const [productSale, setProductSale] = useState([]);
   useEffect(() => {
-    const query = { orderby: "sale-desc" };
+    const query = { orderby: "sale-desc", limit: 5 };
     productServices.getQuery(query).then((res) => setProductSale(res.data));
   }, []);
 
   // Lấy Sản Phẩm Hot
   const [productHot, setProductHot] = useState([]);
   useEffect(() => {
-    const query = { orderby: "view-desc" };
+    const query = { orderby: "view-desc", limit: 5 };
     productServices.getQuery(query).then((res) => setProductHot(res.data));
   }, []);
 
@@ -82,77 +82,114 @@ function Home() {
     productServices.getQuery(query).then((res) => setHeadPhone(res.data));
   }, []);
 
-  const [userId, setUserId] = useState<string>("");
-  const [wish, setwish] = useState<string[]>([]);
+  // const [userId, setUserId] = useState<string>("");
+  // const [wish, setwish] = useState<string[]>([]);
 
-  useEffect(() => {
-    const userJSON = localStorage.getItem("user");
-    const user = JSON.parse(userJSON!);
+  // useEffect(() => {
+  //   const userJSON = localStorage.getItem("user");
+  //   const user = JSON.parse(userJSON!);
 
-    if (user) {
-      userServices.getById(user.id).then((res) => {
-        setUserId(res.data.id);
-        setwish(res.data.wish);
-      });
-    }
-  }, [load]);
+  //   if (user) {
+  //     userServices.getById(user.id).then((res) => {
+  //       // setUserId(res.data.id);
+  //       // setwish(res.data.wish);
+  //     });
+  //   }
+  // }, [load]);
 
   return (
     <>
       {/* Slide */}
-      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
-        <Swiper
-          centeredSlides={true}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false,
-          }}
-          pagination={{
-            clickable: true,
-          }}
-          navigation={{
-            nextEl: ".custom-next",
-            prevEl: ".custom-prev",
-          }}
-          loop={true}
-          modules={[Autoplay, Navigation]}
-          className="!h-96 w-full relative group rounded-lg shadow-xl border border-gray-300"
-        >
-          {imageSlide.map((e, index) => (
-            <SwiperSlide className="h-full" key={index + 1}>
-              <img className="w-full h-full object-cover" src={e} alt="" />
-            </SwiperSlide>
-          ))}
-          <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
-            <FaAngleLeft className="w-8 h-8 text-white" />
-          </button>
-          <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
-            <FaAngleRight className="w-8 h-8 text-white" />
-          </button>
-        </Swiper>
-        <div className="grid grid-cols-3 gap-4 mt-4">
-          <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
-            <img
-              className="w-full h-full"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/m55-9190-9-3-25-right-banner.png"
-              alt="Banner"
-            />
-          </div>
-          <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
-            <img
-              className="w-full h-full"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/right-imac-m4-30-12.jpg"
-              alt="Banner"
-            />
-          </div>
-          <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
-            <img
-              className="w-full h-full"
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/s-edu-2-0-right-laptop.jpg"
-              alt="Banner"
-            />
-          </div>
-        </div>
+      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0  flex flex-col gap-4">
+        {state.load ? (
+          <Fragment>
+            <div className="relative center-flex bg-gray-200 h-96 rounded-lg shadow-lg overflow-hidden">
+              <div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
+                        w-full h-full animate-[shimmer_1.5s_infinite]"
+              ></div>
+              <BsCardImage className="!w-24 !h-24 text-gray-300 " />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="relative center-flex bg-gray-200 h-36 rounded-lg shadow-lg overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
+                        w-full h-full animate-[shimmer_1.5s_infinite]"
+                ></div>
+                <BsCardImage className="!w-24 !h-24 text-gray-300 " />
+              </div>
+              <div className="relative center-flex bg-gray-200 h-36 rounded-lg shadow-lg overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
+                        w-full h-full animate-[shimmer_1.5s_infinite]"
+                ></div>
+                <BsCardImage className="!w-24 !h-24 text-gray-300 " />
+              </div>
+              <div className="relative center-flex bg-gray-200 h-36 rounded-lg shadow-lg overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
+                        w-full h-full animate-[shimmer_1.5s_infinite]"
+                ></div>
+                <BsCardImage className="!w-24 !h-24 text-gray-300 " />
+              </div>
+            </div>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <Swiper
+              centeredSlides={true}
+              autoplay={{
+                delay: 2500,
+                disableOnInteraction: false,
+              }}
+              pagination={{
+                clickable: true,
+              }}
+              navigation={{
+                nextEl: ".custom-next",
+                prevEl: ".custom-prev",
+              }}
+              loop={true}
+              modules={[Autoplay, Navigation]}
+              className="!h-96 w-full relative group rounded-lg shadow-xl border border-gray-300"
+            >
+              {imageSlide.map((e, index) => (
+                <SwiperSlide className="h-full" key={index + 1}>
+                  <img className="w-full h-full object-cover" src={e} alt="" />
+                </SwiperSlide>
+              ))}
+              <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+                <FaAngleLeft className="w-8 h-8 text-white" />
+              </button>
+              <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+                <FaAngleRight className="w-8 h-8 text-white" />
+              </button>
+            </Swiper>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
+                <img
+                  className="w-full h-full"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/m55-9190-9-3-25-right-banner.png"
+                  alt="Banner"
+                />
+              </div>
+              <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
+                <img
+                  className="w-full h-full"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/right-imac-m4-30-12.jpg"
+                  alt="Banner"
+                />
+              </div>
+              <div className="h-36 rounded-lg shadow-lg overflow-hidden border border-gray-300">
+                <img
+                  className="w-full h-full"
+                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/s-edu-2-0-right-laptop.jpg"
+                  alt="Banner"
+                />
+              </div>
+            </div>
+          </Fragment>
+        )}
       </section>
 
       {/* Product Sale */}

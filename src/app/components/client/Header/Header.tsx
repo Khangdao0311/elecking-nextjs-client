@@ -26,15 +26,15 @@ import * as authServices from "@/app/services/authService";
 import * as productServices from "@/app/services/productService";
 import { useStore, actions, initState } from "@/app/store";
 import { useLifecycles } from "react-use";
+import { re_render } from "@/app/store/actions";
 
 function Header() {
   const [state, dispatch] = useStore();
   const [showMenu, setShowMenu] = useState(false);
   const [search, setSearch] = useState("");
   const [breadCrumb, setBreadCrumb] = useState<any>([]);
-  const [load, setLoad] = useState(true);
 
-  useLifecycles(() => setLoad(false));
+  useLifecycles(() => dispatch(actions.load()));
 
   const pathname = usePathname();
   const { id }: any = useParams();
@@ -60,7 +60,13 @@ function Header() {
               clear();
             }
 
-            dispatch(actions.set({ user: user, wish: res.data.wish, cart: res.data.cart }));
+            dispatch(
+              actions.set({
+                user: user,
+                wish: res.data.wish,
+                cart: res.data.cart,
+              })
+            );
           } else {
             clear();
           }
@@ -70,7 +76,7 @@ function Header() {
       localStorage.clear();
       dispatch(actions.set(initState));
     }
-  }, [state.load]);
+  }, [state.re_render]);
 
   useEffect(() => {
     if (searchParams.get("search")) setSearch(searchParams.get("search") || "");
@@ -192,7 +198,7 @@ function Header() {
           y < 100 ? "top-0" : "-top-11"
         } transition-all duration-200 w-full z-30 shadow-lg`}
       >
-        {load ? (
+        {state.load ? (
           <div className="bg-[#E9EFFF] h-11 p-2 hidden md:block">
             <div className="container-custom h-full relative grid grid-cols-3 gap-4">
               <div className="relative bg-gray-300 rounded-lg  shadow !w-full h-full overflow-hidden">

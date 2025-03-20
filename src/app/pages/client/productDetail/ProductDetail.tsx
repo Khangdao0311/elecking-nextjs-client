@@ -3,7 +3,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Thumbs } from "swiper/modules";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import SwiperCore from "swiper/core";
 import { Modal, Pagination, Rate } from "antd";
 import { AiOutlineShoppingCart } from "react-icons/ai";
@@ -21,16 +21,17 @@ import {
 } from "react-icons/fa6";
 import { FaRegEdit, FaUserEdit } from "react-icons/fa";
 import moment from "moment";
+import { TbMoodEmpty } from "react-icons/tb";
 
 import Product from "@/app/components/client/Product";
-import ModalAddProduct from "@/app/components/client/ModalAddProduct";
+import ModalAddProduct from "@/app/pages/client/productDetail/components/ModalAddProduct";
 import * as productServices from "@/app/services/productService";
 import * as authServices from "@/app/services/authService";
 import * as reviewServices from "@/app/services/reviewService";
 import ProductColor from "./components/ProductColor";
 import ProductVariant from "./components/ProductVariant";
+import config from "@/app/config";
 import { useStore, actions, initState } from "@/app/store";
-import { TbMoodEmpty } from "react-icons/tb";
 
 SwiperCore.use([Navigation, Thumbs]);
 
@@ -51,6 +52,8 @@ function ProductDetail() {
 
   const { id }: any = useParams();
 
+  const router = useRouter();
+
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => setProduct(res.data));
     productServices.getSame({ id: id, limit: 5 }).then((res) => setProductSame(res.data));
@@ -61,7 +64,7 @@ function ProductDetail() {
       setReviews(res.data);
       setTotalReviews(res.total);
     });
-  }, [id, rating, state.load]);
+  }, [id, rating, state.re_render]);
 
   function handleAddToCart() {
     let isSame = false;
@@ -99,31 +102,49 @@ function ProductDetail() {
     }
 
     authServices.cart(state.user.id, cartNew).then((res) => {
-      dispatch(actions.load());
+      dispatch(actions.re_render());
     });
   }
 
   function handleAddToWish(id: string) {
     authServices.wish(state.user.id, id).then((res) => {
-      dispatch(actions.load());
+      dispatch(actions.re_render());
     });
+  }
+
+  function handleBuyNow() {
+    const checkout = {
+      order: [
+        {
+          product: {
+            id: product?.id,
+            variant: iVariant,
+            color: iColor,
+          },
+          quantity: quantity,
+        },
+      ],
+      voucher_id: "",
+    };
+    localStorage.setItem("checkout", JSON.stringify(checkout));
+    router.push(config.routes.client.checkout);
   }
 
   function handleRemoveFromWish(id: string) {
     authServices.wish(state.user.id, id).then((res) => {
-      dispatch(actions.load());
+      dispatch(actions.re_render());
     });
   }
 
   function handleAddToWishReview(id: string) {
     reviewServices.wish(id, state.user.id).then((res) => {
-      dispatch(actions.load());
+      dispatch(actions.re_render());
     });
   }
 
   function handleRemoveFromWishReview(id: string) {
     reviewServices.wish(id, state.user.id).then((res) => {
-      dispatch(actions.load());
+      dispatch(actions.re_render());
     });
   }
 
@@ -218,8 +239,7 @@ function ProductDetail() {
                 <Swiper
                   onSwiper={setThumbsSwiper}
                   spaceBetween={10}
-                  slidesPerView={9}
-                  freeMode={true}
+                  slidesPerView={9.5}
                   watchSlidesProgress={true}
                   className="w-full !pb-4"
                 >
@@ -257,10 +277,11 @@ function ProductDetail() {
                           checked={index == iVariant}
                           onClick={() => {
                             setIVariant(index);
+                            setIColor(0);
                             mainSwiper?.slideTo(0);
                             setQuantity(
-                              quantity > product.variants[index].colors[iColor].quantity
-                                ? product.variants[index].colors[iColor].quantity
+                              quantity > product.variants[index].colors[0].quantity
+                                ? product.variants[index].colors[0].quantity
                                 : quantity
                             );
                           }}
@@ -377,7 +398,10 @@ function ProductDetail() {
                     <AiOutlineShoppingCart className="w-8 h-8 shrink-0 text-primary font-bold" />
                     <p className="text-primary text-md font-medium">Thêm vào giỏ hàng</p>
                   </div>
-                  <div className="cursor-pointer flex w-3/5 h-16 items-center bg-primary rounded-lg shadow-lg select-none">
+                  <div
+                    onClick={handleBuyNow}
+                    className="cursor-pointer flex w-3/5 h-16 items-center bg-primary rounded-lg shadow-lg select-none"
+                  >
                     <p className="w-full text-center text-white text-lg font-bold">MUA NGAY</p>
                   </div>
                 </div>

@@ -1,7 +1,8 @@
-import { LOAD, SET_WISH, SET } from "./constants";
+import { LOAD, SET_WISH, SET, RE_RENDER } from "./constants";
 
 const initState: any = {
   load: true,
+  re_render: false,
   user: null,
   wish: [],
   cart: [],
@@ -20,7 +21,12 @@ function reduce(state: any, action: any) {
     case LOAD:
       return {
         ...state,
-        load: !state.load,
+        load: false,
+      };
+    case RE_RENDER:
+      return {
+        ...state,
+        re_render: !state.re_render,
       };
     case SET_WISH:
       return {
