@@ -12,6 +12,7 @@ import * as authServices from "@/app/services/authService";
 import { useRouter } from "next/navigation";
 import ModalAddProduct from "@/app/pages/client/productDetail/components/ModalAddProduct";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
+import { Modal } from "antd";
 
 function Register() {
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -224,41 +225,60 @@ function Register() {
           </div>
         </section>
       </div>
-
-      {loginSuccess && (
-        <>
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-5 w-[519px] h-[250px] p-10 bg-white rounded-2xl z-50 items-center justify-center shadow-lg">
-            <div>
-              <HiCheckCircle className="w-24 h-24 fill-green-500 text-white" />
+      <Modal
+        open={loginSuccess}
+        closeIcon={<div className="hidden" />}
+        onCancel={() => setLoginSuccess(false)}
+        footer={null}
+        title={null}
+        centered
+        maskClosable={false}
+      >
+        {loginSuccess && (
+          <>
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-5 w-[519px] h-[250px] p-10 bg-white rounded-2xl z-50 items-center justify-center shadow-lg">
+              <div>
+                <HiCheckCircle className="w-24 h-24 fill-green-500 text-white" />
+              </div>
+              <div className="text-2xl font-bold">Đăng ký thành công!</div>
+              <button
+                onClick={() => router.push(config.routes.client.login)}
+                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
+              >
+                Đăng nhập ngay
+              </button>
             </div>
-            <div className="text-2xl font-bold">Đăng ký thành công!</div>
-            <button
-              onClick={() => router.push(config.routes.client.login)}
-              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
-            >
-              Đăng nhập ngay
-            </button>
-          </div>
-        </>
-      )}
-      {loginFail && (
-        <>
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-5 w-[519px] h-[250px] p-10 bg-white rounded-2xl z-50 items-center justify-center shadow-lg">
-            <div>
-              <HiXCircle className="w-24 h-24 fill-red-500 text-white" />
+          </>
+        )}
+      </Modal>
+      <Modal
+        open={loginFail}
+        closeIcon={<div className="hidden" />}
+        onCancel={() => setLoginFail(false)}
+        footer={null}
+        title={null}
+        centered
+        maskClosable={false}
+      >
+        {loginFail && (
+          <>
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-5 w-[519px] h-[250px] p-10 bg-white rounded-2xl z-50 items-center justify-center shadow-lg">
+              <div>
+                <HiXCircle className="w-24 h-24 fill-red-500 text-white" />
+              </div>
+              <div className="text-2xl font-bold">Đăng ký thất bại!</div>
+              <button
+                onClick={() => setLoginFail(false)}
+                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
+              >
+                Quay lại
+              </button>
             </div>
-            <div className="text-2xl font-bold">Đăng ký thất bại!</div>
-            <button
-              onClick={() => setLoginFail(false)}
-              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
-            >
-              Quay lại
-            </button>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </Modal>
     </>
   );
 }

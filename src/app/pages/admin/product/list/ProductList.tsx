@@ -320,7 +320,7 @@ function ProductList() {
                               color.price_extra
                             ).toLocaleString("vi-VN")}{" "}
                             đ
-                            <div></div>
+                            <div>{}</div>
                           </td>
                           <td className="px-3 py-3 text-center text-gray-700">
                             {color.price_extra.toLocaleString("vi-VN")} đ
