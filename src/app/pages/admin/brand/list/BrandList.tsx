@@ -163,7 +163,7 @@ function BrandList() {
                 columns={columns}
                 dataSource={brands}
                 rowKey="id"
-                scroll={{ x: 1000, y: 400 }}
+                scroll={{ x: 1000, y: 420 }}
                 pagination={false}
                 tableLayout="auto"
               />

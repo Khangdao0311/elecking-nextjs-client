@@ -176,7 +176,7 @@ function UserList() {
             columns={columns}
             dataSource={users}
             rowKey="id"
-            scroll={{ x: 1000, y: 400 }}
+            scroll={{ x: 1000, y: 500 }}
             pagination={false}
             tableLayout="auto"
           />

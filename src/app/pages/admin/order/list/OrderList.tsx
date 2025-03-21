@@ -1,7 +1,7 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
-import { Button, Modal } from 'antd';
+import { Button, Modal } from "antd";
 import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
@@ -45,7 +45,6 @@ function OrderList() {
             _.push(res.data);
           });
         }
-
       }
       setProductOder(_);
     }
@@ -61,11 +60,12 @@ function OrderList() {
 
   useEffect(() => {
     if (selectedOrder && getaddress.length > 0) {
-      const address = getaddress.find((addr) => addr.id === selectedOrder.address_id);
+      const address = getaddress.find(
+        (addr) => addr.id === selectedOrder.address_id
+      );
       setSelectedAddress(address || null);
     }
   }, [selectedOrder, getaddress]);
-
 
   useEffect(() => {
     const query = { limit: 7 };
@@ -89,7 +89,6 @@ function OrderList() {
     setEditorder(true);
   };
 
-
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
@@ -97,13 +96,14 @@ function OrderList() {
     if (search != "") {
       query.search = search;
     }
+    console.log(query);
+
     orderServices.getQuery(query).then((res) => {
       setOrders(res.data);
       setTotalPages(res.total);
     });
   }, [limit, page, search]);
   console.log(orders);
-
 
   const columns: TableProps<IOrder>["columns"] = [
     {
@@ -125,7 +125,8 @@ function OrderList() {
       dataIndex: "ordered_at",
       key: "ordered_at",
       width: 160,
-      render: (date) => moment(date, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm"),
+      render: (date) =>
+        moment(date, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm"),
     },
     {
       title: "Khách Hàng",
@@ -147,13 +148,15 @@ function OrderList() {
       key: "transaction_code",
       width: 120,
       align: "center",
-      render: (code) => <span className="line-clamp-1">{code || "Không có"}</span>,
+      render: (code) => (
+        <span className="line-clamp-1">{code || "Không có"}</span>
+      ),
     },
     {
       title: "Phương Thức Thanh Toán",
       dataIndex: "payment_method",
       key: "payment_method",
-      align: 'center',
+      align: "center",
       width: 230,
       render: (payment) => payment.name || "N/A",
     },
@@ -161,7 +164,7 @@ function OrderList() {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
-      width: 128,
+      width: 130,
       align: "center",
       render: (status) => {
         let text = "";
@@ -191,7 +194,10 @@ function OrderList() {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
-          <button onClick={() => showEditOrder(record.id)} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
+          <button
+            onClick={() => showEditOrder(record.id)}
+            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center"
+          >
             <FiEdit className="w-5 h-5" />
           </button>
         </Space>
@@ -218,7 +224,7 @@ function OrderList() {
             columns={columns}
             dataSource={orders}
             rowKey="id"
-            scroll={{ x: 1000, y: 400 }}
+            scroll={{ x: 1000, y: 480 }}
             pagination={false}
             tableLayout="auto"
           />
@@ -252,12 +258,16 @@ function OrderList() {
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Voucher:</p>
                   <p className="text-sm font-normal">
-                    {selectedOrder.voucher_id ? selectedOrder.voucher_id : "Không có"}
+                    {selectedOrder.voucher_id
+                      ? selectedOrder.voucher_id
+                      : "Không có"}
                   </p>
                 </div>
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Người nhận hàng:</p>
-                  <p className="text-sm font-normal">{selectedOrder.user.fullname}</p>
+                  <p className="text-sm font-normal">
+                    {selectedOrder.user.fullname}
+                  </p>
                 </div>
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Số điện thoại:</p>
@@ -305,38 +315,80 @@ function OrderList() {
                   </p>
                 </div>
                 {productOder.map((product: IProduct, index: number) => (
-                  <div key={index} className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]">
+                  <div
+                    key={index}
+                    className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]"
+                  >
                     <div className="flex w-full items-center gap-2.5">
                       <img
-                        src={productOder[index]?.variants?.[selectedOrder?.products[index]?.product?.variant ?? 0]?.colors?.[selectedOrder?.products[index]?.product?.color ?? 0]?.image}
+                        src={
+                          productOder[index]?.variants?.[
+                            selectedOrder?.products[index]?.product?.variant ??
+                              0
+                          ]?.colors?.[
+                            selectedOrder?.products[index]?.product?.color ?? 0
+                          ]?.image
+                        }
                         alt=""
                         className="w-16 h-16"
                       />
                       <div className="flex py-1.5 flex-col gap-1.5">
-                        <p className="text-sm font-normal">
-                          {product.name}
-                        </p>
+                        <p className="text-sm font-normal">{product.name}</p>
                         <div className="flex gap-1.5 items-center">
                           <p className="text-sm font-normal text-red-500">
                             {Number(
-                              (productOder[index]?.variants?.[selectedOrder?.products[index]?.product?.variant ?? 0]?.price ?? 0) -
-                              (productOder[index]?.variants?.[selectedOrder?.products[index]?.product?.variant ?? 0]?.price_sale ?? 0) +
-                              (productOder[index]?.variants?.[selectedOrder?.products[index]?.product?.variant ?? 0]?.colors?.[selectedOrder?.products[index]?.product?.color ?? 0]?.price_extra ?? 0)
-                            ).toLocaleString("vn-VN")} đ
+                              (productOder[index]?.variants?.[
+                                selectedOrder?.products[index]?.product
+                                  ?.variant ?? 0
+                              ]?.price ?? 0) -
+                                (productOder[index]?.variants?.[
+                                  selectedOrder?.products[index]?.product
+                                    ?.variant ?? 0
+                                ]?.price_sale ?? 0) +
+                                (productOder[index]?.variants?.[
+                                  selectedOrder?.products[index]?.product
+                                    ?.variant ?? 0
+                                ]?.colors?.[
+                                  selectedOrder?.products[index]?.product
+                                    ?.color ?? 0
+                                ]?.price_extra ?? 0)
+                            ).toLocaleString("vn-VN")}{" "}
+                            đ
                           </p>
-                          <del className="text-xs font-normal">{(productOder[index]?.variants?.[selectedOrder?.products[index]?.product?.variant ?? 0]?.price ?? 0).toLocaleString("vn-VN")} đ</del>
+                          <del className="text-xs font-normal">
+                            {(
+                              productOder[index]?.variants?.[
+                                selectedOrder?.products[index]?.product
+                                  ?.variant ?? 0
+                              ]?.price ?? 0
+                            ).toLocaleString("vn-VN")}{" "}
+                            đ
+                          </del>
                         </div>
                       </div>
                     </div>
                     <p className="min-w-24 text-center text-sm font-normal">
-                      {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
+                      {selectedOrder?.products?.[index]?.quantity ??
+                        "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
-                      {((
-                        (productOder[index]?.variants?.[selectedOrder?.products[index]?.product?.variant ?? 0]?.price ?? 0)
-                        - (productOder[index]?.variants?.[selectedOrder?.products[index]?.product?.variant ?? 0]?.price_sale ?? 0)
-                        + ((productOder[index]?.variants?.[selectedOrder?.products[index]?.product?.variant ?? 0]?.colors?.[selectedOrder?.products[index]?.product?.color ?? 0]?.price_extra ?? 0)
-                        )) * (selectedOrder?.products[index]?.quantity ?? 0)).toLocaleString("vn-VN")} đ
+                      {(
+                        ((productOder[index]?.variants?.[
+                          selectedOrder?.products[index]?.product?.variant ?? 0
+                        ]?.price ?? 0) -
+                          (productOder[index]?.variants?.[
+                            selectedOrder?.products[index]?.product?.variant ??
+                              0
+                          ]?.price_sale ?? 0) +
+                          (productOder[index]?.variants?.[
+                            selectedOrder?.products[index]?.product?.variant ??
+                              0
+                          ]?.colors?.[
+                            selectedOrder?.products[index]?.product?.color ?? 0
+                          ]?.price_extra ?? 0)) *
+                        (selectedOrder?.products[index]?.quantity ?? 0)
+                      ).toLocaleString("vn-VN")}{" "}
+                      đ
                     </p>
                   </div>
                 ))}

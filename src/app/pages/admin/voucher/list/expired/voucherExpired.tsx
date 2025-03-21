@@ -96,23 +96,8 @@ import config from "@/app/config";
         key: "status",
         width: 160,
         align: "center",
-        render: (status) => {
-          let text = "";
-          switch (status) {
-            case 0:
-              text = "Ngưng hoạt động";
-              break;
-            case 1:
-              text = "Đang hoạt động";
-              break;
-            case 2:
-              text = "Chờ xác nhận";
-              break;
-            default:
-              text = "Không xác định";
-          }
-          return <Statusvoucher status={status} text={text} />;
-        },
+        render: (status) => 
+       <Statusvoucher status={0} text={"Hết hạn"} />
       },
       {
         title: "Chức năng",
