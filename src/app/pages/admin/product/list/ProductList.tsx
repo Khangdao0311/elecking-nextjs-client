@@ -83,9 +83,9 @@ function ProductList() {
         return (
           <div className="text-xs font-medium text-red-500">
             {finalPrice.toLocaleString("vi-VN")} đ
-            {variant.price_sale !== 0 && (
+            {variant.price > finalPrice && (
               <del className="text-xs font-light text-gray-500 block">
-                {variant.price_sale.toLocaleString("vi-VN")} đ
+                {variant.price.toLocaleString("vi-VN")} đ
               </del>
             )}
           </div>
@@ -176,7 +176,6 @@ function ProductList() {
       ),
     },
   ];
-  console.log(productDetail);
 
   return (
     <>
@@ -308,19 +307,34 @@ function ProductList() {
                                   .map((prop) => prop.name)
                                   .join(" - ")
                               : "Không có"}
-                           
                           </td>
                           <td className="px-3 py-3 text-center text-gray-700">
                             {color.name}
                           </td>
-                          <td className="px-3 py-3 text-center text-gray-700 flex-col">
-                            {(
-                              product.price -
-                              product.price_sale +
-                              color.price_extra
-                            ).toLocaleString("vi-VN")}{" "}
-                            đ
-                            <div>{}</div>
+                          <td
+                            className="test-xs font-medium text-red-500 flex-col items-center justify-center
+                          "
+                          >
+                            <div className="w-full text-center">
+                              {(
+                                product.price -
+                                product.price_sale +
+                                color.price_extra
+                              ).toLocaleString("vi-VN")}{" "}
+                              đ
+                            </div>
+                            <div className="w-full text-center">
+                              <del className="px-3 py-3 text-center text-gray-700 flex-col">
+                                {product.price -
+                                  product.price_sale +
+                                  color.price_extra ===
+                                product.price
+                                  ? " "
+                                  : `${product.price.toLocaleString(
+                                      "vi-VN"
+                                    )} đ`}{" "}
+                              </del>
+                            </div>
                           </td>
                           <td className="px-3 py-3 text-center text-gray-700">
                             {color.price_extra.toLocaleString("vi-VN")} đ

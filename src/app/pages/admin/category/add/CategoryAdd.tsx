@@ -55,7 +55,6 @@ function CategoryAdd() {
                 placeholder="Nhập Tên Danh Mục"
               />
 
-              <Input type="file" onChange={(e) => setImg(e.target.files)} />
             </div>
           </div>
           <div>

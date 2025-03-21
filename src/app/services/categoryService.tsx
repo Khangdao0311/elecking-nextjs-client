@@ -6,3 +6,10 @@ export async function getQuery(params: any) {
     .get(`${config.api.category}`, { params })
     .then((response: any) => response.data);
 }
+
+
+export async function addCategory(body) {
+  return axios
+    .post(`${config.api.category},${body}`)
+    .then((response: any) => response.data);
+}
