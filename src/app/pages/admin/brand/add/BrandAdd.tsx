@@ -201,18 +201,19 @@ function BrandAdd() {
           <div className="w-full">
             <div className="text-sm font-medium">
               Mô tả thương hiệu <span className="text-primary">*</span>
-            </div>
             <div
               ref={quillRef}
-              className="w-full min-h-[100px] border border-gray-300 rounded"
+              className="w-full container border border-gray-300 rounded"
             ></div>
+            </div>
           </div>
+        <Button back="brand/list" />
         </div>
 
-        <Button back="brand/list" />
       </div>
     </>
   );
 }
+
 
 export default BrandAdd;

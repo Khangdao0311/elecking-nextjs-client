@@ -51,7 +51,8 @@ function ProductDetail() {
   const [rating, setRating] = useState("");
 
   const { id }: any = useParams();
-
+ console.log(id);
+ 
   const router = useRouter();
 
   useEffect(() => {
