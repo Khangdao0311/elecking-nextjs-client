@@ -20,6 +20,8 @@ function BrandList() {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [load, setLoad] = useState(true);
+  
+
 
   console.log(page);
 
@@ -87,8 +89,8 @@ function BrandList() {
       width: 290,
       key: "description",
       render: (text) => (
-        <Tooltip title={text}>
-          <span className="line-clamp-1">{text}</span>
+        <Tooltip title={<div dangerouslySetInnerHTML={{ __html: text }} />}>
+          <span className="line-clamp-1" dangerouslySetInnerHTML={{ __html: text }} />
         </Tooltip>
       ),
     },
