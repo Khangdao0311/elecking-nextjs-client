@@ -19,8 +19,13 @@ function Cart() {
   const [state, dispatch] = useStore();
   const [checkedItems, setCheckItems] = useState<boolean[]>([]);
   const [productsCart, setProductsCart] = useState<IProduct[]>([]);
-  const [voucher, setVoucher] = useState<any>("");
-  const [showModelVoucher, setShowModelVoucher] = useState(false);
+  const [voucher, setVoucher] = useState<IVoucher | null>(null);
+  const [showModalVoucher, setShowModalVoucher] = useState(false);
+
+  const [total, setTotal] = useState<any>({
+    original: 0,
+    sale: 0,
+  });
 
   const router = useRouter();
 
@@ -29,6 +34,11 @@ function Cart() {
     api.info({
       message: message,
       placement: "topRight",
+      style: {
+        width: "fit-content",
+        display: "inline-block",
+        textWrap: "nowrap",
+      },
     });
   };
 
@@ -47,6 +57,35 @@ function Cart() {
     }
     _();
   }, [state.cart]);
+
+  useEffect(() => {
+    const _total = state.cart.reduce((acc: number, item: any, index: number) => {
+      if (checkedItems[index]) {
+        acc +=
+          (productsCart[index]?.variants[item.product?.variant]?.price +
+            productsCart[index]?.variants[item.product?.variant]?.colors[item.product?.color]
+              ?.price_extra) *
+          item.quantity;
+      }
+      return acc;
+    }, 0);
+    const _totalSale = state.cart.reduce((acc: number, item: any, index: number) => {
+      if (checkedItems[index]) {
+        acc +=
+          (productsCart[index]?.variants[item.product?.variant]?.price -
+            productsCart[index]?.variants[item.product?.variant]?.price_sale +
+            productsCart[index]?.variants[item.product?.variant]?.colors[item.product?.color]
+              ?.price_extra) *
+          item.quantity;
+      }
+      return acc;
+    }, 0);
+
+    setTotal({
+      original: _total,
+      sale: _totalSale,
+    });
+  }, [productsCart, checkedItems, state.cart]);
 
   function handleChangeVariant(iProduct: number, iVariant: number) {
     const cartNew = state.cart.map((item: any, index: number) => {
@@ -168,22 +207,6 @@ function Cart() {
     );
   }
 
-  function totalCart() {
-    return `${state.cart
-      .reduce((acc: number, item: any, index: number) => {
-        if (checkedItems[index]) {
-          acc +=
-            (productsCart[index]?.variants[item.product?.variant]?.price -
-              productsCart[index]?.variants[item.product?.variant]?.price_sale +
-              productsCart[index]?.variants[item.product?.variant]?.colors[item.product?.color]
-                ?.price_extra) *
-            item.quantity;
-        }
-        return acc;
-      }, 0)
-      .toLocaleString("vi-VN")} ₫`;
-  }
-
   function totalSale() {
     return `${(
       state.cart.reduce((acc: number, item: any, index: number) => {
@@ -214,7 +237,13 @@ function Cart() {
     if (checkedItems.some((e) => e === true)) {
       const checkout = {
         order: state.cart.filter((item: any, index: number) => checkedItems[index]),
-        voucher_id: voucher,
+        voucher: voucher,
+        index: state.cart
+          .map((item: any, index: number) => {
+            if (checkedItems[index]) return index;
+            return null;
+          })
+          .filter((item: any) => item !== null),
       };
       localStorage.setItem("checkout", JSON.stringify(checkout));
       router.push(config.routes.client.checkout);
@@ -227,18 +256,20 @@ function Cart() {
     <>
       {contextHolder}
       <Modal
-        open={showModelVoucher}
-        onCancel={() => setShowModelVoucher(false)}
+        open={showModalVoucher}
+        onCancel={() => setShowModalVoucher(false)}
         footer={null}
         title={null}
         centered
         maskClosable={false}
         closable={false}
+        width="auto"
       >
         <ModalVoucher
+          orderPrice={total.sale}
           voucher={voucher}
           setVoucher={setVoucher}
-          onClose={() => setShowModelVoucher(false)}
+          onClose={() => setShowModalVoucher(false)}
         />
       </Modal>
       <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
@@ -586,7 +617,13 @@ function Cart() {
                     <span className="text-base font-normal">ElecKing Voucher</span>
                   </div>
                   <p
-                    onClick={() => setShowModelVoucher(true)}
+                    onClick={() => {
+                      if (checkedItems.some((e) => e === true)) {
+                        setShowModalVoucher(true);
+                      } else {
+                        openNotification("Vui lòng chọn sản phẩm để áp dụng voucher !");
+                      }
+                    }}
                     className="ml-2 text-blue-600 cursor-pointer"
                   >
                     Chọn mã
@@ -612,20 +649,7 @@ function Cart() {
                         <div className="py-4 px-2 flex justify-between">
                           <span className="text-gray-600 text-lg font-normal">Tổng tiền hàng</span>
                           <span className="text-black text-lg font-normal">
-                            {state.cart
-                              .reduce((acc: number, item: any, index: number) => {
-                                if (checkedItems[index]) {
-                                  acc +=
-                                    (productsCart[index]?.variants[item.product?.variant]?.price +
-                                      productsCart[index]?.variants[item.product?.variant]?.colors[
-                                        item.product?.color
-                                      ]?.price_extra) *
-                                    item.quantity;
-                                }
-                                return acc;
-                              }, 0)
-                              .toLocaleString("vi-VN")}{" "}
-                            ₫
+                            {total.original.toLocaleString("vi-VN")} ₫
                           </span>
                         </div>
                         {totalSale() !== "0 ₫" && (
@@ -633,25 +657,61 @@ function Cart() {
                             <span className="text-gray-600 text-lg font-normal">
                               Giảm giá sản phẩm
                             </span>
-                            <span className="text-black text-lg font-normal">- {totalSale()}</span>
+                            <span className="text-black text-lg font-normal">
+                              - {(total.original - total.sale).toLocaleString("vi-VN")} ₫
+                            </span>
                           </div>
                         )}
                         {voucher && (
                           <div className="py-4 px-2 flex justify-between">
                             <span className="text-gray-600 text-lg font-normal">Voucher</span>
-                            <span className="text-black text-lg font-normal">{"0 ₫"}</span>
+                            <span className="text-black text-lg font-normal">
+                              -{" "}
+                              {(voucher.discount_type === 1
+                                ? voucher.discount_value.toLocaleString("vi-VN")
+                                : total.sale - total.sale * (voucher.discount_value / 100) >
+                                  voucher.max_discount
+                                ? voucher.max_discount
+                                : total.sale - total.sale * (voucher.discount_value / 100)
+                              ).toLocaleString("vi-VN")}
+                              ₫
+                            </span>
                           </div>
                         )}
                         <div className="py-4 px-2 flex justify-between">
                           <span className="font-medium text-xl">Tổng số tiền thanh toán</span>
-                          <span className="text-primary font-bold text-xl">{totalCart()}</span>
+                          <span className="text-primary font-bold text-xl">
+                            {(
+                              total.sale -
+                              (voucher
+                                ? voucher.discount_type === 1
+                                  ? voucher.discount_value
+                                  : total.sale - total.sale * (voucher.discount_value / 100) >
+                                    voucher.max_discount
+                                  ? voucher.max_discount
+                                  : total.sale - total.sale * (voucher.discount_value / 100)
+                                : 0)
+                            ).toLocaleString("vi-VN")}{" "}
+                            ₫
+                          </span>
                         </div>
                       </div>
                     }
                   >
                     <div className="center-flex">
                       <span className="text-primary text-lg font-bold cursor-pointer relative">
-                        {totalCart()}
+                        {(
+                          total.sale -
+                          (voucher
+                            ? voucher.discount_type === 1
+                              ? voucher.discount_value
+                              : total.sale - total.sale * (voucher.discount_value / 100) >
+                                voucher.max_discount
+                              ? voucher.max_discount
+                              : total.sale - total.sale * (voucher.discount_value / 100)
+                            : 0)
+                        ).toLocaleString("vi-VN")}{" "}
+                        ₫
                       </span>
                       <IoMdArrowDropdown className="w-6 h-6 inline text-black group-hover:rotate-180" />
                     </div>

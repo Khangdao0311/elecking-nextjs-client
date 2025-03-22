@@ -74,7 +74,7 @@ function Header() {
         .catch((err) => clear());
     } else {
       localStorage.clear();
-      dispatch(actions.set(initState));
+      dispatch(actions.set({ ...initState, load: false }));
     }
   }, [state.re_render]);
 

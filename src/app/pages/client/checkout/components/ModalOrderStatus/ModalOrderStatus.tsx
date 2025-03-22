@@ -1,9 +1,11 @@
+"use client";
+
 import { FaCircleCheck, FaCircleXmark } from "react-icons/fa6";
 
-function Modal(props: { status: string; content: string }) {
+function ModalOrderStatus(props: { status: string; content: string }) {
   return (
     <>
-      <div className="bg-white center-fixed flex-col gap-5 rounded-2xl z-50">
+      <div className="w-[500px] bg-white center-fixed flex-col gap-5 rounded-2xl z-50">
         <div className="bg-white flex flex-col gap-5 rounded-lg py-10 px-20 items-center shadow-xl">
           {props.status == "success" ? (
             <FaCircleCheck className="w-36 h-36 text-green-500" />
@@ -18,4 +20,4 @@ function Modal(props: { status: string; content: string }) {
   );
 }
 
-export default Modal;
+export default ModalOrderStatus;

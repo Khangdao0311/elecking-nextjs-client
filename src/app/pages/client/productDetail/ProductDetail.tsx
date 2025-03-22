@@ -16,8 +16,6 @@ import {
   FaPlus,
   FaRegHeart,
   FaRegStar,
-  FaStar,
-  FaUserLarge,
 } from "react-icons/fa6";
 import { FaRegEdit, FaUserEdit } from "react-icons/fa";
 import moment from "moment";
@@ -51,8 +49,7 @@ function ProductDetail() {
   const [rating, setRating] = useState("");
 
   const { id }: any = useParams();
- console.log(id);
- 
+
   const router = useRouter();
 
   useEffect(() => {
@@ -125,7 +122,7 @@ function ProductDetail() {
           quantity: quantity,
         },
       ],
-      voucher_id: "",
+      voucher: null,
     };
     localStorage.setItem("checkout", JSON.stringify(checkout));
     router.push(config.routes.client.checkout);

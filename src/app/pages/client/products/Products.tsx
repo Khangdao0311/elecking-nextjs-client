@@ -528,7 +528,6 @@ function Products() {
             </div>
           )}
           {state.load &&
-            products.length === 0 &&
             Array.from({ length: query.limit }).map((_, i: number) => (
               <Fragment key={i}>
                 <ProductLoad />

@@ -82,21 +82,6 @@ function Home() {
     productServices.getQuery(query).then((res) => setHeadPhone(res.data));
   }, []);
 
-  // const [userId, setUserId] = useState<string>("");
-  // const [wish, setwish] = useState<string[]>([]);
-
-  // useEffect(() => {
-  //   const userJSON = localStorage.getItem("user");
-  //   const user = JSON.parse(userJSON!);
-
-  //   if (user) {
-  //     userServices.getById(user.id).then((res) => {
-  //       // setUserId(res.data.id);
-  //       // setwish(res.data.wish);
-  //     });
-  //   }
-  // }, [load]);
-
   return (
     <>
       {/* Slide */}

@@ -14,6 +14,7 @@ const api = {
   payment_method: `${url}/payment_method`,
   stats: `${url}/stats`,
   review: `${url}/review`,
+  vnpay: `${url}/vnpay`,
 };
 
 export default api;
