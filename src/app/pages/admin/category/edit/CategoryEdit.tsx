@@ -1,97 +1,215 @@
 "use client";
-import React, {useState} from 'react';
-import { Input, Upload } from 'antd';
+import React, { useEffect, useState } from "react";
+import { Input, Upload } from "antd";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Button from "@/app/components/admin/Button";
-import { Select } from 'antd';
-import { IoCloseSharp } from 'react-icons/io5';
-
+import { Select } from "antd";
+import { IoCloseSharp } from "react-icons/io5";
+import * as categoryService from "@/app/services/categoryService";
+import { useParams } from "next/navigation";
+import * as proptypeService from "@/app/services/proptypeService";
+import * as uploadService from "@/app/services/uploadService";
 function CategoryEdit() {
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+  const { id }: any = useParams();
+  const [proptype, setproptype] = useState<IProptype[]>([]);
+  const [editProptype, setEditProptype] = useState<IProptype[]>();
+  const [status, setStatus] = useState(1);
+  const [categoryName, setCategoryName] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState<UploadFile[]>([]);
+  const [initialImage, setInitialImage] = useState("");
+  const [editImage, setEditImage] = useState<any>();
+
+  const { id: string } = useParams();
+
+  useEffect(() => {
+    const query = { limit: 0 };
+    proptypeService.getQuery(query).then((res) => setproptype(res.data));
+  }, []);
+
+  useEffect(() => {
+    categoryService.getOne(id).then((res) => {
+      setEditProptype(res.data.proptypes);
+      setCategoryName(res.data.name);
+      setDescription(res.data.description);
+      setInitialImage(res.data.image);
+      const oldImageName = res.data.image.split("/").pop();
+      setEditImage(oldImageName);
+      if (res.data.image) {
+        setImage([
+          {
+            uid: crypto.randomUUID(),
+            name: oldImageName,
+            status: "done",
+            url: res.data.image,
+          },
+        ]);
+      }
+    });
+  }, [id]);
+
+  const handleChangeProptype = (value: any) => {
+    setEditProptype(value);
   };
-  const [images, setImages] = useState<UploadFile[]>([]);
-  const beforeUpload = (file:File) => {
+
+  function handleChange(value: any) {
+    setStatus(value);
+  }
+
+  function handleEdit() {
+    let finalImage = editImage;
+    if (image[0]?.originFileObj) {
+      const formData = new FormData();
+      formData.append("image", image[0].originFileObj as File);
+      uploadService.uploadSingle(formData);
+      finalImage = image[0].name;
+    } 
+    
+    if (editProptype  && status && categoryName && description) {
+      categoryService
+        .editCategory(id, {
+          name: categoryName,
+          image: finalImage,
+          status: status,
+          proptypes: JSON.stringify(editProptype),
+          description: description,
+        })
+        .then((res) => res.data);
+    }
+  }
+
+  const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),
       name: file.name,
       status: "uploading",
       originFileObj: file as RcFile,
-    }
-    setImages((prev)=>[...prev,newfile]);
+    };
+    setImage((prev) => {
+      const newFile = [newfile];
+      return newFile;
+    });
     setTimeout(() => {
-      setImages((prev) =>
+      setImage((prev) =>
         prev.map((item) =>
           item.uid === newfile.uid ? { ...item, status: "done" } : item
-    )
-  );
-}, 1000);
-
-return false;
-}
-const removeimage = (file:UploadFile) =>{
-  setImages((prev) => prev.filter((item)=>item.uid!==file.uid))
-}
+        )
+      );
+    }, 1000);
+    return false;
+  };
+  const removeimage = (file: UploadFile) => {
+    setImage((prev) => prev.filter((item) => item.uid !== file.uid));
+  };
   return (
     <>
       <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
       <div className="bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div className="w-full flex flex-col gap-6">
           <div className="w-full">
-            <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">Sửa Danh Mục</div>
+            <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">
+              Sửa Danh Mục
+            </div>
           </div>
-          <div className='flex items-center gap-4'>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Mã Danh Mục</div>
-              <Input className='w-[268px] h-11 shadow-md' value= "aht1h3rt1h32rt1321313213213" disabled/>
+          <div className="flex items-center gap-4">
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Tên danh mục <span className="text-primary">*</span>
+              </div>
+              <Input
+                className="w-[268px] h-11 shadow-md"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+              />
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Tên danh mục <span className='text-primary'>*</span></div>
-              <Input disabled className='w-[268px] h-11 shadow-md' value= "Điện thoại" />
-            </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Trạng Thái <span className='text-primary'>*</span></div>
-              <Select className='shadow-md'
-                defaultValue="Đang hoạt động"
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Trạng Thái <span className="text-primary">*</span>
+              </div>
+              <Select
+                className="shadow-md"
+                value={status}
                 style={{ width: 268, height: 44 }}
                 onChange={handleChange}
                 options={[
-                  { value: 'Đang hoạt động', label: 'Đang hoạt động' },
-                  { value: 'Ngừng hoạt động', label: 'Ngừng hoạt động' },
+                  { value: 1, label: "Đang hoạt động" },
+                  { value: 2, label: "Ngừng hoạt động" },
                 ]}
+              />
+            </div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium ">
+                Biến thể <span className="text-primary">*</span>
+              </div>
+              <Select
+                mode="multiple"
+                placeholder="Inserted are removed"
+                value={editProptype}
+                onChange={handleChangeProptype}
+                className=" min-w-[268px] h-[44px] flex items-center justify-center"
+                options={proptype.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                }))}
+              />
+              <style jsx>{`
+                :global(.ant-select-selection-overflow) {
+                  height: 44px !important;
+                  padding: 0 5px !important;
+                  margin-top: 0 !important;
+                }
+                :global(.ant-select-selection-item) {
+                  margin-top: 0 !important;
+                }
+              `}</style>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Mô Tả <span className="text-primary">*</span>
+              </div>
+              <Input.TextArea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-[268px] h-11"
+                placeholder="Nhập Tên Danh Mục"
               />
             </div>
           </div>
           <div>
-            <div className='text-sm font-medium'>Ảnh <span className='text-primary'>*</span></div>
+            <div className="text-sm font-medium">
+              Ảnh <span className="text-primary">*</span>
+            </div>
             <div className="flex flex-col gap-2.5">
               <Upload
-                multiple
+                multiple={false}
+                maxCount={1}
                 listType="picture"
-                fileList={images}
+                fileList={image}
                 beforeUpload={beforeUpload}
                 onRemove={removeimage}
                 showUploadList={false}
               >
                 <style jsx>{`
-          :global(.ant-upload-select) {
-            width: 100%!important
-          }
-        `}</style>
+                  :global(.ant-upload-select) {
+                    width: 100% !important;
+                  }
+                `}</style>
                 <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
                   <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
                     Chọn tệp
                   </div>
                   <div className="w-full text-sm font-normal">
-                    <span>{images.length}</span> Tệp
+                    <span>{image.length}</span> Tệp
                   </div>
                 </div>
               </Upload>
 
               {/* Hiển thị danh sách ảnh đã chọn */}
               <div className="flex items-center flex-wrap gap-3">
-                {images.map((file) => {
+                {image.map((file) => {
                   const imageSrc = file.originFileObj
                     ? URL.createObjectURL(file.originFileObj)
                     : file.url;
@@ -121,7 +239,7 @@ const removeimage = (file:UploadFile) =>{
               </div>
             </div>
           </div>
-          <Button back="category/list"/>
+          <Button onClick={handleEdit} back="category/list" />
         </div>
       </div>
     </>

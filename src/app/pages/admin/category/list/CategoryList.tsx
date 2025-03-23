@@ -142,7 +142,7 @@ function CategoryList() {
             columns={columns}
             dataSource={categories}
             rowKey="id"
-            scroll={{ x: 1000, y: 430 }} 
+            scroll={{ x: 1000, y: 430 }}
             pagination={false}
             tableLayout="auto"
           />

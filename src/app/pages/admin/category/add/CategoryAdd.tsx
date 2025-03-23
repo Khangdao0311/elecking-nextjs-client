@@ -1,17 +1,30 @@
 "use client";
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Upload } from "antd";
-import React, { useState } from "react";
+import { Input, Select, Upload } from "antd";
+import React, { useEffect, useState } from "react";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { IoCloseSharp } from "react-icons/io5";
-import axios from "axios";
-
+import * as proptypeService from "@/app/services/proptypeService";
+import * as uploadService from "@/app/services/uploadService"
+import * as categoryService from "@/app/services/categoryService"
 function CategoryAdd() {
-  const [name, setName] = useState("");
-  const [img, setImg] = useState<any>();
+  const [proptype, setproptype] = useState<IProptype[]>([]);
+  useEffect(() => {
+    const query = { limit: 0 };
+    proptypeService.getQuery(query).then((res) => setproptype(res.data));
+  }, []);
 
-  const [images, setImages] = useState<UploadFile[]>([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedProptype, setSelectedProptype] = useState<string[]>([]);
+
+  // chạy mảng để lấy tên của proptype
+  const handleChange = (value: string[]) => {
+    setSelectedProptype(value);
+  };
+
+  const [image, setImage] = useState<UploadFile[]>([]);
   const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),
@@ -19,9 +32,12 @@ function CategoryAdd() {
       status: "uploading",
       originFileObj: file as RcFile,
     };
-    setImages((prev) => [...prev, newfile]);
+    setImage((prev) => {
+      const newFile = [newfile];
+      return newFile;
+    });
     setTimeout(() => {
-      setImages((prev) =>
+      setImage((prev) =>
         prev.map((item) =>
           item.uid === newfile.uid ? { ...item, status: "done" } : item
         )
@@ -31,8 +47,27 @@ function CategoryAdd() {
     return false;
   };
   const removeimage = (file: UploadFile) => {
-    setImages((prev) => prev.filter((item) => item.uid !== file.uid));
+    setImage((prev) => prev.filter((item) => item.uid !== file.uid));
   };
+
+  function handleAdd() {
+    if (image[0]?.originFileObj) {
+      const formData = new FormData();
+      formData.append("image", image[0].originFileObj as File);
+      uploadService.uploadSingle(formData)
+    } else {
+      console.warn("Không có ảnh được chọn!");
+    }
+    if(image[0]?.originFileObj && selectedProptype && name && description){
+      categoryService.addCategory({name:name, image: image[0].name, description: description, proptypes: JSON.stringify(selectedProptype)})
+      .then(res => {
+        res.data
+        console.log('Thêm thành công')
+      })
+    }
+  }
+
+
   return (
     <>
       <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
@@ -49,12 +84,48 @@ function CategoryAdd() {
                 Tên Danh Mục <span className="text-primary">*</span>
               </div>
               <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-[268px] h-11 shadow-md"
+                onChange={(e: any) => setName(e.target.value)}
+                className="w-[268px] h-11 "
                 placeholder="Nhập Tên Danh Mục"
               />
-
+            </div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium ">
+                Biến thể <span className="text-primary">*</span>
+              </div>
+              <Select
+                mode="multiple"
+                placeholder="Inserted are removed"
+                value={selectedProptype}
+                onChange={handleChange}
+                className=" min-w-[268px] h-[44px] flex items-center justify-center"
+                options={proptype.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                }))}
+              />
+              <style jsx>{`
+                :global(.ant-select-selection-overflow) {
+                  height: 44px !important;
+                  padding: 0 5px !important;
+                  margin-top: 0 !important;
+                }
+                :global(.ant-select-selection-item) {
+                  margin-top: 0 !important;
+                }
+              `}</style>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Mô Tả <span className="text-primary">*</span>
+              </div>
+              <Input.TextArea
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-[268px] h-11"
+                placeholder="Nhập Tên Danh Mục"
+              />
             </div>
           </div>
           <div>
@@ -63,9 +134,10 @@ function CategoryAdd() {
             </div>
             <div className="flex flex-col gap-2.5">
               <Upload
-                multiple
+                multiple={false}
+                maxCount={1}
                 listType="picture"
-                fileList={images}
+                fileList={image}
                 beforeUpload={beforeUpload}
                 onRemove={removeimage}
                 showUploadList={false}
@@ -80,14 +152,14 @@ function CategoryAdd() {
                     Chọn tệp
                   </div>
                   <div className="w-full text-sm font-normal">
-                    <span>{images.length}</span> Tệp
+                    <span>{image.length}</span> Tệp
                   </div>
                 </div>
               </Upload>
 
               {/* Hiển thị danh sách ảnh đã chọn */}
               <div className="flex items-center flex-wrap gap-3">
-                {images.map((file) => {
+                {image.map((file) => {
                   const imageSrc = file.originFileObj
                     ? URL.createObjectURL(file.originFileObj)
                     : file.url;
@@ -120,23 +192,7 @@ function CategoryAdd() {
         </div>
         <Button
           back="category/list"
-          onClick={() => {
-            const formData = new FormData();
-            formData.append("image", img[0]);
-            axios
-              .post(`http://localhost:8000/upload/image`, formData)
-              .then((response: any) => response.data);
-            axios
-              .post(`http://localhost:8000/category`, {
-                name: name,
-                image: img[0].name,
-                description: "mota",
-                icon: "",
-                properties: JSON.stringify(["67cbb9d9c27a2ba1c45b87ad"]),
-              })
-              .then((response: any) => response.data)
-              .then((res) => console.log("ok"));
-          }}
+          onClick={handleAdd}
         />
       </div>
     </>
