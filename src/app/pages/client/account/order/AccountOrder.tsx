@@ -9,21 +9,21 @@ import { useStore } from "@/app/store";
 import SidebarAccount from "@/app/components/client/SidebarAccount";
 import * as orderServices from "@/app/services/orderService";
 import OrderDetail from "./components/OrderDetail";
+import { TbMoodEmpty } from "react-icons/tb";
 
 function AccountOrder() {
   const [state, dispatch] = useStore();
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [order, setOrder] = useState<IOrder | null>(null);
+  const [status, setStatus] = useState<string>("");
 
   useEffect(() => {
     if (state.user) {
       orderServices
-        .getQuery({ user_id: state.user.id, limit: null })
+        .getQuery({ user_id: state.user.id, limit: null, status: status })
         .then((res) => setOrders(res.data));
     }
-  }, [state.user]);
-
-  console.log(order);
+  }, [state.user, status]);
 
   return (
     <>
@@ -46,24 +46,75 @@ function AccountOrder() {
         <div className="w-9/12 flex flex-col gap-6 rounded-xl min-h-[calc(100vh-190px)]">
           <h2 className="text-2xl font-bold uppercase">Lịch Sử Mua Hàng</h2>
           <div className="w-full flex gap-2.5 flex-wrap">
-            <div className="px-10 py-2.5 text-base font-medium border border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200  ">
+            <div
+              onClick={() => {
+                if (status !== "") setStatus("");
+              }}
+              className={`${
+                status === ""
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+              } px-10 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+            >
               Tất cả
             </div>
-            <div className="px-10 py-2.5 text-base font-medium border border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200  ">
+            <div
+              onClick={() => {
+                if (status !== "2") setStatus("2");
+              }}
+              className={`${
+                status === "2"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+              } px-10 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+            >
               Chờ xác nhận
             </div>
-            <div className="px-10 py-2.5 text-base font-medium border border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200  ">
+            <div
+              onClick={() => {
+                if (status !== "3") setStatus("3");
+              }}
+              className={`${
+                status === "3"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+              } px-10 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+            >
               Đang vận chuyển
             </div>
-            <div className="px-10 py-2.5 text-base font-medium border border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200  ">
+            <div
+              onClick={() => {
+                if (status !== "1") setStatus("1");
+              }}
+              className={`${
+                status === "1"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+              } px-10 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+            >
               Đã nhận
             </div>
-            <div className="px-10 py-2.5 text-base font-medium border border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200  ">
+            <div
+              onClick={() => {
+                if (status !== "0") setStatus("0");
+              }}
+              className={`${
+                status === "0"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+              } px-10 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+            >
               Đã hủy
             </div>
           </div>
           <div className="w-full flex flex-col gap-4 relative">
             {/*  */}
+            {!state.load && orders.length === 0 && (
+              <div className="w-full min-h-80 center-flex flex-col gap-2 col-span-5">
+                <TbMoodEmpty className="w-36 h-36 text-gray-300" />
+                <p className="text-3xl text-gray-400 font-medium">Không có đơn hàng !</p>
+              </div>
+            )}
             {orders.map((order: IOrder, iOrder: number) => {
               let status: any = {};
               switch (order.status) {
@@ -96,9 +147,9 @@ function AccountOrder() {
                       <BsFillClipboard2CheckFill className="text-2xl w-1/2 h-1/2" />
                     </div>
                   </div>
-                  <div className="flex flex-col gap-1 w-full">
-                    <div className="flex w-full gap-2">
-                      <p className="text-base font-bold text-gray-700">Sản phẩm</p>
+                  <div className="flex flex-col items-start gap-1 w-full">
+                    <div className="flex  w-full gap-2">
+                      <p className="text-base font-bold text-gray-700 shrink-0">Sản phẩm</p>
                       <div className="flex flex-col gap-1">
                         {order.products.map((productOrder: any, iProductOrder: number) => (
                           <p key={iProductOrder} className="text-base font-medium text-gray-700">
@@ -108,19 +159,19 @@ function AccountOrder() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex  gap-2">
                       <p className="text-base font-bold text-gray-700">Tổng tiền</p>
                       <span className="text-base font-bold text-red-500">
                         {order.total.toLocaleString("vi-VN")} đ
                       </span>
                     </div>
 
-                    <div className="flex items-end justify-between">
-                      <div className={`px-6 py-2 rounded-lg bg-${status.color}-100 select-none`}>
-                        <p className={`text-sm font-medium text-${status.color}-800`}>
-                          {status.text}
-                        </p>
-                      </div>
+                    <div
+                      className={`px-6 py-2 center-flex rounded-lg bg-${status.color}-100 select-none`}
+                    >
+                      <p className={`text-sm font-medium text-${status.color}-800`}>
+                        {status.text}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-end h-full shrink-0">
