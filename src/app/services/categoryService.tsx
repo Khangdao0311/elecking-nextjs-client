@@ -6,10 +6,21 @@ export async function getQuery(params: any) {
     .get(`${config.api.category}`, { params })
     .then((response: any) => response.data);
 }
-
-
-export async function addCategory(body) {
+export async function getOne(id: string) {
   return axios
-    .post(`${config.api.category},${body}`)
+    .get(`${config.api.category}/${id}`)
+    .then((response: any) => response.data);
+}
+
+
+export async function addCategory(body: any) {
+  return axios
+    .post(`${config.api.category}`,body)
+    .then((response: any) => response.data);
+}
+
+export async function editCategory(id:string, body: any) {
+  return axios
+    .put(`${config.api.category}/${id}`,body)
     .then((response: any) => response.data);
 }
