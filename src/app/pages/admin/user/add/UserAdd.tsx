@@ -6,6 +6,7 @@ import ButtonAdmin from "@/app/components/admin/Button";
 import React, { useState } from "react";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { IoCloseSharp } from "react-icons/io5";
+import { number } from "yup";
 
 const handleChange = (value: string) => {
   console.log(`selected ${value}`);
@@ -17,7 +18,7 @@ function UserAdd() {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),
       name: file.name,
-      status: "uploading",
+      status: "uploading",  
       originFileObj: file as RcFile,
     };
     setImages((prev) => [...prev, newfile]);
@@ -188,7 +189,7 @@ function UserAdd() {
           </div>
         </div>
 
-        <ButtonAdmin back="user/list" />
+        <ButtonAdmin back="user/list"/>
       </div>
     </>
   );

@@ -6,11 +6,14 @@ import { Bar } from "react-chartjs-2";
 import * as orderServices from "@/app/services/orderService";
 import * as userServices from "@/app/services/userService";
 import * as voucherServices from "@/app/services/voucherService";
+import * as productServices from "@/app/services/productService";
+import * as addressServices from "@/app/services/addressService";
 import * as statsServices from "@/app/services/statService";
+import { Button, Modal } from 'antd';
 import moment from "moment";
 import { FiEdit } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { Space, Table, TableProps } from "antd";
+import { Select, Space, Table, TableProps } from "antd";
 import {
   Chart as ChartJS,
   BarElement,
@@ -26,27 +29,72 @@ const handleChange = (value: string) => {
 };
 
 function DashBoard() {
+  const [editorder, setEditorder] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const showeditorder = () => setEditorder(true);
+  const closeeditorder = () => setEditorder(false);
   const [getorders, setGetorders] = useState<IOrder[]>([]);
   const [vouchers, setVoucher] = useState()
-  const [users, setUsers] = useState< IUser[] >([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [limit, setLimit] = useState(1000);
   const [totalorder, setTotalorder] = useState()
   const [stats, setStats] = useState([])
   const [year, setYear] = useState(new Date().getFullYear())
   const [chartData, setChartData] = useState<number[]>(new Array(12).fill(0));
   const [totalprice, setTotalprice] = useState()
+  const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
+  const [getaddress, setGetaddress] = useState<IAddress[]>([]);
+  const [getUser, setGetUser] = useState<IUser[]>([]);
+
+  useEffect(() => {
+    const query = { limit: 7 };
+    addressServices.getQuery(query).then((res) => {
+      setGetaddress(res.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (selectedOrder && getaddress.length > 0) {
+      const address = getaddress.find((addr) => addr.id === selectedOrder.address_id);
+      setSelectedAddress(address || null);
+    }
+  }, [selectedOrder, getaddress]);
+
+
+  useEffect(() => {
+    const query = { limit: 7 };
+    userServices.getQuery(query).then((res) => {
+      setGetUser(res.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (selectedOrder && getUser.length > 0) {
+      const user = getUser.find((user) => user.id == selectedOrder?.user?.id);
+      if (user) {
+        setSelectedUser(user);
+      }
+    }
+  }, [selectedOrder, getUser]);
+
+  const showEditOrder = (orderId: string) => {
+    const order = getorders.find(order => order.id === orderId);
+    if (order) {
+      setSelectedOrder(order);
+      setEditorder(true);
+    }
+  };
 
   useEffect(() => {
     const query: any = {};
-
     query.limit = limit;
-
     voucherServices.getQuery(query).then((res) => {
-      setVoucher(res.total);  
+      setVoucher(res.total);
     });
   }, []);
   console.log(vouchers);
-  
+
   useEffect(() => {
     const query: any = {};
 
@@ -65,7 +113,7 @@ function DashBoard() {
     });
   }, []);
   useEffect(() => {
-    const query = {year : year};
+    const query = { year: year };
     console.log(query);
     statsServices.getQuery(query).then((res) => {
       setStats(res.data);
@@ -121,7 +169,7 @@ function DashBoard() {
       width: 150,
       align: "left",
       render: (id) => (
-        <span className="line-clamp-1">{id.length > 10 ? `${id.slice(0,10)}...`: id}</span>
+        <span className="line-clamp-1">{id.length > 10 ? `${id.slice(0, 10)}...` : id}</span>
       )
     },
     {
@@ -147,7 +195,7 @@ function DashBoard() {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
-          <button className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
+          <button onClick={() => showEditOrder(record.id)} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
             <FiEdit className="w-5 h-5" />
           </button>
         </Space>
@@ -161,7 +209,7 @@ function DashBoard() {
       key: "id",
       align: "left",
       render: (id) => (
-        <span className="line-clamp-1">{id.length > 10 ? `${id.slice(0,10)}...`: id}</span>
+        <span className="line-clamp-1">{id.length > 10 ? `${id.slice(0, 10)}...` : id}</span>
       )
     },
     {
@@ -192,10 +240,10 @@ function DashBoard() {
       align: "left",
     },
   ];
-  
+
   return (
     <>
-      <TitleAdmin title="Bảng điều khiển" yearChange={(newYear: any)=>{setYear(newYear)}}/>
+      <TitleAdmin title="Bảng điều khiển" yearChange={(newYear: any) => { setYear(newYear) }} />
       <div className="bg-white shadow-lg rounded-lg p-4 flex items-start flex-col gap-4">
         <div className="flex gap-4 justify-between w-full  max-w-full">
           <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
@@ -204,7 +252,7 @@ function DashBoard() {
             </div>
             <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
               <p className="text-base font-bold text-red-500">Tổng doanh thu</p>
-              <p className="text-base font-bold">{(totalprice??0).toLocaleString("vi-VN")} đ</p>
+              <p className="text-base font-bold">{(totalprice ?? 0).toLocaleString("vi-VN")} đ</p>
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>
@@ -253,32 +301,145 @@ function DashBoard() {
             <p className="text-xl font-bold">Đơn hàng chờ xác nhận</p>
             <div className="border border-zinc-300"></div>
             <div style={{ width: "100%", overflowY: "auto", maxWidth: "100%" }}>
-          <Table<IOrder>
-            columns={ordercolumns}
-            dataSource={getorders.filter(order => order.status === 2)}
-            rowKey="id"
-            scroll={{ x: 500, y: 230 }} 
-            pagination={false}
-            tableLayout="auto"
-          />
-        </div>
+              <Table<IOrder>
+                columns={ordercolumns}
+                dataSource={getorders.filter(order => order.status === 2)}
+                rowKey="id"
+                scroll={{ x: 500, y: 230 }}
+                pagination={false}
+                tableLayout="auto"
+              />
+            </div>
           </div>
           <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
             <p className="text-xl font-bold">Khách hàng mới</p>
             <div className="border border-zinc-300"></div>
             <div style={{ width: "100%", overflowY: "auto", maxWidth: "100%" }}>
-          <Table<IUser>
-            columns={usercolumns}
-            dataSource={users}
-            rowKey="id"
-            scroll={{ x: 500, y: 230 }} 
-            pagination={false}
-            tableLayout="auto"
-          />
-        </div>
+              <Table<IUser>
+                columns={usercolumns}
+                dataSource={users}
+                rowKey="id"
+                scroll={{ x: 500, y: 230 }}
+                pagination={false}
+                tableLayout="auto"
+              />
             </div>
+          </div>
         </div>
       </div>
+      <Modal
+        width={650}
+        open={editorder}
+        onCancel={closeeditorder}
+        footer={null}
+        centered
+      >
+        {editorder && selectedOrder && (
+          <>
+            <div className="px-4 h-16 flex items-center">
+              <p className="text-xl font-semibold w-full">Chi Tiết Đơn Hàng</p>
+            </div>
+            <div className="p-4 flex gap-3 flex-col border-y border-gray-200">
+              <div className="flex flex-wrap gap-3">
+                <div className="flex w-[278px] gap-1.5">
+                  <p className="text-sm font-medium">Mã Đơn Hàng:</p>
+                  <p className="text-sm font-normal">{selectedOrder.id}</p>
+                </div>
+                <div className="flex w-[278px] gap-1.5">
+                  <p className="text-sm font-medium">Voucher:</p>
+                  <p className="text-sm font-normal">
+                    {selectedOrder.voucher_id ? selectedOrder.voucher_id : "Không có"}
+                  </p>
+                </div>
+                <div className="flex w-[278px] gap-1.5">
+                  <p className="text-sm font-medium">Người nhận hàng:</p>
+                  <p className="text-sm font-normal">{selectedOrder.user.fullname}</p>
+                </div>
+                <div className="flex w-[278px] gap-1.5">
+                  <p className="text-sm font-medium">Số điện thoại:</p>
+                  <p className="text-sm font-normal">{selectedUser?.phone}</p>
+                </div>
+                <div className="flex w-full gap-1.5">
+                  <p className="text-sm font-medium">Tỉnh/Thành phố:</p>
+                  <p className="text-sm font-normal">
+                    {`${selectedAddress?.ward}, ${selectedAddress?.district}, ${selectedAddress?.province}  `}
+                  </p>
+                </div>
+                <div className="flex w-full gap-1.5">
+                  <p className="text-sm font-medium">Địa chỉ cụ thể:</p>
+                  <p className="text-sm font-normal">
+                    {selectedAddress?.description}
+                  </p>
+                </div>
+                <div className="flex flex-col w-[278px] gap-0.5">
+                  <p className="text-sm font-medium">Trạng Thái Đơn Hàng:</p>
+                  <Select
+                    className="h-[28px] w-full shadow-md rounded"
+                    defaultValue={String(selectedOrder.status)}
+                    onChange={handleChange}
+                    options={[
+                      { value: "0", label: "Đã hủy" },
+                      { value: "1", label: "Đã giao hàng" },
+                      { value: "2", label: "Chờ xác nhận" },
+                      { value: "3", label: "Đang vận chuyển" },
+                    ]}
+                  />
+                </div>
+                <div className="flex w-full gap-1.5">
+                  <p className="text-sm font-medium">Loại địa chỉ:</p>
+                  <p className="text-sm font-bold text-primary">Nhà riêng</p>
+                </div>
+              </div>
+              <div className="px-3 py-2 flex flex-col gap-2 rounded border border-gray-200 shadow-lg">
+                <div className="flex w-full gap-2">
+                  <p className="w-full text-sm font-medium">Sản Phẩm</p>
+                  <p className="min-w-24 text-sm font-medium text-center">
+                    Số Lượng
+                  </p>
+                  <p className="min-w-24 text-sm font-medium text-center">
+                    Thành Tiền
+                  </p>
+                </div>
+                {selectedOrder.products.map((e, index) => (
+                  <div key={index} className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]">
+                    <div className="flex w-full items-center gap-2.5">
+                      <img
+                        src={e.product.image}
+                        alt=""
+                        className="w-16 h-16"
+                      />
+                      <div className="flex py-1.5 flex-col gap-1.5">
+                        <p className="text-sm font-normal">
+                          {e.product.name}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="min-w-24 text-center text-sm font-normal">
+                      {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
+                    </p>
+                    <p className="min-w-24 text-center text-primary text-sm font-normal">
+                      {e.product.price.toLocaleString("vn-VN")} đ
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="px-4 h-[64px] items-center justify-end flex gap-4">
+              <div className="flex gap-4">
+                <p
+                  onClick={closeeditorder}
+                  className="cursor-pointer px-6 w-[114px] h-[40px] bg-red-100 text-red-800 text-sm font-bold flex items-center justify-center rounded"
+                >
+                  Trở lại
+                </p>
+                <p className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded">
+                  Lưu
+                </p>
+              </div>
+            </div>
+          </>
+        )}
+      </Modal>
     </>
   );
 }

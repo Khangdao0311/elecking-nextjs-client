@@ -11,6 +11,7 @@ export async function getById(id: string) {
     .get(`${config.api.brand}/${id}`)
     .then((response: any) => response.data);
 }
+
 export async function addBrand(body:any) {
   return axios
     .post(`${config.api.brand}`,body)

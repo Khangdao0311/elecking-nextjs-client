@@ -8,12 +8,20 @@ import { IoCloseSharp } from "react-icons/io5";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import type { RcFile } from "antd/es/upload/interface";
+import * as uploadServices from "@/app/services/uploadService";
+import axios from "axios";
 
 function BrandAdd() {
+  const [name, setName] = useState("");
+  const [description, setdescription] = useState("");
+  const [imgBanner, setImgBanner] = useState<any>();
+  const [imgBrand, setImgBrand] = useState<any>();
   const quillRef = useRef<HTMLDivElement>(null);
   const [editorContent, setEditorContent] = useState("");
   const [logo, setLogo] = useState<UploadFile[]>([]);
   const [banner, setBanner] = useState<UploadFile[]>([]);
+
+  
 
   useEffect(() => {
     if (!quillRef.current) return; // Kiểm tra nếu ref tồn tại
@@ -29,7 +37,11 @@ function BrandAdd() {
     quill.on("text-change", () => {
       setEditorContent(quill.root.innerHTML);
     });
-  }, [editorContent]); 
+
+    quill.on("text-change", () => {
+      setdescription(quill.getText().trim());
+    });
+  }, [editorContent]);
   const handleRemove = (file: UploadFile, type: "logo" | "banner") => {
     if (type === "logo") {
       setLogo((prev) => prev.filter((item) => item.uid !== file.uid));
@@ -37,6 +49,7 @@ function BrandAdd() {
       setBanner((prev) => prev.filter((item) => item.uid !== file.uid));
     }
   };
+
   const handleBeforeUpload = (file: File, type: "logo" | "banner") => {
     const newFile: UploadFile = {
       uid: crypto.randomUUID(),
@@ -44,10 +57,17 @@ function BrandAdd() {
       status: "uploading",
       originFileObj: file as RcFile,
     };
-  
+    
+
     const setState = type === "logo" ? setLogo : setBanner;
-    setState((prev) => [...prev, newFile]);
-  
+
+    setState((prev) => {
+      const newFiles = [newFile];
+      return newFiles;
+    });
+
+    // setState((prev) => [...prev, newFile]);
+
     setTimeout(() => {
       setState((prev) =>
         prev.map((item) =>
@@ -55,10 +75,9 @@ function BrandAdd() {
         )
       );
     }, 1000);
-  
+
     return false;
   };
-  
 
   return (
     <>
@@ -74,12 +93,13 @@ function BrandAdd() {
                 Tên Thương Hiệu <span className="text-primary">*</span>
               </div>
               <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-[268px] h-11 shadow-md"
                 placeholder="Nhập Tên Thương Hiệu"
               />
             </div>
           </div>
-
           {/* Ảnh */}
           <div>
             <div className="text-sm font-medium">
@@ -87,11 +107,14 @@ function BrandAdd() {
             </div>
             <div className="flex flex-col gap-2.5">
               <Upload
-                multiple
+                multiple={false}
                 listType="picture"
                 fileList={logo}
-                beforeUpload={(file)=>handleBeforeUpload(file, "logo")}
-                onRemove={(file)=>handleRemove(file, "logo")}
+                onChange={({ fileList }) => {
+                  setImgBrand(fileList.map(file => file.originFileObj));
+                }}
+                beforeUpload={(file) => handleBeforeUpload(file, "logo")}
+                onRemove={(file) => handleRemove(file, "logo")}
                 showUploadList={false}
               >
                 <style jsx>{`
@@ -141,18 +164,20 @@ function BrandAdd() {
               </div>
             </div>
           </div>
-
           <div>
             <div className="text-sm font-medium">
               Ảnh Bìa <span className="text-primary">*</span>
             </div>
             <div className="flex flex-col gap-2.5">
               <Upload
-                multiple
+                multiple={false}
                 listType="picture"
                 fileList={banner}
-                beforeUpload={(file)=>handleBeforeUpload(file, "banner")}
-                onRemove={(file)=>handleRemove(file, "banner")}
+                onChange={({ fileList }) => {
+                  setImgBanner(fileList.map(file => file.originFileObj));
+                }}
+                beforeUpload={(file) => handleBeforeUpload(file, "banner")}
+                onRemove={(file) => handleRemove(file, "banner")}
                 showUploadList={false}
               >
                 <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
@@ -197,23 +222,43 @@ function BrandAdd() {
               </div>
             </div>
           </div>
-
           <div className="w-full">
             <div className="text-sm font-medium">
               Mô tả thương hiệu <span className="text-primary">*</span>
+            </div>
             <div
               ref={quillRef}
-              className="w-full container border border-gray-300 rounded"
+              className="w-full h-[100px] border border-gray-300 rounded"
             ></div>
-            </div>
           </div>
-        <Button back="brand/list" />
-        </div>
+          <div className="mt-[60px]">
+            <Button
+              back="brand/list"
+              onClick={() => {
+                const logoFormData = new FormData();
+                logoFormData.append("image", imgBrand[0]);
+                uploadServices.uploadSingle(logoFormData)
+                  .then((response: any) => response.data);
 
+                const bannerFormData = new FormData();
+                bannerFormData.append("image", imgBanner[0]);
+                uploadServices.uploadSingle(bannerFormData)
+                  .then((response: any) => response.data);
+
+                axios.post("http://localhost:8000/brand", {
+                  name: name,
+                  logo: imgBrand[0].name,
+                  banner: imgBanner[0].name,
+                  description: description,
+                });
+              }}
+            >
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   );
 }
-
 
 export default BrandAdd;
