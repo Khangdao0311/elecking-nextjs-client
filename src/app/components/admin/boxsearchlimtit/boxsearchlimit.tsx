@@ -16,7 +16,7 @@ const BoxSearchLimit = (props: {
 
   return (
     <div className="flex items-center bg-white shadow-xl rounded-lg px-7 py-3 justify-between">
-      <div className="flex gap-4 items-center">
+      <div className="flex w-1/2 gap-4 items-center">
         <p>Tìm kiếm:</p>
         <Input
           className="w-80 h-8"
@@ -33,11 +33,11 @@ const BoxSearchLimit = (props: {
           }
         />
       </div>
-      <div className="flex gap-2 items-center">
+      <div className="flex w-1/2 gap-2 justify-end items-center">
         <p>Hiện</p>
         <Select
           defaultValue={5}
-          style={{ width: 120 }}
+          style={{ width: 80 }}
           onChange={(value) => props.onLimitChange(value)}
           options={[
             { value: 5, label: "5" },

@@ -6,7 +6,7 @@ import { BiCategory } from "react-icons/bi";
 import { BsBoxSeam, BsClipboardCheck, BsSpeedometer2 } from "react-icons/bs";
 import { FaCircleUser } from "react-icons/fa6";
 import { LuUser } from "react-icons/lu";
-import { TbLogout2 } from "react-icons/tb";
+import { TbFileDatabase, TbLogout2 } from "react-icons/tb";
 import { VscTag } from "react-icons/vsc";
 import React from "react";
 
@@ -62,6 +62,7 @@ function Sidebar() {
             Bảng điều khiểu
           </p>
         </Link>
+
         <Link
           href={config.routes.admin.category.list}
           className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
@@ -85,6 +86,31 @@ function Sidebar() {
             Quản lý danh mục
           </p>
         </Link>
+
+        <Link
+          href={config.routes.admin.configuration.list}
+          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
+            pathname.startsWith("/admin/configuration") ? "pl-7 bg-white" : ""
+          } transition-all duration-300	rounded-md cursor-pointer select-none`}
+        >
+          <TbFileDatabase 
+            className={`group-hover:text-primary ${
+              pathname.startsWith("/admin/configuration")
+                ? "text-primary"
+                : "text-white"
+            } w-6 h-6`}
+          />
+          <p
+            className={`group-hover:text-primary ${
+              pathname.startsWith("/admin/configuration")
+                ? "text-primary"
+                : "text-white"
+            } text-sm font-bold`}
+          >
+            Quản lý cấu hình
+          </p>
+        </Link>
+
         <Link
           href={config.routes.admin.product.list}
           className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
