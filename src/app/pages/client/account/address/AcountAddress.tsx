@@ -1,10 +1,10 @@
 "use client";
-import Sidebar from "@/app/components/client/Sidebar_user";
+import Sidebar from "@/app/components/client/SidebarAccount";
 import { FaPlus } from "react-icons/fa6";
 
 function AccountAddress() {
   return (
-    <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+    <div className="container-custom flex items-start gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
       <Sidebar />
       <div className="w-9/12 rounded-lg border border-gray-200 shadow-md">
         <div className="px-5 flex text-justify items-center h-20">

@@ -90,6 +90,7 @@ function Checkout() {
                   .cart(state.user.id, cartNew)
                   .then((res) => dispatch(actions.re_render()));
               }
+              localStorage.removeItem("checkout");
               setTimeout(() => router.push(config.routes.client.home), 1000);
             });
         } else {
@@ -190,6 +191,7 @@ function Checkout() {
                 .cart(state.user.id, cartNew)
                 .then((res) => dispatch(actions.re_render()));
             }
+            localStorage.removeItem("checkout");
             setTimeout(() => router.push(config.routes.client.home), 1000);
           } else {
             setLoading(false);

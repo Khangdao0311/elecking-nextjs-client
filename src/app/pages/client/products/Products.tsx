@@ -15,7 +15,7 @@ import * as productServices from "@/app/services/productService";
 import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
 import * as userServices from "@/app/services/userService";
-import ProductLoad from "@/app/components/client/ProductLoad/ProductLoad";
+import ProductLoad from "@/app/components/client/ProductLoad";
 import { useStore } from "@/app/store";
 import { TbMoodEmpty } from "react-icons/tb";
 

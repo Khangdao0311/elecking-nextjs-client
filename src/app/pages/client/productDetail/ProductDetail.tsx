@@ -30,6 +30,7 @@ import ProductColor from "./components/ProductColor";
 import ProductVariant from "./components/ProductVariant";
 import config from "@/app/config";
 import { useStore, actions, initState } from "@/app/store";
+import ProductLoad from "@/app/components/client/ProductLoad";
 
 SwiperCore.use([Navigation, Thumbs]);
 
@@ -42,7 +43,7 @@ function ProductDetail() {
   const [product, setProduct] = useState<IProduct>();
   const [reviews, setReviews] = useState<IReview[]>([]);
   const [totalReviews, setTotalReviews] = useState<number>(0);
-  const [productSame, setProductSame] = useState<IProduct[]>([]);
+  const [productsSame, setProductsSame] = useState<IProduct[]>([]);
   const [iVariant, setIVariant] = useState(0);
   const [iColor, setIColor] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -54,7 +55,7 @@ function ProductDetail() {
 
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => setProduct(res.data));
-    productServices.getSame({ id: id, limit: 5 }).then((res) => setProductSame(res.data));
+    productServices.getSame({ id: id, limit: 5 }).then((res) => setProductsSame(res.data));
   }, [id]);
 
   useEffect(() => {
@@ -586,7 +587,13 @@ function ProductDetail() {
               <p className="text-3xl font-medium">Sản Phẩm Tương Tự</p>
             </div>
             <div className="grid grid-cols-5 container-custom gap-2.5">
-              {productSame.map((product) => (
+              {productsSame.length === 0 &&
+                Array.from({ length: 5 }).map((_, i: number) => (
+                  <Fragment key={i}>
+                    <ProductLoad />
+                  </Fragment>
+                ))}
+              {productsSame.map((product) => (
                 <Fragment key={product.id}>
                   <Product product={product} />
                 </Fragment>

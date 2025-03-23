@@ -84,7 +84,7 @@ function Header() {
 
   useEffect(() => {
     switch (pathname) {
-      case "/products":
+      case config.routes.client.products:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -96,7 +96,7 @@ function Header() {
           },
         ]);
         break;
-      case `/product-detail/${id}`:
+      case `${config.routes.client.productDetail}${id}`:
         productServices.getProById(id).then((res) => {
           setBreadCrumb([
             {
@@ -118,7 +118,7 @@ function Header() {
           ]);
         });
         break;
-      case "/cart":
+      case config.routes.client.cart:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -130,7 +130,7 @@ function Header() {
           },
         ]);
         break;
-      case "/login":
+      case config.routes.client.login:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -142,7 +142,7 @@ function Header() {
           },
         ]);
         break;
-      case "/register":
+      case config.routes.client.register:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -154,7 +154,7 @@ function Header() {
           },
         ]);
         break;
-      case "/checkout":
+      case config.routes.client.checkout:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -165,12 +165,103 @@ function Header() {
             link: config.routes.client.cart,
           },
           {
-            name: "Chi tiết giỏ hàng",
+            name: "Thanh Toán",
             link: config.routes.client.checkout,
           },
         ]);
         break;
-
+      case config.routes.client.account:
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Tài khoản",
+            link: config.routes.client.account,
+          },
+        ]);
+        break;
+      case config.routes.client.accountOrder:
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Tài khoản",
+            link: config.routes.client.account,
+          },
+          {
+            name: "Lịch sử mua hàng",
+            link: config.routes.client.accountOrder,
+          },
+        ]);
+        break;
+      case config.routes.client.accountVoucher:
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Tài khoản",
+            link: config.routes.client.account,
+          },
+          {
+            name: "Voucher",
+            link: config.routes.client.accountVoucher,
+          },
+        ]);
+        break;
+      case config.routes.client.accountProfile:
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Tài khoản",
+            link: config.routes.client.account,
+          },
+          {
+            name: "Thông tin cá nhân",
+            link: config.routes.client.accountProfile,
+          },
+        ]);
+        break;
+      case config.routes.client.accountAddress:
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Tài khoản",
+            link: config.routes.client.account,
+          },
+          {
+            name: "Địa chỉ của tôi",
+            link: config.routes.client.accountAddress,
+          },
+        ]);
+        break;
+      case config.routes.client.accountPassword:
+        setBreadCrumb([
+          {
+            name: "Trang Chủ",
+            link: config.routes.client.home,
+          },
+          {
+            name: "Tài khoản",
+            link: config.routes.client.account,
+          },
+          {
+            name: "Đổi mật khẩu",
+            link: config.routes.client.accountPassword,
+          },
+        ]);
+        break;
       default:
         setBreadCrumb([]);
         break;
@@ -187,7 +278,7 @@ function Header() {
 
   function clear() {
     localStorage.clear();
-    dispatch(actions.set(initState));
+    dispatch(actions.set({ ...initState, load: false }));
     router.push(config.routes.client.login);
   }
 

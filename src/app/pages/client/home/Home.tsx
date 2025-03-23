@@ -12,7 +12,7 @@ import * as productServices from "@/app/services/productService";
 import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
 import * as userServices from "@/app/services/userService";
-import ProductLoad from "@/app/components/client/ProductLoad/ProductLoad";
+import ProductLoad from "@/app/components/client/ProductLoad";
 import { BsCardImage } from "react-icons/bs";
 import { useStore } from "@/app/store";
 
@@ -349,7 +349,7 @@ function Home() {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-9 container-custom gap-3.5">
+        <div className="flex flex-wrap container-custom gap-3.5">
           {categories.length === 0 &&
             Array.from({ length: 9 }).map((_, i: number) => (
               <div

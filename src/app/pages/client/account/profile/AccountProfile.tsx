@@ -1,5 +1,5 @@
 "use client";
-import Sidebar from "@/app/components/client/Sidebar_user";
+import Sidebar from "@/app/components/client/SidebarAccount";
 import { FaUser } from "react-icons/fa6";
 import {
   AutoComplete,
@@ -18,7 +18,7 @@ function AccountProfile() {
   const { Option } = Select;
   
   return (
-    <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex gap-4">
+    <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex items-start gap-4">
       <Sidebar />
       <div className="mx-auto w-9/12 border border-gray-200 shadow-xl rounded-lg flex justify-center items-center">
         <div className="w-[740px]  flex flex-col gap-6 justify-center items-center m-auto">

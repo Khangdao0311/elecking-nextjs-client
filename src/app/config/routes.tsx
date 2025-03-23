@@ -4,7 +4,7 @@ const routes = {
     products: "/products",
     productDetail: "/product-detail/",
     cart: "/cart",
-    checkout: "/checkout/",
+    checkout: "/checkout",
     login: "/login",
     register: "/register",
     forgotPassword: "/forgot-password",
