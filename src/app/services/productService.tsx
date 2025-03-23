@@ -18,3 +18,9 @@ export async function getSame(params: any) {
     .get(`${config.api.product}/same`, { params })
     .then((response: any) => response.data);
 }
+
+export async function addProduct(body:any) {
+  return axios
+  .post(`${config.api.brand}`,body)
+  .then((response: any) => response.data)
+}
