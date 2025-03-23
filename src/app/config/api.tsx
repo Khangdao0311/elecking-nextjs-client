@@ -15,6 +15,8 @@ const api = {
   stats: `${url}/stats`,
   review: `${url}/review`,
   vnpay: `${url}/vnpay`,
+  proptype: `${url}/proptype`,
+  property: `${url}/property`,
 };
 
 export default api;

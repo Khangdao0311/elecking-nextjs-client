@@ -28,6 +28,11 @@ const routes = {
       add: "/admin/category/add",
       edit: "/admin/category/edit/",
     },
+    configuration: {
+      list: "/admin/configuration/list",
+      add: "/admin/configuration/add",
+      edit: "/admin/configuration/edit/",
+    },
     voucher: {
       list: {
         expired: "/admin/voucher/list/expired",
