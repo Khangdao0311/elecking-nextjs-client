@@ -4,9 +4,10 @@ interface ICategory {
   image: string;
   status: number;
   icon: string;
-  propertype: IProptype[];
+  proptypes: IProptype[];
   description: string;
 }
 interface IProptype {
   id: string;
+  name: string;
 }

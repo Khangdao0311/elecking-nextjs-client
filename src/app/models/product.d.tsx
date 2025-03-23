@@ -11,6 +11,7 @@ interface IProduct {
 }
 
 interface IProperty {
+    id: string
     name: string
     stye: string
 }
