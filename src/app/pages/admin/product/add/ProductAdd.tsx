@@ -27,9 +27,7 @@ function ProductAdd() {
   const [variants, setVariants] = useState<any>([]);
   const [expandedVariants, setExpandedVariants] = useState<boolean[]>([true]);
   const [expandedColors, setExpandedColors] = useState<boolean[]>([true]);
-  const [selectedcategory, setSelectedcategory] = useState<ICategory | null>(
-    null
-  );
+  const [selectedcategory, setSelectedcategory] = useState<ICategory | null>(null);
   const [selectedbrand, setSelectedbrand] = useState<IBrand | null>(null);
   const [properties, setProperties] = useState<any>({});
 
@@ -58,12 +56,10 @@ function ProductAdd() {
         const _: any = [];
         const __: any = [];
         for (const item of selectedcategory.proptypes) {
-          await propertyServices
-            .getQuery({ proptype_id: item.id })
-            .then((res: any) => {
-              _[item.name] = [{ id: "", name: `${item.name}` }, ...res.data];
-              __.push("");
-            });
+          await propertyServices.getQuery({ proptype_id: item.id }).then((res: any) => {
+            _[item.name] = [{ id: "", name: `${item.name}` }, ...res.data];
+            __.push("");
+          });
         }
         setProperties(_);
         setVariants([
@@ -86,11 +82,7 @@ function ProductAdd() {
     _();
   }, [selectedcategory]);
 
-  const beforeUploadcolor = (
-    file: UploadFile,
-    iVariant: number,
-    iColor: number
-  ) => {
+  const beforeUploadcolor = (file: UploadFile, iVariant: number, iColor: number) => {
     const newFile: UploadFile = {
       uid: crypto.randomUUID(),
       name: file.name,
@@ -100,9 +92,7 @@ function ProductAdd() {
     setImagescolor((prev) => [...prev, newFile]);
     setTimeout(() => {
       setImagescolor((prev) =>
-        prev.map((item) =>
-          item.uid === newFile.uid ? { ...item, status: "done" } : item
-        )
+        prev.map((item) => (item.uid === newFile.uid ? { ...item, status: "done" } : item))
       );
     }, 1000);
 
@@ -137,9 +127,7 @@ function ProductAdd() {
     setImages((prev) => [...prev, newfile]);
     setTimeout(() => {
       setImages((prev) =>
-        prev.map((item) =>
-          item.uid === newfile.uid ? { ...item, status: "done" } : item
-        )
+        prev.map((item) => (item.uid === newfile.uid ? { ...item, status: "done" } : item))
       );
     }, 1000);
     console.log(variants);
@@ -200,17 +188,13 @@ function ProductAdd() {
     );
   }
   function handleToggleColor(iColor: number) {
-    setExpandedColors((prev) =>
-      prev.map((isOpen, index) => (index === iColor ? !isOpen : isOpen))
-    );
+    setExpandedColors((prev) => prev.map((isOpen, index) => (index === iColor ? !isOpen : isOpen)));
   }
   function handleRemoveVariant(iVariant: number) {
     setVariants((prev: { colors: any[] }[]) =>
       prev.filter((_, index: number) => index !== iVariant)
     );
-    setExpandedVariants((prev: boolean[]) =>
-      prev.filter((_, index: number) => index !== iVariant)
-    );
+    setExpandedVariants((prev: boolean[]) => prev.filter((_, index: number) => index !== iVariant));
   }
   function handleRemoveColor(iVariant: number, iColor: number) {
     setVariants((prevVariants: { colors: any[] }[]) =>
@@ -218,9 +202,7 @@ function ProductAdd() {
         if (vIndex === iVariant) {
           return {
             ...variant,
-            colors: variant.colors.filter(
-              (_: any, cIndex: number) => cIndex !== iColor
-            ),
+            colors: variant.colors.filter((_: any, cIndex: number) => cIndex !== iColor),
           };
         }
         return variant;
@@ -306,9 +288,7 @@ function ProductAdd() {
               onClick={handleAddVariant}
               className="px-5 py-2 bg-green-100 rounded cursor-pointer"
             >
-              <p className="w-full text-sm font-bold text-green-800">
-                Thêm loại
-              </p>
+              <p className="w-full text-sm font-bold text-green-800">Thêm loại</p>
             </div>
           </div>
           <div className="flex flex-col gap-6">
@@ -386,10 +366,7 @@ function ProductAdd() {
                                     return {
                                       ...variant,
                                       property_ids: variant.property_ids.map(
-                                        (
-                                          proptype_id: any,
-                                          iProptype_id: number
-                                        ) => {
+                                        (proptype_id: any, iProptype_id: number) => {
                                           if (iItem === iProptype_id) {
                                             return value;
                                           }
@@ -416,9 +393,7 @@ function ProductAdd() {
                           onClick={() => handleAddColor(iVariant)}
                           className="px-5 py-2 bg-green-100 rounded"
                         >
-                          <p className="w-full text-sm font-bold text-green-800">
-                            Thêm màu
-                          </p>
+                          <p className="w-full text-sm font-bold text-green-800">Thêm màu</p>
                         </div>
                       </div>
                       {variant.colors.map((color: any, iColor: number) => (
@@ -439,9 +414,7 @@ function ProductAdd() {
                                 />
                               </div>
                               <div
-                                onClick={() =>
-                                  handleRemoveColor(iVariant, iColor)
-                                }
+                                onClick={() => handleRemoveColor(iVariant, iColor)}
                                 className="w-[18px] h-[18px] bg-red-600"
                               >
                                 <IoIosClose className="text-white flex justify-center items-center" />
@@ -453,118 +426,84 @@ function ProductAdd() {
                                   <Input
                                     className="w-[268px] h-11 shadow-md"
                                     placeholder="Nhập tên màu"
-                                    value={
-                                      variants[iVariant].colors[iColor]?.name
-                                    }
+                                    value={variants[iVariant].colors[iColor]?.name}
                                     onChange={(e) =>
                                       setVariants((prev: IProductVariant[]) =>
-                                        prev.map(
-                                          (
-                                            variant: IProductVariant,
-                                            i: number
-                                          ) => {
-                                            if (i === iVariant) {
-                                              return {
-                                                ...variant,
-                                                colors: variant.colors.map(
-                                                  (
-                                                    eColor: IProductColor,
-                                                    eIColor: number
-                                                  ) => {
-                                                    if (eIColor === iColor) {
-                                                      return {
-                                                        ...eColor,
-                                                        name: e.target.value,
-                                                      };
-                                                    }
-                                                    return eColor;
+                                        prev.map((variant: IProductVariant, i: number) => {
+                                          if (i === iVariant) {
+                                            return {
+                                              ...variant,
+                                              colors: variant.colors.map(
+                                                (eColor: IProductColor, eIColor: number) => {
+                                                  if (eIColor === iColor) {
+                                                    return {
+                                                      ...eColor,
+                                                      name: e.target.value,
+                                                    };
                                                   }
-                                                ),
-                                              };
-                                            }
-                                            return variant;
+                                                  return eColor;
+                                                }
+                                              ),
+                                            };
                                           }
-                                        )
+                                          return variant;
+                                        })
                                       )
                                     }
                                   />
                                   <Input
                                     className="w-[268px] h-11 shadow-md"
                                     placeholder="Nhập giá thêm"
-                                    value={
-                                      variants[iVariant].colors[iColor]
-                                        ?.price_extra
-                                    }
+                                    value={variants[iVariant].colors[iColor]?.price_extra}
                                     onChange={(e) =>
                                       setVariants((prev: IProductVariant[]) =>
-                                        prev.map(
-                                          (
-                                            variant: IProductVariant,
-                                            i: number
-                                          ) => {
-                                            if (i === iVariant) {
-                                              return {
-                                                ...variant,
-                                                colors: variant.colors.map(
-                                                  (
-                                                    eColor: IProductColor,
-                                                    eIColor: number
-                                                  ) => {
-                                                    if (eIColor === iColor) {
-                                                      return {
-                                                        ...eColor,
-                                                        price_extra:
-                                                          e.target.value,
-                                                      };
-                                                    }
-                                                    return eColor;
+                                        prev.map((variant: IProductVariant, i: number) => {
+                                          if (i === iVariant) {
+                                            return {
+                                              ...variant,
+                                              colors: variant.colors.map(
+                                                (eColor: IProductColor, eIColor: number) => {
+                                                  if (eIColor === iColor) {
+                                                    return {
+                                                      ...eColor,
+                                                      price_extra: e.target.value,
+                                                    };
                                                   }
-                                                ),
-                                              };
-                                            }
-                                            return variant;
+                                                  return eColor;
+                                                }
+                                              ),
+                                            };
                                           }
-                                        )
+                                          return variant;
+                                        })
                                       )
                                     }
                                   />
                                   <Input
                                     className="w-[268px] h-11 shadow-md"
                                     placeholder="Nhập số lượng"
-                                    value={
-                                      variants[iVariant].colors[iColor]
-                                        ?.quantity
-                                    }
+                                    value={variants[iVariant].colors[iColor]?.quantity}
                                     onChange={(e) =>
                                       setVariants((prev: IProductVariant[]) =>
-                                        prev.map(
-                                          (
-                                            variant: IProductVariant,
-                                            i: number
-                                          ) => {
-                                            if (i === iVariant) {
-                                              return {
-                                                ...variant,
-                                                colors: variant.colors.map(
-                                                  (
-                                                    eColor: IProductColor,
-                                                    eIColor: number
-                                                  ) => {
-                                                    if (eIColor === iColor) {
-                                                      return {
-                                                        ...eColor,
-                                                        quantity:
-                                                          e.target.value,
-                                                      };
-                                                    }
-                                                    return eColor;
+                                        prev.map((variant: IProductVariant, i: number) => {
+                                          if (i === iVariant) {
+                                            return {
+                                              ...variant,
+                                              colors: variant.colors.map(
+                                                (eColor: IProductColor, eIColor: number) => {
+                                                  if (eIColor === iColor) {
+                                                    return {
+                                                      ...eColor,
+                                                      quantity: e.target.value,
+                                                    };
                                                   }
-                                                ),
-                                              };
-                                            }
-                                            return variant;
+                                                  return eColor;
+                                                }
+                                              ),
+                                            };
                                           }
-                                        )
+                                          return variant;
+                                        })
                                       )
                                     }
                                   />
@@ -600,16 +539,11 @@ function ProductAdd() {
                                   <div className="flex items-center flex-wrap gap-3">
                                     {imagescolor.map((file) => {
                                       const imageSrc = file.originFileObj
-                                        ? URL.createObjectURL(
-                                            file.originFileObj
-                                          )
+                                        ? URL.createObjectURL(file.originFileObj)
                                         : file.url;
 
                                       return (
-                                        <div
-                                          key={file.uid}
-                                          className="w-20 h-20 relative"
-                                        >
+                                        <div key={file.uid} className="w-20 h-20 relative">
                                           {file.status === "uploading" ? (
                                             <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded">
                                               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500"></div>
@@ -623,9 +557,7 @@ function ProductAdd() {
                                           )}
                                           <div
                                             className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
-                                            onClick={() =>
-                                              removeimagecolor(file)
-                                            }
+                                            onClick={() => removeimagecolor(file)}
                                           >
                                             <IoCloseSharp className="text-red-500" />
                                           </div>
@@ -718,25 +650,31 @@ function ProductAdd() {
           <Button
             back="product/list"
             onClick={async () => {
-                console.log(images.map((file) => file.name));
-                await productServices
-                  .addProduct({
-                    name: name,
-                    images: JSON.stringify(images.map((file) => file.name)), //là tên à
-                    category_id: selectedcategory?.id,
-                    brand_id: selectedbrand,
-                    variants: JSON.stringify(variants),
-                    description: editorContent,
-                  })
-                  .then((res) => {
-                    console.log(res);
-                  });
-
-                console.log("Cập nhật thành công");
-              // } catch (error) {
-              //   console.error("Lỗi khi cập nhật thương hiệu:", error);
-              //   alert("Cập nhật thất bại! Vui lòng thử lại.");
-              // }
+              await productServices
+                .addProduct({
+                  name: name,
+                  images: JSON.stringify(images.map((file) => file.name)),
+                  category_id: selectedcategory?.id,
+                  brand_id: selectedbrand,
+                  variants: JSON.stringify(
+                    variants.map((varriant: any) => ({
+                      ...varriant,
+                      price: +varriant.price,
+                      price_sale: +varriant.price_sale,
+                      colors: varriant.colors.map((color: any) => ({
+                        ...color,
+                        price_extra: +color.price_extra,
+                        quantity: +color.quantity,
+                      })),
+                    }))
+                  ),
+                  description: editorContent,
+                })
+                .then((res) => {
+                  if (res.status === 200) {
+                    console.log("Cập nhật thành công");
+                  }
+                });
             }}
           />
         </div>
