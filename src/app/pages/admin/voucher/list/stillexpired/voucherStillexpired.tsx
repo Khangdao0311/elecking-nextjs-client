@@ -13,7 +13,7 @@ import type { TableProps } from "antd";
 import config from "@/app/config";
 import Link from "next/link";
 function VoucherStillexpired() {
-  const [vouchers, setVouchers] = useState<IVocher []>([]);
+  const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
@@ -31,7 +31,7 @@ function VoucherStillexpired() {
     });
   }, [limit, page, search]);
 
-  const columns: TableProps<IVocher>["columns"] = [
+  const columns: TableProps<IVoucher>["columns"] = [
     {
       title: "STT",
       dataIndex: "index",
@@ -123,8 +123,8 @@ function VoucherStillexpired() {
       render: (_, record) => (
         <Space size="middle">
           <Link
-          href={`${config.routes.admin.voucher.edit}/${record.id}`}
-          className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
+            href={`${config.routes.admin.voucher.edit}/${record.id}`}
+            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
             <FiEdit className="w-5 h-5" />
           </Link>
         </Space>
@@ -147,35 +147,35 @@ function VoucherStillexpired() {
         }}
       />
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <Link 
-        href={config.routes.admin.voucher.add}
-        className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
+        <Link
+          href={config.routes.admin.voucher.add}
+          className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo voucher mới</p>
         </Link>
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
-                  <Table<IVocher>
-                    columns={columns}
-                    dataSource={vouchers.filter(voucher => voucher.status === 1)}
-                    rowKey="id"
-                    scroll={{ x: 1000, y: 400 }} 
-                    pagination={false}
-                    tableLayout="auto"
-                  />
-                </div>
-                {totalPages > limit && (
-                  <div className="flex w-full justify-end">
-                    <Pagination
-                      current={page}
-                      onChange={(e) => setPage(e)}
-                      defaultCurrent={1}
-                      align="end"
-                      pageSize={limit}
-                      total={totalPages}
-                      showSizeChanger={false}
-                    />
-                  </div>
-                )}
+          <Table<IVoucher>
+            columns={columns}
+            dataSource={vouchers.filter(voucher => voucher.status === 1)}
+            rowKey="id"
+            scroll={{ x: 1000, y: 400 }}
+            pagination={false}
+            tableLayout="auto"
+          />
+        </div>
+        {totalPages > limit && (
+          <div className="flex w-full justify-end">
+            <Pagination
+              current={page}
+              onChange={(e) => setPage(e)}
+              defaultCurrent={1}
+              align="end"
+              pageSize={limit}
+              total={totalPages}
+              showSizeChanger={false}
+            />
+          </div>
+        )}
       </div>
     </>
   );

@@ -25,6 +25,7 @@ function OrderList() {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState<number>(0);
+  const [isDisabledStatus, setIsDisabledStatus] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(selectedOrder?.status);
 
   useEffect(() => {
@@ -40,6 +41,8 @@ function OrderList() {
       setEditorder(true);
     }
   };
+
+  
 
   useEffect(() => {
     const query: any = {};
@@ -239,7 +242,7 @@ function OrderList() {
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
                     value={status}
-                    disabled={status === 0 || status === 1}
+                    disabled={selectedOrder.status === 0 || selectedOrder.status === 1}
                     onChange={(value) => {
                       setStatus(Number(value));
                     }}

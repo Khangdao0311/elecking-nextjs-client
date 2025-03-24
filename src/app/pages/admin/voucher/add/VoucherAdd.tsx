@@ -13,6 +13,7 @@ import * as userServices from "@/app/services/userService";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import * as voucherServices from "@/app/services/voucherService";
+import { notification, } from 'antd';
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
 
@@ -34,6 +35,16 @@ function VoucherAdd() {
   const [user, setUser] = useState("");
   const router = useRouter()
 
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
+
 
   useEffect(() => {
     const query = { limit: 7 };
@@ -43,10 +54,6 @@ function VoucherAdd() {
   }, []);
 
   // console.log(getUser);
-
-  const handleChange = (value: number) => {
-    setDiscountType(value);
-  };
 
   const handleChangeUser = (value: string) => {
     setUser(value);
@@ -87,12 +94,17 @@ function VoucherAdd() {
             </div>
             <div className='flex gap-0.5 flex-col'>
               <div className='text-sm font-medium'>Loại Khuyến Mãi <span className='text-primary'> *</span></div>
-              <Select className='shadow-md'
-                placeholder="Chọn loại khuyến mãi"
+              <Select
+                className="shadow-md"
+                value={discountType}
                 style={{ width: 268, height: 44 }}
-                onChange={handleChange}
+                onChange={(value) => {
+                  console.log(value);
+                  setDiscountType(Number(value));
+                }
+                }
                 options={[
-                  { value: 0, label: 'Phần trăm' },
+                  { value: 2, label: 'Phần trăm' },
                   { value: 1, label: 'Giá' },
                 ]}
               />
@@ -160,27 +172,66 @@ function VoucherAdd() {
               />
             </div>
           </div>
-          <Button
-            
-            onClick={() => {
-              const voucherData = {
-                code,
-                discount_type: discountType,
-                discount_value: discountValue,
-                min_order_value: minOrderValue,
-                max_discount: maxDiscount,
-                start_date: startDate,
-                end_date: endDate,
-                quantity,
-                user_id: user || null,
-              }
-              voucherServices.addVoucher(voucherData).then(res => {
-                router.push(config.routes.admin.voucher.list.stillexpired)
-              })
-              
-            }}
-          >
-          </Button>
+          {contextHolder}
+          <Space>
+            <Button
+              onClick={async () => {
+                const start = dayjs(startDate, "YYYYMMDD");
+                const end = dayjs(endDate, "YYYYMMDD");
+                let errors: string[] = [];
+                if (
+                  !code ||
+                  discountType === null ||
+                  discountValue === null ||
+                  minOrderValue === null ||
+                  maxDiscount === null ||
+                  !startDate ||
+                  !endDate ||
+                  quantity === null ||
+                  !user
+                ) {
+                  errors.push("Vui lòng nhập đầy đủ thông tin.");
+                }
+
+                if (start.isAfter(end)) {
+                  errors.push("Ngày bắt đầu và ngày kết thúc không hợp lệ.");
+                }
+
+                if (discountType === 1 && (discountValue ?? 0) < 1000) {
+                  errors.push("Giá trị giảm giá phải lớn hơn hoặc bằng 1000.");
+                }
+
+                if (errors.length > 0) {
+                  openNotificationWithIcon('error', 'Lỗi dữ liệu !', <>{errors.map((err, index) => <div key={index}>{err}</div>)}</>);
+                  return;
+                }
+
+                try {
+                  const voucherData = {
+                    code,
+                    discount_type: discountType,
+                    discount_value: discountValue,
+                    min_order_value: minOrderValue,
+                    max_discount: maxDiscount,
+                    start_date: startDate,
+                    end_date: endDate,
+                    quantity,
+                    user_id: user,
+                  };
+
+                  await voucherServices.addVoucher(voucherData);
+                  openNotificationWithIcon('success', "Thành công", "Thêm voucher thành công");
+                  setTimeout(() => {
+                    router.push(config.routes.admin.voucher.list.stillexpired);
+                  }, 1000);
+                } catch (error) {
+                  openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                  console.error(error);
+                }
+              }}
+            >
+            </Button>
+          </Space>
         </div>
       </div>
     </>

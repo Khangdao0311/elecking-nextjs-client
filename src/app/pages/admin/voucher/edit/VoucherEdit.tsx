@@ -13,6 +13,9 @@ import { useParams } from "next/navigation";
 import * as voucherService from "@/app/services/voucherService";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
+import config from "@/app/config";
+import { notification, } from 'antd';
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 
@@ -30,7 +33,17 @@ function VoucherEdit() {
   const [endDate, setEndDate] = useState("");
   const [quantity, setQuantity] = useState<number | null>(null);
   const [user, setUser] = useState<number | null>(null);
-  
+  const router = useRouter()
+
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
 
   const handleDateStart = (date: dayjs.Dayjs | null) => {
     if (date) {
@@ -88,7 +101,7 @@ function VoucherEdit() {
           <div className='flex items-center flex-wrap gap-4'>
             <div className='flex gap-0.5 flex-col'>
               <div className='text-sm font-medium'>Mã Khuyến Mãi <span className="text-primary">*</span></div>
-              <Input className='w-[268px] h-11 shadow-md' value={code} onChange={(e) => setCode(e.target.value)} disabled/>
+              <Input className='w-[268px] h-11 shadow-md' value={code} onChange={(e) => setCode(e.target.value)} disabled />
             </div>
             <div className='flex gap-0.5 flex-col'>
               <div className='text-sm font-medium'>Loại Khuyến Mãi <span className='text-primary'> *</span></div>
@@ -96,8 +109,7 @@ function VoucherEdit() {
                 className="shadow-md"
                 value={discountType}
                 style={{ width: 268, height: 44 }}
-                onChange={(value) => 
-                {
+                onChange={(value) => {
                   console.log(value);
                   setDiscountType(Number(value));
                 }
@@ -163,25 +175,68 @@ function VoucherEdit() {
 
             </div>
           </div>
-          <Button
-            back="voucher/list/stillexpired"
-            onClick={ () => {
-              console.log(discountType);
-              const voucherData = {
-                code: code,
-                  discount_type: discountType,
-                  discount_value: discountValue,
-                  min_order_value: minOrderValue,
-                  max_discount: maxDiscount,
-                  start_date: startDate,
-                  end_date: endDate,
-                  quantity: quantity,
-                  status: 1,
-                  user_id: user || null,
-              }
-              voucherService.editBrand(id, voucherData)
-            }}
-          />
+          {contextHolder}
+          <Space>
+            <Button
+              onClick={async () => {
+                const start = dayjs(startDate, "YYYYMMDD");
+                const end = dayjs(endDate, "YYYYMMDD");
+                let errors: string[] = [];
+
+                if (
+                  !code ||
+                  discountType === null ||
+                  discountValue === null ||
+                  minOrderValue === null ||
+                  (discountType !== 1 && maxDiscount === null) ||
+                  !startDate ||
+                  !endDate ||
+                  quantity === null
+                ) {
+                  errors.push("Vui lòng nhập đầy đủ thông tin.");
+                }
+
+                if (start.isAfter(end)) {
+                  errors.push("Ngày bắt đầu và ngày kết thúc không hợp lệ.");
+                }
+
+                if (discountType === 1 && (discountValue ?? 0) < 1000) {
+                  errors.push("Giá trị giảm giá phải lớn hơn hoặc bằng 1000.");
+                }
+
+                if (errors.length > 0) {
+                  openNotificationWithIcon('error', 'Lỗi dữ liệu !', <>{errors.map((err, index) => <div key={index}>{err}</div>)}</>);
+                  return;
+                }
+
+                try {
+                  const voucherData = {
+                    code,
+                    discount_type: discountType,
+                    discount_value: discountValue,
+                    min_order_value: minOrderValue,
+                    max_discount: maxDiscount,
+                    start_date: startDate,
+                    end_date: endDate,
+                    quantity,
+                    status: 1,
+                    user_id: user || null,
+                  };
+
+                  await voucherService.editBrand(id, voucherData);
+                  openNotificationWithIcon('success', "Thành công", "Cập nhật voucher thành công");
+                  setTimeout(() => {
+                    router.push(config.routes.admin.voucher.list.stillexpired);
+                  }, 1000);
+                } catch (error) {
+                  openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                  console.error(error);
+                }
+              }}
+            >
+            </Button>
+
+          </Space>
         </div>
       </div>
     </>

@@ -11,6 +11,8 @@ import "quill/dist/quill.snow.css";
 import { useParams } from "next/navigation";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
+import { useRouter } from "next/navigation";
+import config from "@/app/config";
 
 function BrandEdit() {
   const quillRef = useRef<HTMLDivElement>(null);
@@ -25,6 +27,9 @@ function BrandEdit() {
   );
   const [name, setName] = useState("");
   const { id }: any = useParams();
+
+    const router = useRouter()
+  
 
   useEffect(() => {
     brandServices.getById(`${id}`).then((res) => {
@@ -311,7 +316,9 @@ function BrandEdit() {
           description: editorContent.trim(),
         },
         id
-      );
+      ).then(res => {
+        router.push(config.routes.admin.brand.list)
+      })
 
       alert("Cập nhật thành công!");
     } catch (error) {

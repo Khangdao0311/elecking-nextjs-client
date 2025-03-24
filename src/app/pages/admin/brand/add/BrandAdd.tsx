@@ -9,7 +9,13 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import type { RcFile } from "antd/es/upload/interface";
 import * as uploadServices from "@/app/services/uploadService";
+import * as brandServices from "@/app/services/brandService";
 import axios from "axios";
+import { Button as ButtonAnt, notification, Space } from 'antd';
+import config from "@/app/config";
+import { useRouter } from "next/navigation";
+
+
 
 function BrandAdd() {
   const [name, setName] = useState("");
@@ -20,28 +26,38 @@ function BrandAdd() {
   const [editorContent, setEditorContent] = useState("");
   const [logo, setLogo] = useState<UploadFile[]>([]);
   const [banner, setBanner] = useState<UploadFile[]>([]);
+  const router = useRouter()
 
-  
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
+
 
   useEffect(() => {
-    if (!quillRef.current) return; // Kiểm tra nếu ref tồn tại
-    if (quillRef.current.querySelector(".ql-editor")) return; // Tránh khởi tạo lại
+    if (!quillRef.current) return;
+    if (quillRef.current.querySelector(".ql-editor")) return;
 
     const quill = new Quill(quillRef.current, {
       theme: "snow",
     });
 
-    // Load dữ liệu cũ nếu có
     quill.root.innerHTML = editorContent;
 
     quill.on("text-change", () => {
       setEditorContent(quill.root.innerHTML);
+      setdescription(quill.root.innerHTML);
     });
+  }, []);
 
-    quill.on("text-change", () => {
-      setdescription(quill.getText().trim());
-    });
-  }, [editorContent]);
+
+
+
   const handleRemove = (file: UploadFile, type: "logo" | "banner") => {
     if (type === "logo") {
       setLogo((prev) => prev.filter((item) => item.uid !== file.uid));
@@ -57,7 +73,7 @@ function BrandAdd() {
       status: "uploading",
       originFileObj: file as RcFile,
     };
-    
+
 
     const setState = type === "logo" ? setLogo : setBanner;
 
@@ -231,29 +247,42 @@ function BrandAdd() {
               className="w-full h-[100px] border border-gray-300 rounded"
             ></div>
           </div>
+          {contextHolder}
           <div className="mt-[60px]">
-            <Button
-              back="brand/list"
-              onClick={() => {
-                const logoFormData = new FormData();
-                logoFormData.append("image", imgBrand[0]);
-                uploadServices.uploadSingle(logoFormData)
-                  .then((response: any) => response.data);
+            <Space>
+              <Button
+                onClick={async () => {
+                  if (!name.trim() || !imgBrand?.length || !imgBanner?.length || !description.trim()) {
+                    openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
+                    return;
+                  }
+                  try {
+                    const logoFormData = new FormData();
+                    logoFormData.append("image", imgBrand[0]);
+                    await uploadServices.uploadSingle(logoFormData);
+                    const bannerFormData = new FormData();
+                    bannerFormData.append("image", imgBanner[0]);
+                    await uploadServices.uploadSingle(bannerFormData);
+                    const brandData = {
+                      name: name,
+                      logo: imgBrand[0].name, 
+                      banner: imgBanner[0].name,
+                      description: description,
+                    };
+                    await brandServices.addBrand(brandData);
+                    openNotificationWithIcon('success', "Thành công", "Thêm thành công");
+                    setTimeout(() => {
+                      router.push(config.routes.admin.brand.list);
+                    }, 1000);
 
-                const bannerFormData = new FormData();
-                bannerFormData.append("image", imgBanner[0]);
-                uploadServices.uploadSingle(bannerFormData)
-                  .then((response: any) => response.data);
-
-                axios.post("http://localhost:8000/brand", {
-                  name: name,
-                  logo: imgBrand[0].name,
-                  banner: imgBanner[0].name,
-                  description: description,
-                });
-              }}
-            >
-            </Button>
+                  } catch (error) {
+                    openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                    console.error(error);
+                  }
+                }}
+              >
+              </Button>
+            </Space>
           </div>
         </div>
       </div>

@@ -45,21 +45,15 @@ function DashBoard() {
   const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
   const [getaddress, setGetaddress] = useState<IAddress[]>([]);
+  const [isDisabledStatus, setIsDisabledStatus] = useState(false);
   const [getUser, setGetUser] = useState<IUser[]>([]);
+  const [status, setStatus] = useState<number>(0);
 
   useEffect(() => {
-    const query = { limit: 7 };
-    addressServices.getQuery(query).then((res) => {
-      setGetaddress(res.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (selectedOrder && getaddress.length > 0) {
-      const address = getaddress.find((addr) => addr.id === selectedOrder.address_id);
-      setSelectedAddress(address || null);
+    if (selectedOrder) {
+      setStatus(selectedOrder.status)
     }
-  }, [selectedOrder, getaddress]);
+  }, [selectedOrder]);
 
 
   useEffect(() => {
@@ -353,41 +347,50 @@ function DashBoard() {
                 </div>
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Người nhận hàng:</p>
-                  <p className="text-sm font-normal">{selectedOrder.user.fullname}</p>
+                  <p className="text-sm font-normal">{selectedOrder.address.fullname}</p>
                 </div>
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Số điện thoại:</p>
-                  <p className="text-sm font-normal">{selectedUser?.phone}</p>
+                  <p className="text-sm font-normal">{selectedOrder.address.phone}</p>
                 </div>
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Tỉnh/Thành phố:</p>
                   <p className="text-sm font-normal">
-                    {`${selectedAddress?.ward}, ${selectedAddress?.district}, ${selectedAddress?.province}  `}
+                    {`${selectedOrder.address.ward.name}, ${selectedOrder.address.district.name}, ${selectedOrder.address.province.name}  `}
                   </p>
                 </div>
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Địa chỉ cụ thể:</p>
                   <p className="text-sm font-normal">
-                    {selectedAddress?.description}
+                    {selectedOrder.address.description}
                   </p>
                 </div>
                 <div className="flex flex-col w-[278px] gap-0.5">
                   <p className="text-sm font-medium">Trạng Thái Đơn Hàng:</p>
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
-                    defaultValue={String(selectedOrder.status)}
-                    onChange={handleChange}
+                    value={status}
+                    disabled= {selectedOrder.status === 0 || selectedOrder.status === 1}
+                    onChange={(value) => {
+                      setStatus(Number(value));
+                    }}
                     options={[
-                      { value: "0", label: "Đã hủy" },
-                      { value: "1", label: "Đã giao hàng" },
-                      { value: "2", label: "Chờ xác nhận" },
-                      { value: "3", label: "Đang vận chuyển" },
+                      { value: 2, label: "Chờ xác nhận", disabled: ![2].includes(selectedOrder.status) },
+                      { value: 3, label: "Đang vận chuyển", disabled: ![2, 3].includes(selectedOrder.status) },
+                      { value: 1, label: "Đã giao hàng" },
+                      { value: 0, label: "Đã hủy" }
                     ]}
                   />
                 </div>
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Loại địa chỉ:</p>
-                  <p className="text-sm font-bold text-primary">Nhà riêng</p>
+                  {selectedOrder.address.type === 1 && (
+                    <p className="text-sm font-bold text-primary">Nhà riêng</p>
+                  )}
+
+                  {selectedOrder.address.type === 2 && (
+                    <p className="text-sm font-bold text-primary">Văn phòng</p>
+                  )}
                 </div>
               </div>
               <div className="px-3 py-2 flex flex-col gap-2 rounded border border-gray-200 shadow-lg">
@@ -426,15 +429,29 @@ function DashBoard() {
             </div>
             <div className="px-4 h-[64px] items-center justify-end flex gap-4">
               <div className="flex gap-4">
-                <p
+                <button
                   onClick={closeeditorder}
                   className="cursor-pointer px-6 w-[114px] h-[40px] bg-red-100 text-red-800 text-sm font-bold flex items-center justify-center rounded"
                 >
                   Trở lại
-                </p>
-                <p className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded">
+                </button>
+                <button className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
+                  onClick={() => {
+                    orderServices.updateStatus(selectedOrder.id, status)
+                      .then(() => {
+                        setGetorders((prevOrders) =>
+                          prevOrders.map((order) =>
+                            order.id === selectedOrder.id ? { ...order, status } : order
+                          )
+                        );
+                        closeeditorder();
+                        setIsDisabledStatus(status === 0 || status === 1);
+                        alert("Cập nhật trạng thái thành công!");
+                      })
+                  }}
+                >
                   Lưu
-                </p>
+                </button>
               </div>
             </div>
           </>
