@@ -22,20 +22,19 @@ function ProductAdd() {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-   const [editorContent, setEditorContent] = useState("");
-  const [brands, setBrands] = useState("")
-
+  const [editorContent, setEditorContent] = useState("");
+  const [brands, setBrands] = useState<IBrand[]>([]);
   const [variants, setVariants] = useState<any>([]);
   const [expandedVariants, setExpandedVariants] = useState<boolean[]>([true]);
   const [expandedColors, setExpandedColors] = useState<boolean[]>([true]);
   const [selectedcategory, setSelectedcategory] = useState<ICategory | null>(
     null
   );
+  const [selectedbrand, setSelectedbrand] = useState<IBrand | null>(null);
   const [properties, setProperties] = useState<any>({});
 
-  useEffect(()=>{
-
-  })
+  useEffect(() => {});
+  console.log(variants);
 
   useEffect(() => {
     if (!quillRef.current) return; // Kiểm tra nếu ref tồn tại
@@ -51,7 +50,7 @@ function ProductAdd() {
     quill.on("text-change", () => {
       setEditorContent(quill.root.innerHTML);
     });
-  }, [editorContent]); 
+  }, [editorContent]);
 
   useEffect(() => {
     async function _() {
@@ -87,25 +86,48 @@ function ProductAdd() {
     _();
   }, [selectedcategory]);
 
-    const beforeUploadcolor = (file: File) => {
-      const newfile: UploadFile = {
-        uid: crypto.randomUUID(),
-        name: file.name,
-        status: "uploading",
-        originFileObj: file as RcFile,
-      };
-      setImagescolor((prev) => [...prev, newfile]);
-      setTimeout(() => {
-        setImagescolor((prev) =>
-          prev.map((item) =>
-            item.uid === newfile.uid ? { ...item, status: "done" } : item
-          )
-        );
-      }, 1000);
-
-      return false;
+  const beforeUploadcolor = (
+    file: UploadFile,
+    iVariant: number,
+    iColor: number
+  ) => {
+    const newFile: UploadFile = {
+      uid: crypto.randomUUID(),
+      name: file.name,
+      status: "uploading",
+      originFileObj: file as RcFile,
     };
-    const beforeUpload = (file: File) => {
+    setImagescolor((prev) => [...prev, newFile]);
+    setTimeout(() => {
+      setImagescolor((prev) =>
+        prev.map((item) =>
+          item.uid === newFile.uid ? { ...item, status: "done" } : item
+        )
+      );
+    }, 1000);
+
+    setVariants((prev: IProductVariant[]) =>
+      prev.map((variant, i) => {
+        if (i === iVariant) {
+          return {
+            ...variant,
+            colors: variant.colors.map((color, j) => {
+              if (j === iColor) {
+                return {
+                  ...color,
+                  image: file.name, // Gán tên ảnh vào biến image của color
+                };
+              }
+              return color;
+            }),
+          };
+        }
+        return variant;
+      })
+    );
+    return false; // Ngăn upload ngay lập tức, có thể xử lý upload sau
+  };
+  const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),
       name: file.name,
@@ -120,7 +142,7 @@ function ProductAdd() {
         )
       );
     }, 1000);
-
+    console.log(variants);
     return false;
   };
   const removeimagecolor = (file: UploadFile) => {
@@ -210,12 +232,11 @@ function ProductAdd() {
     categoryServices.getQuery(query).then((res) => setCategories(res.data));
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     const query: any = {};
-    brandServices.getQuery(query).then((res) => setBrands(res.data))
-  },[])
+    brandServices.getQuery(query).then((res) => setBrands(res.data));
+  }, []);
 
-  // console.log(variants, name);
   return (
     <>
       <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
@@ -260,6 +281,20 @@ function ProductAdd() {
                 value={selectedcategory?.id}
                 options={categories}
                 fieldNames={{ value: "id", label: "name" }}
+              />
+            </div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Thương hiệu <span className="text-primary">*</span>
+              </div>
+              <Select
+                className="shadow-md"
+                style={{ width: 268, height: 44 }}
+                onChange={(value) => setSelectedbrand(value)}
+                options={brands.map((brand) => ({
+                  value: brand.id,
+                  label: brand.name,
+                }))}
               />
             </div>
           </div>
@@ -323,6 +358,20 @@ function ProductAdd() {
                       <Input
                         className="w-[268px] h-11 shadow-md"
                         placeholder="Nhập giá giảm"
+                        value={variants[iVariant].price_sale}
+                        onChange={(e) =>
+                          setVariants((prev: IProductVariant[]) =>
+                            prev.map((variant: IProductVariant, i: number) => {
+                              if (i === iVariant) {
+                                return {
+                                  ...variant,
+                                  price_sale: e.target.value,
+                                };
+                              }
+                              return variant;
+                            })
+                          )
+                        }
                       />
                       {selectedcategory?.proptypes.map((item, iItem) => (
                         <div key={iItem} className="flex flex-wrap gap-2">
@@ -442,18 +491,93 @@ function ProductAdd() {
                                   <Input
                                     className="w-[268px] h-11 shadow-md"
                                     placeholder="Nhập giá thêm"
+                                    value={
+                                      variants[iVariant].colors[iColor]
+                                        ?.price_extra
+                                    }
+                                    onChange={(e) =>
+                                      setVariants((prev: IProductVariant[]) =>
+                                        prev.map(
+                                          (
+                                            variant: IProductVariant,
+                                            i: number
+                                          ) => {
+                                            if (i === iVariant) {
+                                              return {
+                                                ...variant,
+                                                colors: variant.colors.map(
+                                                  (
+                                                    eColor: IProductColor,
+                                                    eIColor: number
+                                                  ) => {
+                                                    if (eIColor === iColor) {
+                                                      return {
+                                                        ...eColor,
+                                                        price_extra:
+                                                          e.target.value,
+                                                      };
+                                                    }
+                                                    return eColor;
+                                                  }
+                                                ),
+                                              };
+                                            }
+                                            return variant;
+                                          }
+                                        )
+                                      )
+                                    }
                                   />
                                   <Input
                                     className="w-[268px] h-11 shadow-md"
                                     placeholder="Nhập số lượng"
+                                    value={
+                                      variants[iVariant].colors[iColor]
+                                        ?.quantity
+                                    }
+                                    onChange={(e) =>
+                                      setVariants((prev: IProductVariant[]) =>
+                                        prev.map(
+                                          (
+                                            variant: IProductVariant,
+                                            i: number
+                                          ) => {
+                                            if (i === iVariant) {
+                                              return {
+                                                ...variant,
+                                                colors: variant.colors.map(
+                                                  (
+                                                    eColor: IProductColor,
+                                                    eIColor: number
+                                                  ) => {
+                                                    if (eIColor === iColor) {
+                                                      return {
+                                                        ...eColor,
+                                                        quantity:
+                                                          e.target.value,
+                                                      };
+                                                    }
+                                                    return eColor;
+                                                  }
+                                                ),
+                                              };
+                                            }
+                                            return variant;
+                                          }
+                                        )
+                                      )
+                                    }
                                   />
                                 </div>
                                 <div className="flex flex-col gap-2.5">
                                   <Upload
-                                    multiple
+                                    multiple={false}
+                                    maxCount={1}
                                     listType="picture"
                                     fileList={imagescolor}
-                                    beforeUpload={beforeUploadcolor}
+                                    beforeUpload={(file) =>
+                                      beforeUploadcolor(file, iVariant, iColor)
+                                    }
                                     onRemove={removeimagecolor}
                                     showUploadList={false}
                                   >
@@ -582,28 +706,38 @@ function ProductAdd() {
               </div>
             </div>
             <div>
-            <div className="text-sm font-medium">
-              Mô tả thương hiệu <span className="text-primary">*</span>
-              <div
-                ref={quillRef}
-                className="w-full min-h-[100px] border border-gray-300 rounded"
-              ></div>
-            </div>
+              <div className="text-sm font-medium">
+                Mô tả thương hiệu <span className="text-primary">*</span>
+                <div
+                  ref={quillRef}
+                  className="w-full min-h-[100px] border border-gray-300 rounded"
+                ></div>
+              </div>
             </div>
           </div>
           <Button
             back="product/list"
-            // onClick={async () => {
-            //   console.log(images.map(file => file.name));
-            //   await productServices.addProduct(
-            //     {
-            //       name: name,
-            //       images: images.map(file => file.name),
-            //       category_id: selectedcategory?.id
+            onClick={async () => {
+                console.log(images.map((file) => file.name));
+                await productServices
+                  .addProduct({
+                    name: name,
+                    images: JSON.stringify(images.map((file) => file.name)), //là tên à
+                    category_id: selectedcategory?.id,
+                    brand_id: selectedbrand,
+                    variants: JSON.stringify(variants),
+                    description: editorContent,
+                  })
+                  .then((res) => {
+                    console.log(res);
+                  });
 
-            //     }
-            //   )
-            // }}
+                console.log("Cập nhật thành công");
+              // } catch (error) {
+              //   console.error("Lỗi khi cập nhật thương hiệu:", error);
+              //   alert("Cập nhật thất bại! Vui lòng thử lại.");
+              // }
+            }}
           />
         </div>
       </div>

@@ -21,6 +21,6 @@ export async function getSame(params: any) {
 
 export async function addProduct(body:any) {
   return axios
-  .post(`${config.api.brand}`,body)
+  .post(`${config.api.product}`,body)
   .then((response: any) => response.data)
 }
