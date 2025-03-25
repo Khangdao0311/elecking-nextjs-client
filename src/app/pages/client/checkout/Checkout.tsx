@@ -167,7 +167,18 @@ function Checkout() {
             : 0),
         price_ship: 0,
         note: note,
-        products: JSON.stringify(checkout.order),
+        products: JSON.stringify(
+          checkout.order.map((e: any, i: number) => ({
+            ...e,
+            product: {
+              ...e.product,
+              price:
+                productsOrder[i].variants[e.product.variant].price -
+                productsOrder[i].variants[e.product.variant].price_sale +
+                productsOrder[i].variants[e.product.variant].colors[e.product.color].price_extra,
+            },
+          }))
+        ),
         user_id: state.user.id,
         voucher_id: voucher?.id,
         payment_method_id: paymentMethod?.id,

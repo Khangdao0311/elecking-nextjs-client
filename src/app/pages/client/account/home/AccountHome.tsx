@@ -39,18 +39,18 @@ function AccountHome() {
 
   useEffect(() => {
     async function _() {
-      if (state.cart.length) {
-        const _: IProduct[] = [];
+      const _: IProduct[] = [];
+      if (state.wish.length || !productsWish.length) {
         for (const id of state.wish) {
           await productServices.getProById(id).then((res: any) => {
             _.push(res.data);
           });
         }
-        setProductsWish(_);
       }
+      setProductsWish(_);
     }
     _();
-  }, [state.cart]);
+  }, [state.wish]);
 
   return (
     <>

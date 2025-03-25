@@ -41,9 +41,9 @@ export async function updateTransactionCode(id: string, transaction_code: string
     .then((response: any) => response.data);
 }
 
-export async function updateStatus(id: string, status: number) {
+export async function updateStatus(order_id: string, status: number) {
   return axios
-    .put(`${config.api.order}/update_status/${id}`, {
+    .put(`${config.api.order}/update_status/${order_id}`, {
       status: status,
     })
     .then((response: any) => response.data);

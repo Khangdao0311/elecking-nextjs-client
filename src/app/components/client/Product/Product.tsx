@@ -72,15 +72,18 @@ function Product(props: { product: IProduct }) {
         )}
       </div>
       <div className="flex items-center justify-between w-full">
-        <div className="center-flex justify-start ">
+        <div className="center-flex justify-start items-start ">
           {props.product.rating !== null && (
-            <Rate
-              className="text-secondaryDark text-base"
-              defaultValue={props.product.rating}
-              allowHalf
-              disabled
-              characterRender={(char) => <span style={{ marginInlineEnd: "2px" }}>{char}</span>}
-            />
+            <Fragment>
+              <Rate
+                className="text-secondaryDark text-base"
+                defaultValue={Math.ceil(props.product.rating * 2) / 2}
+                allowHalf
+                disabled
+                characterRender={(char) => <span style={{ marginInlineEnd: "2px" }}>{char}</span>}
+              />{" "}
+              <span className="text-xs select-none"> ({props.product.rating})</span>
+            </Fragment>
           )}
         </div>
         <div className="center-flex gap-1 cursor-pointer">

@@ -10,3 +10,7 @@ export async function wish(review_id: string, user_id: string) {
     .post(`${config.api.review}/like/${review_id}`, { user_id: user_id })
     .then((response: any) => response.data);
 }
+
+export async function create(review: any) {
+  return axios.post(`${config.api.review}`, review).then((response: any) => response.data);
+}

@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Thumbs } from "swiper/modules";
 import { useParams, useRouter } from "next/navigation";
 import SwiperCore from "swiper/core";
-import { Modal, Pagination, Rate } from "antd";
+import { Image, Modal, Pagination, Rate } from "antd";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
   FaAngleLeft,
@@ -48,6 +48,7 @@ function ProductDetail() {
   const [iColor, setIColor] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [rating, setRating] = useState("");
+  const [page, setPage] = useState(1);
 
   const { id }: any = useParams();
 
@@ -59,11 +60,14 @@ function ProductDetail() {
   }, [id]);
 
   useEffect(() => {
-    reviewServices.getQuery({ product_id: id, rating: rating }).then((res) => {
-      setReviews(res.data);
-      setTotalReviews(res.total);
-    });
-  }, [id, rating, state.re_render]);
+    reviewServices
+      .getQuery({ product_id: id, rating: rating, orderby: "id-desc", limit: 5, page: page })
+      .then((res) => {
+        setReviews([]);
+        setReviews(res.data);
+        setTotalReviews(res.total);
+      });
+  }, [id, rating, state.re_render, page]);
 
   function handleAddToCart() {
     let isSame = false;
@@ -153,7 +157,19 @@ function ProductDetail() {
         <>
           {/* Chi tiết sản phẩm, giá và type */}
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
-            <div className="text-lg font-extrabold">{product?.name}</div>
+            <div className="flex gap-4">
+              <p className="text-lg font-bold">{product?.name}</p>
+              <div className="center-flex gap-1">
+                <Rate
+                  className="text-secondaryDark text-xl"
+                  defaultValue={Math.ceil(product!.rating * 2) / 2}
+                  allowHalf
+                  disabled
+                  characterRender={(char) => <span style={{ marginInlineEnd: "6px" }}>{char}</span>}
+                />
+                <span className="text-base  select-none">( {product?.rating} )</span>
+              </div>
+            </div>
             <hr className="my-4" />
 
             <div className="flex gap-4">
@@ -328,30 +344,43 @@ function ProductDetail() {
                     ).toLocaleString("vi-VN")}{" "}
                     đ
                   </p>
-                  <del className="text-lg font-normal text-gray-500">
-                    {product!.variants[iVariant].price.toLocaleString("vi-VN")} đ
-                  </del>
-                  <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
-                    {/* <p className="w-full text-center text-xs font-bold text-white">
-                      -6%
-                    </p> */}
-                    {Math.ceil(
-                      100 -
-                        ((product.variants[0].price - product.variants[0].price_sale) /
-                          product.variants[0].price) *
-                          100
-                    ) > 0 && (
-                      <div className="w-full text-center text-xs font-bold text-white">
-                        {Math.ceil(
-                          100 -
-                            ((product.variants[0].price - product.variants[0].price_sale) /
-                              product.variants[0].price) *
-                              100
-                        )}{" "}
-                        %
-                      </div>
-                    )}
-                  </div>
+                  {product!.variants[iVariant].price -
+                    product!.variants[iVariant].price_sale +
+                    product!.variants[iVariant].colors[iColor].price_extra <
+                    product!.variants[iVariant].price +
+                      product!.variants[iVariant].colors[iColor].price_extra && (
+                    <del className="text-lg font-normal text-gray-500">
+                      {(
+                        product!.variants[iVariant].price +
+                        product!.variants[iVariant].colors[iColor].price_extra
+                      ).toLocaleString("vi-VN")}{" "}
+                      đ
+                    </del>
+                  )}
+                  {product!.variants[iVariant].price -
+                    product!.variants[iVariant].price_sale +
+                    product!.variants[iVariant].colors[iColor].price_extra <
+                    product!.variants[iVariant].price +
+                      product!.variants[iVariant].colors[iColor].price_extra && (
+                    <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
+                      {Math.ceil(
+                        100 -
+                          ((product.variants[0].price - product.variants[0].price_sale) /
+                            product.variants[0].price) *
+                            100
+                      ) > 0 && (
+                        <div className="w-full text-center text-xs font-bold text-white">
+                          {Math.ceil(
+                            100 -
+                              ((product.variants[0].price - product.variants[0].price_sale) /
+                                product.variants[0].price) *
+                                100
+                          )}{" "}
+                          %
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 {/* quantity */}
                 <div className="flex gap-4 items-center py-4">
@@ -450,7 +479,7 @@ function ProductDetail() {
                     <div className="flex gap-1">
                       <Rate
                         className="text-secondaryDark text-base"
-                        defaultValue={product.rating}
+                        defaultValue={Math.ceil(product.rating * 2) / 2}
                         allowHalf
                         disabled
                         characterRender={(char) => (
@@ -495,7 +524,11 @@ function ProductDetail() {
                   <div key={index} className="flex items-start gap-4 py-4 ">
                     <div className="w-16 h-16 center-flex rounded-full overflow-hidden  shadow-lg">
                       {review.user.avatar ? (
-                        <img className="w-full h-full" src={review.user.avatar} alt="" />
+                        <img
+                          className="w-full h-full object-contain"
+                          src={review.user.avatar}
+                          alt=""
+                        />
                       ) : (
                         <FaCircleUser className="w-full h-full text-gray-300" />
                       )}
@@ -505,8 +538,7 @@ function ProductDetail() {
                       <div className="flex gap-1">
                         <Rate
                           className="text-secondaryDark text-base"
-                          defaultValue={review.rating}
-                          allowHalf
+                          value={review.rating}
                           disabled
                           characterRender={(char) => (
                             <span style={{ marginInlineEnd: "2px" }}>{char}</span>
@@ -521,15 +553,27 @@ function ProductDetail() {
                       <div>
                         <p className="text-base font-normal">{review.content}</p>
                       </div>
-                      {review.images.length > 0 && (
-                        <div className="flex gap-2.5">
-                          <div className="w-16 h-16 rounded-lg bg-red-500">
+                      <div className="flex gap-4">
+                        {review.images.length > 0 && (
+                          <Image.PreviewGroup
+                            preview={{
+                              onChange: (current, prev) =>
+                                console.log(`current index: ${current}, prev index: ${prev}`),
+                            }}
+                          >
                             {review.images.map((image: string, index: number) => (
-                              <img key={index} src={image} alt="hình ảnh đánh giá" />
+                              <Image
+                                className="object-contain rounded border border-gray-300 shadow-lg"
+                                width={80}
+                                height={80}
+                                key={index}
+                                src={image}
+                                alt="hình ảnh đánh giá"
+                              />
                             ))}
-                          </div>
-                        </div>
-                      )}
+                          </Image.PreviewGroup>
+                        )}
+                      </div>
                       <div className="flex gap-2 items-center">
                         <div className="w-5 h-5 cursor-pointer">
                           {review.like.includes(state.user?.id) ? (
@@ -575,6 +619,7 @@ function ProductDetail() {
                     total={totalReviews}
                     pageSize={5}
                     showSizeChanger={false}
+                    onChange={setPage}
                   />
                 </div>
               )}
