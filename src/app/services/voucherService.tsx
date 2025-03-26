@@ -22,5 +22,5 @@ export async function addVoucher(body:any) {
 export async function editBrand( id: any, body:any) {
   return axios
     .put(`${config.api.voucher}/${id}`,body)
-    .then((res)=> res.data)
+    .then((response)=> response.data)
 }

@@ -15,12 +15,14 @@ import type { TableProps } from "antd";
 import { FaEye } from "react-icons/fa6";
 import { LuEyeClosed } from "react-icons/lu";
 function UserList() {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [eyeState, setEyeState] = useState<{ [key: string]: boolean }>({});
+  const [hiddenUsers, setHiddenUsers] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
     const query: any = {};
 
@@ -46,7 +48,19 @@ function UserList() {
       ...prev,
       [id]: !prev[id],
     }));
+
+    setUsers((prevUsers) =>
+      prevUsers.map((user: IUser) =>
+        user.id === id ? { ...user, status: user.status === 0 ? 1 : 0 } : user
+      )
+    );
+
+    setHiddenUsers((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
+
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
@@ -118,12 +132,6 @@ function UserList() {
           case 1:
             text = "Đang hoạt động";
             break;
-          case 2:
-            text = "Chờ xác nhận";
-            break;
-          case 3:
-            text = "Đang vận chuyển";
-            break;
         }
         return (
           <div className="flex items-center justify-center">
@@ -138,12 +146,6 @@ function UserList() {
       width: 150,
       render: (_, record) => (
         <Space size="middle">
-          <Link
-            href={`${config.routes.admin.user.edit}/${record.id}`}
-            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
-          >
-            <FiEdit className="w-5 h-5" />
-          </Link>
           <button
             className="w-6 h-6 bg-red-100 rounded text-red-800 flex items-center justify-center"
             onClick={() => toggleEye(record.id)}
@@ -169,21 +171,24 @@ function UserList() {
         }}
       />
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <Link
+        {/* <Link
           href={config.routes.admin.user.add}
           className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
         >
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo người dùng mới</p>
-        </Link>
+        </Link> */}
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IUser>
             columns={columns}
             dataSource={users}
             rowKey="id"
-            scroll={getTableScroll(users.length)}
             pagination={false}
-            tableLayout="auto"
+            rowClassName={(record) => (hiddenUsers[record.id] ? "bg-gray-200" : "")}
+            onRow={() => ({
+              onMouseEnter: (e) => e.stopPropagation(),
+              onMouseLeave: (e) => e.stopPropagation(),
+            })}
           />
         </div>
         {totalPages > limit && (

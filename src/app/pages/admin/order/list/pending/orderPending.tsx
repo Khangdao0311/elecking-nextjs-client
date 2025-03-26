@@ -326,7 +326,7 @@
                         {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
                       </p>
                       <p className="min-w-24 text-center text-primary text-sm font-normal">
-                        {e.product.price.toLocaleString("vn-VN")} đ
+                      {selectedOrder.total.toLocaleString('vn-VN')} đ
                       </p>
                     </div>
                   ))}
