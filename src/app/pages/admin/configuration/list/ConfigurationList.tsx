@@ -69,11 +69,11 @@ function ConfigurationList() {
     if (searchProptype != "") {
       query.search = searchProptype;
     }
-    console.log(searchProperty);
     proptypeService.getQuery(query).then((res) => {
       setTotalPagesProptype(res.total);
       setProptype(res.data);
     });
+
   }, [limitProptype, pageProptype, searchProptype]);
 
   useEffect(() => {
@@ -231,7 +231,7 @@ function ConfigurationList() {
     })
   }
 
-  function handleshowCatConfiguration() {
+  function handleshowAddConfiguration() {
     setShowAddConfiguration(true);
   }
 
@@ -270,6 +270,8 @@ function ConfigurationList() {
   }
 
   function handleGetConfiguration(id: string) {
+    console.log(proptype);
+    
     setShowEditConfiguration(true);
     propertyService.getOne(id).then((res) => {
       setNameConfiguration(res.data.name);
@@ -371,7 +373,7 @@ function ConfigurationList() {
           <div className="flex justify-between items-center">
             <p className="text-xl font-bold">Tên Các Cấu Hình</p>
             <button
-              onClick={handleshowCatConfiguration}
+              onClick={handleshowAddConfiguration}
               className="w-28 flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
             >
               <GoPlus className="w-6 h-6" />
@@ -379,7 +381,7 @@ function ConfigurationList() {
             </button>
           </div>
           <div className="border border-zinc-300"></div>
-          <div className="w-[582px]">
+          <div className="w-full">
             <BoxSearchLimit
               title="danh mục"
               onLimitChange={(newLimit: any) => {
