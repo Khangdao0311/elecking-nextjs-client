@@ -60,16 +60,20 @@ function AccountHome() {
         </div>
         <div className="w-9/12 flex flex-col gap-6 rounded-xl min-h-[calc(100vh-190px)]">
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+            <div className="w-40 h-40 border-2 border-primary rounded-full overflow-hidden shadow-xl">
               {state?.user?.avatar ? (
                 <img src={state?.user?.avatar} alt="Avatar" className="w-full h-full " />
               ) : (
                 <FaCircleUser className=" text-gray-400 w-full h-full" />
               )}
             </div>
-            <div className="flex flex-col gap-2.5">
-              <p className="text-3xl uppercase font-bold">{state?.user?.fullname || "Họ Và Tên"}</p>
-              <p className="text-lgm font-semibold">0976232323</p>
+            <div className="flex items-start flex-col gap-2.5 w-fulls">
+              <p className="text-3xl uppercase font-bold px-10 py-2 border-2 border-primary rounded-lg">
+                {state?.user?.fullname || "Họ Và Tên"}
+              </p>
+              <p className="text-base text-gray-700 font-medium px-6 py-1 border border-primary rounded-lg">
+                {state?.user?.phone || "Số điện thoại"}
+              </p>
             </div>
           </div>
           <section className="w-full bg-gradient-to-r from-primaryDark to-primary p-4 flex flex-col gap-4 rounded-lg">

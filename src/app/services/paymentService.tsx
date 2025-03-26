@@ -4,8 +4,12 @@ import config from "@/app/config";
 export async function getQuery(params: any) {
   return axios
     .get(`${config.api.payment_method}`, { params })
-    .then((response: any) => response.data);
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
 }
 export async function getById(id: string) {
-  return axios.get(`${config.api.payment_method}/${id}`).then((response: any) => response.data);
+  return axios
+    .get(`${config.api.payment_method}/${id}`)
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
 }

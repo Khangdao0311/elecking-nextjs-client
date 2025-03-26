@@ -2,11 +2,17 @@ import axios from "axios";
 import config from "@/app/config";
 
 export async function getQuery(params: any) {
-  return axios.get(`${config.api.order}`, { params }).then((response: any) => response.data);
+  return axios
+    .get(`${config.api.order}`, { params })
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
 }
 
 export async function getById(id: string) {
-  return axios.get(`${config.api.order}/${id}`).then((response: any) => response.data);
+  return axios
+    .get(`${config.api.order}/${id}`)
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
 }
 
 export async function inset({
@@ -30,7 +36,8 @@ export async function inset({
       payment_method_id,
       address_id,
     })
-    .then((response: any) => response.data);
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
 }
 
 export async function updateTransactionCode(id: string, transaction_code: string) {
@@ -38,7 +45,8 @@ export async function updateTransactionCode(id: string, transaction_code: string
     .put(`${config.api.order}/update_transaction_code/${id}`, {
       transaction_code: transaction_code,
     })
-    .then((response: any) => response.data);
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
 }
 
 export async function updateStatus(order_id: string, status: number) {
@@ -46,6 +54,6 @@ export async function updateStatus(order_id: string, status: number) {
     .put(`${config.api.order}/update_status/${order_id}`, {
       status: status,
     })
-    .then((response: any) => response.data);
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
 }
-  

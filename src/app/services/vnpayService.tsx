@@ -8,5 +8,6 @@ export async function createPaymentUrl(order_id: string, total: number) {
       total: total,
       bankCode: "",
     })
-    .then((response: any) => response.data);
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
 }
