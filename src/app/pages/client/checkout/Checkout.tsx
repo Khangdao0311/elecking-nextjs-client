@@ -15,11 +15,12 @@ import * as orderServices from "@/app/services/orderService";
 import * as vnpayServices from "@/app/services/vnpayService";
 import * as authServices from "@/app/services/authService";
 import ModalVoucher from "@/app/components/client/ModalVoucher";
+import ModalAddressNew from "@/app/components/client/ModalAddress/New";
+import ModalAddressEdit from "@/app/components/client/ModalAddress/Edit";
 import ModalAddress from "./components/ModalAddress";
-import ModalAddressNew from "./components/ModalAddressNew";
-import ModalAddressEdit from "./components/ModalAddressEdit";
 import ModalPaymentMethod from "./components/ModalPaymentMethod";
 import ModalOrderStatus from "./components/ModalOrderStatus";
+import Loading from "@/app/components/client/Loading/Loading";
 
 function Checkout() {
   const [state, dispatch] = useStore();
@@ -147,8 +148,8 @@ function Checkout() {
       addressServices
         .getQuery({ user_id: state.user?.id, limit: 0, orderby: "id-asc" })
         .then((res) => {
-          setAddress(res.data.find((e: IAddress) => e.setDefault === true));
           setAddresses(res.data);
+          setAddress(res.data.find((e: IAddress) => e.setDefault === true));
         });
     }
   }, [state.user, state.re_render, checkout]);
@@ -216,13 +217,10 @@ function Checkout() {
     }
   }
 
+
   return (
     <>
-      {loading && (
-        <div className="fixed top-0 bottom-0 left-0 right-0 bg-black/50 z-40 center-flex">
-          <LuLoaderCircle className="text-white w-28 h-28 animate-spin" />
-        </div>
-      )}
+      {loading && <Loading />}
       {contextHolder}
       <Fragment>
         {/* model address  */}

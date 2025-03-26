@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
+
+import * as addressServices from "@/app/services/addressService";
+import { useStore, actions } from "@/app/store";
 
 function ModalAddress({
   addresses,
@@ -14,7 +17,22 @@ function ModalAddress({
   onNew,
   onEdit,
 }: any) {
+  const [state, dispatch] = useStore();
   const [selectedAddress, setSelectedAddress] = useState(address);
+
+  useEffect(() => {
+    setSelectedAddress(address);
+  }, [address]);
+
+  function handleCancelAddress(addressX: IAddress) {
+    const addressCancel = {
+      ...addressX,
+      status: 0,
+    };
+    addressServices.edit(addressX.id, addressCancel).then((res) => {
+      dispatch(actions.re_render());
+    });
+  }
 
   return (
     <div className="w-[500px] flex flex-col gap-4">
@@ -26,7 +44,8 @@ function ModalAddress({
         slidesPerView="auto"
         spaceBetween={10}
         mousewheel={true}
-        modules={[Mousewheel]}
+        freeMode={true}
+        modules={[Mousewheel, FreeMode]}
         className="w-full h-[500px]"
       >
         {addresses.map((eAddress: IAddress, iAddress: number) => (
@@ -40,7 +59,7 @@ function ModalAddress({
               <input
                 type="radio"
                 className="accent-primary w-5 h-5"
-                checked={eAddress.id === selectedAddress.id}
+                checked={eAddress?.id === selectedAddress?.id}
                 readOnly
                 id={`${iAddress}`}
                 onClick={() => {
@@ -81,9 +100,7 @@ function ModalAddress({
                 Cập nhật
               </p>
               <p
-                onClick={() => {
-                  console.log("Xóa !");
-                }}
+                onClick={() => handleCancelAddress(eAddress)}
                 className="text-sm font-semibold text-primary select-none cursor-pointer"
               >
                 Xóa

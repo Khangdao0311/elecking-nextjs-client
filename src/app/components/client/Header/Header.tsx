@@ -284,6 +284,28 @@ function Header() {
 
   return (
     <>
+      {/* nút scroll top  */}
+      <FloatButton.BackTop
+        visibilityHeight={200}
+        icon={<FaAnglesUp className="text-black" />}
+        className="w-12 h-12 !z-10"
+      />
+      {/* modal login */}
+      <Modal
+        open={state.show.login}
+        onCancel={() => dispatch(actions.set({ show: { ...state.show, login: false } }))}
+        footer={null}
+        title={null}
+        centered
+        maskClosable={false}
+      >
+        <ModalLogin
+          onClick={() => dispatch(actions.set({ show: { ...state.show, login: false } }))}
+        />
+      </Modal>
+
+      {/* overlay popup categpry menu */}
+      {showMenu && <div className="bg-black/30 fixed inset-0 z-20 cursor-pointer"></div>}
       <header
         className={`sticky ${
           y < 100 ? "top-0" : "-top-11"
@@ -437,7 +459,13 @@ function Header() {
                 }
               }}
             >
-              <FaCircleUser className="text-base w-6 h-6 text-gray-800" />
+              {state.user ? (
+                <div className=" w-6 h-6 rounded-full overflow-hidden">
+                  <img className="w-full h-full object-fill" src={state.user.avatar} alt="avarar" />
+                </div>
+              ) : (
+                <FaCircleUser className="text-base w-6 h-6 text-gray-800" />
+              )}
               <p className="text-gray-800 text-xs font-medium">
                 {!!state.user ? state.user.username : "Emember"}
               </p>
@@ -459,29 +487,6 @@ function Header() {
           </div>
         )}
       </header>
-
-      {/* nút scroll top  */}
-      <FloatButton.BackTop
-        visibilityHeight={200}
-        icon={<FaAnglesUp className="text-black" />}
-        className="w-12 h-12 !z-10"
-      />
-      {/* modal login */}
-      <Modal
-        open={state.show.login}
-        onCancel={() => dispatch(actions.set({ show: { ...state.show, login: false } }))}
-        footer={null}
-        title={null}
-        centered
-        maskClosable={false}
-      >
-        <ModalLogin
-          onClick={() => dispatch(actions.set({ show: { ...state.show, login: false } }))}
-        />
-      </Modal>
-
-      {/* overlay popup categpry menu */}
-      {showMenu && <div className="bg-black/30 fixed inset-0 z-20 cursor-pointer"></div>}
     </>
   );
 }

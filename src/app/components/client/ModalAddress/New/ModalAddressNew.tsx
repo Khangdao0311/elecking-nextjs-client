@@ -1,11 +1,15 @@
 "use client";
 
-import { Select } from "antd";
-import { Input } from "antd";
+import { Select, Input } from "antd";
 import { useEffect, useState } from "react";
-import * as locationServices from "@/app/services/locationService";
 
-function ModelAddressEdit({ addressEdit, onClose }: any) {
+import { useStore, actions } from "@/app/store";
+import * as locationServices from "@/app/services/locationService";
+import * as addressServices from "@/app/services/addressService";
+
+function ModelAddressNew({ onClose }: any) {
+  const [state, dispatch] = useStore();
+
   const [provinces, setProvinces] = useState<any>([]);
   const [district, setDistricts] = useState<any>([]);
   const [ward, setWards] = useState<any>([]);
@@ -13,27 +17,16 @@ function ModelAddressEdit({ addressEdit, onClose }: any) {
   const [selectedProvince, setSelectedProvince] = useState<any>(undefined);
   const [selectedDistrict, setSelectedDistrict] = useState<any>(undefined);
   const [selectedWard, setSelectedWard] = useState<any>(undefined);
-  const [fullname, setFullname] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [fullname, setFullname] = useState<string>("");
   const [type, setType] = useState<number | undefined>(undefined);
   const [setDefault, setSetDefault] = useState<boolean>(false);
 
   useEffect(() => {
-    setSelectedProvince(addressEdit.province);
-    setSelectedDistrict(addressEdit.district);
-    setSelectedWard(addressEdit.ward);
-    setFullname(addressEdit.fullname);
-    setPhone(addressEdit.phone);
-    setDescription(addressEdit.description);
-    setType(addressEdit.type);
-    setSetDefault(addressEdit.setDefault);
-  }, [addressEdit]);
-
-  useEffect(() => {
     locationServices
       .getProvince()
-      .then((res) => setProvinces(res.map((e: any) => ({ code: e.code, name: e.name }))));
+      .then((res) => setProvinces(res.map((e: any) => ({ name: e.name, code: e.code }))));
   }, []);
 
   useEffect(() => {
@@ -41,7 +34,7 @@ function ModelAddressEdit({ addressEdit, onClose }: any) {
       locationServices
         .getDistrict(selectedProvince.code)
         .then((res) =>
-          setDistricts(res.districts.map((e: any) => ({ code: e.code, name: e.name })))
+          setDistricts(res.districts.map((e: any) => ({ name: e.name, code: e.code })))
         );
     }
   }, [selectedProvince]);
@@ -50,14 +43,45 @@ function ModelAddressEdit({ addressEdit, onClose }: any) {
     if (selectedDistrict) {
       locationServices
         .getWard(selectedDistrict?.code)
-        .then((res) => setWards(res.wards.map((e: any) => ({ code: e.code, name: e.name }))));
+        .then((res) => setWards(res.wards.map((e: any) => ({ name: e.name, code: e.code }))));
     }
   }, [selectedDistrict]);
+
+  function handleNewAddress() {
+    const addressNew = {
+      province: selectedProvince,
+      district: selectedDistrict,
+      ward: selectedWard,
+      description: description,
+      phone: phone,
+      fullname: fullname,
+      type: type,
+      setDefault: setDefault,
+      user_id: state.user.id,
+    };
+
+    addressServices.create(addressNew).then((res) => {
+      cancel();
+      onClose();
+      dispatch(actions.re_render());
+    });
+  }
+
+  function cancel() {
+    setSelectedProvince(undefined);
+    setSelectedDistrict(undefined);
+    setSelectedWard(undefined);
+    setDescription("");
+    setPhone("");
+    setFullname("");
+    setType(undefined);
+    setSetDefault(false);
+  }
 
   return (
     <div className="w-[500px]">
       <div className="w-full py-4 flex-center">
-        <p className="text-xl font-semibold">Cập Nhật Địa Chỉ</p>
+        <p className="text-xl font-semibold">Địa Chỉ Mới</p>
       </div>
       <div className="w-full py-4 flex flex-col gap-4  ">
         <div className="grid grid-cols-2 gap-2.5 ">
@@ -84,7 +108,7 @@ function ModelAddressEdit({ addressEdit, onClose }: any) {
           <div className=" h-10">
             <Select
               className="w-full h-full"
-              placeholder="Tỉnh/Thành phố"
+              placeholder="Tỉnh / Thành phố"
               showSearch
               value={selectedProvince?.code}
               optionFilterProp="name"
@@ -164,14 +188,8 @@ function ModelAddressEdit({ addressEdit, onClose }: any) {
           </div>
         </div>
         <div
-          onClick={() => {
-            if (!addressEdit.setDefault) {
-              setSetDefault(!setDefault);
-            }
-          }}
-          className={`flex gap-2 items-center  ${
-            addressEdit.setDefault ? "opacity-30 cursor-not-allowed" : "cursor-pointer"
-          }`}
+          onClick={() => setSetDefault(!setDefault)}
+          className="flex gap-2 items-center cursor-pointer"
         >
           <input
             type="checkbox"
@@ -186,20 +204,16 @@ function ModelAddressEdit({ addressEdit, onClose }: any) {
         <p
           className="px-10 border border-gray-300 py-2 rounded-lg cursor-pointer"
           onClick={() => {
-            setSelectedProvince(addressEdit.province);
-            setSelectedDistrict(addressEdit.district);
-            setSelectedWard(addressEdit.ward);
-            setFullname(addressEdit.fullname);
-            setPhone(addressEdit.phone);
-            setDescription(addressEdit.description);
-            setType(addressEdit.type);
-            setSetDefault(addressEdit.setDefault);
             onClose();
+            cancel();
           }}
         >
           Trở lại
         </p>
-        <p onClick={() => onClose()} className="px-5 bg-primary py-2 rounded-lg text-white">
+        <p
+          onClick={handleNewAddress}
+          className="px-5 bg-primary py-2 rounded-lg text-white cursor-pointer"
+        >
           Hoàn thành
         </p>
       </div>
@@ -207,4 +221,4 @@ function ModelAddressEdit({ addressEdit, onClose }: any) {
   );
 }
 
-export default ModelAddressEdit;
+export default ModelAddressNew;
