@@ -37,10 +37,9 @@ function ProductAdd() {
     null
   );
   const { id }: any = useParams();
-  console.log(selectedbrand);
-
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => {
+      console.log("Variants từ API:", res.data.variants); // ✅ Debug
       const formattedVariants = res.data.variants.map((variant: any) => ({
         ...variant,
         colors: variant.colors.map((color: any, index: number) => ({
@@ -56,22 +55,14 @@ function ProductAdd() {
         })),
       }));
       setVariants(formattedVariants);
-      // setVariants(res.data.variants)
-      setName(res.data.name);
-      setEditorContent(res.data.description);
-      setSelectedbrand(res.data.brand);
-      if (Array.isArray(res.data.images)) {
-        setImages(
-          res.data.images.map((imgUrl: any, index: any) => ({
-            uid: crypto.randomUUID(),
-            name: `logo_${index + 1}.png`,
-            status: "done",
-            url: imgUrl,
-          }))
-        );
-      }
     });
   }, [id]);
+
+  useEffect(() => {
+    console.log("Danh sách variants cập nhật:", variants);
+  }, [variants]);
+  
+  
 
   useEffect(() => {
     if (!quillRef.current || !editorContent) return;
@@ -292,6 +283,8 @@ function ProductAdd() {
       });
     });
   }, []); // ❗ Chạy một lần khi component mount, không phụ thuộc vào `storageidcategory`
+
+  
 
   return (
     <>
@@ -795,12 +788,12 @@ function ProductAdd() {
                 })),
                 property_ids: variant.property_ids.filter(Boolean),
               }));
-              console.log("Dữ liệu gửi lên API:", {
-                category_id: selectedcategory?.id,
-                brand_id: selectedbrand,
-                variants: formattedVariants,
-                description: editorContent,
-              });
+              // console.log("Dữ liệu gửi lên API:", {
+              //   category_id: selectedcategory?.id,
+              //   brand_id: selectedbrand,
+              //   variants: formattedVariants,
+              //   description: editorContent,
+              // });
               await productServices
                 .addProduct({
                   name: name,

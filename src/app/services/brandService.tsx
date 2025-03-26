@@ -19,7 +19,6 @@ export async function addBrand(body:any) {
 }
 
 export async function editBrand(body:any, id: any) {
-  console.log("Dữ liệu gửi đi:", body, "ID:", id);
   return axios
     .put(`${config.api.brand}/${id}`,body)
     .then((res)=> res.data)

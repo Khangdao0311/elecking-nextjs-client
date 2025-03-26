@@ -19,7 +19,7 @@ export async function addVoucher(body:any) {
     .then((response: any) => response.data);
 }
 
-export async function editBrand( id: any, body:any) {
+export async function editVoucher( id: any, body:any) {
   return axios
     .put(`${config.api.voucher}/${id}`,body)
     .then((response)=> response.data)

@@ -90,6 +90,9 @@ function VoucherEdit() {
 
   const createDateNew = dayjs(startDate, "YYYYMMDD");
   const endDatevNew = dayjs(endDate, 'YYYYMMDD');
+  
+  console.log(voucher);
+  
   return (
     <>
       <TitleAdmin title="Quản lý voucher / Sửa voucher" />

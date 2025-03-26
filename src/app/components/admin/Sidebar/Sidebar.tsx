@@ -166,7 +166,6 @@ function Sidebar() {
           <Menu
             mode="inline"
             defaultSelectedKeys={["1"]}
-            defaultOpenKeys={["sub1"]}
             className="bg-slate-800 border-none"
             style={{ margin: 0 }}
             items={[
@@ -299,7 +298,7 @@ function Sidebar() {
                               : "text-white"
                             } text-sm font-bold`}
                         >
-                          Hết hạn
+                          Đã hủy
                         </p>
                       </Link>
                     ),
@@ -314,7 +313,6 @@ function Sidebar() {
           <Menu
             mode="inline"
             defaultSelectedKeys={["1"]}
-            defaultOpenKeys={["sub1"]}
             className="bg-slate-800 border-none"
             style={{ margin: 0 }}
             items={[

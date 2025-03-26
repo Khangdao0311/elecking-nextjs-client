@@ -102,29 +102,30 @@ function CategoryEdit() {
       uploadService.uploadSingle(formData);
       finalImage = image[0].name;
     }
-    
+
     if (editProptype && typeof status === "number" && categoryName && editorContent) {
       categoryService
         .editCategory(id, {
           name: categoryName,
           image: finalImage,
           status: status,
-          proptypes: JSON.stringify(editProptype),
+          proptypes: JSON.stringify(editProptype.map(e => e.id)),
           description: editorContent,
         })
         .then((res) => {
-          if(res.status === 200){
+          if (res.status === 200) {
             openNotificationWithIcon('success', "Thành công", "Sửa thành công");
             setTimeout(() => {
               router.push(`${config.routes.admin.category.list}`)
-            },1000)
-          }else{
+            }, 1000)
+          } else {
             openNotificationWithIcon('error', "Thất bại", "Sửa thất bại");
           }
         });
+      
     }
   }
-
+ 
   const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),
@@ -148,6 +149,8 @@ function CategoryEdit() {
   const removeimage = (file: UploadFile) => {
     setImage((prev) => prev.filter((item) => item.uid !== file.uid));
   };
+
+
   return (
     <>
       <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
@@ -190,10 +193,13 @@ function CategoryEdit() {
               </div>
               <Select
                 mode="multiple"
-                placeholder="Inserted are removed"
-                value={editProptype}
-                onChange={handleChangeProptype}
-                className=" min-w-[268px] h-[44px] flex items-center justify-center"
+                placeholder="Chọn biến thể"
+                value={editProptype?.map((item) => item.id)}
+                onChange={(selectedIds) => {
+                  const updatedList = proptype.filter((item) => selectedIds.includes(item.id));
+                  setEditProptype(updatedList);
+                }}
+                className="min-w-[268px] h-[44px] flex items-center justify-center"
                 options={proptype.map((item) => ({
                   value: item.id,
                   label: item.name,
