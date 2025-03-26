@@ -131,6 +131,11 @@ function VoucherStillexpired() {
       ),
     },
   ];
+  
+  const getTableScroll = (dataLength: any) => {
+    if (dataLength <= 5) return undefined;
+    return { x: 1000, y: 420 };
+  };
 
   return (
     <>
@@ -158,7 +163,7 @@ function VoucherStillexpired() {
             columns={columns}
             dataSource={vouchers.filter(voucher => voucher.status === 1)}
             rowKey="id"
-            scroll={{ x: 1000, y: 400 }}
+            scroll={getTableScroll(vouchers.filter(voucher => voucher.status === 1).length)}
             pagination={false}
             tableLayout="auto"
           />

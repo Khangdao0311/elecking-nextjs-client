@@ -11,7 +11,7 @@ import type { RcFile } from "antd/es/upload/interface";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
 import axios from "axios";
-import { Button as ButtonAnt, notification, Space } from 'antd';
+import { notification, Space } from 'antd';
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
 
@@ -37,7 +37,6 @@ function BrandAdd() {
       description: description,
     });
   }
-
 
   useEffect(() => {
     if (!quillRef.current) return;
@@ -256,7 +255,6 @@ function BrandAdd() {
                     openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
                     return;
                   }
-                  try {
                     const logoFormData = new FormData();
                     logoFormData.append("image", imgBrand[0]);
                     await uploadServices.uploadSingle(logoFormData);
@@ -269,16 +267,15 @@ function BrandAdd() {
                       banner: imgBanner[0].name,
                       description: description,
                     };
-                    await brandServices.addBrand(brandData);
-                    openNotificationWithIcon('success', "Thành công", "Thêm thành công");
-                    setTimeout(() => {
-                      router.push(config.routes.admin.brand.list);
-                    }, 1000);
-
-                  } catch (error) {
-                    openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
-                    console.error(error);
-                  }
+                    const brandResponse = await brandServices.addBrand(brandData);
+                    if (brandResponse?.status === 200) {
+                      openNotificationWithIcon("success", "Thành công", "Thêm thành công");
+                      setTimeout(() => {
+                        router.push(config.routes.admin.brand.list);
+                      }, 1000);
+                    } else {
+                      openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                    }
                 }}
               >
               </Button>

@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { BiCategory } from "react-icons/bi";
 import { BsBoxSeam, BsClipboardCheck, BsSpeedometer2 } from "react-icons/bs";
 import { FaCircleUser } from "react-icons/fa6";
-import { LuUser } from "react-icons/lu";
-import { TbFileDatabase, TbLogout2 } from "react-icons/tb";
+import { LuPackageCheck, LuUser } from "react-icons/lu";
+import { TbCancel, TbFileDatabase, TbLogout2 } from "react-icons/tb";
 import { VscTag } from "react-icons/vsc";
 import React from "react";
 
@@ -19,6 +19,9 @@ const handleChange = (value: string) => {
 };
 import config from "@/app/config";
 import { SiBrandfolder } from "react-icons/si";
+import { MdFreeCancellation, MdOutlineLocalShipping, MdPendingActions } from "react-icons/md";
+import { GiSandsOfTime } from "react-icons/gi";
+import { IoMdTime } from "react-icons/io";
 
 function Sidebar() {
   const pathname = usePathname();
@@ -38,26 +41,23 @@ function Sidebar() {
         <p className="text-sm font-medium text-white">Chào mừng bạn trở lại</p>
       </div>
       <hr />
-      <div className="h-full flex flex-col overflow-auto gap-3 bg-">
+      <div className="h-full flex flex-col overflow-auto gap-3" style={{scrollbarWidth: "none", msOverflowStyle: "none"}}>
         <Link
           href={config.routes.admin.dashboard}
-          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
-            pathname.startsWith("/admin/dashboard") ? "pl-7 bg-white" : ""
-          } transition-all duration-300	rounded-md cursor-pointer select-none`}
+          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/dashboard") ? "pl-7 bg-white" : ""
+            } transition-all duration-300	rounded-md cursor-pointer select-none`}
         >
           <BsSpeedometer2
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/dashboard")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/dashboard")
                 ? "text-primary"
                 : "text-white"
-            } w-6 h-6`}
+              } w-6 h-6`}
           />
           <p
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/dashboard")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/dashboard")
                 ? "text-primary"
                 : "text-white"
-            } text-sm font-bold`}
+              } text-sm font-bold`}
           >
             Bảng điều khiểu
           </p>
@@ -65,23 +65,20 @@ function Sidebar() {
 
         <Link
           href={config.routes.admin.category.list}
-          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
-            pathname.startsWith("/admin/category") ? "pl-7 bg-white" : ""
-          } transition-all duration-300	rounded-md cursor-pointer select-none`}
+          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/category") ? "pl-7 bg-white" : ""
+            } transition-all duration-300	rounded-md cursor-pointer select-none`}
         >
           <BiCategory
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/category")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/category")
                 ? "text-primary"
                 : "text-white"
-            } w-6 h-6`}
+              } w-6 h-6`}
           />
           <p
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/category")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/category")
                 ? "text-primary"
                 : "text-white"
-            } text-sm font-bold`}
+              } text-sm font-bold`}
           >
             Quản lý danh mục
           </p>
@@ -89,23 +86,20 @@ function Sidebar() {
 
         <Link
           href={config.routes.admin.configuration.list}
-          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
-            pathname.startsWith("/admin/configuration") ? "pl-7 bg-white" : ""
-          } transition-all duration-300	rounded-md cursor-pointer select-none`}
+          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/configuration") ? "pl-7 bg-white" : ""
+            } transition-all duration-300	rounded-md cursor-pointer select-none`}
         >
-          <TbFileDatabase 
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/configuration")
+          <TbFileDatabase
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/configuration")
                 ? "text-primary"
                 : "text-white"
-            } w-6 h-6`}
+              } w-6 h-6`}
           />
           <p
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/configuration")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/configuration")
                 ? "text-primary"
                 : "text-white"
-            } text-sm font-bold`}
+              } text-sm font-bold`}
           >
             Quản lý cấu hình
           </p>
@@ -113,92 +107,209 @@ function Sidebar() {
 
         <Link
           href={config.routes.admin.product.list}
-          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
-            pathname.startsWith("/admin/product") ? "pl-7 bg-white" : ""
-          } transition-all duration-300	rounded-md cursor-pointer select-none`}
+          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/product") ? "pl-7 bg-white" : ""
+            } transition-all duration-300	rounded-md cursor-pointer select-none`}
         >
           <BsBoxSeam
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/product")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/product")
                 ? "text-primary"
                 : "text-white"
-            } w-6 h-6`}
+              } w-6 h-6`}
           />
           <p
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/product")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/product")
                 ? "text-primary"
                 : "text-white"
-            } text-sm font-bold`}
+              } text-sm font-bold`}
           >
             Quản lý sản phẩm
           </p>
         </Link>
         <Link
           href={config.routes.admin.user.list}
-          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
-            pathname.startsWith("/admin/user") ? "pl-7 bg-white" : ""
-          } transition-all duration-300	rounded-md cursor-pointer select-none`}
+          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/user") ? "pl-7 bg-white" : ""
+            } transition-all duration-300	rounded-md cursor-pointer select-none`}
         >
           <LuUser
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/user") ? "text-primary" : "text-white"
-            } w-6 h-6`}
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/user") ? "text-primary" : "text-white"
+              } w-6 h-6`}
           />
           <p
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/user") ? "text-primary" : "text-white"
-            } text-sm font-bold`}
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/user") ? "text-primary" : "text-white"
+              } text-sm font-bold`}
           >
             Quản lý người dùng
           </p>
         </Link>
         <Link
           href={config.routes.admin.brand.list}
-          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
-            pathname.startsWith("/admin/brand") ? "pl-7 bg-white" : ""
-          } transition-all duration-300	rounded-md cursor-pointer select-none`}
+          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/brand") ? "pl-7 bg-white" : ""
+            } transition-all duration-300	rounded-md cursor-pointer select-none`}
         >
           <SiBrandfolder
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/brand")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/brand")
                 ? "text-primary"
                 : "text-white"
-            } w-6 h-6`}
+              } w-6 h-6`}
           />
           <p
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/brand")
+            className={`group-hover:text-primary ${pathname.startsWith("/admin/brand")
                 ? "text-primary"
                 : "text-white"
-            } text-sm font-bold`}
+              } text-sm font-bold`}
           >
             Quản lý thương hiệu
           </p>
         </Link>
-        <Link
-          href={config.routes.admin.order.list}
-          className={`group  a h-11 p-3 flex gap-3 hover:pl-7 hover:bg-white ${
-            pathname.startsWith("/admin/order") ? "pl-7 bg-white" : ""
-          } transition-all duration-300	rounded-md cursor-pointer select-none`}
-        >
-          <BsClipboardCheck
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/order")
-                ? "text-primary"
-                : "text-white"
-            } w-6 h-6`}
+
+        <div className={pathname.startsWith("/admin/order") ? "active" : ""}>
+          <Menu
+            mode="inline"
+            defaultSelectedKeys={["1"]}
+            defaultOpenKeys={["sub1"]}
+            className="bg-slate-800 border-none"
+            style={{ margin: 0 }}
+            items={[
+              {
+                key: "sub1",
+                label: (
+                  <div
+                    className={`group a items-center h-14 p-3 w-full flex gap-3 hover:pl-7 text-white hover:bg-white ${pathname.startsWith("/admin/order")
+                        ? "pl-7 bg-white"
+                        : ""
+                      } transition-all duration-300	rounded-md cursor-pointer select-none`}
+                  >
+                    <BsClipboardCheck
+                      className={`group-hover:text-primary ${pathname.startsWith("/admin/order")
+                          ? "text-primary"
+                          : "text-white"
+                        } w-6 h-6`}
+                    />
+                    <p
+                      className={`group-hover:text-primary  ${pathname.startsWith("/admin/order")
+                          ? "text-primary"
+                          : "text-white"
+                        } text-sm font-bold`}
+                    >
+                      Quản lí đơn hàng
+                    </p>
+                  </div>
+                ),
+                children: [
+                  {
+                    key: "1",
+                    label: (
+                      <Link
+                        href={config.routes.admin.order.list.pending}
+                        className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/order/list/pending")
+                            ? "pl-7 bg-white"
+                            : ""
+                          } transition-all duration-300	rounded-lg cursor-pointer select-none`}
+                      >
+                        <GiSandsOfTime
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/order/list/pending")
+                              ? "text-primary"
+                              : "text-white"
+                            } w-6 h-6`}
+                        />
+                        <p
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/order/list/pending")
+                              ? "text-primary"
+                              : "text-white"
+                            } text-sm font-bold`}
+                        >
+                          Chờ xác nhận
+                        </p>
+                      </Link>
+                    ),
+                  },
+                  {
+                    key: "2",
+                    label: (
+                      <Link
+                        href={config.routes.admin.order.list.shiping}
+                        className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/order/list/shiping")
+                            ? "pl-7 bg-white"
+                            : ""
+                          } transition-all duration-300	rounded-lg cursor-pointer select-none`}
+                      >
+                        <MdOutlineLocalShipping
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/order/list/shiping")
+                              ? "text-primary"
+                              : "text-white"
+                            } w-6 h-6`}
+                        />
+                        <p
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/order/list/shiping")
+                              ? "text-primary"
+                              : "text-white"
+                            } text-sm font-bold`}
+                        >
+                          Đang vận chuyển
+                        </p>
+                      </Link>
+                    ),
+                  },
+                  {
+                    key: "3",
+                    label: (
+                      <Link
+                        href={config.routes.admin.order.list.delivered}
+                        className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/order/list/delivered")
+                            ? "pl-7 bg-white"
+                            : ""
+                          } transition-all duration-300	rounded-lg cursor-pointer select-none`}
+                      >
+                        <LuPackageCheck
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/order/list/delivered")
+                              ? "text-primary"
+                              : "text-white"
+                            } w-6 h-6`}
+                        />
+                        <p
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/order/list/delivered")
+                              ? "text-primary"
+                              : "text-white"
+                            } text-sm font-bold`}
+                        >
+                          Đã giao hàng
+                        </p>
+                      </Link>
+                    ),
+                  },
+                  {
+                    key: "4",
+                    label: (
+                      <Link
+                        href={config.routes.admin.order.list.cancle}
+                        className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/order/list/cancle")
+                            ? "pl-7 bg-white"
+                            : ""
+                          } transition-all duration-300	rounded-lg cursor-pointer select-none`}
+                      >
+                        <TbCancel 
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/order/list/cancle")
+                              ? "text-primary"
+                              : "text-white"
+                            } w-6 h-6`}
+                        />
+                        <p
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/order/list/cancle")
+                              ? "text-primary"
+                              : "text-white"
+                            } text-sm font-bold`}
+                        >
+                          Hết hạn
+                        </p>
+                      </Link>
+                    ),
+                  }
+                ],
+              },
+            ]}
           />
-          <p
-            className={`group-hover:text-primary ${
-              pathname.startsWith("/admin/order")
-                ? "text-primary"
-                : "text-white"
-            } text-sm font-bold`}
-          >
-            Quản lý đơn hàng
-          </p>
-        </Link>
+        </div>
+
         <div className={pathname.startsWith("/admin/voucher") ? "active" : ""}>
           <Menu
             mode="inline"
@@ -211,25 +322,22 @@ function Sidebar() {
                 key: "sub1",
                 label: (
                   <div
-                    className={`group a items-center h-14 p-3 w-full flex gap-3 hover:pl-7 text-white hover:bg-white ${
-                      pathname.startsWith("/admin/voucher")
+                    className={`group a items-center h-14 p-3 w-full flex gap-3 hover:pl-7 text-white hover:bg-white ${pathname.startsWith("/admin/voucher")
                         ? "pl-7 bg-white"
                         : ""
-                    } transition-all duration-300	rounded-md cursor-pointer select-none`}
+                      } transition-all duration-300	rounded-md cursor-pointer select-none`}
                   >
                     <VscTag
-                      className={`group-hover:text-primary ${
-                        pathname.startsWith("/admin/voucher")
+                      className={`group-hover:text-primary ${pathname.startsWith("/admin/voucher")
                           ? "text-primary"
                           : "text-white"
-                      } w-6 h-6`}
+                        } w-6 h-6`}
                     />
                     <p
-                      className={`group-hover:text-primary  ${
-                        pathname.startsWith("/admin/voucher")
+                      className={`group-hover:text-primary  ${pathname.startsWith("/admin/voucher")
                           ? "text-primary"
                           : "text-white"
-                      } text-sm font-bold`}
+                        } text-sm font-bold`}
                     >
                       Quản lí voucher
                     </p>
@@ -241,25 +349,22 @@ function Sidebar() {
                     label: (
                       <Link
                         href={config.routes.admin.voucher.list.stillexpired}
-                        className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${
-                          pathname.startsWith("/admin/voucher/list/stillexpired")
+                        className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/voucher/list/stillexpired")
                             ? "pl-7 bg-white"
                             : ""
-                        } transition-all duration-300	rounded-lg cursor-pointer select-none`}
+                          } transition-all duration-300	rounded-lg cursor-pointer select-none`}
                       >
-                        <VscTag
-                          className={`group-hover:text-primary ${
-                            pathname.startsWith("/admin/voucher/list/stillexpired")
+                        <IoMdTime
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/voucher/list/stillexpired")
                               ? "text-primary"
                               : "text-white"
-                          } w-6 h-6`}
+                            } w-6 h-6`}
                         />
                         <p
-                          className={`group-hover:text-primary ${
-                            pathname.startsWith("/admin/voucher/list/stillexpired")
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/voucher/list/stillexpired")
                               ? "text-primary"
                               : "text-white"
-                          } text-sm font-bold`}
+                            } text-sm font-bold`}
                         >
                           Còn hoạt động
                         </p>
@@ -271,25 +376,22 @@ function Sidebar() {
                     label: (
                       <Link
                         href={config.routes.admin.voucher.list.expired}
-                        className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${
-                          pathname.startsWith("/admin/voucher/list/expired")
+                        className={`group  a h-11 p-3  flex gap-3 hover:pl-7 hover:bg-white ${pathname.startsWith("/admin/voucher/list/expired")
                             ? "pl-7 bg-white"
                             : ""
-                        } transition-all duration-300	rounded-lg cursor-pointer select-none`}
+                          } transition-all duration-300	rounded-lg cursor-pointer select-none`}
                       >
-                        <VscTag
-                          className={`group-hover:text-primary ${
-                            pathname.startsWith("/admin/voucher/list/expired")
+                        <TbCancel 
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/voucher/list/expired")
                               ? "text-primary"
                               : "text-white"
-                          } w-6 h-6`}
+                            } w-6 h-6`}
                         />
                         <p
-                          className={`group-hover:text-primary ${
-                            pathname.startsWith("/admin/voucher/list/expired")
+                          className={`group-hover:text-primary ${pathname.startsWith("/admin/voucher/list/expired")
                               ? "text-primary"
                               : "text-white"
-                          } text-sm font-bold`}
+                            } text-sm font-bold`}
                         >
                           Hết hạn
                         </p>

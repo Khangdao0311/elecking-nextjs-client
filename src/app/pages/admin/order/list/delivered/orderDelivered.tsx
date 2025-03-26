@@ -42,12 +42,11 @@ function OrderList() {
     }
   };
 
-  
-
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
     query.page = page;
+    query.status = 1;
     if (search != "") {
       query.search = search;
     }
@@ -55,8 +54,15 @@ function OrderList() {
       setOrders(res.data);
       setTotalPages(res.total);
     });
-  }, [limit, page, search]);
+    console.log(query);
+    
+  }, [limit, page, search,status]);
 
+  const getTableScroll = (dataLength: any) => {
+    if (dataLength <= 5) return undefined;
+    return { x: 1000, y: 420 };
+  };
+  
   const columns: TableProps<IOrder>["columns"] = [
     {
       title: "STT",
@@ -173,7 +179,7 @@ function OrderList() {
             columns={columns}
             dataSource={orders}
             rowKey="id"
-            scroll={{ x: 1000, y: 400 }}
+            scroll={getTableScroll(orders.length)}
             pagination={false}
             tableLayout="auto"
           />

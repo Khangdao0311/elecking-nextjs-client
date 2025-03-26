@@ -234,6 +234,10 @@ function DashBoard() {
       align: "left",
     },
   ];
+  const getTableScroll = (dataLength: any) => {
+    if (dataLength <= 5) return undefined;
+    return { x: 500, y: 230 };
+  };
 
   return (
     <>
@@ -299,7 +303,7 @@ function DashBoard() {
                 columns={ordercolumns}
                 dataSource={getorders.filter(order => order.status === 2)}
                 rowKey="id"
-                scroll={{ x: 500, y: 230 }}
+                scroll={getTableScroll(getorders.filter(order => order.status === 2).length)}
                 pagination={false}
                 tableLayout="auto"
               />
@@ -313,7 +317,7 @@ function DashBoard() {
                 columns={usercolumns}
                 dataSource={users}
                 rowKey="id"
-                scroll={{ x: 500, y: 230 }}
+                scroll={getTableScroll(users.length)}
                 pagination={false}
                 tableLayout="auto"
               />

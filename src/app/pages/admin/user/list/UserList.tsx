@@ -48,6 +48,11 @@ function UserList() {
     }));
   };
 
+  const getTableScroll = (dataLength: any) => {
+    if (dataLength <= 5) return undefined;
+    return { x: 1000, y: 420 };
+  };
+
   console.log(users);
   const columns: TableProps<IUser>["columns"] = [
     {
@@ -176,7 +181,7 @@ function UserList() {
             columns={columns}
             dataSource={users}
             rowKey="id"
-            scroll={{ x: 1000, y: 500 }}
+            scroll={getTableScroll(users.length)}
             pagination={false}
             tableLayout="auto"
           />

@@ -1,3 +1,7 @@
+import oderCancle from "../pages/admin/order/list/cancle";
+import oderDelivered from "../pages/admin/order/list/delivered";
+import oderShiping from "../pages/admin/order/list/pending";
+
 const routes = {
   client: {
     home: "/home",
@@ -30,6 +34,8 @@ const routes = {
     },
     configuration: {
       list: "/admin/configuration/list",
+      add: "/admin/configuration/add",
+      edit: "/admin/configuration/edit/",
     },
     voucher: {
       list: {
@@ -50,7 +56,12 @@ const routes = {
       edit: "/admin/user/edit/",
     },
     order: {
-      list: "/admin/order/list",
+      list: {
+        delivered: "/admin/order/list/delivered",
+        cancle: "/admin/order/list/cancle",
+        shiping: "/admin/order/list/shiping",
+        pending: "/admin/order/list/pending",
+      }
     },
   },
 };

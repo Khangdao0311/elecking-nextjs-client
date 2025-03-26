@@ -13,6 +13,8 @@ import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
+import { notification, Space } from 'antd';
+
 
 function BrandEdit() {
   const quillRef = useRef<HTMLDivElement>(null);
@@ -28,8 +30,18 @@ function BrandEdit() {
   const [name, setName] = useState("");
   const { id }: any = useParams();
 
-    const router = useRouter()
-  
+  const router = useRouter()
+
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
+
 
   useEffect(() => {
     brandServices.getById(`${id}`).then((res) => {
@@ -63,34 +75,34 @@ function BrandEdit() {
   }, [id]);
 
   useEffect(() => {
-  if (!quillRef.current || !editorContent) return; 
+    if (!quillRef.current || !editorContent) return;
 
-  if (quillRef.current.querySelector(".ql-editor")) return;
+    if (quillRef.current.querySelector(".ql-editor")) return;
 
-  const quillInstance = new Quill(quillRef.current, {
-    theme: "snow",
-  });
+    const quillInstance = new Quill(quillRef.current, {
+      theme: "snow",
+    });
 
-  quillInstance.root.innerHTML = editorContent; 
+    quillInstance.root.innerHTML = editorContent;
 
-  quillInstance.on("text-change", () => {
-    setEditorContent(quillInstance.root.innerHTML);
-  });
-}, [editorContent]);
+    quillInstance.on("text-change", () => {
+      setEditorContent(quillInstance.root.innerHTML);
+    });
+  }, [editorContent]);
 
 
   const handleRemove = (file: UploadFile, type: "logo" | "banner") => {
     if (type === "logo") {
-    setLogo([]);
-    setStorageimglogo("");
-  } else {
-    setBanner([]);
-    setStorageimgbanner(""); 
-  }
+      setLogo([]);
+      setStorageimglogo("");
+    } else {
+      setBanner([]);
+      setStorageimgbanner("");
+    }
   };
   const handleBeforeUpload = (file: File, type: "logo" | "banner") => {
     const newFile: UploadFile = {
-      uid: crypto.randomUUID(), 
+      uid: crypto.randomUUID(),
       name: file.name,
       status: "uploading",
       originFileObj: file as RcFile,
@@ -279,54 +291,51 @@ function BrandEdit() {
             </div>
           </div>
         </div>
+        {contextHolder}
         <Button
-  back="brand/list"
-  onClick={async () => {
-    try {
-      let imgLogoName = storageimglogo ? storageimglogo.split("/").pop() : "";; 
-      let imgBannerName = storageimgbanner ? storageimgbanner.split("/").pop() : ""; 
+          back="brand/list"
+          onClick={async () => {
+            let imgLogoName = storageimglogo ? storageimglogo.split("/").pop() : "";;
+            let imgBannerName = storageimgbanner ? storageimgbanner.split("/").pop() : "";
+            if (logo.length > 0 && logo[0].originFileObj && (logo[0].originFileObj.name !== storageimglogo)) {
+              const imgLogo = logo[0].originFileObj as File;
+              const formDataLogo = new FormData();
+              formDataLogo.append("image", imgLogo);
+              uploadServices.uploadSingle(formDataLogo)
+              imgLogoName = imgLogo.name
+            }
+            if (banner.length > 0 && banner[0].originFileObj && (banner[0].originFileObj.name !== storageimgbanner)) {
+              const imgBanner = banner[0].originFileObj as File;
+              const formDataBanner = new FormData();
+              formDataBanner.append("image", imgBanner);
+              uploadServices.uploadSingle(formDataBanner)
+              imgBannerName = imgBanner.name
+            }
+            if (!name.trim() || !imgLogoName?.length || !imgBannerName?.length || !editorContent.trim()) {
+              openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
+              return;
+            }
+            const brandResponse = await brandServices.editBrand(
+              {
+                name: name.trim(),
+                logo: imgLogoName,
+                banner: imgBannerName,
+                status: selectedStatus,
+                description: editorContent.trim(),
+              },
+              id
+            )
+            if (brandResponse?.status == 200) {
+              openNotificationWithIcon("success", "Thành công", "Sửa thành công");
+              setTimeout(() => {
+                router.push(config.routes.admin.brand.list);
+              }, 1000);
+            } else {
+              openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+            }
 
-      if (logo.length > 0 && logo[0].originFileObj && (logo[0].originFileObj.name !== storageimglogo)) {
-        const imgLogo = logo[0].originFileObj as File;
-        const formDataLogo = new FormData();
-        formDataLogo.append("image", imgLogo);
-        uploadServices.uploadSingle(formDataLogo)
-        imgLogoName = imgLogo.name
-      }
-
-      if (banner.length > 0 && banner[0].originFileObj && (banner[0].originFileObj.name !== storageimgbanner)) {
-        const imgBanner = banner[0].originFileObj as File;
-        const formDataBanner = new FormData();
-        formDataBanner.append("image", imgBanner);
-        uploadServices.uploadSingle(formDataBanner)
-        imgBannerName = imgBanner.name 
-      }
-
-      if (!name.trim()) {
-        alert("Tên thương hiệu không được để trống!");
-        return;
-      }
-
-      await brandServices.editBrand(
-        {
-          name: name.trim(),
-          logo: imgLogoName, 
-          banner: imgBannerName, 
-          status: selectedStatus,
-          description: editorContent.trim(),
-        },
-        id
-      ).then(res => {
-        router.push(config.routes.admin.brand.list)
-      })
-
-      alert("Cập nhật thành công!");
-    } catch (error) {
-      console.error("Lỗi khi cập nhật thương hiệu:", error);
-      alert("Cập nhật thất bại! Vui lòng thử lại.");
-    }
-  }}
-/>
+          }}
+        />
 
       </div>
     </>

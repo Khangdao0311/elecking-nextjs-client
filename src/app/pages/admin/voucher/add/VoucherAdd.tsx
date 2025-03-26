@@ -206,28 +206,29 @@ function VoucherAdd() {
                   return;
                 }
 
-                try {
-                  const voucherData = {
-                    code,
-                    discount_type: discountType,
-                    discount_value: discountValue,
-                    min_order_value: minOrderValue,
-                    max_discount: maxDiscount,
-                    start_date: startDate,
-                    end_date: endDate,
-                    quantity,
-                    user_id: user,
-                  };
 
-                  await voucherServices.addVoucher(voucherData);
+                const voucherData = {
+                  code,
+                  discount_type: discountType,
+                  discount_value: discountValue,
+                  min_order_value: minOrderValue,
+                  max_discount: maxDiscount,
+                  start_date: startDate,
+                  end_date: endDate,
+                  quantity,
+                  user_id: user,
+                  status: 1
+                };
+                const voucherResponse = await voucherServices.addVoucher(voucherData);
+                if (voucherResponse?.status == 200) {
                   openNotificationWithIcon('success', "Thành công", "Thêm voucher thành công");
                   setTimeout(() => {
                     router.push(config.routes.admin.voucher.list.stillexpired);
                   }, 1000);
-                } catch (error) {
+                } else {
                   openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
-                  console.error(error);
                 }
+
               }}
             >
             </Button>

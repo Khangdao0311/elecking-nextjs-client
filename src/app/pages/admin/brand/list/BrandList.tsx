@@ -20,10 +20,6 @@ function BrandList() {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [load, setLoad] = useState(true);
-  
-
-
-  console.log(page);
 
   useEffect(() => {
     const query: any = {};
@@ -39,6 +35,13 @@ function BrandList() {
     });
   }, [limit, page, search]);
   console.log(brands);
+
+  
+  const getTableScroll = (dataLength: any) => {
+    if (dataLength <= 5) return undefined;
+    return { x: 50, y: 300 };
+  };
+  
   const columns: TableProps<IBrand>["columns"] = [
     {
       title: "STT",
@@ -134,6 +137,7 @@ function BrandList() {
       ),
     },
   ];
+  
   return (
     <>
       {load ? (
@@ -165,7 +169,7 @@ function BrandList() {
                 columns={columns}
                 dataSource={brands}
                 rowKey="id"
-                scroll={{ x: 1000, y: 420 }}
+                scroll={getTableScroll(brands.length)}
                 pagination={false}
                 tableLayout="auto"
               />

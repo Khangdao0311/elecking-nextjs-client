@@ -177,6 +177,11 @@ function ProductList() {
     },
   ];
 
+  const getTableScroll = (dataLength: any) => {
+    if (dataLength <= 5) return undefined;
+    return { x: 50, y: 300 };
+  };
+
   return (
     <>
       <TitleAdmin title="Danh Sách Sản Phẩm" />
@@ -204,7 +209,7 @@ function ProductList() {
             columns={columns}
             dataSource={products}
             rowKey="id"
-            scroll={{ x: 1000, y: 400 }}
+            scroll={getTableScroll(products.length)}
             pagination={false}
             tableLayout="auto"
           />

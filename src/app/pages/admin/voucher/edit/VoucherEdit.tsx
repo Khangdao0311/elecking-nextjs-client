@@ -209,28 +209,27 @@ function VoucherEdit() {
                   return;
                 }
 
-                try {
-                  const voucherData = {
-                    code,
-                    discount_type: discountType,
-                    discount_value: discountValue,
-                    min_order_value: minOrderValue,
-                    max_discount: maxDiscount,
-                    start_date: startDate,
-                    end_date: endDate,
-                    quantity,
-                    status: 1,
-                    user_id: user || null,
-                  };
+                const voucherData = {
+                  code,
+                  discount_type: discountType,
+                  discount_value: discountValue,
+                  min_order_value: minOrderValue,
+                  max_discount: maxDiscount,
+                  start_date: startDate,
+                  end_date: endDate,
+                  quantity,
+                  status: 1,
+                  user_id: user || null,
+                };
 
-                  await voucherService.editBrand(id, voucherData);
+                const voucherResponse = await voucherService.editBrand(id, voucherData);
+                if (voucherResponse?.status == 200) {
                   openNotificationWithIcon('success', "Thành công", "Cập nhật voucher thành công");
                   setTimeout(() => {
                     router.push(config.routes.admin.voucher.list.stillexpired);
                   }, 1000);
-                } catch (error) {
+                } else {
                   openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
-                  console.error(error);
                 }
               }}
             >
