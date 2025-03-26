@@ -30,8 +30,6 @@ const routes = {
     },
     configuration: {
       list: "/admin/configuration/list",
-      add: "/admin/configuration/add",
-      edit: "/admin/configuration/edit/",
     },
     voucher: {
       list: {

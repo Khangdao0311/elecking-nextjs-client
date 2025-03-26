@@ -1,25 +1,63 @@
 "use client";
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Select, Upload } from "antd";
-import React, { useEffect, useState } from "react";
+import { Input, Modal, Select, Upload } from "antd";
+import React, { useEffect, useRef, useState } from "react";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { IoCloseSharp } from "react-icons/io5";
 import * as proptypeService from "@/app/services/proptypeService";
-import * as uploadService from "@/app/services/uploadService"
-import * as categoryService from "@/app/services/categoryService"
+import * as uploadService from "@/app/services/uploadService";
+import * as categoryService from "@/app/services/categoryService";
+import "quill/dist/quill.snow.css";
+import Quill from "quill";
+import config from "@/app/config";
+import { Button as ButtonAnt, notification, Space } from "antd";
 function CategoryAdd() {
   const [proptype, setproptype] = useState<IProptype[]>([]);
-  useEffect(() => {
-    const query = { limit: 0 };
-    proptypeService.getQuery(query).then((res) => setproptype(res.data));
-  }, []);
-
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedProptype, setSelectedProptype] = useState<string[]>([]);
+  const quillRef = useRef<HTMLDivElement>(null);
+  const [editorContent, setEditorContent] = useState("");
 
-  // chạy mảng để lấy tên của proptype
+
+
+type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
+
+
+  useEffect(() => {
+    const query = { limit: 0 };
+    proptypeService.getQuery(query).then((res) => setproptype(res.data));
+  },[]);
+
+  useEffect(() => {
+    if (!quillRef.current) return; // Kiểm tra nếu ref tồn tại
+    if (quillRef.current.querySelector(".ql-editor")) return; // Tránh khởi tạo lại
+
+    const quill = new Quill(quillRef.current, {
+      theme: "snow",
+    });
+
+    // Load dữ liệu cũ nếu có
+    quill.root.innerHTML = editorContent;
+
+    quill.on("text-change", () => {
+      setEditorContent(quill.root.innerHTML);
+    });
+
+    quill.on("text-change", () => {
+      setDescription(quill.getText().trim());
+    });
+  }, [editorContent]);
+
   const handleChange = (value: string[]) => {
     setSelectedProptype(value);
   };
@@ -54,19 +92,36 @@ function CategoryAdd() {
     if (image[0]?.originFileObj) {
       const formData = new FormData();
       formData.append("image", image[0].originFileObj as File);
-      uploadService.uploadSingle(formData)
+      uploadService.uploadSingle(formData);
     } else {
       console.warn("Không có ảnh được chọn!");
     }
-    if(image[0]?.originFileObj && selectedProptype && name && description){
-      categoryService.addCategory({name:name, image: image[0].name, description: description, proptypes: JSON.stringify(selectedProptype)})
-      .then(res => {
-        res.data
-        console.log('Thêm thành công')
-      })
+    if (image[0]?.originFileObj && selectedProptype && name && description) {
+      categoryService
+        .addCategory({
+          name: name,
+          image: image[0].name,
+          description: description,
+          proptypes: JSON.stringify(selectedProptype),
+        })
+        .then((res) => {
+          if(res.status === 200){
+            openNotificationWithIcon('success', "Thành công", "Thêm thành công");
+            setName("");
+            setDescription("");
+            setSelectedProptype([]);
+            setImage([]);
+            setEditorContent("");
+            if (quillRef.current) {
+              const quill = new Quill(quillRef.current);
+              quill.root.innerHTML = "";
+            }
+          }
+        });
+    } else {
+      openNotificationWithIcon('error', "Thêm thất bại", "Lỗi dữ liệu");
     }
   }
-
 
   return (
     <>
@@ -84,6 +139,7 @@ function CategoryAdd() {
                 Tên Danh Mục <span className="text-primary">*</span>
               </div>
               <Input
+                value={name}
                 onChange={(e: any) => setName(e.target.value)}
                 className="w-[268px] h-11 "
                 placeholder="Nhập Tên Danh Mục"
@@ -116,18 +172,7 @@ function CategoryAdd() {
               `}</style>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex gap-0.5 flex-col">
-              <div className="text-sm font-medium">
-                Mô Tả <span className="text-primary">*</span>
-              </div>
-              <Input.TextArea
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-[268px] h-11"
-                placeholder="Nhập Tên Danh Mục"
-              />
-            </div>
-          </div>
+
           <div>
             <div className="text-sm font-medium">
               Ảnh <span className="text-primary">*</span>
@@ -187,13 +232,20 @@ function CategoryAdd() {
                   );
                 })}
               </div>
+              <div className="w-full">
+                <div className="text-sm font-medium">
+                  Mô tả <span className="text-primary">*</span>
+                </div>
+                <div
+                  ref={quillRef}
+                  className="w-full !h-[150px] border border-gray-300 rounded"
+                ></div>
+              </div>
             </div>
           </div>
         </div>
-        <Button
-          back="category/list"
-          onClick={handleAdd}
-        />
+        {contextHolder}
+        <Button back="category/list" onClick={handleAdd} />
       </div>
     </>
   );

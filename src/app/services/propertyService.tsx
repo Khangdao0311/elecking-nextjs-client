@@ -6,3 +6,23 @@ export async function getQuery(params: any) {
     .get(`${config.api.property}`, { params })
     .then((response: any) => response.data);
 }
+
+
+export async function addProperty(body: any) {
+  return axios
+    .post(`${config.api.property}`, body )
+    .then((response: any) => response.data);
+}
+
+export async function editProperty(id:string, body: any) {
+  return axios
+    .put(`${config.api.property}/${id}`, body )
+    .then((response: any) => response.data);
+}
+
+
+export async function getOne(id:string) {
+  return axios
+    .get(`${config.api.property}/${id}`)
+    .then((response: any) => response.data);
+}

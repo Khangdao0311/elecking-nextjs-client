@@ -13,7 +13,7 @@ interface IProduct {
 interface IProperty {
     id: string
     name: string
-    stye: string
+    proptype_id: string
 }
 
 interface IProductVariant {

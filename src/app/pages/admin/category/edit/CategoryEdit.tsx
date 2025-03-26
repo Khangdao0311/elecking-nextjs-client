@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Input, Upload } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import { Input, Modal, notification, Upload } from "antd";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Button from "@/app/components/admin/Button";
@@ -10,18 +10,38 @@ import * as categoryService from "@/app/services/categoryService";
 import { useParams } from "next/navigation";
 import * as proptypeService from "@/app/services/proptypeService";
 import * as uploadService from "@/app/services/uploadService";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
+import { HiCheckCircle } from "react-icons/hi";
+import { useRouter } from "next/navigation";
+import config from "@/app/config";
+
 function CategoryEdit() {
   const { id }: any = useParams();
   const [proptype, setproptype] = useState<IProptype[]>([]);
   const [editProptype, setEditProptype] = useState<IProptype[]>();
   const [status, setStatus] = useState(1);
   const [categoryName, setCategoryName] = useState("");
-  const [description, setDescription] = useState("");
   const [image, setImage] = useState<UploadFile[]>([]);
   const [initialImage, setInitialImage] = useState("");
   const [editImage, setEditImage] = useState<any>();
+  const [editorContent, setEditorContent] = useState("");
+  const quillRef = useRef<HTMLDivElement>(null);
+  const [editSuccess, setEditSuccess] = useState(false);
+  const router = useRouter();
 
-  const { id: string } = useParams();
+
+
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
+
 
   useEffect(() => {
     const query = { limit: 0 };
@@ -32,10 +52,11 @@ function CategoryEdit() {
     categoryService.getOne(id).then((res) => {
       setEditProptype(res.data.proptypes);
       setCategoryName(res.data.name);
-      setDescription(res.data.description);
+      setEditorContent(res.data.description);
       setInitialImage(res.data.image);
       const oldImageName = res.data.image.split("/").pop();
       setEditImage(oldImageName);
+      setStatus(res.data.status ?? 1);
       if (res.data.image) {
         setImage([
           {
@@ -48,6 +69,22 @@ function CategoryEdit() {
       }
     });
   }, [id]);
+
+  useEffect(() => {
+    if (!quillRef.current || !editorContent) return;
+
+    if (quillRef.current.querySelector(".ql-editor")) return;
+
+    const quillInstance = new Quill(quillRef.current, {
+      theme: "snow",
+    });
+
+    quillInstance.root.innerHTML = editorContent;
+
+    quillInstance.on("text-change", () => {
+      setEditorContent(quillInstance.root.innerHTML);
+    });
+  }, [editorContent]);
 
   const handleChangeProptype = (value: any) => {
     setEditProptype(value);
@@ -64,18 +101,27 @@ function CategoryEdit() {
       formData.append("image", image[0].originFileObj as File);
       uploadService.uploadSingle(formData);
       finalImage = image[0].name;
-    } 
+    }
     
-    if (editProptype  && status && categoryName && description) {
+    if (editProptype && typeof status === "number" && categoryName && editorContent) {
       categoryService
         .editCategory(id, {
           name: categoryName,
           image: finalImage,
           status: status,
           proptypes: JSON.stringify(editProptype),
-          description: description,
+          description: editorContent,
         })
-        .then((res) => res.data);
+        .then((res) => {
+          if(res.status === 200){
+            openNotificationWithIcon('success', "Thành công", "Sửa thành công");
+            setTimeout(() => {
+              router.push(`${config.routes.admin.category.list}`)
+            },1000)
+          }else{
+            openNotificationWithIcon('error', "Thất bại", "Sửa thất bại");
+          }
+        });
     }
   }
 
@@ -134,7 +180,7 @@ function CategoryEdit() {
                 onChange={handleChange}
                 options={[
                   { value: 1, label: "Đang hoạt động" },
-                  { value: 2, label: "Ngừng hoạt động" },
+                  { value: 0, label: "Ngừng hoạt động" },
                 ]}
               />
             </div>
@@ -163,19 +209,6 @@ function CategoryEdit() {
                   margin-top: 0 !important;
                 }
               `}</style>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex gap-0.5 flex-col">
-              <div className="text-sm font-medium">
-                Mô Tả <span className="text-primary">*</span>
-              </div>
-              <Input.TextArea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-[268px] h-11"
-                placeholder="Nhập Tên Danh Mục"
-              />
             </div>
           </div>
           <div>
@@ -237,11 +270,49 @@ function CategoryEdit() {
                   );
                 })}
               </div>
+              <div className="w-full">
+                <div className="text-sm font-medium">
+                  Mô tả <span className="text-primary">*</span>
+                </div>
+                <div
+                  ref={quillRef}
+                  className="w-full !h-[150px] border border-gray-300 rounded"
+                ></div>
+              </div>
             </div>
           </div>
+          {contextHolder}
           <Button onClick={handleEdit} back="category/list" />
         </div>
       </div>
+
+      {/* <Modal
+        open={editSuccess}
+        closeIcon={<div className="hidden" />}
+        onCancel={() => setEditSuccess(false)}
+        footer={null}
+        title={null}
+        centered
+        maskClosable={false}
+      >
+        {editSuccess && (
+          <>
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-5 w-[519px] h-[250px] p-10 bg-white rounded-2xl z-50 items-center justify-center shadow-lg">
+              <div>
+                <HiCheckCircle className="w-24 h-24 fill-green-500 text-white" />
+              </div>
+              <div className="text-2xl font-bold">Sửa danh mục thành công!</div>
+              <button
+                onClick={() => `${router.push(config.routes.admin.category.list)}`}
+                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
+              >
+                Tiếp tục
+              </button>
+            </div>
+          </>
+        )}
+      </Modal> */}
     </>
   );
 }

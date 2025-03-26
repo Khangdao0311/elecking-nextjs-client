@@ -55,7 +55,7 @@ function CategoryList() {
       ),
     },
     {
-      title: "Tên Danh Mục",
+      title: "Tên Danh Mục Cấu Hình",
       dataIndex: "name",
       width: 450,
       key: "name",
@@ -74,12 +74,6 @@ function CategoryList() {
             break;
           case 1:
             text = "Đang hoạt động";
-            break;
-          case 2:
-            text = "Chờ xác nhận";
-            break;
-          case 3:
-            text = "Đang vận chuyển";
             break;
         }
         return (
