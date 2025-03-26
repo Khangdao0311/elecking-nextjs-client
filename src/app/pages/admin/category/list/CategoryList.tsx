@@ -32,7 +32,12 @@ function CategoryList() {
     });
   }, [limit, page, search]);
 
-  console.log(typeof limit);
+
+  const getTableScroll = (dataLength: any) => {
+    if (dataLength <= 5) return undefined;
+    return { x: 50, y: 300 };
+  };
+
 
   const columns: TableProps<ICategory>["columns"] = [
     {
@@ -136,7 +141,7 @@ function CategoryList() {
             columns={columns}
             dataSource={categories}
             rowKey="id"
-            scroll={{ x: 1000, y: 430 }}
+            scroll={getTableScroll(categories.length)}
             pagination={false}
             tableLayout="auto"
           />

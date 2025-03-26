@@ -60,6 +60,8 @@ function ConfigurationList() {
     return { x: 50, y: 300 };
   };
 
+  
+
   useEffect(() => {
     const query: any = {};
     query.limit = limitProptype;
@@ -344,7 +346,7 @@ function ConfigurationList() {
               columns={columnsProptype}
               dataSource={proptype}
               rowKey="id"
-              scroll={getTableScroll(property.length)}
+              scroll={getTableScroll(proptype.length)}
               pagination={false}
               tableLayout="auto"
             />
