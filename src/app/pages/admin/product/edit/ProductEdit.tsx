@@ -7,6 +7,7 @@ import { GrFormNext } from "react-icons/gr";
 import { IoIosClose } from "react-icons/io";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { IoCloseSharp } from "react-icons/io5";
+import { useParams } from "next/navigation";
 import * as categoryServices from "@/app/services/categoryService";
 import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
@@ -32,22 +33,59 @@ function ProductAdd() {
   const [selectedbrand, setSelectedbrand] = useState<IBrand | null>(null);
   const [properties, setProperties] = useState<any>({});
   const [storageimgcolor, setStorageimgcolor] = useState<File[]>([]);
-
-  useEffect(() => {});
+  const [storageidcategory, setStorageidcategory] = useState<number | null>(
+    null
+  );
+  const { id }: any = useParams();
+  console.log(selectedbrand);
 
   useEffect(() => {
-    if (!quillRef.current) return;
+    productServices.getProById(`${id}`).then((res) => {
+      const formattedVariants = res.data.variants.map((variant: any) => ({
+        ...variant,
+        colors: variant.colors.map((color: any, index: number) => ({
+          ...color,
+          image: color.image
+            ? {
+                uid: crypto.randomUUID(),
+                name: `color_${index + 1}.png`,
+                status: "done",
+                url: color.image,
+              }
+            : null,
+        })),
+      }));
+      setVariants(formattedVariants);
+      // setVariants(res.data.variants)
+      setName(res.data.name);
+      setEditorContent(res.data.description);
+      setSelectedbrand(res.data.brand);
+      if (Array.isArray(res.data.images)) {
+        setImages(
+          res.data.images.map((imgUrl: any, index: any) => ({
+            uid: crypto.randomUUID(),
+            name: `logo_${index + 1}.png`,
+            status: "done",
+            url: imgUrl,
+          }))
+        );
+      }
+    });
+  }, [id]);
+
+  useEffect(() => {
+    if (!quillRef.current || !editorContent) return;
+
     if (quillRef.current.querySelector(".ql-editor")) return;
 
-    const quill = new Quill(quillRef.current, {
+    const quillInstance = new Quill(quillRef.current, {
       theme: "snow",
     });
 
-    // Load dữ liệu cũ nếu có
-    quill.root.innerHTML = editorContent;
+    quillInstance.root.innerHTML = editorContent;
 
-    quill.on("text-change", () => {
-      setEditorContent(quill.root.innerHTML);
+    quillInstance.on("text-change", () => {
+      setEditorContent(quillInstance.root.innerHTML);
     });
   }, [editorContent]);
 
@@ -76,7 +114,7 @@ function ProductAdd() {
                 image: "",
                 price_extra: "",
                 quantity: "",
-                status: 1
+                status: 1,
               },
             ],
           },
@@ -86,36 +124,33 @@ function ProductAdd() {
     _();
   }, [selectedcategory]);
 
-  
-
   const beforeUploadcolor = (file: File, iVariant: number, iColor: number) => {
-      setVariants((prev: IProductVariant[]) =>
-        prev.map((variant, i) => {
-          if (i === iVariant) {
-            return {
-              ...variant,
-              colors: variant.colors.map((color, j) => {
-                if (j === iColor) {
-                  return {
-                    ...color,
-                    image: {
-                      name: file.name,
-                      originFileObj: file,
-                    },
-                  };
-                }
-                return color;
-              }),
-            };
-          }
-          return variant;
-        })
-      );
-      setStorageimgcolor((prev: File[]) => [...prev, file]);
-      return false;
-    };
-    console.log(variants);
-    
+    setVariants((prev: IProductVariant[]) =>
+      prev.map((variant, i) => {
+        if (i === iVariant) {
+          return {
+            ...variant,
+            colors: variant.colors.map((color, j) => {
+              if (j === iColor) {
+                return {
+                  ...color,
+                  image: {
+                    name: file.name,
+                    originFileObj: file,
+                  },
+                };
+              }
+              return color;
+            }),
+          };
+        }
+        return variant;
+      })
+    );
+    setStorageimgcolor((prev: File[]) => [...prev, file]);
+    return false;
+  };
+
   const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),
@@ -143,7 +178,7 @@ function ProductAdd() {
               if (j === iColor) {
                 return {
                   ...color,
-                  image: null, // Xóa ảnh bằng cách đặt lại thành `null`
+                  image: null,
                 };
               }
               return color;
@@ -154,7 +189,6 @@ function ProductAdd() {
       })
     );
 
-    // 🟢 Xóa ảnh khỏi storageimgcolor
     setStorageimgcolor((prev) => prev.filter((_, index) => index !== iColor));
   };
 
@@ -181,9 +215,7 @@ function ProductAdd() {
     ]);
     setExpandedVariants((prev) => [...prev, true]);
   }
-  console.log(properties);
-  console.log(variants);
-  
+
   function handleAddColor(iVariant: number) {
     setVariants((prev: any) =>
       prev.map((item: any, index: number) => {
@@ -239,24 +271,36 @@ function ProductAdd() {
       })
     );
   }
-  useEffect(() => {
-    const query: any = {};
-    categoryServices.getQuery(query).then((res) => setCategories(res.data));
-  }, []);
 
   useEffect(() => {
     const query: any = {};
     brandServices.getQuery(query).then((res) => setBrands(res.data));
   }, []);
+  useEffect(() => {
+    const query: any = {};
+    categoryServices.getQuery(query).then((res) => {
+      setCategories(res.data);
+
+      setSelectedcategory((prev) => {
+        // Nếu chưa chọn category nào và đã có storageidcategory thì cập nhật
+        if (!prev && storageidcategory) {
+          return (
+            res.data.find((cat: any) => cat.id === storageidcategory) || null
+          );
+        }
+        return prev; // Giữ nguyên nếu đã chọn trước đó
+      });
+    });
+  }, []); // ❗ Chạy một lần khi component mount, không phụ thuộc vào `storageidcategory`
 
   return (
     <>
-      <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
+      <TitleAdmin title="Quản sản phẩm/ Sửa sản phẩm" />
       <div className="bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div className="w-full flex flex-col gap-6">
           <div className="w-full">
             <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">
-              Thêm Sản Phẩm
+              Sửa Sản Phẩm
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -291,7 +335,11 @@ function ProductAdd() {
               <Select
                 className="shadow-md"
                 style={{ width: 268, height: 44 }}
-                onChange={(value) => setSelectedbrand(value)}
+                value={selectedbrand?.id}
+                onChange={(value) => {
+                  const brand = brands.find((b) => b.id === value);
+                  setSelectedbrand(brand || null);
+                }}
                 options={brands.map((brand) => ({
                   value: brand.id,
                   label: brand.name,
@@ -615,7 +663,7 @@ function ProductAdd() {
                                                 )
                                               : variants[iVariant].colors[
                                                   iColor
-                                                ].image.name
+                                                ].image.url // Sửa lại từ `name` thành `url`
                                           }
                                           alt="Color Preview"
                                           className="w-full h-full object-cover rounded"
@@ -716,24 +764,24 @@ function ProductAdd() {
           <Button
             back="product/list"
             onClick={async () => {
-              if(storageimgcolor){
+              if (storageimgcolor) {
                 const formDataimgcolor = new FormData();
                 storageimgcolor.forEach((file) => {
                   formDataimgcolor.append("images", file);
                 });
-                uploadServices.uploadMultiple(formDataimgcolor)
+                uploadServices.uploadMultiple(formDataimgcolor);
               }
-              if(images){
+              if (images) {
                 const formDaraimages = new FormData();
                 images.forEach((file) => {
                   if (file.originFileObj) {
                     formDaraimages.append("images", file.originFileObj);
                   }
                 });
-                uploadServices.uploadMultiple(formDaraimages)
+                uploadServices.uploadMultiple(formDaraimages);
               }
-              console.log(images);
-              
+              // console.log(images);
+
               const formattedVariants = variants.map((variant: any) => ({
                 ...variant,
                 price: +variant.price,
@@ -743,7 +791,7 @@ function ProductAdd() {
                   price_extra: +color.price_extra,
                   quantity: +color.quantity,
                   image: color.image?.name || "",
-                  status: 1
+                  status: 1,
                 })),
                 property_ids: variant.property_ids.filter(Boolean),
               }));
