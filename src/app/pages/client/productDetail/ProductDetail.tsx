@@ -31,6 +31,7 @@ import ProductVariant from "./components/ProductVariant";
 import config from "@/app/config";
 import { useStore, actions, initState } from "@/app/store";
 import ProductLoad from "@/app/components/client/ProductLoad";
+import Shimmer from "@/app/components/client/Shimmer";
 
 SwiperCore.use([Navigation, Thumbs]);
 
@@ -44,8 +45,8 @@ function ProductDetail() {
   const [reviews, setReviews] = useState<IReview[]>([]);
   const [totalReviews, setTotalReviews] = useState<number>(0);
   const [productsSame, setProductsSame] = useState<IProduct[]>([]);
-  const [iVariant, setIVariant] = useState(0);
-  const [iColor, setIColor] = useState(0);
+  const [iVariant, setIVariant] = useState(-1);
+  const [iColor, setIColor] = useState(-1);
   const [quantity, setQuantity] = useState(1);
   const [rating, setRating] = useState("");
   const [page, setPage] = useState(1);
@@ -55,7 +56,19 @@ function ProductDetail() {
   const router = useRouter();
 
   useEffect(() => {
-    productServices.getProById(`${id}`).then((res) => setProduct(res.data));
+    productServices.getProById(`${id}`).then((res) => {
+      setProduct(res.data);
+      // Đặt tên cho vòng lặp ngoài
+      outerLoop: for (let i = 0; i < res.data.variants.length; i++) {
+        for (let j = 0; j < res.data.variants[i].colors.length; j++) {
+          if (res.data.variants[i].colors[j].quantity > 0) {
+            setIVariant(i);
+            setIColor(j);
+            break outerLoop; // Thoát hoàn toàn cả 2 vòng lặp
+          }
+        }
+      }
+    });
     productServices.getSame({ id: id, limit: 5 }).then((res) => setProductsSame(res.data));
   }, [id]);
 
@@ -153,7 +166,13 @@ function ProductDetail() {
 
   return (
     <>
-      {product && (
+      {showModal && (
+        <div onClick={() => setShowModal(false)}>
+          <ModalAddProduct />
+          <div className="overlay"></div>
+        </div>
+      )}
+      {!state.load && product ? (
         <>
           {/* Chi tiết sản phẩm, giá và type */}
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
@@ -195,7 +214,11 @@ function ProductDetail() {
                     <SwiperSlide>
                       <img
                         className="w-full h-full object-contain"
-                        src={product.variants[iVariant].colors[iColor].image}
+                        src={
+                          product.variants[iVariant === -1 ? 0 : iVariant].colors[
+                            iColor === -1 ? 0 : iColor
+                          ].image
+                        }
                       />
                     </SwiperSlide>
                     {product?.images.map((img, index) => (
@@ -287,16 +310,24 @@ function ProductDetail() {
                     product?.variants?.map((variant, index) => (
                       <div key={index}>
                         <ProductVariant
+                          disabled={!variant.colors.some((e) => e.quantity > 0)}
                           name={variant.properties.map((e) => e.name).join(" - ")}
                           price={variant.price - variant.price_sale}
                           checked={index == iVariant}
                           onClick={() => {
                             setIVariant(index);
-                            setIColor(0);
+                            setIColor(
+                              variant.colors.findIndex((e: IProductColor) => e.quantity > 0)
+                            );
                             mainSwiper?.slideTo(0);
                             setQuantity(
-                              quantity > product.variants[index].colors[0].quantity
-                                ? product.variants[index].colors[0].quantity
+                              quantity >
+                                product.variants[index].colors[
+                                  variant.colors.findIndex((e: IProductColor) => e.quantity > 0)
+                                ].quantity
+                                ? product.variants[index].colors[
+                                    variant.colors.findIndex((e: IProductColor) => e.quantity > 0)
+                                  ].quantity
                                 : quantity
                             );
                           }}
@@ -308,29 +339,35 @@ function ProductDetail() {
                 <div>
                   <div className="py-4">Chọn màu để xem giá</div>
                   <div className="grid grid-cols-3 flex-wrap gap-2.5">
-                    {product?.variants[iVariant]?.colors.map((color, index) => (
-                      <div key={index}>
-                        <ProductColor
-                          image={color.image}
-                          color={color.name}
-                          price={
-                            product.variants[iVariant].price -
-                            product.variants[iVariant].price_sale +
-                            color.price_extra
-                          }
-                          checked={index == iColor}
-                          onClick={() => {
-                            setIColor(index);
-                            mainSwiper?.slideTo(0);
-                            setQuantity(
-                              quantity > product.variants[iVariant].colors[index].quantity
-                                ? product.variants[iVariant].colors[index].quantity
-                                : quantity
-                            );
-                          }}
-                        />
-                      </div>
-                    ))}
+                    {product?.variants[iVariant === -1 ? 0 : iVariant]?.colors.map(
+                      (color, index) => (
+                        <div key={index}>
+                          <ProductColor
+                            disabled={color.quantity === 0}
+                            image={color.image}
+                            color={color.name}
+                            price={
+                              product.variants[iVariant === -1 ? 0 : iVariant].price -
+                              product.variants[iVariant === -1 ? 0 : iVariant].price_sale +
+                              color.price_extra
+                            }
+                            checked={index == iColor}
+                            onClick={() => {
+                              setIColor(index);
+                              mainSwiper?.slideTo(0);
+                              setQuantity(
+                                quantity >
+                                  product.variants[iVariant === -1 ? 0 : iVariant].colors[index]
+                                    .quantity
+                                  ? product.variants[iVariant === -1 ? 0 : iVariant].colors[index]
+                                      .quantity
+                                  : quantity
+                              );
+                            }}
+                          />
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
                 {/* price */}
@@ -338,30 +375,42 @@ function ProductDetail() {
                   <p className="text-base font-medium w-[92px]">Giá</p>
                   <p className="text-3xl font-bold text-red-500 w-[204px]">
                     {(
-                      product!.variants[iVariant].price -
-                      product!.variants[iVariant].price_sale +
-                      product!.variants[iVariant].colors[iColor].price_extra
+                      product!.variants[iVariant === -1 ? 0 : iVariant].price -
+                      product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
+                      product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                        iColor === -1 ? 0 : iColor
+                      ].price_extra
                     ).toLocaleString("vi-VN")}{" "}
                     đ
                   </p>
-                  {product!.variants[iVariant].price -
-                    product!.variants[iVariant].price_sale +
-                    product!.variants[iVariant].colors[iColor].price_extra <
-                    product!.variants[iVariant].price +
-                      product!.variants[iVariant].colors[iColor].price_extra && (
+                  {product!.variants[iVariant === -1 ? 0 : iVariant].price -
+                    product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
+                    product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                      iColor === -1 ? 0 : iColor
+                    ].price_extra <
+                    product!.variants[iVariant === -1 ? 0 : iVariant].price +
+                      product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                        iColor === -1 ? 0 : iColor
+                      ].price_extra && (
                     <del className="text-lg font-normal text-gray-500">
                       {(
-                        product!.variants[iVariant].price +
-                        product!.variants[iVariant].colors[iColor].price_extra
+                        product!.variants[iVariant === -1 ? 0 : iVariant].price +
+                        product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                          iColor === -1 ? 0 : iColor
+                        ].price_extra
                       ).toLocaleString("vi-VN")}{" "}
                       đ
                     </del>
                   )}
-                  {product!.variants[iVariant].price -
-                    product!.variants[iVariant].price_sale +
-                    product!.variants[iVariant].colors[iColor].price_extra <
-                    product!.variants[iVariant].price +
-                      product!.variants[iVariant].colors[iColor].price_extra && (
+                  {product!.variants[iVariant === -1 ? 0 : iVariant].price -
+                    product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
+                    product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                      iColor === -1 ? 0 : iColor
+                    ].price_extra <
+                    product!.variants[iVariant === -1 ? 0 : iVariant].price +
+                      product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                        iColor === -1 ? 0 : iColor
+                      ].price_extra && (
                     <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
                       {Math.ceil(
                         100 -
@@ -397,7 +446,12 @@ function ProductDetail() {
                     </div>
                     <div
                       onClick={() => {
-                        if (quantity < product?.variants[iVariant].colors[iColor].quantity)
+                        if (
+                          quantity <
+                          product?.variants[iVariant === -1 ? 0 : iVariant].colors[
+                            iColor === -1 ? 0 : iColor
+                          ].quantity
+                        )
                           setQuantity(quantity + 1);
                       }}
                       className="w-10 h-10 border rounded-r-lg flex items-center justify-center cursor-pointer"
@@ -406,29 +460,48 @@ function ProductDetail() {
                     </div>
                   </div>
                   <p className="select-none text-gray-700">
-                    {product.variants[iVariant].colors[iColor].quantity} Sản phẩm có sẵn
+                    {
+                      product.variants[iVariant === -1 ? 0 : iVariant].colors[
+                        iColor === -1 ? 0 : iColor
+                      ].quantity
+                    }{" "}
+                    Sản phẩm có sẵn
                   </p>
                 </div>
                 {/* button */}
                 <div className="flex gap-4 py-2.5">
                   <div
                     onClick={() => {
-                      if (!state.user) {
-                        dispatch(actions.set({ show: { ...state.show, login: true } }));
-                      } else {
-                        handleAddToCart();
-                        setShowModal(true);
-                        setTimeout(() => setShowModal(false), 1000);
+                      if (iVariant !== -1 && iColor !== -1) {
+                        if (!state.user) {
+                          dispatch(actions.set({ show: { ...state.show, login: true } }));
+                        } else {
+                          handleAddToCart();
+                          setShowModal(true);
+                          setTimeout(() => setShowModal(false), 1000);
+                        }
                       }
                     }}
-                    className="cursor-pointer flex gap-1.5 p-1 rounded-lg w-2/5 h-16  items-center justify-center border border-primary select-none"
+                    className={` flex gap-1.5 p-1 rounded-lg w-2/5 h-16  items-center justify-center border border-primary select-none ${
+                      iVariant !== -1 && iColor !== -1 ? "cursor-pointer" : "opacity-50"
+                    }`}
                   >
                     <AiOutlineShoppingCart className="w-8 h-8 shrink-0 text-primary font-bold" />
                     <p className="text-primary text-md font-medium">Thêm vào giỏ hàng</p>
                   </div>
                   <div
-                    onClick={handleBuyNow}
-                    className="cursor-pointer flex w-3/5 h-16 items-center bg-primary rounded-lg shadow-lg select-none"
+                    onClick={() => {
+                      if (iVariant !== -1 && iColor !== -1) {
+                        if (!state.user) {
+                          dispatch(actions.set({ show: { ...state.show, login: true } }));
+                        } else {
+                          handleBuyNow();
+                        }
+                      }
+                    }}
+                    className={` flex w-3/5 h-16 items-center bg-primary rounded-lg shadow-lg select-none  ${
+                      iVariant !== -1 && iColor !== -1 ? "cursor-pointer" : "opacity-50"
+                    }`}
                   >
                     <p className="w-full text-center text-white text-lg font-bold">MUA NGAY</p>
                   </div>
@@ -645,12 +718,137 @@ function ProductDetail() {
               ))}
             </div>
           </section>
-          {showModal && (
-            <div onClick={() => setShowModal(false)}>
-              <ModalAddProduct />
-              <div className="overlay"></div>
+        </>
+      ) : (
+        <>
+          <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
+            <div className="flex gap-4">
+              <Shimmer className="w-1/2 h-7" />
             </div>
-          )}
+            <hr className="my-4" />
+
+            <div className="flex gap-4">
+              {/* hình ảnh */}
+              <div className="w-7/12 flex flex-col gap-4">
+                <Shimmer image={true} className="w-full  h-[365px]" />
+
+                <div className="grid grid-cols-9 gap-2.5">
+                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-4 w-5/12">
+                <div className="grid grid-cols-3 flex-wrap gap-2.5">
+                  <Shimmer className="h-16" />
+                  <Shimmer className="h-16" />
+                  <Shimmer className="h-16" />
+                </div>
+                <Shimmer className="w-1/2 h-6" />
+
+                <div className="grid grid-cols-3 flex-wrap gap-2.5">
+                  <Shimmer className="h-16" />
+                  <Shimmer className="h-16" />
+                  <Shimmer className="h-16" />
+                  <Shimmer className="h-16" />
+                  <Shimmer className="h-16" />
+                </div>
+                <Shimmer className="w-full h-9" />
+                <Shimmer className="w-full h-10" />
+
+                <div className="flex gap-4 py-2.5">
+                  <Shimmer className="w-2/5 h-16" />
+                  <Shimmer className="w-3/5 h-16" />
+                </div>
+              </div>
+            </div>
+          </section>
+          <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex ">
+            <div className="flex gap-4 w-full">
+              <div className="w-4/5  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
+                <Shimmer className="w-2/5 h-7" />
+                <hr />
+                <Shimmer className="w-1/2 h-6" />
+                <Shimmer className="w-9/12 h-6" />
+                <Shimmer className="w-2/5 h-6" />
+                <Shimmer className="w-4/5 h-6" />
+                <Shimmer className="w-2/3 h-6" />
+                <Shimmer className="w-4/5 h-6" />
+                <Shimmer className="w-3/5 h-6" />
+                <Shimmer className="w-3/4 h-6" />
+                <Shimmer className="w-5/5 h-6" />
+                <Shimmer className="w-4/5 h-6" />
+                <Shimmer className="w-2/5 h-6" />
+                <Shimmer className="w-3/5 h-6" />
+                <Shimmer className="w-8/12 h-6" />
+                <Shimmer className="w-4/5 h-6" />
+                <Shimmer className="w-3/5 h-6" />
+                <Shimmer className="w-5/5 h-6" />
+              </div>
+              <Shimmer image={true} className="w-1/5 " />
+            </div>
+          </section>
+          <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 ">
+            <div className="shadow-xl border border-gray-300  rounded-lg p-4">
+              <Shimmer className="w-1/3 h-10" />
+              <div className="flex gap-4 p-4">
+                <div className="flex flex-col items-center justify-center gap-1">
+                  <Shimmer className="w-20 h-10" />
+                  <Shimmer className="w-20 h-5" />
+                </div>
+                <div className="flex gap-2.5 p-2.5">
+                  <Shimmer className="w-32 h-11" />
+                  <Shimmer className="w-32 h-11" />
+                  <Shimmer className="w-32 h-11" />
+                  <Shimmer className="w-32 h-11" />
+                  <Shimmer className="w-32 h-11" />
+                  <Shimmer className="w-32 h-11" />
+                </div>
+              </div>
+              <hr />
+              <div className=" flex flex-col px-4">
+                <div className="flex items-start gap-4 py-4 ">
+                  <Shimmer image className="w-16 h-16 !rounded-full shrink-0" />
+                  <div className="flex flex-col gap-3 w-full">
+                    <Shimmer className="w-1/5 h-7" />
+                    <Shimmer className="w-1/12 h-7" />
+                    <Shimmer className="w-2/12 h-7" />
+                    <Shimmer className="w-9/12 h-7" />
+                    <Shimmer className="w-full h-7" />
+
+                    <div className="flex gap-4">
+                      <Shimmer className="w-20 h-20" image />
+                      <Shimmer className="w-20 h-20" image />
+                      <Shimmer className="w-20 h-20" image />
+                      <Shimmer className="w-20 h-20" image />
+                      <Shimmer className="w-20 h-20" image />
+                      <Shimmer className="w-20 h-20" image />
+                    </div>
+                    <Shimmer className="w-14 h-7" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 gap-2.5">
+            <div className="flex gap-2.5 py-2.5">
+              <Shimmer className="w-2/5 h-9" />
+            </div>
+            <div className="grid grid-cols-5 container-custom gap-2.5">
+              {Array.from({ length: 5 }).map((_, i: number) => (
+                <Fragment key={i}>
+                  <ProductLoad />
+                </Fragment>
+              ))}
+            </div>
+          </section>
         </>
       )}
     </>

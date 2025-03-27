@@ -15,6 +15,7 @@ import SidebarAccount from "@/app/components/client/SidebarAccount";
 import * as orderServices from "@/app/services/orderService";
 import OrderDetail from "./components/OrderDetail";
 import Review from "./components/Review";
+import Shimmer from "@/app/components/client/Shimmer";
 
 function AccountOrder() {
   const [state, dispatch] = useStore();
@@ -140,12 +141,49 @@ function AccountOrder() {
           </div>
           <div className="w-full flex flex-col gap-4 relative">
             {/*  */}
+
+            {state.load && (
+              <>
+                <div className="flex items-start gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300">
+                  <Shimmer className={"w-28 h-28 shrink-0"} image />
+
+                  <div className="flex flex-col items-start gap-2 w-full">
+                    <Shimmer className={"w-full h-6"} />
+                    <Shimmer className={"w-1/3 h-6"} />
+                    <Shimmer className={"w-1/4 h-9"} />
+                  </div>
+                  <div className="flex items-end h-full shrink-0">
+                    <Shimmer className={"w-36 h-11"} />
+                  </div>
+                  <em className="absolute top-0 right-0 p-4 text-gray-700">
+                    <Shimmer className={"w-36 h-6"} />
+                  </em>
+                </div>
+                <div className="flex items-start gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300">
+                  <Shimmer className={"w-28 h-28 shrink-0"} image />
+
+                  <div className="flex flex-col items-start gap-2 w-full">
+                    <Shimmer className={"w-full h-6"} />
+                    <Shimmer className={"w-1/3 h-6"} />
+                    <Shimmer className={"w-1/4 h-9"} />
+                  </div>
+                  <div className="flex items-end h-full shrink-0">
+                    <Shimmer className={"w-36 h-11"} />
+                  </div>
+                  <em className="absolute top-0 right-0 p-4 text-gray-700">
+                    <Shimmer className={"w-36 h-6"} />
+                  </em>
+                </div>
+              </>
+            )}
+
             {!state.load && orders.length === 0 && (
-              <div className="w-full min-h-80 center-flex flex-col gap-2 col-span-5">
+              <div className="w-full min-h-80 center-flex flex-col gap-2">
                 <TbMoodEmpty className="w-36 h-36 text-gray-300" />
                 <p className="text-3xl text-gray-400 font-medium">Không có đơn hàng !</p>
               </div>
             )}
+
             {orders.map((order: IOrder, iOrder: number) => {
               let status: any = {};
               switch (order.status) {
@@ -218,7 +256,7 @@ function AccountOrder() {
                       {status.icon}
                     </div>
                   </div>
-                  <div className="flex flex-col items-start gap-1 w-full">
+                  <div className="flex flex-col items-start gap-2 w-full">
                     <div className="flex  w-full gap-2">
                       <p className="text-base font-bold text-gray-700 shrink-0">Sản phẩm</p>
                       <div className="flex flex-col gap-1">

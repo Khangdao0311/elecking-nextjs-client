@@ -10,6 +10,7 @@ import { useStore, actions } from "@/app/store";
 import SidebarAccount from "@/app/components/client/SidebarAccount";
 import * as userServices from "@/app/services/userService";
 import * as uploadServices from "@/app/services/uploadService";
+import Shimmer from "@/app/components/client/Shimmer";
 
 function AccountProfile() {
   const [state, dispatch] = useStore();
@@ -78,6 +79,7 @@ function AccountProfile() {
           })
         );
         dispatch(actions.re_render());
+        setFile(undefined);
         openNotification("Cập nhật thành công !");
       });
     }
@@ -94,61 +96,88 @@ function AccountProfile() {
           <h2 className="text-2xl font-bold uppercase">Tài Khoản Của Bạn</h2>
           <div className="flex h-full divide-x-2 divide-gray-100">
             <div className="flex flex-col gap-8 w-2/3 pr-10">
-              <div className="flex gap-4 h-10 items-center">
-                <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                  Tên tài khoản:
-                </p>
-                <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
-                  {user?.username}
-                </p>
-              </div>
-              <div className="flex gap-4 h-10 items-center">
-                <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                  Họ và Tên:
-                </p>
-                <Input
-                  className="w-8/12 h-full flex items-center justify-start select-none font-normal"
-                  placeholder="Nhập Họ và Tên"
-                  value={profile.fullname}
-                  onChange={(e) => setProfile({ ...profile, fullname: e.target.value })}
-                />
-              </div>
-              <div className="flex gap-4 h-10 items-center">
-                <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                  Email:
-                </p>
-                <Input
-                  className="w-8/12 h-full flex items-center justify-start select-none font-normal"
-                  placeholder="Nhập Email"
-                  value={profile.email}
-                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                />
-              </div>
-              <div className="flex gap-4 h-10 items-center">
-                <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                  Số điện thoại:
-                </p>
-                <Input
-                  className="w-8/12 h-full flex items-center justify-start select-none font-normal"
-                  placeholder="Nhập số điện thoại"
-                  value={profile.phone}
-                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                />
-              </div>
-              <div className="flex gap-4 h-10 items-center">
-                <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                  Ngày Tham Gia:
-                </p>
-                <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
-                  {moment(user?.register_date, "YYYYMMDDHHmmss").format("DD/MM/YYYY")}
-                </p>
-              </div>
+              {!state.load || user ? (
+                <>
+                  <div className="flex gap-4 h-10 items-center">
+                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                      Tên tài khoản:
+                    </p>
+                    <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
+                      {user?.username}
+                    </p>
+                  </div>
+                  <div className="flex gap-4 h-10 items-center">
+                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                      Họ và Tên:
+                    </p>
+                    <Input
+                      className="w-8/12 h-full flex items-center justify-start select-none font-normal"
+                      placeholder="Nhập Họ và Tên"
+                      value={profile.fullname}
+                      onChange={(e) => setProfile({ ...profile, fullname: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex gap-4 h-10 items-center">
+                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                      Email:
+                    </p>
+                    <Input
+                      className="w-8/12 h-full flex items-center justify-start select-none font-normal"
+                      placeholder="Nhập Email"
+                      value={profile.email}
+                      onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex gap-4 h-10 items-center">
+                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                      Số điện thoại:
+                    </p>
+                    <Input
+                      className="w-8/12 h-full flex items-center justify-start select-none font-normal"
+                      placeholder="Nhập số điện thoại"
+                      value={profile.phone}
+                      onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex gap-4 h-10 items-center">
+                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                      Ngày Tham Gia:
+                    </p>
+                    <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
+                      {moment(user?.register_date, "YYYYMMDDHHmmss").format("DD/MM/YYYY")}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex gap-4 h-10 items-center">
+                    <Shimmer className="w-4/12 h-full" />
+                    <Shimmer className="w-8/12 h-full" />
+                  </div>
+                  <div className="flex gap-4 h-10 items-center">
+                    <Shimmer className="w-4/12 h-full" />
+                    <Shimmer className="w-8/12 h-full" />
+                  </div>
+                  <div className="flex gap-4 h-10 items-center">
+                    <Shimmer className="w-4/12 h-full" />
+                    <Shimmer className="w-8/12 h-full" />
+                  </div>
+                  <div className="flex gap-4 h-10 items-center">
+                    <Shimmer className="w-4/12 h-full" />
+                    <Shimmer className="w-8/12 h-full" />
+                  </div>
+                  <div className="flex gap-4 h-10 items-center">
+                    <Shimmer className="w-4/12 h-full" />
+                    <Shimmer className="w-8/12 h-full" />
+                  </div>
+                </>
+              )}
             </div>
             <div className=" w-1/3 pl-10 center-flex flex-col gap-6">
               <div className=" w-2/3 aspect-square rounded-full overflow-hidden center-flex shadow-lg border-2 border-primaryDark">
                 {file || user?.avatar ? (
                   <img
-                    src={file ? URL.createObjectURL(file!) : user?.avatar}
+                    src={file ? URL?.createObjectURL(file!) : user?.avatar}
                     alt=""
                     className="w-full h-full object-fill"
                   />

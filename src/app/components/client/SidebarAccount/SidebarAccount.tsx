@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 import { FaGift, FaUser } from "react-icons/fa6";
 import { CiLock, CiLogout } from "react-icons/ci";
@@ -9,8 +9,11 @@ import { IoBagCheckOutline, IoLocationOutline } from "react-icons/io5";
 
 import config from "@/app/config";
 import { useWindowScroll } from "@uidotdev/usehooks";
+import { useStore, actions, initState } from "@/app/store";
 
 function SidebarAccount() {
+  const [state, dispatch] = useStore();
+  const router = useRouter();
   const pathname = usePathname();
   const [scroll] = useWindowScroll();
   const { x, y } = scroll as { x: number; y: number };
@@ -142,24 +145,15 @@ function SidebarAccount() {
         </p>
       </Link>
       <Link
-        href={config.routes.admin.login}
-        className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex items-center gap-5 hover:bg-primary rounded-lg ${
-          pathname == config.routes.admin.login ? "bg-primary" : ""
-        } transition-all duration-300 rounded-lg cursor-pointer select-none`}
+        onClick={() => {
+          localStorage.clear();
+          dispatch(actions.set({ ...initState, load: false }));
+        }}
+        href={config.routes.client.login}
+        className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex items-center gap-5 hover:bg-primary transition-all duration-300 rounded-lg cursor-pointer select-none`}
       >
-        <CiLogout
-          className={`group-hover:text-white w-[24px] h-[24px] ${
-            pathname == config.routes.admin.login ? "text-white" : "text-black"
-          }`}
-        />
-        <p
-          className={`text-sm group-hover:text-white font-bold text-black w-[132px] ${
-            pathname == config.routes.admin.login ? "text-white" : "text-black"
-          }
-            `}
-        >
-          Đăng Xuất
-        </p>
+        <CiLogout className={`group-hover:text-white w-[24px] h-[24px] text-black`} />
+        <p className={`text-sm group-hover:text-white font-bold text-black w-[132px]`}>Đăng Xuất</p>
       </Link>
     </div>
   );

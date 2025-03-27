@@ -14,6 +14,7 @@ import * as productServices from "@/app/services/productService";
 import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
 import ModalVoucher from "@/app/components/client/ModalVoucher";
+import Shimmer from "@/app/components/client/Shimmer";
 
 function Cart() {
   const [state, dispatch] = useStore();
@@ -95,11 +96,22 @@ function Cart() {
           product: {
             ...item.product,
             variant: iVariant,
-            color: 0,
+            color: productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
+              (e: IProductColor) => e.quantity > 0
+            ),
           },
           quantity:
-            item.quantity > productsCart[iProduct]?.variants[iVariant]?.colors[0]?.quantity
-              ? productsCart[iProduct]?.variants[iVariant]?.colors[0]?.quantity
+            item.quantity >
+            productsCart[iProduct]?.variants[iVariant]?.colors[
+              productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
+                (e: IProductColor) => e.quantity > 0
+              )
+            ]?.quantity
+              ? productsCart[iProduct]?.variants[iVariant]?.colors[
+                  productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
+                    (e: IProductColor) => e.quantity > 0
+                  )
+                ]?.quantity
               : item.quantity,
         };
       }
@@ -117,8 +129,16 @@ function Cart() {
       if (existing) {
         existing.quantity =
           existing.quantity + item.quantity >
-          productsCart[iProduct]?.variants[iVariant]?.colors[0]?.quantity
-            ? productsCart[iProduct]?.variants[iVariant]?.colors[0]?.quantity
+          productsCart[iProduct]?.variants[iVariant]?.colors[
+            productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
+              (e: IProductColor) => e.quantity > 0
+            )
+          ]?.quantity
+            ? productsCart[iProduct]?.variants[iVariant]?.colors[
+                productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
+                  (e: IProductColor) => e.quantity > 0
+                )
+              ]?.quantity
             : existing.quantity + item.quantity;
       } else {
         acc.push({ ...item });
@@ -277,30 +297,67 @@ function Cart() {
           <div className="flex flex-col items-center gap-4 mb-40">
             {state.load ? (
               <Fragment>
-                <div className="relative h-14 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-                  ></div>
-                </div>
-                <div className="relative h-32 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-                  ></div>
-                </div>
-                <div className="relative h-32 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-                  ></div>
-                </div>
-                <div className="relative h-32 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-                  ></div>
-                </div>
+                {/*  */}
+                <Fragment>
+                  {/*  */}
+                  <div className="flex items-center border rounded-xl shadow-lg p-4 gap-2.5 ">
+                    <Shimmer className={"w-16 h-6"} />
+                    <Shimmer className={"w-[660px] h-6"} />
+                    <Shimmer className={"w-40 h-6"} />
+                    <Shimmer className={"w-40 h-6"} />
+                    <Shimmer className={"w-40 h-6"} />
+                  </div>
+
+                  <div className="flex items-center border rounded-xl shadow-lg p-4 gap-2.5  ">
+                    <div className="w-16 flex justify-center">
+                      <Shimmer className={"w-6 h-6"} />
+                    </div>
+                    <div className="w-[660px] flex gap-2.5">
+                      <Shimmer className={"w-24 h-24"} image />
+                      <div className="flex w-64 flex-col gap-3">
+                        <Shimmer className={"w-full h-6"} />
+                        <Shimmer className={"w-5/6 h-6"} />
+                        <Shimmer className={"w-full h-6"} />
+                      </div>
+                      <div className="w-72 flex gap-2 items-center select-none">
+                        <Shimmer className={"w-1/2 h-10"} />
+                        <Shimmer className={"w-1/2 h-10"} />
+                      </div>
+                    </div>
+                    <div className="flex w-40 h-10 gap-0.5 rounded-lg overflow-hidden">
+                      <Shimmer className={"shrink-0 w-10 h-10 !rounded-none"} />
+                      <Shimmer className={"w-full h-10 !rounded-none"} />
+                      <Shimmer className={"shrink-0 w-10 h-10 !rounded-none"} />
+                    </div>
+                    <Shimmer className={"w-40 h-6"} />
+                    <Shimmer className={"w-40 h-6"} />
+                  </div>
+                  <div className="flex items-center border rounded-xl shadow-lg p-4 gap-2.5  ">
+                    <div className="w-16 flex justify-center">
+                      <Shimmer className={"w-6 h-6"} />
+                    </div>
+                    <div className="w-[660px] flex gap-2.5">
+                      <Shimmer className={"w-24 h-24"} image />
+                      <div className="flex w-64 flex-col gap-3">
+                        <Shimmer className={"w-full h-6"} />
+                        <Shimmer className={"w-5/6 h-6"} />
+                        <Shimmer className={"w-full h-6"} />
+                      </div>
+                      <div className="w-72 flex gap-2 items-center select-none">
+                        <Shimmer className={"w-1/2 h-10"} />
+                        <Shimmer className={"w-1/2 h-10"} />
+                      </div>
+                    </div>
+                    <div className="flex w-40 h-10 gap-0.5 rounded-lg overflow-hidden">
+                      <Shimmer className={"shrink-0 w-10 h-10 !rounded-none"} />
+                      <Shimmer className={"w-full h-10 !rounded-none"} />
+                      <Shimmer className={"shrink-0 w-10 h-10 !rounded-none"} />
+                    </div>
+                    <Shimmer className={"w-40 h-6"} />
+                    <Shimmer className={"w-40 h-6"} />
+                  </div>
+                </Fragment>
+                {/*  */}
               </Fragment>
             ) : (
               state.cart.length > 0 && (
@@ -359,11 +416,12 @@ function Cart() {
                           />
                         </label>
                         <div className="flex w-64 flex-col gap-3">
-                          <div className="font-bold text-base">
-                            <Link href={`${config.routes.client.productDetail}/${product.id}`}>
-                              {product.name}
-                            </Link>
-                          </div>
+                          <Link
+                            className="font-bold text-base"
+                            href={`${config.routes.client.productDetail}/${product.id}`}
+                          >
+                            {product.name}
+                          </Link>
                           <div className="text-primary text-b font-bold flex gap-2 items-center">
                             {(
                               product.variants[state.cart?.[iProduct]?.product?.variant]?.price -
@@ -399,15 +457,22 @@ function Cart() {
                                   {product.variants.map((variant: any, ivariant: number) => (
                                     <div
                                       key={ivariant}
-                                      onClick={
-                                        ivariant == state.cart?.[iProduct]?.product?.variant
-                                          ? () => {}
-                                          : () => handleChangeVariant(iProduct, ivariant)
-                                      }
-                                      className={`relative px-4 py-2 border rounded-lg cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 select-none ${
+                                      onClick={() => {
+                                        if (
+                                          variant.colors.some((e: any) => e.quantity > 0) &&
+                                          ivariant != state.cart?.[iProduct]?.product?.variant
+                                        ) {
+                                          handleChangeVariant(iProduct, ivariant);
+                                        }
+                                      }}
+                                      className={`relative px-4 py-2 border rounded-lg shadow-lg  transition-all duration-200 select-none ${
                                         ivariant == state.cart?.[iProduct]?.product?.variant
                                           ? "border-primary"
                                           : "border-gray-300"
+                                      } ${
+                                        !variant.colors.some((e: any) => e.quantity > 0)
+                                          ? "opacity-35"
+                                          : "cursor-pointer hover:shadow-xl hover:scale-105"
                                       }`}
                                     >
                                       {variant.properties.map((e: IProperty) => e.name).join(" - ")}
@@ -450,15 +515,22 @@ function Cart() {
                                   ]?.colors.map((color, iColor: number) => (
                                     <div
                                       key={iColor}
-                                      onClick={
-                                        iColor === state.cart?.[iProduct]?.product?.color
-                                          ? () => {}
-                                          : () => handleChangeColor(iProduct, iColor)
-                                      }
-                                      className={`relative px-4 py-2 border rounded-lg cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 select-none ${
+                                      onClick={() => {
+                                        if (
+                                          color.quantity > 0 &&
+                                          iColor !== state.cart?.[iProduct]?.product?.color
+                                        ) {
+                                          handleChangeColor(iProduct, iColor);
+                                        }
+                                      }}
+                                      className={`relative px-4 py-2 border rounded-lg shadow-lg transition-all duration-200 select-none ${
                                         iColor === state.cart?.[iProduct]?.product?.color
                                           ? "border-primary"
                                           : "border-gray-300"
+                                      } ${
+                                        color.quantity > 0
+                                          ? "hover:shadow-xl hover:scale-105 cursor-pointer"
+                                          : "opacity-35"
                                       }`}
                                     >
                                       {color.name}
@@ -490,9 +562,7 @@ function Cart() {
                           <button
                             onClick={() => {
                               if (state.cart?.[iProduct]?.quantity - 1 === 0) {
-                                console.log(2121212);
-
-                                openNotification("S");
+                                openNotification("????");
                               } else {
                                 handleChangeQuantity(
                                   iProduct,
@@ -575,11 +645,22 @@ function Cart() {
 
         <section className=" fixed left-0 right-0 bottom-0 w-full">
           {state.load ? (
-            <div className="relative container-custom h-40 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                      w-full h-full animate-[shimmer_1.5s_infinite]"
-              ></div>
+            <div className="container-custom  p-4 bg-white border border-gray-300 rounded-2xl shadow-xl">
+              <div className="flex justify-between items-center border-t border-b p-2 border-dotted mb-2 ">
+                <div className="flex items-center gap-5">
+                  <Shimmer className={"w-6 h-6"} />
+                  <Shimmer className={"w-32 h-6"} />
+                  <Shimmer className={"w-48 h-6"} />
+                </div>
+                <div className="flex items-center gap-60">
+                  <Shimmer className={"w-44 h-8"} />
+                  <Shimmer className={"w-20 h-6"} />
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <Shimmer className={"w-1/2 h-7"} />
+                <Shimmer className={"w-72 h-16"} />
+              </div>
             </div>
           ) : state.cart.length > 0 ? (
             <div className="container-custom  p-4 bg-white border border-gray-300 rounded-2xl shadow-xl">

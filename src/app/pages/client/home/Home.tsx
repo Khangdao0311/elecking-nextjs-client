@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import Product from "@/app/components/client/Product";
+import { BsCardImage } from "react-icons/bs";
 
 import config from "@/app/config";
 import * as productServices from "@/app/services/productService";
@@ -13,8 +14,8 @@ import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
 import * as userServices from "@/app/services/userService";
 import ProductLoad from "@/app/components/client/ProductLoad";
-import { BsCardImage } from "react-icons/bs";
 import { useStore } from "@/app/store";
+import Shimmer from "@/app/components/client/Shimmer";
 
 const imageSlide = [
   "https://mainguyen.sgp1.digitaloceanspaces.com/231474/banner-samsung.jpg",
@@ -88,35 +89,11 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0  flex flex-col gap-4">
         {state.load ? (
           <Fragment>
-            <div className="relative center-flex bg-gray-200 h-96 rounded-lg shadow-lg overflow-hidden">
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                        w-full h-full animate-[shimmer_1.5s_infinite]"
-              ></div>
-              <BsCardImage className="!w-24 !h-24 text-gray-300 " />
-            </div>
+            <Shimmer image className={`w-full  h-96`} />
             <div className="grid grid-cols-3 gap-4">
-              <div className="relative center-flex bg-gray-200 h-36 rounded-lg shadow-lg overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                        w-full h-full animate-[shimmer_1.5s_infinite]"
-                ></div>
-                <BsCardImage className="!w-24 !h-24 text-gray-300 " />
-              </div>
-              <div className="relative center-flex bg-gray-200 h-36 rounded-lg shadow-lg overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                        w-full h-full animate-[shimmer_1.5s_infinite]"
-                ></div>
-                <BsCardImage className="!w-24 !h-24 text-gray-300 " />
-              </div>
-              <div className="relative center-flex bg-gray-200 h-36 rounded-lg shadow-lg overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                        w-full h-full animate-[shimmer_1.5s_infinite]"
-                ></div>
-                <BsCardImage className="!w-24 !h-24 text-gray-300 " />
-              </div>
+              <Shimmer image className={`w-full  h-36`} />
+              <Shimmer image className={`w-full  h-36`} />
+              <Shimmer image className={`w-full  h-36`} />
             </div>
           </Fragment>
         ) : (
@@ -209,11 +186,15 @@ function Home() {
 
       {/* Promot*/}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
-        <img
-          className="w-full rounded-lg borer border-gray-200 shadow-lg"
-          src="https://cdn2.cellphones.com.vn/insecure/rs:fill:1200:75/q:90/plain/https://dashboard.cellphones.com.vn/storage/s-edu-2-0-special-desk.gif"
-          alt=""
-        />
+        {state.load ? (
+          <Shimmer image className={`w-full h-20`} />
+        ) : (
+          <img
+            className="w-full rounded-lg borer border-gray-200 shadow-lg"
+            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:1200:75/q:90/plain/https://dashboard.cellphones.com.vn/storage/s-edu-2-0-special-desk.gif"
+            alt=""
+          />
+        )}
       </section>
 
       {/* Sản Phẩm Nổi Bật */}
@@ -356,19 +337,8 @@ function Home() {
                 key={i}
                 className="relative bg-white border border-gray-200 rounded-lg w-32 h-32 shadow-lg p-2 flex flex-col gap-2"
               >
-                <div className="relative bg-gray-200 rounded shadow !w-full !h-1/5 overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                      w-full h-full animate-[shimmer_1.5s_infinite]"
-                  ></div>
-                </div>
-                <div className="relative center-flex bg-gray-200 rounded-lg shadow !w-full h-4/5 aspect-square overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                      w-full h-full animate-[shimmer_1.5s_infinite]"
-                  ></div>
-                  <BsCardImage className="!w-16 !h-16 text-gray-300 " />
-                </div>
+                <Shimmer className={`!w-full !h-1/5`} />
+                <Shimmer image className={`!w-full h-4/5`} />
               </div>
             ))}
           {categories.map((category: ICategory, iCategory: number) => (
@@ -397,16 +367,9 @@ function Home() {
         {categories.length === 0 && (
           <div className="grid grid-cols-4 container-custom gap-4 !h-36">
             {Array.from({ length: 4 }).map((_, i: number) => (
-              <div
-                key={i}
-                className="relative center-flex bg-gray-200 rounded-lg shadow !w-full h-full aspect-square overflow-hidden"
-              >
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                      w-full h-full animate-[shimmer_1.5s_infinite]"
-                ></div>
-                <BsCardImage className="!w-16 !h-16 text-gray-300 " />
-              </div>
+              <Fragment key={i}>
+                <Shimmer image className={`!w-full h-full`} />
+              </Fragment>
             ))}
           </div>
         )}

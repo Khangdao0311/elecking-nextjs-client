@@ -21,6 +21,7 @@ import ModalAddress from "./components/ModalAddress";
 import ModalPaymentMethod from "./components/ModalPaymentMethod";
 import ModalOrderStatus from "./components/ModalOrderStatus";
 import Loading from "@/app/components/client/Loading/Loading";
+import Shimmer from "@/app/components/client/Shimmer";
 
 function Checkout() {
   const [state, dispatch] = useStore();
@@ -217,7 +218,6 @@ function Checkout() {
     }
   }
 
-
   return (
     <>
       {loading && <Loading />}
@@ -354,40 +354,76 @@ function Checkout() {
       <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 flex flex-col gap-6">
         {state.load ? (
           <Fragment>
-            <div className="relative h-32 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-              ></div>
+            <div className="bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+              <Shimmer className={"w-1/4 h-8"} />
+              <div className="flex justify-between items-center gap-10">
+                <Shimmer className={"w-full h-8"} />
+                <Shimmer className={"w-20 h-11 shrink-0"} />
+              </div>
             </div>
-            <div className="relative h-48 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-              ></div>
+            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4 ">
+              <div className="flex gap-2.5 pb-4 border-b border-gray-300">
+                <Shimmer className={"w-[730px] h-6"} />
+                <Shimmer className={"w-[160px] h-6"} />
+                <Shimmer className={"w-[160px] h-6"} />
+                <Shimmer className={"w-[160px] h-6"} />
+              </div>
+              <div className="center-flex gap-2.5 ">
+                <div className="w-[730px]  flex gap-4 items-center">
+                  <Shimmer className={"w-24 h-24 shrink-0"} image />
+                  <Shimmer className={"w-full h-6"} />
+                </div>
+                <Shimmer className={"w-[160px] h-6"} />
+                <Shimmer className={"w-[160px] h-6"} />
+                <Shimmer className={"w-[160px] h-6"} />
+              </div>
             </div>
-            <div className="relative h-36 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-              ></div>
+            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+              <Shimmer className={"w-1/6 h-7"} />
+              <Shimmer className={"w-full h-14"} />
             </div>
-            <div className="relative h-48 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-              ></div>
+            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+              <Shimmer className={"w-1/5 h-7"} />
+              <div className="flex place-content-between border-gray-100 border px-10 py-4 gap-10 items-center rounded-lg cursor-pointer">
+                <div className="flex w-full gap-6 items-center">
+                  <Shimmer className={"w-20 h-20 shrink-0"} image />
+                  <Shimmer className={"w-full h-7"} />
+                </div>
+                <Shimmer className="w-6 h-6 " />
+              </div>
             </div>
-            <div className="relative h-96 bg-gray-200 rounded-lg  shadow !w-full overflow-hidden">
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                  w-full h-full animate-[shimmer_1.5s_infinite]"
-              ></div>
+            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col">
+              <div className="flex items-center place-content-between px-5 py-2.5">
+                <Shimmer className={"w-1/5 h-8"} />
+                <Shimmer className={"w-20 h-7"} />
+              </div>
+
+              <div className="flex justify-end gap-32 py-4 border-y border-gray-300 border-dashed">
+                <div className="flex flex-col gap-7">
+                  <Shimmer className={"w-40 h-7"} />
+                  <Shimmer className={"w-40 h-7"} />
+                  <Shimmer className={"w-40 h-7"} />
+                  <Shimmer className={"w-40 h-7"} />
+                  <Shimmer className={"w-44 h-8"} />
+                </div>
+                <div className="flex flex-col gap-7 items-end">
+                  <Shimmer className={"w-40 h-7"} />
+                  <Shimmer className={"w-40 h-7"} />
+                  <Shimmer className={"w-40 h-7"} />
+                  <Shimmer className={"w-40 h-7"} />
+                  <Shimmer className={"w-44 h-8"} />
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center py-4">
+                <Shimmer className={"w-1/2 h-6"} />
+                <Shimmer className={"w-1/4 h-16"} />
+              </div>
             </div>
           </Fragment>
         ) : (
           <Fragment>
-            <div className="bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
+            <div className="bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
               <div className="flex gap-4 items-center">
                 <FaMapLocationDot className="w-8 h-8 text-primaryDark" />
                 <p className="text-2xl font-bold text-primary text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
@@ -422,13 +458,24 @@ function Checkout() {
               </div>
             </div>
 
-            <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4 ">
+            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4 ">
               <div className="flex gap-2.5 pb-4 border-b border-gray-300">
                 <p className="w-[730px] text-base font-medium">Sản phẩm</p>
                 <p className="w-[160px] text-center text-base font-medium">Đơn giá</p>
                 <p className="w-[160px] text-center text-base font-medium">Số lượng</p>
                 <p className="w-[160px] text-center text-base font-medium">Thành tiền</p>
               </div>
+              {productsOrder.length === 0 && (
+                <div className="center-flex gap-2.5 ">
+                  <div className="w-[730px]  flex gap-4 items-center">
+                    <Shimmer className={"w-24 h-24 shrink-0"} image />
+                    <Shimmer className={"w-full h-6"} />
+                  </div>
+                  <Shimmer className={"w-[160px] h-6"} />
+                  <Shimmer className={"w-[160px] h-6"} />
+                  <Shimmer className={"w-[160px] h-6"} />
+                </div>
+              )}
               {productsOrder.map((product: IProduct, iProduct: number) => (
                 <div key={iProduct} className="flex gap-2.5 items-center">
                   <div className="flex gap-2.5 items-center w-[730px]">
@@ -499,7 +546,7 @@ function Checkout() {
               ))}
             </div>
 
-            <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
+            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
               <p className="text-xl font-bold w-full ">Lời nhắn</p>
               <div>
                 <TextArea
@@ -511,11 +558,11 @@ function Checkout() {
               </div>
             </div>
 
-            <div className=" bg-white shadow-xl rounded-2xl p-5 grid gap-y-4">
+            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
               <p className="text-xl font-bold w-full">Phương Thức Thanh Toán</p>
               <div
                 onClick={() => setShowModal({ ...showModal, payment_method: true })}
-                className="flex place-content-between border-gray-300 border px-10 py-4 items-center rounded-lg cursor-pointer"
+                className="flex place-content-between border-gray-300 border px-10 py-4 gap-10 items-center rounded-lg cursor-pointer"
               >
                 <div className="flex gap-6 items-center">
                   <img
@@ -531,7 +578,7 @@ function Checkout() {
               </div>
             </div>
 
-            <div className=" bg-white shadow-xl rounded-2xl p-5 grid">
+            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col">
               <div className="flex items-center place-content-between px-5 py-2.5">
                 <div className="flex items-center gap-2">
                   <LuTicket className="w-8 h-8" />

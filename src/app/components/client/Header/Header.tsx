@@ -137,7 +137,7 @@ function Header() {
             link: config.routes.client.home,
           },
           {
-            name: "Sản phẩm",
+            name: "Đăng nhập",
             link: config.routes.client.login,
           },
         ]);
@@ -149,7 +149,7 @@ function Header() {
             link: config.routes.client.home,
           },
           {
-            name: "Sản phẩm",
+            name: "Đăng ký  ",
             link: config.routes.client.register,
           },
         ]);
