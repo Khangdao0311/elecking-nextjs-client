@@ -136,12 +136,12 @@ function voucherExpired() {
         }}
       />
       <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <Link
+        {/* <Link
           href={config.routes.admin.voucher.add}
           className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo voucher mới</p>
-        </Link>
+        </Link> */}
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IVoucher>
             columns={columns}

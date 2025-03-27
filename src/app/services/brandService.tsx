@@ -18,7 +18,7 @@ export async function addBrand(body:any) {
     .then((response: any) => response.data);
 }
 
-export async function editBrand(body:any, id: any) {
+export async function editBrand( id: any,body:any) {
   return axios
     .put(`${config.api.brand}/${id}`,body)
     .then((res)=> res.data)

@@ -284,7 +284,7 @@
                         { value: 2, label: "Chờ xác nhận", disabled: ![2].includes(selectedOrder.status) },
                         { value: 3, label: "Đang vận chuyển", disabled: ![2, 3].includes(selectedOrder.status) },
                         { value: 1, label: "Đã giao hàng" },
-                        { value: 0, label: "Đã hủy" }
+                        // { value: 0, label: "Đã hủy" }
                       ]}
                     />
                   </div>

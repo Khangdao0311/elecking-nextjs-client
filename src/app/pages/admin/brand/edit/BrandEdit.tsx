@@ -316,14 +316,15 @@ function BrandEdit() {
               return;
             }
             const brandResponse = await brandServices.editBrand(
+              id,
               {
                 name: name.trim(),
                 logo: imgLogoName,
                 banner: imgBannerName,
                 status: selectedStatus,
                 description: editorContent.trim(),
-              },
-              id
+              }
+              
             )
             if (brandResponse?.status == 200) {
               openNotificationWithIcon("success", "Thành công", "Sửa thành công");

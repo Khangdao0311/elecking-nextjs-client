@@ -42,7 +42,7 @@ function DashBoard() {
   const [year, setYear] = useState(new Date().getFullYear())
   const [chartData, setChartData] = useState<number[]>(new Array(12).fill(0));
   const [totalprice, setTotalprice] = useState()
-  const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<IOrder>();
   const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
   const [getaddress, setGetaddress] = useState<IAddress[]>([]);
   const [isDisabledStatus, setIsDisabledStatus] = useState(false);
@@ -87,7 +87,7 @@ function DashBoard() {
       setVoucher(res.total);
     });
   }, []);
-  console.log(vouchers);
+  // console.log(vouchers); 
 
   useEffect(() => {
     const query: any = {};
@@ -98,28 +98,35 @@ function DashBoard() {
       setUsers(res.data);
     });
   }, []);
+
   useEffect(() => {
-    const query: any = {};
+    const query: any = { year: year };
     query.limit = limit;
     orderServices.getQuery(query).then((res) => {
       setGetorders(res.data);
-      setTotalorder(res.total);
+      // setTotalorder(res.total);
+      // console.log(res);
     });
-  }, []);
+  }, [year]);
+
+
   useEffect(() => {
     const query = { year: year };
-    console.log(query);
     statsServices.getQuery(query).then((res) => {
       setStats(res.data);
       setTotalprice(res.data.totalPrice);
-      const updatedChartData = Array.from({ length: 12 }, (_, index) => {
-        return res.data[index + 1]?.price || 0;
-      });
+      setTotalorder(res.data.totalOrder);
+
+      const updatedChartData = Object.keys(res.data)
+        .slice(0, 6)
+        .map((key) => res.data[key]?.price || 0);
       setChartData(updatedChartData);
     });
   }, [year]);
-  console.log(getorders);
-  console.log(stats);
+
+  // console.log(getorders);
+  // console.log(totalorder);
+  // console.log(stats);
   const data = {
     labels: [
       "Tháng 1",
@@ -128,12 +135,6 @@ function DashBoard() {
       "Tháng 4",
       "Tháng 5",
       "Tháng 6",
-      "Tháng 7",
-      "Tháng 8",
-      "Tháng 9",
-      "Tháng 10",
-      "Tháng 11",
-      "Tháng 12",
     ],
     datasets: [
       {
@@ -144,6 +145,8 @@ function DashBoard() {
       },
     ],
   };
+  // console.log(chartData);
+
   const options: ChartOptions<"bar"> = {
     responsive: true,
     plugins: {
@@ -374,7 +377,7 @@ function DashBoard() {
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
                     value={status}
-                    disabled= {selectedOrder.status === 0 || selectedOrder.status === 1}
+                    disabled={selectedOrder.status === 0 || selectedOrder.status === 1}
                     onChange={(value) => {
                       setStatus(Number(value));
                     }}
@@ -407,7 +410,7 @@ function DashBoard() {
                     Thành Tiền
                   </p>
                 </div>
-                {selectedOrder.products.map((e, index) => (
+                {selectedOrder.products.map((e:any, index) => (
                   <div key={index} className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]">
                     <div className="flex w-full items-center gap-2.5">
                       <img
@@ -425,7 +428,7 @@ function DashBoard() {
                       {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
-                      {e.product.price.toLocaleString("vn-VN")} đ
+                    {selectedOrder.total.toLocaleString('vn-VN')} đ
                     </p>
                   </div>
                 ))}

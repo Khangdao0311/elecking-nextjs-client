@@ -117,10 +117,12 @@ function VoucherAdd() {
               <div className='text-sm font-medium'>Đơn Tối Thiểu<span className="text-primary"> *</span></div>
               <Input onChange={(e) => setMinOrderValue(Number(e.target.value))} className='w-[268px] h-11 shadow-md' placeholder="Nhập đơn tối nhiểu cho voucher" />
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Giá Trị Cao Nhất<span className="text-primary"> *</span></div>
-              <Input onChange={(e) => setMaxDiscount(Number(e.target.value))} className='w-[268px] h-11 shadow-md' placeholder="Nhập giá trị cao nhất" />
-            </div>
+            {discountType === 2 && (
+              <div className='flex gap-0.5 flex-col'>
+                <div className='text-sm font-medium'>Giá Trị Cao Nhất<span className="text-primary"> *</span></div>
+                <Input onChange={(e) => setMaxDiscount(Number(e.target.value))} className='w-[268px] h-11 shadow-md' placeholder="Nhập giá trị cao nhất" />
+              </div>
+            )}
             <div className='flex gap-0.5 flex-col'>
               <div className='text-sm font-medium'>Ngày Bắt Đầu <span className='text-primary'>*</span></div>
               <Space direction="vertical">
@@ -175,6 +177,7 @@ function VoucherAdd() {
           {contextHolder}
           <Space>
             <Button
+            back = "voucher/list/stillexpired"
               onClick={async () => {
                 const start = dayjs(startDate, "YYYYMMDD");
                 const end = dayjs(endDate, "YYYYMMDD");

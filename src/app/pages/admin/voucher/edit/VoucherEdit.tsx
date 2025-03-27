@@ -132,10 +132,12 @@ function VoucherEdit() {
               <div className='text-sm font-medium'>Đơn Tối Thiểu<span className="text-primary"> *</span></div>
               <Input className='w-[268px] h-11 shadow-md' value={minOrderValue ?? ''} onChange={(e) => setMinOrderValue(Number(e.target.value) || null)} />
             </div>
+            {discountType === 2 && (
             <div className='flex gap-0.5 flex-col'>
               <div className='text-sm font-medium'>Giá Trị Cao Nhất<span className="text-primary"> *</span></div>
               <Input className='w-[268px] h-11 shadow-md' value={maxDiscount ?? ''} onChange={(e) => setMaxDiscount(Number(e.target.value) || null)} />
             </div>
+            )}
             <div className='flex gap-0.5 flex-col'>
               <div className='text-sm font-medium'>Ngày Bắt Đầu <span className='text-primary'>*</span></div>
               <Space direction="vertical">
@@ -181,6 +183,7 @@ function VoucherEdit() {
           {contextHolder}
           <Space>
             <Button
+            back = "voucher/list/stillexpired"
               onClick={async () => {
                 const start = dayjs(startDate, "YYYYMMDD");
                 const end = dayjs(endDate, "YYYYMMDD");
@@ -225,7 +228,7 @@ function VoucherEdit() {
                   user_id: user || null,
                 };
 
-                const voucherResponse = await voucherService.editBrand(id, voucherData);
+                const voucherResponse = await voucherService.editVoucher(id, voucherData);
                 if (voucherResponse?.status == 200) {
                   openNotificationWithIcon('success', "Thành công", "Cập nhật voucher thành công");
                   setTimeout(() => {

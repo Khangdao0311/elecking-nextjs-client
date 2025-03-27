@@ -184,6 +184,7 @@ function BrandAdd() {
               Ảnh Bìa <span className="text-primary">*</span>
             </div>
             <div className="flex flex-col gap-2.5">
+              
               <Upload
                 multiple={false}
                 listType="picture"
@@ -235,6 +236,7 @@ function BrandAdd() {
                   );
                 })}
               </div>
+
             </div>
           </div>
           <div className="w-full">
@@ -250,32 +252,33 @@ function BrandAdd() {
           <div className="mt-[60px]">
             <Space>
               <Button
+                back="brand/list"
                 onClick={async () => {
                   if (!name.trim() || !imgBrand?.length || !imgBanner?.length || !description.trim()) {
                     openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
                     return;
                   }
-                    const logoFormData = new FormData();
-                    logoFormData.append("image", imgBrand[0]);
-                    await uploadServices.uploadSingle(logoFormData);
-                    const bannerFormData = new FormData();
-                    bannerFormData.append("image", imgBanner[0]);
-                    await uploadServices.uploadSingle(bannerFormData);
-                    const brandData = {
-                      name: name,
-                      logo: imgBrand[0].name, 
-                      banner: imgBanner[0].name,
-                      description: description,
-                    };
-                    const brandResponse = await brandServices.addBrand(brandData);
-                    if (brandResponse?.status === 200) {
-                      openNotificationWithIcon("success", "Thành công", "Thêm thành công");
-                      setTimeout(() => {
-                        router.push(config.routes.admin.brand.list);
-                      }, 1000);
-                    } else {
-                      openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
-                    }
+                  const logoFormData = new FormData();
+                  logoFormData.append("image", imgBrand[0]);
+                  await uploadServices.uploadSingle(logoFormData);
+                  const bannerFormData = new FormData();
+                  bannerFormData.append("image", imgBanner[0]);
+                  await uploadServices.uploadSingle(bannerFormData);
+                  const brandData = {
+                    name: name,
+                    logo: imgBrand[0].name,
+                    banner: imgBanner[0].name,
+                    description: description,
+                  };
+                  const brandResponse = await brandServices.addBrand(brandData);
+                  if (brandResponse?.status === 200) {
+                    openNotificationWithIcon("success", "Thành công", "Thêm thành công");
+                    setTimeout(() => {
+                      router.push(config.routes.admin.brand.list);
+                    }, 1000);
+                  } else {
+                    openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                  }
                 }}
               >
               </Button>
