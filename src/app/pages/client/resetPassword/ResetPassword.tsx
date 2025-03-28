@@ -4,18 +4,20 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
+import { Input, Modal } from "antd";
 
 import Loading from "@/app/components/client/Loading";
 import { useStore } from "@/app/store";
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
-import { Input, Modal } from "antd";
-import { MdOutlineError } from "react-icons/md";
+import Shimmer from "@/app/components/client/Shimmer";
 
 function ResetPassword() {
   const [state, dispatch] = useStore();
   const [loading, setLoading] = useState(false);
-  const [errorToken, setErrorToken] = useState(false);
+  const [status, setStatus] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const { token } = useParams();
   const router = useRouter();
@@ -36,25 +38,31 @@ function ResetPassword() {
   });
 
   function handleResetPassword(values: any) {
+    setLoading(true);
     authServices.resetPassword(token!.toString(), values.passwordNew).then((res) => {
-      console.log(res);
-
+      setLoading(false);
       if (res.status === 200) {
-        router.push(config.routes.client.login);
+        setStatus(true);
+        setShowModal(true);
+        setTimeout(() => {
+          router.push(config.routes.client.login);
+        }, 1500);
       }
       if (res.status === 401) {
-        setErrorToken(true);
+        setStatus(false);
+        setShowModal(true);
         setTimeout(() => {
           router.push(config.routes.client.forgotPassword);
-        }, 1000);
+        }, 1500);
       }
     });
   }
 
   return (
     <>
+      {loading && <Loading />}
       <Modal
-        open={errorToken}
+        open={showModal}
         footer={null}
         title={null}
         centered
@@ -62,35 +70,67 @@ function ResetPassword() {
         closable={false}
         width="auto"
       >
-        <div className="center-flex gap-4 flex-col">
-          <MdOutlineError className="w-20 h-20 text-red-500" />
-          <p className="text-base font-medium text-red-500">Lỗi Token đã hết hạn !</p>
-        </div>
+        {status ? (
+          <div className="center-flex flex-col gap-4">
+            <div>
+              <FaCircleCheck className="w-20 h-20 text-green-500 " />
+            </div>
+            <div className="text-lg font-medium text-green-700">
+              Thiết lập lại mật khẩu thành công !
+            </div>
+          </div>
+        ) : (
+          <div className="center-flex flex-col gap-4">
+            <div>
+              <FaCircleExclamation className="w-20 h-20 text-red-500 " />
+            </div>
+            <div className="text-lg font-medium text-red-700">Token hết hạng sử dụng !</div>
+          </div>
+        )}
       </Modal>
       <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="flex items-center justify-center min-h-[500px]">
-          <Formik
-            initialValues={{
-              passwordNew: "",
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleResetPassword}
-          >
-            {({ values, errors, touched, isValid, handleChange, handleBlur }) => {
-              const passwordChecks = [
-                { regex: /[a-z]/, text: "Ít nhất một ký tự viết thường" },
-                { regex: /[A-Z]/, text: "Ít nhất một ký tự viết hoa" },
-                { regex: /^.{8,16}$/, text: "8 - 16 ký tự" },
-                {
-                  regex: /^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;<>,.?/~`-]+$/,
-                  text: "Chỉ chứa chữ cái, số và ký tự phổ biến",
-                },
-              ];
+          {state.load ? (
+            <div className="w-[600px] p-10 shadow-xl flex flex-col gap-5">
+              <div className="w-full center-flex ">
+                <Shimmer className="w-2/3 h-8" />
+              </div>
+              <div className=" flex flex-col gap-4">
+                <Shimmer className="w-1/4 h-6" />
+                <Shimmer className="w-full h-12" />
+                <div className="flex flex-col  gap-2">
+                  <Shimmer className="w-5/12 h-6" />
+                  <Shimmer className="w-2/5 h-6" />
+                  <Shimmer className="w-1/4 h-6" />
+                  <Shimmer className="w-1/2 h-6" />
+                </div>
+              </div>
+              <Shimmer className="w-full h-12" />
+            </div>
+          ) : (
+            <Formik
+              initialValues={{
+                passwordNew: "",
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleResetPassword}
+            >
+              {({ values, errors, touched, isValid, handleChange, handleBlur }) => {
+                const passwordChecks = [
+                  { regex: /[a-z]/, text: "Ít nhất một ký tự viết thường" },
+                  { regex: /[A-Z]/, text: "Ít nhất một ký tự viết hoa" },
+                  { regex: /^.{8,16}$/, text: "8 - 16 ký tự" },
+                  {
+                    regex: /^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;<>,.?/~`-]+$/,
+                    text: "Chỉ chứa chữ cái, số và ký tự phổ biến",
+                  },
+                ];
 
-              return (
-                <Form className="w-[600px] p-10 shadow-xl">
-                  <div className="flex items-center justify-center flex-col gap-5">
-                    <div className="text-2xl font-bold text-primary">Thiết lập lại mật khẩu</div>
+                return (
+                  <Form className="w-[600px] p-10 shadow-xl flex items-center justify-center flex-col gap-5">
+                    <div className="w-full text-center text-2xl font-bold text-primary">
+                      Thiết lập lại mật khẩu
+                    </div>
                     <div className="flex flex-col gap-4 mx-auto w-[100%]">
                       <div className="text-base font-medium">Mật khẩu Mới</div>
                       <Input.Password
@@ -125,11 +165,11 @@ function ResetPassword() {
                     >
                       Tiếp theo
                     </button>
-                  </div>
-                </Form>
-              );
-            }}
-          </Formik>
+                  </Form>
+                );
+              }}
+            </Formik>
+          )}
         </div>
       </div>
     </>
