@@ -20,7 +20,7 @@ import ModalAddressEdit from "@/app/components/client/ModalAddress/Edit";
 import ModalAddress from "./components/ModalAddress";
 import ModalPaymentMethod from "./components/ModalPaymentMethod";
 import ModalOrderStatus from "./components/ModalOrderStatus";
-import Loading from "@/app/components/client/Loading/Loading";
+import Loading from "@/app/components/client/Loading";
 import Shimmer from "@/app/components/client/Shimmer";
 
 function Checkout() {

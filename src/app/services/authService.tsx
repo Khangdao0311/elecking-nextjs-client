@@ -67,3 +67,17 @@ export async function getToken(refresh_token: string) {
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
+
+export async function forgotPassword(email: string) {
+  return axios
+    .post(`${config.api.auth}/forgot-password`, { email: email })
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
+}
+
+export async function resetPassword(token: string, passwordNew: string) {
+  return axios
+    .post(`${config.api.auth}/reset-password`, { token: token, passwordNew: passwordNew })
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
+}
