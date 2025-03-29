@@ -14,6 +14,9 @@ import moment from "moment";
 import { FiEdit } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { Select, Space, Table, TableProps } from "antd";
+import { notification } from 'antd';
+import config from "@/app/config";
+import { useRouter } from "next/navigation";
 import {
   Chart as ChartJS,
   BarElement,
@@ -39,7 +42,9 @@ function DashBoard() {
   const [limit, setLimit] = useState(1000);
   const [totalorder, setTotalorder] = useState()
   const [stats, setStats] = useState([])
-  const [year, setYear] = useState(new Date().getFullYear())
+  const [year, setYear] = useState<number | null>(null);
+
+
   const [chartData, setChartData] = useState<number[]>(new Array(12).fill(0));
   const [totalprice, setTotalprice] = useState()
   const [selectedOrder, setSelectedOrder] = useState<IOrder>();
@@ -48,10 +53,22 @@ function DashBoard() {
   const [isDisabledStatus, setIsDisabledStatus] = useState(false);
   const [getUser, setGetUser] = useState<IUser[]>([]);
   const [status, setStatus] = useState<number>(0);
+  const [selectedStatus, setSelectedStatus] = useState(selectedOrder?.status);
+
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
+
 
   useEffect(() => {
     if (selectedOrder) {
-      setStatus(selectedOrder.status)
+      setSelectedStatus(selectedOrder.status);
     }
   }, [selectedOrder]);
 
@@ -76,6 +93,7 @@ function DashBoard() {
     const order = getorders.find(order => order.id === orderId);
     if (order) {
       setSelectedOrder(order);
+      setSelectedStatus(order.status);
       setEditorder(true);
     }
   };
@@ -109,33 +127,34 @@ function DashBoard() {
     });
   }, [year]);
 
+  const generateLabels = () => {
+    if (!year) {
+      return Array.from({ length: 6 }, (_, i) =>
+        moment().subtract(5 - i, "months").format("MM/YYYY")
+      );
+    }
+    return Array.from({ length: 12 }, (_, i) => moment().month(i).year(year).format("MM/YYYY"));
+  };
 
   useEffect(() => {
-    const query = { year: year };
+    const query: any = year ? { year } : { year: moment().year() };
     statsServices.getQuery(query).then((res) => {
+      console.log("Dữ liệu API trả về:", res.data);
       setStats(res.data);
       setTotalprice(res.data.totalPrice);
       setTotalorder(res.data.totalOrder);
-
-      const updatedChartData = Object.keys(res.data)
-        .slice(0, 6)
-        .map((key) => res.data[key]?.price || 0);
+      const months = generateLabels();
+      const updatedChartData = months.map((month) => {
+        const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+        return res.data[formattedMonth]?.price || 0;
+      });
+      console.log("Dữ liệu biểu đồ:", updatedChartData);
       setChartData(updatedChartData);
     });
   }, [year]);
 
-  // console.log(getorders);
-  // console.log(totalorder);
-  // console.log(stats);
   const data = {
-    labels: [
-      "Tháng 1",
-      "Tháng 2",
-      "Tháng 3",
-      "Tháng 4",
-      "Tháng 5",
-      "Tháng 6",
-    ],
+    labels: generateLabels(),
     datasets: [
       {
         label: "Doanh Thu",
@@ -145,7 +164,6 @@ function DashBoard() {
       },
     ],
   };
-  // console.log(chartData);
 
   const options: ChartOptions<"bar"> = {
     responsive: true,
@@ -376,14 +394,15 @@ function DashBoard() {
                   <p className="text-sm font-medium">Trạng Thái Đơn Hàng:</p>
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
-                    value={status}
-                    disabled={selectedOrder.status === 0 || selectedOrder.status === 1}
+                    value={selectedStatus}
+                    disabled={selectedOrder?.status === 0 || selectedOrder?.status === 1}
                     onChange={(value) => {
-                      setStatus(Number(value));
+                      setSelectedStatus(Number(value));
                     }}
                     options={[
-                      { value: 2, label: "Chờ xác nhận", disabled: ![2].includes(selectedOrder.status) },
-                      { value: 3, label: "Đang vận chuyển", disabled: ![2, 3].includes(selectedOrder.status) },
+                      { value: 2, label: "Chờ xác nhận", disabled: ![2].includes(selectedOrder?.status) },
+                      { value: 3, label: "Đã xác nhận", disabled: ![2, 3].includes(selectedOrder?.status) },
+                      { value: 4, label: "Đang vận chuyển", disabled: ![2, 3, 4].includes(selectedOrder?.status) },
                       { value: 1, label: "Đã giao hàng" },
                       { value: 0, label: "Đã hủy" }
                     ]}
@@ -410,7 +429,7 @@ function DashBoard() {
                     Thành Tiền
                   </p>
                 </div>
-                {selectedOrder.products.map((e:any, index) => (
+                {selectedOrder.products.map((e: any, index) => (
                   <div key={index} className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]">
                     <div className="flex w-full items-center gap-2.5">
                       <img
@@ -428,7 +447,7 @@ function DashBoard() {
                       {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
-                    {selectedOrder.total.toLocaleString('vn-VN')} đ
+                      {selectedOrder.total.toLocaleString('vn-VN')} đ
                     </p>
                   </div>
                 ))}
@@ -444,17 +463,18 @@ function DashBoard() {
                 </button>
                 <button className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
                   onClick={() => {
-                    orderServices.updateStatus(selectedOrder.id, status)
+                    orderServices.updateStatus(selectedOrder.id, Number(selectedStatus))
                       .then(() => {
                         setGetorders((prevOrders) =>
                           prevOrders.map((order) =>
-                            order.id === selectedOrder.id ? { ...order, status } : order
+                            order.id === selectedOrder.id
+                              ? { ...order, status: Number(selectedStatus) }
+                              : order
                           )
                         );
                         closeeditorder();
-                        setIsDisabledStatus(status === 0 || status === 1);
-                        alert("Cập nhật trạng thái thành công!");
-                      })
+                        openNotificationWithIcon("success", "Thành công", "Sửa trạng thái thành công");
+                      });
                   }}
                 >
                   Lưu

@@ -8,18 +8,18 @@ import * as voucherServices from "@/app/services/voucherService";
 import { useEffect, useState } from "react";
 import Statusvoucher from "@/app/pages/admin/Components/Status";
 import moment from "moment";
-import { Space, Table, Tag } from "antd";
+import { Space, Table } from "antd";
 import type { TableProps } from "antd";
-import config from "@/app/config";
 import Link from "next/link";
-function VoucherStillexpired() {
+import config from "@/app/config";
+function voucherExpired() {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   useEffect(() => {
-    const query: any = {};
+    const query: any = { expired: 0 };
     query.limit = limit;
     query.page = page;
     if (search != "") {
@@ -30,7 +30,6 @@ function VoucherStillexpired() {
       setVouchers(res.data);
     });
   }, [limit, page, search]);
-
   const columns: TableProps<IVoucher>["columns"] = [
     {
       title: "STT",
@@ -97,23 +96,8 @@ function VoucherStillexpired() {
       key: "status",
       width: 160,
       align: "center",
-      render: (status) => {
-        let text = "";
-        switch (status) {
-          case 0:
-            text = "Ngưng hoạt động";
-            break;
-          case 1:
-            text = "Đang hoạt động";
-            break;
-          case 2:
-            text = "Chờ xác nhận";
-            break;
-          default:
-            text = "Không xác định";
-        }
-        return <Statusvoucher status={status} text={text} />;
-      },
+      render: (status) =>
+        <Statusvoucher status={1} text={"Đang hoạt động"} />
     },
     {
       title: "Chức năng",
@@ -134,7 +118,7 @@ function VoucherStillexpired() {
   
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 1000, y: 420 };
+    return { x: 1000, y: 460 };
   };
 
   return (
@@ -151,19 +135,19 @@ function VoucherStillexpired() {
           setPage(1);
         }}
       />
-      <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <Link
+      <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+        {/* <Link
           href={config.routes.admin.voucher.add}
           className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo voucher mới</p>
-        </Link>
+        </Link> */}
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IVoucher>
             columns={columns}
-            dataSource={vouchers.filter(voucher => voucher.status === 1)}
+            dataSource={vouchers}
             rowKey="id"
-            scroll={getTableScroll(vouchers.filter(voucher => voucher.status === 1).length)}
+            scroll={getTableScroll(vouchers.length)}
             pagination={false}
             tableLayout="auto"
           />
@@ -186,4 +170,4 @@ function VoucherStillexpired() {
   );
 }
 
-export default VoucherStillexpired;
+export default voucherExpired;

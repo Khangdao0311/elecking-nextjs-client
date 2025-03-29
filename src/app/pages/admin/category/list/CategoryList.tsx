@@ -35,7 +35,7 @@ function CategoryList() {
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 50, y: 300 };
+    return { x: 50, y: 460 };
   };
 
 

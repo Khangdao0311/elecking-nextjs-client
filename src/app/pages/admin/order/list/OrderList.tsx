@@ -1,4 +1,5 @@
 "use client";
+import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import { Modal } from 'antd';
 import { Pagination } from "antd";
@@ -9,12 +10,13 @@ import * as orderServices from "@/app/services/orderService";
 import Statusorder from "@/app/pages/admin/Components/Status";
 import moment from "moment";
 import { Space, Table, Tag } from "antd";
+import axios from "axios";
 import type { TableProps } from "antd";
-import { usePathname } from "next/navigation";
 import { notification } from 'antd';
+import config from "@/app/config";
+import { useRouter } from "next/navigation";
 
-
-function oderPending() {
+function OrderList() {
   const [editorder, setEditorder] = useState(false);
   const showeditorder = () => setEditorder(true);
   const closeeditorder = () => setEditorder(false);
@@ -24,36 +26,9 @@ function oderPending() {
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<number>(0);
+  const [status, setStatus] = useState<number | string>("");
   const [isDisabledStatus, setIsDisabledStatus] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(selectedOrder?.status);
-  
-
-  const TitleAdmin = (props: {
-    title: string;
-    yearChange?: (value: number) => void;
-  }) => {
-    const pathname = usePathname();
-    return (<div className="flex justify-between items-center bg-white shadow-xl rounded-lg px-7 py-3 relative">
-      <div>
-      <div className="absolute left-0 top-0 bottom-0 w-[10px] bg-yellow-400 rounded-l-lg"></div>
-      <p className="text-sm font-normal">{props.title}</p>
-      </div>
-      {pathname.startsWith("/admin/dashboard") && props.yearChange && ( <Select
-            defaultValue="Tổng doanh thu"
-            onChange={(value) => props.yearChange?.(parseInt(value))}
-            options={[
-              { value: 2021, label: '2021' },
-              { value: 2022, label: '2022' },
-              { value: 2023, label: '2023' },
-              { value: 2024, label: '2024' },
-              { value: 2025, label: '2025' }
-            ]}
-          />)},
-      </div>
-    );
-  }
-
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -64,56 +39,51 @@ function oderPending() {
       description: description,
     });
   }
-  
+
 
   useEffect(() => {
     if (selectedOrder) {
-      setStatus(selectedOrder.status)
+      setSelectedStatus(selectedOrder.status);
     }
   }, [selectedOrder]);
+
 
   const showEditOrder = (orderId: string) => {
     const order = orders.find(order => order.id === orderId);
     if (order) {
       setSelectedOrder(order);
+      setSelectedStatus(order.status);
       setEditorder(true);
     }
   };
 
   useEffect(() => {
-    const query: any = {};
-    query.limit = limit;
-    query.page = page;
-    query.status = 2;
-    query.orderby = "created_at"
-    if (search != "") {
-      query.search = search;
-    }
-    orderServices.getQuery(query).then((res) => {
-      setOrders(res.data);
-      setTotalPages(res.total);
-    });
-    console.log(query);
+    if (!editorder) {
+      const query: any = {};
+      query.limit = limit;
+      query.page = page;
+      query.status = status;
 
-  }, [limit, page, search, status]);
+      if (search !== "") {
+        query.search = search;
+      }
+
+      orderServices.getQuery(query).then((res) => {
+        const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
+          if (a.status === 2 && b.status !== 2) return -1;
+          if (a.status !== 2 && b.status === 2) return 1;
+          return 0;
+        });
+        setOrders(sortedOrders);
+        setTotalPages(res.total);
+      });
+    }
+  }, [limit, page, search, status, editorder]);
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 1000, y: 420 };
+    return { x: 1000, y: 460 };
   };
-
-  const updateOrderStatus = async (orderId: string, newStatus: number) => {
-    try {
-      await orderServices.updateStatus(orderId, newStatus);
-      setOrders((prevOrders) =>
-        prevOrders.filter(order => order.id !== orderId)
-      );
-      setEditorder(false);
-    } catch (error) {
-      console.error("Lỗi cập nhật trạng thái đơn hàng", error);
-    }
-  };
-
 
   const columns: TableProps<IOrder>["columns"] = [
     {
@@ -186,6 +156,9 @@ function oderPending() {
             text = "Chờ xác nhận";
             break;
           case 3:
+            text = "Đã xác nhận";
+            break;
+          case 4:
             text = "Đang vận chuyển";
             break;
           default:
@@ -208,7 +181,7 @@ function oderPending() {
       ),
     },
   ];
-  console.log(selectedOrder);
+
 
   return (
     <>
@@ -224,8 +197,75 @@ function oderPending() {
           setPage(1);
         }}
       />
-
-      <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+      <div className="flex gap-2">
+        <div
+          onClick={() => {
+            if (status !== "") setStatus("");
+          }}
+          className={`${status === ""
+            ? "border-primary bg-primary text-white"
+            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+        >
+          Tất cả
+        </div>
+        <div
+          onClick={() => {
+            if (status !== 2) setStatus(2);
+          }}
+          className={`${status === 2
+            ? "border-primary bg-primary text-white"
+            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+        >
+          Chờ xác nhận
+        </div>
+        <div
+          onClick={() => {
+            if (status !== 3) setStatus(3);
+          }}
+          className={`${status === 3
+            ? "border-primary bg-primary text-white"
+            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+        >
+          Đã xác nhận
+        </div>
+        <div
+          onClick={() => {
+            if (status !== 4) setStatus(4);
+          }}
+          className={`${status === 4
+            ? "border-primary bg-primary text-white"
+            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+        >
+          Đang vận chuyển
+        </div>
+        <div
+          onClick={() => {
+            if (status !== 1) setStatus(1);
+          }}
+          className={`${status === 1
+            ? "border-primary bg-primary text-white"
+            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+        >
+          Đã nhận
+        </div>
+        <div
+          onClick={() => {
+            if (status !== 0) setStatus(0);
+          }}
+          className={`${status === 0
+            ? "border-primary bg-primary text-white"
+            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
+            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+        >
+          Đã hủy
+        </div>
+      </div>
+      <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IOrder>
             columns={columns}
@@ -250,8 +290,6 @@ function oderPending() {
           </div>
         )}
       </div>
-
-      {contextHolder}
 
       <Modal
         width={650}
@@ -301,24 +339,20 @@ function oderPending() {
                   <p className="text-sm font-medium">Trạng Thái Đơn Hàng:</p>
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
-                    value={status}
-                    disabled={selectedOrder.status === 0 || selectedOrder.status === 1}
+                    value={selectedStatus}
+                    disabled={selectedOrder?.status === 0 || selectedOrder?.status === 1}
                     onChange={(value) => {
-                      setStatus(Number(value));
+                      setSelectedStatus(Number(value));
                     }}
                     options={[
-                      { value: 2, label: "Chờ xác nhận", disabled: ![2].includes(selectedOrder.status) },
-                      { value: 3, label: "Đang vận chuyển", disabled: ![2, 3].includes(selectedOrder.status) },
+                      { value: 2, label: "Chờ xác nhận", disabled: ![2].includes(selectedOrder?.status) },
+                      { value: 3, label: "Đã xác nhận", disabled: ![2, 3].includes(selectedOrder?.status) },
+                      { value: 4, label: "Đang vận chuyển", disabled: ![2, 3, 4].includes(selectedOrder?.status) },
                       { value: 1, label: "Đã giao hàng" },
-                      // { value: 0, label: "Đã hủy" }
+                      { value: 0, label: "Đã hủy" }
                     ]}
                   />
-                </div>
-                <div className="flex w-full gap-1.5">
-                  <p className="text-sm font-medium">Xác nhận:</p>
-                  <p className="text-sm font-normal">
-                    {selectedOrder.payment_status ? "Đã thanh toán" : "Chưa thanh toán"}
-                  </p>
+
                 </div>
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Loại địa chỉ:</p>
@@ -359,7 +393,7 @@ function oderPending() {
                       {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
-                      {selectedOrder.total.toLocaleString('vn-VN')} đ
+                      {selectedOrder.total.toLocaleString("vn-VN")} đ
                     </p>
                   </div>
                 ))}
@@ -375,17 +409,18 @@ function oderPending() {
                 </button>
                 <button className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
                   onClick={() => {
-                    updateOrderStatus(selectedOrder.id, Number(status))
-                    orderServices.updateStatus(selectedOrder.id, status)
+                    orderServices.updateStatus(selectedOrder.id, Number(selectedStatus))
                       .then(() => {
                         setOrders((prevOrders) =>
                           prevOrders.map((order) =>
-                            order.id === selectedOrder.id ? { ...order, status } : order
+                            order.id === selectedOrder.id
+                              ? { ...order, status: Number(selectedStatus) }
+                              : order
                           )
                         );
                         closeeditorder();
-                        openNotificationWithIcon('success', 'Thành công', 'Sửa dữ liệu thành công')
-                      })
+                        openNotificationWithIcon("success", "Thành công", "Sửa trạng thái thành công");
+                      });
                   }}
                 >
                   Lưu
@@ -399,4 +434,4 @@ function oderPending() {
   );
 }
 
-export default oderPending;
+export default OrderList;

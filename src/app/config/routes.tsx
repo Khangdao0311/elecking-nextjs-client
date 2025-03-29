@@ -56,12 +56,13 @@ const routes = {
       edit: "/admin/user/edit/",
     },
     order: {
-      list: {
-        delivered: "/admin/order/list/delivered",
-        cancle: "/admin/order/list/cancle",
-        shiping: "/admin/order/list/shiping",
-        pending: "/admin/order/list/pending",
-      }
+      list: "/admin/order/list"
+      // {
+      //   delivered: "/admin/order/list/delivered",
+      //   cancle: "/admin/order/list/cancle",
+      //   shiping: "/admin/order/list/shiping",
+      //   pending: "/admin/order/list/pending",
+      // }
     },
   },
 };

@@ -14,6 +14,8 @@ import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import { FaEye } from "react-icons/fa6";
 import { LuEyeClosed } from "react-icons/lu";
+import { Switch } from 'antd';
+
 function UserList() {
   const [users, setUsers] = useState<IUser[]>([]);
   const [limit, setLimit] = useState(5);
@@ -42,31 +44,71 @@ function UserList() {
     });
   }, [limit, page, search]);
 
-  const toggleEye = (id: string) => {
-    setEyeState((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
 
-    setUsers((prevUsers) =>
-      prevUsers.map((user: IUser) =>
-        user.id === id ? { ...user, status: user.status === 0 ? 1 : 0 } : user
-      )
-    );
 
-    setHiddenUsers((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+  const originalError = console.error;
+  console.error = (...args) => {
+    if (
+      typeof args[0] === "string" &&
+      args[0].includes("[antd: compatible] antd v5 support React is 16 ~ 18")
+    ) {
+      return;
+    }
+    originalError(...args);
   };
 
+  const toggleEye = async (id: string, role: number) => {
+    try {
+      const user = users.find((user) => user.id === id);
+      if (!user) return;
+      const newStatus = user.status === 1 ? 0 : 1;
+      const dataNew = {
+        status: newStatus,
+        role: role,
+      };
+      await userServices.updateStatus(id, dataNew);
+  
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, status: newStatus } : user
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái người dùng:", error);
+    }
+  };
+  
+
+  const handleRoleChange = async (checked: boolean, id: string) => {
+    try {
+      const currentUser = users.find((user) => user.id === id);
+      if (!currentUser) return;
+
+      const newRole = checked ? 1 : 0;
+      const dataNew = {
+        role: newRole,
+        status: currentUser.status,
+      };
+
+      await userServices.updateStatus(id, dataNew);
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, role: newRole } : user
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi khi cập nhật vai trò người dùng:", error);
+    }
+  };
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 1000, y: 420 };
+    return { x: 50, y: 460 };
   };
 
-  console.log(users);
+  console.log(users[0]?.status);
+
   const columns: TableProps<IUser>["columns"] = [
     {
       title: "STT",
@@ -115,7 +157,7 @@ function UserList() {
       dataIndex: "role",
       align: "center",
       width: 160,
-      render: (role) => (role ? "Admin" : "Khách hàng"),
+      render: (role) => (role === 1 ? "Admin" : "Khách hàng"),
     },
     {
       title: "Trạng Thái",
@@ -145,17 +187,21 @@ function UserList() {
       width: 150,
       render: (_, record) => (
         <Space size="middle">
-          <Link
+          {/* <Link
             href={`${config.routes.admin.user.edit}/${record.id}`}
             className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center"
           >
             <FiEdit className="w-5 h-5" />
-          </Link>
+          </Link> */}
+          <Switch
+            checked={record.role === 1} 
+            onChange={(checked) => handleRoleChange(checked, record.id)}
+          />
           <button
             className="w-6 h-6 bg-red-100 rounded text-red-800 flex items-center justify-center"
-            onClick={() => toggleEye(record.id)}
+            onClick={() => toggleEye(record.id, record.role)}
           >
-            {eyeState[record.id] ? <FaEye className="w-5 h-5" /> : <LuEyeClosed className="w-5 h-5" />}
+            {record.status === 1 ? <FaEye className="w-5 h-5" /> : <LuEyeClosed className="w-5 h-5" />}
           </button>
         </Space>
       ),
@@ -175,7 +221,7 @@ function UserList() {
           setPage(1);
         }}
       />
-      <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+      <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         {/* <Link
           href={config.routes.admin.user.add}
           className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
@@ -183,11 +229,12 @@ function UserList() {
           <GoPlus className="w-6 h-6" />
           <p className="text-sm font-bold">Tạo người dùng mới</p>
         </Link> */}
-        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
+        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%"}}>
           <Table<IUser>
             columns={columns}
             dataSource={users}
             rowKey="id"
+            scroll={getTableScroll(users.length)}
             pagination={false}
             rowClassName={(record) => (hiddenUsers[record.id] ? "bg-gray-200" : "")}
             onRow={() => ({

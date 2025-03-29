@@ -19,7 +19,7 @@ function voucherExpired() {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   useEffect(() => {
-    const query: any = { expired: 0 };
+    const query: any = { expired: 1 };
     query.limit = limit;
     query.page = page;
     if (search != "") {
@@ -118,7 +118,7 @@ function voucherExpired() {
   
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 1000, y: 420 };
+    return { x: 1000, y: 460 };
   };
 
   return (
@@ -135,7 +135,7 @@ function voucherExpired() {
           setPage(1);
         }}
       />
-      <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+      <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         {/* <Link
           href={config.routes.admin.voucher.add}
           className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
