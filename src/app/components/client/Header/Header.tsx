@@ -16,6 +16,8 @@ import { useParams, usePathname, useRouter, useSearchParams } from "next/navigat
 import { FloatButton, Modal, Popover } from "antd";
 import { useWindowScroll } from "@uidotdev/usehooks";
 import Cookies from "js-cookie";
+import { useLifecycles } from "react-use";
+
 
 import config from "@/app/config";
 import LogoMobile from "@/app/assets/LogoMobile";
@@ -26,8 +28,6 @@ import * as userServices from "@/app/services/userService";
 import * as authServices from "@/app/services/authService";
 import * as productServices from "@/app/services/productService";
 import { useStore, actions, initState } from "@/app/store";
-import { useLifecycles } from "react-use";
-import { re_render } from "@/app/store/actions";
 
 function Header() {
   const [state, dispatch] = useStore();

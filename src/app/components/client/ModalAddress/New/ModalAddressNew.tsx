@@ -6,8 +6,9 @@ import { useEffect, useState } from "react";
 import { useStore, actions } from "@/app/store";
 import * as locationServices from "@/app/services/locationService";
 import * as addressServices from "@/app/services/addressService";
+import { useRouter } from "next/navigation";
 
-function ModelAddressNew({ onClose }: any) {
+function ModelAddressNew({ onClose, status }: any) {
   const [state, dispatch] = useStore();
 
   const [provinces, setProvinces] = useState<any>([]);
@@ -22,6 +23,8 @@ function ModelAddressNew({ onClose }: any) {
   const [fullname, setFullname] = useState<string>("");
   const [type, setType] = useState<number | undefined>(undefined);
   const [setDefault, setSetDefault] = useState<boolean>(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     locationServices
@@ -188,7 +191,9 @@ function ModelAddressNew({ onClose }: any) {
           </div>
         </div>
         <div
-          onClick={() => setSetDefault(!setDefault)}
+          onClick={() => {
+            setSetDefault(!setDefault);
+          }}
           className="flex gap-2 items-center cursor-pointer"
         >
           <input
@@ -204,8 +209,12 @@ function ModelAddressNew({ onClose }: any) {
         <p
           className="px-10 border border-gray-300 py-2 rounded-lg cursor-pointer"
           onClick={() => {
-            onClose();
-            cancel();
+            if (status) {
+              onClose();
+              cancel();
+            } else {
+              router.back();
+            }
           }}
         >
           Trở lại

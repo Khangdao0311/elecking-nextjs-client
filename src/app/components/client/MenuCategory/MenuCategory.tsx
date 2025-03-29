@@ -12,7 +12,7 @@ function MenuCategory({ onClick }: any) {
 
   useEffect(() => {
     categoryService
-      .getQuery({ limit: 0, orderby: "id-asc" })
+      .getQuery({ limit: 0, orderby: "id-asc", status: 1 })
       .then((res) => setCategories(res.data));
   }, []);
 

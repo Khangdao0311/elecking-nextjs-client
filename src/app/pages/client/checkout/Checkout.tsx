@@ -268,13 +268,10 @@ function Checkout() {
           width="auto"
         >
           <ModalAddressNew
-            onClose={() => {
-              if (addresses.length === 0) {
-                router.back();
-              } else {
-                setShowModal({ ...showModal, address: { list: true, new: false, edit: false } });
-              }
-            }}
+            status={addresses.length > 0}
+            onClose={() =>
+              setShowModal({ ...showModal, address: { list: true, new: false, edit: false } })
+            }
           />
         </Modal>
         {/* modal address edit */}

@@ -23,6 +23,9 @@ function Review(props: { order_id: any; productOrder: any; onClose: any }) {
       product_id: props.productOrder.product.id,
     };
     reviewServices.create(reviewNew).then((res) => {
+      setRating(5);
+      setContent("");
+      setFileList([]);
       props.onClose();
       dispatch(actions.re_render());
     });
