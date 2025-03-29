@@ -40,7 +40,7 @@ function DashBoard() {
   const [vouchers, setVoucher] = useState()
   const [users, setUsers] = useState<IUser[]>([]);
   const [limit, setLimit] = useState(1000);
-  const [totalorder, setTotalorder] = useState()
+  const [totalOrder, setTotalorder] = useState<number[]>([]);
   const [stats, setStats] = useState([])
   const [year, setYear] = useState<number | null>(null);
 
@@ -105,7 +105,6 @@ function DashBoard() {
       setVoucher(res.total);
     });
   }, []);
-  // console.log(vouchers); 
 
   useEffect(() => {
     const query: any = {};
@@ -142,14 +141,20 @@ function DashBoard() {
       console.log("Dữ liệu API trả về:", res.data);
       setStats(res.data);
       setTotalprice(res.data.totalPrice);
-      setTotalorder(res.data.totalOrder);
+      // setTotalorder(res.data.totalOrder);
       const months = generateLabels();
       const updatedChartData = months.map((month) => {
         const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
         return res.data[formattedMonth]?.price || 0;
       });
+
+      const updatedOrderData = months.map((month) => {
+        const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+        return res.data[formattedMonth]?.order || 0;
+      });
       console.log("Dữ liệu biểu đồ:", updatedChartData);
       setChartData(updatedChartData);
+      setTotalorder(updatedOrderData)
     });
   }, [year]);
 
@@ -161,7 +166,15 @@ function DashBoard() {
         data: chartData,
         backgroundColor: "#4F46E5",
         borderRadius: 6,
+        yAxisID: 'y',
       },
+      {
+        label: "Đơn Hàng",
+        data: totalOrder,
+        backgroundColor: "#FF5733",
+        borderRadius: 6,
+        yAxisID: 'y1',
+      }
     ],
   };
 
@@ -173,9 +186,26 @@ function DashBoard() {
     },
     scales: {
       x: { grid: { display: false } },
-      y: { beginAtZero: true },
+      y: {
+        beginAtZero: true,
+        position: 'left',
+        title: {
+          display: true,
+          text: 'Doanh Thu (VNĐ)',
+        },
+      },
+      y1: {
+        beginAtZero: true,
+        position: 'right',
+        grid: { drawOnChartArea: false },
+        title: {
+          display: true,
+          text: 'Số Đơn Hàng',
+        },
+      },
     },
   };
+
   const ordercolumns: TableProps<IOrder>["columns"] = [
     {
       title: "ID Đơn Hàng",
@@ -260,6 +290,9 @@ function DashBoard() {
     return { x: 500, y: 230 };
   };
 
+  console.log(totalOrder);
+  
+
   return (
     <>
       <TitleAdmin title="Bảng điều khiển" yearChange={(newYear: any) => { setYear(newYear) }} />
@@ -303,7 +336,7 @@ function DashBoard() {
             </div>
             <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
               <p className="text-base font-bold text-red-500">Tổng đơn hàng</p>
-              <p className="text-base font-bold">{totalorder}</p>
+              <p className="text-base font-bold">{totalOrder.reduce((acc, val) => acc + val, 0)}</p>
               <div className="border border-dotted text-neutral-300"></div>
             </div>
           </div>

@@ -40,14 +40,11 @@ function OrderList() {
     });
   };
   
-
-
   useEffect(() => {
     if (selectedOrder) {
       setSelectedStatus(selectedOrder.status);
     }
   }, [selectedOrder]);
-
 
   const showEditOrder = (orderId: string) => {
     const order = orders.find(order => order.id === orderId);
@@ -183,7 +180,6 @@ function OrderList() {
     },
   ];
 
-
   return (
     <>
       <TitleAdmin title="Quản lý đơn hàng" />
@@ -198,7 +194,7 @@ function OrderList() {
           setPage(1);
         }}
       />
-      <div className="flex gap-2">
+      <div className="flex gap-2 px-7 py-3 bg-white rounded-lg">
         <div
           onClick={() => {
             if (status !== "") setStatus("");
@@ -266,6 +262,7 @@ function OrderList() {
           Đã hủy
         </div>
       </div>
+
       <div className=" bg-white shadow-xl h-full justify-between rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IOrder>
@@ -350,7 +347,7 @@ function OrderList() {
                       { value: 3, label: "Đã xác nhận", disabled: ![2, 3].includes(selectedOrder?.status) },
                       { value: 4, label: "Đang vận chuyển", disabled: ![2, 3, 4].includes(selectedOrder?.status) },
                       { value: 1, label: "Đã giao hàng" },
-                      { value: 0, label: "Đã hủy" }
+                      { value: 0, label: "Hủy đơn" }
                     ]}
                   />
 

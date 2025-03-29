@@ -13,8 +13,12 @@ import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
+import { notification, Space } from 'antd';
+import config from "@/app/config";
+import { useRouter } from "next/navigation";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
+
 
 function ProductEdit() {
   const [imagescolor, setImagescolor] = useState<UploadFile[]>([]);
@@ -43,18 +47,29 @@ function ProductEdit() {
 
   const { id }: any = useParams();
 
+  const router = useRouter()
+
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
   // console.log(filteredImages);
 
   useEffect(() => {
     if (!images.length || !getimgs.length) return;
-  
+
     const newFilteredFiles = images
       .filter((image) => !getimgs.includes(image.name)) // Lọc ảnh chưa có trong getimgs
       .map((image) => image.originFileObj as File); // Lấy File từ originFileObj
-  
-      setFilteredImages(newFilteredFiles);
+
+    setFilteredImages(newFilteredFiles);
   }, [images, getimgs]);
-  
+
   // console.log("Danh sách file:", filteredImages);
 
   useEffect(() => {
@@ -74,11 +89,11 @@ function ProductEdit() {
           ...color,
           image: color.image
             ? {
-                uid: crypto.randomUUID(),
-                name: color.image.split("/").pop(),
-                status: "done",
-                url: color.image,
-              }
+              uid: crypto.randomUUID(),
+              name: color.image.split("/").pop(),
+              status: "done",
+              url: color.image,
+            }
             : null,
         })),
       }));
@@ -468,9 +483,8 @@ function ProductEdit() {
                         onClick={() => handleToggleVariant(iVariant)}
                       >
                         <GrFormNext
-                          className={`text-white transition-transform  ${
-                            expandedVariants[iVariant] ? "rotate-90" : ""
-                          }`}
+                          className={`text-white transition-transform  ${expandedVariants[iVariant] ? "rotate-90" : ""
+                            }`}
                         />
                       </div>
                       <div
@@ -628,11 +642,10 @@ function ProductEdit() {
                                   onClick={() => toggleColor(iVariant, iColor)}
                                 >
                                   <GrFormNext
-                                    className={`text-white transition-transform ${
-                                      handleToggleColor[iVariant]?.[iColor]
-                                        ? "rotate-90"
-                                        : ""
-                                    }`}
+                                    className={`text-white transition-transform ${handleToggleColor[iVariant]?.[iColor]
+                                      ? "rotate-90"
+                                      : ""
+                                      }`}
                                   />
                                 </div>
                                 <div
@@ -786,45 +799,45 @@ function ProductEdit() {
                                     >
                                       {!variants[iVariant]?.colors[iColor]
                                         ?.image && (
-                                        <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
-                                          <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
-                                            Chọn tệp
+                                          <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
+                                            <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
+                                              Chọn tệp
+                                            </div>
                                           </div>
-                                        </div>
-                                      )}
+                                        )}
                                     </Upload>
 
                                     {/* Hiển thị danh sách ảnh đã chọn */}
                                     <div className="flex items-center flex-wrap gap-3">
                                       {variants[iVariant]?.colors[iColor]
                                         ?.image && (
-                                        <div className="w-20 h-20 relative">
-                                          <img
-                                            src={
-                                              variants[iVariant].colors[iColor]
-                                                .image.originFileObj
-                                                ? URL.createObjectURL(
+                                          <div className="w-20 h-20 relative">
+                                            <img
+                                              src={
+                                                variants[iVariant].colors[iColor]
+                                                  .image.originFileObj
+                                                  ? URL.createObjectURL(
                                                     variants[iVariant].colors[
                                                       iColor
                                                     ].image.originFileObj
                                                   )
-                                                : variants[iVariant].colors[
+                                                  : variants[iVariant].colors[
                                                     iColor
                                                   ].image.url // Sửa lại từ `name` thành `url`
-                                            }
-                                            alt="Color Preview"
-                                            className="w-full h-full object-cover rounded"
-                                          />
-                                          <div
-                                            className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
-                                            onClick={() =>
-                                              removeimagecolor(iVariant, iColor)
-                                            }
-                                          >
-                                            <IoCloseSharp className="text-red-500" />
+                                              }
+                                              alt="Color Preview"
+                                              className="w-full h-full object-cover rounded"
+                                            />
+                                            <div
+                                              className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
+                                              onClick={() =>
+                                                removeimagecolor(iVariant, iColor)
+                                              }
+                                            >
+                                              <IoCloseSharp className="text-red-500" />
+                                            </div>
                                           </div>
-                                        </div>
-                                      )}
+                                        )}
                                     </div>
                                   </div>
                                 </div>
@@ -909,25 +922,36 @@ function ProductEdit() {
               </div>
             </div>
           </div>
+          {contextHolder}
           <Button
             back="product/list"
             onClick={async () => {
-              if (filteredStorageImgColor.length>0) {
+              if (
+                !name.trim() ||
+                !selectedcategory?.id ||
+                !selectedbrand?.id ||
+                !editorContent.trim() ||
+                variants.length === 0
+              ) {
+                openNotificationWithIcon("error", "Lỗi", "Vui lòng nhập đầy đủ dữ liệu");
+                return;
+              }
+
+              if (filteredStorageImgColor.length > 0) {
                 const formDataimgcolor = new FormData();
                 filteredStorageImgColor.forEach((file) => {
                   formDataimgcolor.append("images", file);
                 });
-                uploadServices.uploadMultiple(formDataimgcolor);
+                await uploadServices.uploadMultiple(formDataimgcolor);
               }
 
-              if (filteredImages.length>0) {
+              if (filteredImages.length > 0) {
                 const formDataimgs = new FormData();
                 filteredImages.forEach((file) => {
                   formDataimgs.append("images", file);
                 });
-                uploadServices.uploadMultiple(formDataimgs);
+                await uploadServices.uploadMultiple(formDataimgs);
               }
-              console.log("Danh sách file:",filteredImages);
 
               const formattedVariants = variants.map((variant: any) => ({
                 ...variant,
@@ -942,29 +966,27 @@ function ProductEdit() {
                 })),
                 property_ids: variant.property_ids.filter(Boolean),
               }));
-              console.log("Dữ liệu gửi lên API:", {
+
+              const response = await productServices.editProduct(id, {
+                name: name.trim(),
+                images: JSON.stringify(images.map((file) => file.name)),
                 category_id: selectedcategory?.id,
                 brand_id: selectedbrand?.id,
-                variants: formattedVariants,
-                description: editorContent,
-                images: JSON.stringify(images.map((file) => file.name)),
+                variants: JSON.stringify(formattedVariants),
+                description: editorContent.trim(),
               });
-              await productServices
-                .editProduct(id, {
-                  name: name,
-                  images: JSON.stringify(images.map((file) => file.name)),
-                  category_id: selectedcategory?.id,
-                  brand_id: selectedbrand?.id,
-                  variants: JSON.stringify(formattedVariants),
-                  description: editorContent,
-                })
-                .then((res) => {
-                  if (res.status === 200) {
-                    console.log("Cập nhật thành công");
-                  }
-                });
+
+              if (response?.status === 200) {
+                openNotificationWithIcon("success", "Thành công", "Cập nhật thành công");
+                setTimeout(() => {
+                  router.push(config.routes.admin.product.list);
+                }, 1000);
+              } else {
+                openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+              }
             }}
           />
+
         </div>
       </div>
     </>

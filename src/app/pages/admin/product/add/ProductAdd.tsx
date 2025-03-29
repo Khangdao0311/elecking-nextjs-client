@@ -12,8 +12,12 @@ import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
+import { notification, Space } from 'antd';
+import config from "@/app/config";
+import { useRouter } from "next/navigation";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
+
 
 function ProductAdd() {
   const [imagescolor, setImagescolor] = useState<UploadFile[]>([]);
@@ -32,9 +36,21 @@ function ProductAdd() {
   const [properties, setProperties] = useState<any>({});
   const [storageimgcolor, setStorageimgcolor] = useState<File[]>([]);
   const [handleToggleColor, setHandleToggleColor] = useState<boolean[][]>([]);
-// console.log(variants);
-// console.log(handleToggleColor);
-console.log(storageimgcolor);
+  // console.log(variants);
+  // console.log(handleToggleColor);
+  console.log(storageimgcolor);
+
+  const router = useRouter()
+
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+    api[type]({
+      message: message,
+      description: description,
+    });
+  }
 
   useEffect(() => {
     if (!quillRef.current) return;
@@ -55,21 +71,21 @@ console.log(storageimgcolor);
   useEffect(() => {
     async function fetchProperties() {
       if (!selectedcategory) return;
-  
+
       const properties: Record<string, any[]> = {};
-  
+
       try {
         const promises = selectedcategory.proptypes.map(async (item: any) => {
           const res = await propertyServices.getQuery({ proptype_id: item.id });
           properties[item.name] = [{ id: "", name: `${item.name}` }, ...res.data];
         });
-  
+
         await Promise.all(promises);
-  
+
         const propertyIds: string[] = selectedcategory.proptypes.map(() => "");
-  
+
         setProperties(properties);
-  
+
         setVariants((prev: IProductVariant[]) => {
           // Nếu `variants` đã có dữ liệu, chỉ cập nhật property_ids
           if (prev.length > 0) {
@@ -78,7 +94,7 @@ console.log(storageimgcolor);
               property_ids: [...propertyIds], // Cập nhật property_ids theo danh mục mới
             }));
           }
-  
+
           // Nếu `variants` chưa có dữ liệu, tạo mới một biến thể
           return [
             {
@@ -97,11 +113,11 @@ console.log(storageimgcolor);
             },
           ];
         },
-      );
-      if (!hasInitializedToggleColor.current && selectedcategory) {
-        setHandleToggleColor((prev) => [...prev, [true]]);
-        hasInitializedToggleColor.current = true; // Đánh dấu đã chạy
-      }
+        );
+        if (!hasInitializedToggleColor.current && selectedcategory) {
+          setHandleToggleColor((prev) => [...prev, [true]]);
+          hasInitializedToggleColor.current = true; // Đánh dấu đã chạy
+        }
         setExpandedVariants((prev) => (prev.length === 0 ? [true] : prev));
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu thuộc tính:", error);
@@ -109,41 +125,41 @@ console.log(storageimgcolor);
     }
     fetchProperties();
   }, [selectedcategory]);
-  
-  
-  
-  
 
-  
+
+
+
+
+
 
   const beforeUploadcolor = (file: File, iVariant: number, iColor: number) => {
-      setVariants((prev: IProductVariant[]) =>
-        prev.map((variant, i) => {
-          if (i === iVariant) {
-            return {
-              ...variant,
-              colors: variant.colors.map((color, j) => {
-                if (j === iColor) {
-                  return {
-                    ...color,
-                    image: {
-                      name: file.name,
-                      originFileObj: file,
-                    },
-                  };
-                }
-                return color;
-              }),
-            };
-          }
-          return variant;
-        })
-      );
-      setStorageimgcolor((prev: File[]) => [...prev, file]);
-      return false;
-    };
+    setVariants((prev: IProductVariant[]) =>
+      prev.map((variant, i) => {
+        if (i === iVariant) {
+          return {
+            ...variant,
+            colors: variant.colors.map((color, j) => {
+              if (j === iColor) {
+                return {
+                  ...color,
+                  image: {
+                    name: file.name,
+                    originFileObj: file,
+                  },
+                };
+              }
+              return color;
+            }),
+          };
+        }
+        return variant;
+      })
+    );
+    setStorageimgcolor((prev: File[]) => [...prev, file]);
+    return false;
+  };
 
-    
+
   const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),
@@ -195,7 +211,7 @@ console.log(storageimgcolor);
       // Lấy số lượng property_ids dựa trên selectedcategory.proptypes.length
       const propertyIds =
         selectedcategory?.proptypes.map(() => "") || [];
-  
+
       return [
         ...prev,
         {
@@ -213,13 +229,13 @@ console.log(storageimgcolor);
         },
       ];
     });
-  
+
     setExpandedVariants((prev) => [...prev, true]);
     setHandleToggleColor((prev) => [...prev, [true]]);
   }
-  
 
-  
+
+
   function handleAddColor(iVariant: number) {
     setVariants((prev: any) =>
       prev.map((item: any, index: number) => {
@@ -240,7 +256,7 @@ console.log(storageimgcolor);
         return item;
       })
     );
-    setHandleToggleColor((prev: boolean[][]) => 
+    setHandleToggleColor((prev: boolean[][]) =>
       prev.map((toggleArray, i) =>
         i === iVariant ? [...toggleArray, true] : [...toggleArray]
       )
@@ -374,9 +390,8 @@ console.log(storageimgcolor);
                       onClick={() => handleToggleVariant(iVariant)}
                     >
                       <GrFormNext
-                        className={`text-white transition-transform  ${
-                          expandedVariants[iVariant] ? "rotate-90" : ""
-                        }`}
+                        className={`text-white transition-transform  ${expandedVariants[iVariant] ? "rotate-90" : ""
+                          }`}
                       />
                     </div>
                     <div
@@ -486,9 +501,8 @@ console.log(storageimgcolor);
                                 onClick={() => toggleColor(iVariant, iColor)}
                               >
                                 <GrFormNext
-                                  className={`text-white transition-transform ${
-                                    handleToggleColor[iVariant]?.[iColor] ? "rotate-90" : ""
-                                  }`}
+                                  className={`text-white transition-transform ${handleToggleColor[iVariant]?.[iColor] ? "rotate-90" : ""
+                                    }`}
                                 />
                               </div>
                               <div
@@ -636,8 +650,8 @@ console.log(storageimgcolor);
                                     }
                                     showUploadList={false}
                                   >
-                                   {!variants[iVariant]?.colors[iColor]
-                                        ?.image && (
+                                    {!variants[iVariant]?.colors[iColor]
+                                      ?.image && (
                                         <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
                                           <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
                                             Chọn tệp
@@ -650,33 +664,33 @@ console.log(storageimgcolor);
                                   <div className="flex items-center flex-wrap gap-3">
                                     {variants[iVariant]?.colors[iColor]
                                       ?.image && (
-                                      <div className="w-20 h-20 relative">
-                                        <img
-                                          src={
-                                            variants[iVariant].colors[iColor]
-                                              .image.originFileObj
-                                              ? URL.createObjectURL(
+                                        <div className="w-20 h-20 relative">
+                                          <img
+                                            src={
+                                              variants[iVariant].colors[iColor]
+                                                .image.originFileObj
+                                                ? URL.createObjectURL(
                                                   variants[iVariant].colors[
                                                     iColor
                                                   ].image.originFileObj
                                                 )
-                                              : variants[iVariant].colors[
+                                                : variants[iVariant].colors[
                                                   iColor
                                                 ].image.name
-                                          }
-                                          alt="Color Preview"
-                                          className="w-full h-full object-cover rounded"
-                                        />
-                                        <div
-                                          className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
-                                          onClick={() =>
-                                            removeimagecolor(iVariant, iColor)
-                                          }
-                                        >
-                                          <IoCloseSharp className="text-red-500" />
+                                            }
+                                            alt="Color Preview"
+                                            className="w-full h-full object-cover rounded"
+                                          />
+                                          <div
+                                            className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
+                                            onClick={() =>
+                                              removeimagecolor(iVariant, iColor)
+                                            }
+                                          >
+                                            <IoCloseSharp className="text-red-500" />
+                                          </div>
                                         </div>
-                                      </div>
-                                    )}
+                                      )}
                                   </div>
                                 </div>
                               </div>
@@ -690,7 +704,6 @@ console.log(storageimgcolor);
               </div>
             ))}
           </div>
-
           <div className="flex flex-col gap-1">
             <div className="text-sm font-medium">
               Hình Ảnh <span className="text-primary">*</span>
@@ -760,29 +773,33 @@ console.log(storageimgcolor);
               </div>
             </div>
           </div>
+          {contextHolder}
           <Button
             back="product/list"
             onClick={async () => {
-              if(storageimgcolor){
+              if (!name.trim() || !selectedcategory?.id || !selectedbrand || images.length === 0 || variants.length === 0) {
+                openNotificationWithIcon("error", "Lỗi", "Vui lòng nhập đầy đủ dữ liệu");
+                return;
+              }
+
+              if (storageimgcolor) {
                 const formDataimgcolor = new FormData();
                 storageimgcolor.forEach((file) => {
                   formDataimgcolor.append("images", file);
                 });
-                uploadServices.uploadMultiple(formDataimgcolor)
+                await uploadServices.uploadMultiple(formDataimgcolor);
               }
 
-              (storageimgcolor)
-              if(images){
+              if (images) {
                 const formDaraimages = new FormData();
                 images.forEach((file) => {
                   if (file.originFileObj) {
                     formDaraimages.append("images", file.originFileObj);
                   }
                 });
-                uploadServices.uploadMultiple(formDaraimages)
+                await uploadServices.uploadMultiple(formDaraimages);
               }
 
-              
               const formattedVariants = variants.map((variant: any) => ({
                 ...variant,
                 price: +variant.price,
@@ -792,32 +809,31 @@ console.log(storageimgcolor);
                   price_extra: +color.price_extra,
                   quantity: +color.quantity,
                   image: color.image?.name || "",
-                  status: 1
+                  status: 1,
                 })),
                 property_ids: variant.property_ids.filter(Boolean),
               }));
-              console.log("Dữ liệu gửi lên API:", {
+
+              const productData = {
+                name: name,
+                images: JSON.stringify(images.map((file) => file.name)),
                 category_id: selectedcategory?.id,
                 brand_id: selectedbrand,
-                variants: formattedVariants,
+                variants: JSON.stringify(formattedVariants),
                 description: editorContent,
-              });
-              await productServices
-                .addProduct({
-                  name: name,
-                  images: JSON.stringify(images.map((file) => file.name)),
-                  category_id: selectedcategory?.id,
-                  brand_id: selectedbrand,
-                  variants: JSON.stringify(formattedVariants),
-                  description: editorContent,
-                })
-                .then((res) => {
-                  if (res.status === 200) {
-                    console.log("Cập nhật thành công");
-                  }
-                });
+              }
+              const productResponse = await productServices.addProduct(productData)
+              if (productResponse?.status === 200) {
+                openNotificationWithIcon("success", "Thành công", "Thêm thành công");
+                setTimeout(() => {
+                  router.push(config.routes.admin.product.list);
+                }, 1000);
+              } else {
+                openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+              }
             }}
           />
+
         </div>
       </div>
     </>
