@@ -54,13 +54,10 @@ function ConfigurationList() {
     });
   };
 
-
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
     return { x: 50, y: 300 };
   };
-
-  
 
   useEffect(() => {
     const query: any = {};
@@ -73,7 +70,6 @@ function ConfigurationList() {
       setTotalPagesProptype(res.total);
       setProptype(res.data);
     });
-
   }, [limitProptype, pageProptype, searchProptype]);
 
   useEffect(() => {
@@ -83,7 +79,6 @@ function ConfigurationList() {
     if (searchProperty != "") {
       query.search = searchProperty;
     }
-    console.log(searchProperty);
 
     propertyService.getQuery(query).then((res) => {
       setProperTy(res.data);
@@ -191,7 +186,7 @@ function ConfigurationList() {
       .then((res) => {
         setTotalPagesProptype(res.total);
         setProptype(res.data);
-      });  
+      });
   }
 
   function handleGetCatConfiguration(id: string) {
@@ -223,12 +218,12 @@ function ConfigurationList() {
         setTotalPagesProptype(res.total);
         setProptype(res.data);
       });
-      await propertyService
-    .getQuery({limit: limitProperty, page: pageProperty})
-    .then((res) => {
-      setTotalPagesProperty(res.total);
-      setProperTy(res.data);
-    })
+    await propertyService
+      .getQuery({ limit: limitProperty, page: pageProperty })
+      .then((res) => {
+        setTotalPagesProperty(res.total);
+        setProperTy(res.data);
+      });
   }
 
   function handleshowAddConfiguration() {
@@ -269,11 +264,12 @@ function ConfigurationList() {
     }
   }
 
-  function handleGetConfiguration(id: string) {
-    console.log(proptype);
-    
+  async function handleGetConfiguration(id: string) {
     setShowEditConfiguration(true);
-    propertyService.getOne(id).then((res) => {
+    await proptypeService.getQuery({ limit: 0 }).then((res) => {
+      setProptype(res.data);
+    });
+    await propertyService.getOne(id).then((res) => {
       setNameConfiguration(res.data.name);
       setSelectedProperty(res.data.proptype.id);
       setIdConfiguration(res.data.id);

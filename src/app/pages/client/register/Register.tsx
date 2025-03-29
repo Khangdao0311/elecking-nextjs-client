@@ -27,7 +27,16 @@ function Register() {
     fullname: Yup.string().required("Vui lòng nhập Họ và Tên"),
     email: Yup.string().email("Email không hợp lệ").required("vui lòng nhập Email"),
     username: Yup.string().required("Vui lòng nhập tên tài khoản"),
-    password: Yup.string().required("Vui lòng nhập mật khẩu"),
+    password: Yup.string()
+    .matches(/[a-z]/, "Ít nhất một ký tự viết thường")
+      .matches(/[A-Z]/, "Ít nhất một ký tự viết hoa")
+      .matches(
+        /^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;<>,.?/~`-]+$/,
+        "Chỉ chứa chữ cái, số và ký tự phổ biến"
+      )
+      .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+      .max(16, "Mật khẩu không được vượt quá 16 ký tự")
+    .required("Vui lòng nhập mật khẩu"),
     repeatPassword: Yup.string()
       .oneOf([Yup.ref("password")], "Mật khẩu không khớp")
       .required("Vui lòng nhập lại mật khẩu"),
@@ -224,24 +233,6 @@ function Register() {
                     >
                       Đăng ký
                     </button>
-
-                    {/* <div className="gap-5 flex items-center justify-center text-center text-gray-500 relative w-full">
-                      <div className="border-t absolute right-0 top-1/2 w-[180px] transform -translate-y-1/2 bg-gray-200"></div>
-                      <span className="bg-white text-gray-400 text-sm font-medium">HOẶC</span>
-                      <div className="border-t absolute left-0 top-1/2  w-[180px] transform -translate-y-1/2 bg-gray-200"></div>
-                    </div>
-
-                    <div className="flex justify-center gap-4 w-full">
-                    <div className="flex w-1/2 items-center gap-2 border border-gray-200 rounded-md py-2 px-4 shadow-md transition duration-300">
-                      <FcGoogle className="w-6 h-6" />
-                      <div className="text-sm font-medium">Google</div>
-                    </div>
-                    <div className="flex w-1/2 items-center gap-2 border border-gray-200 rounded-md py-2 px-4 shadow-md transition duration-300">
-                      <FaFacebook className="w-6 h-6 text-blue-600" />
-                      <div className="text-sm font-medium">Facebook</div>
-                    </div>
-                  </div> */}
-
                     <div className="flex items-center justify-center w-full gap-1.5">
                       <div>Bạn đã có tài khoản ?</div>
                       <Link
