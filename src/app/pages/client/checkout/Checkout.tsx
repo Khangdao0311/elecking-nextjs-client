@@ -149,6 +149,8 @@ function Checkout() {
       addressServices
         .getQuery({ user_id: state.user?.id, limit: 0, orderby: "id-asc" })
         .then((res) => {
+          if (res.data.length === 0)
+            setShowModal({ ...showModal, address: { list: false, new: true, edit: false } });
           setAddresses(res.data);
           setAddress(res.data.find((e: IAddress) => e.setDefault === true));
         });
@@ -266,9 +268,13 @@ function Checkout() {
           width="auto"
         >
           <ModalAddressNew
-            onClose={() =>
-              setShowModal({ ...showModal, address: { list: true, new: false, edit: false } })
-            }
+            onClose={() => {
+              if (addresses.length === 0) {
+                router.back();
+              } else {
+                setShowModal({ ...showModal, address: { list: true, new: false, edit: false } });
+              }
+            }}
           />
         </Modal>
         {/* modal address edit */}

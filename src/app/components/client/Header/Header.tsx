@@ -463,9 +463,17 @@ function Header() {
               }}
             >
               {state.user ? (
-                <div className=" w-6 h-6 rounded-full overflow-hidden">
-                  <img className="w-full h-full object-fill" src={state.user.avatar} alt="avarar" />
-                </div>
+                state.user.avatar ? (
+                  <div className=" w-6 h-6 rounded-full overflow-hidden">
+                    <img
+                      className="w-full h-full object-fill"
+                      src={state.user.avatar}
+                      alt="avarar"
+                    />
+                  </div>
+                ) : (
+                  <FaCircleUser className="text-base w-6 h-6 text-gray-800" />
+                )
               ) : (
                 <FaCircleUser className="text-base w-6 h-6 text-gray-800" />
               )}
