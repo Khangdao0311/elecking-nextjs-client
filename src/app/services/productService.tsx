@@ -28,3 +28,9 @@ export async function addProduct(body: any) {
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
+export async function editProduct(id: any,body: any) {
+  return axios
+    .put(`${config.api.product}/${id}`, body)
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
+}
