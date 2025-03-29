@@ -1,9 +1,11 @@
 import api from "./api";
 import routes from "./routes";
+import constants from "./constants";
 
 const config = {
-  routes,
   api,
+  routes,
+  constants,
 };
 
 export default config;

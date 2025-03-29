@@ -15,6 +15,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FloatButton, Modal, Popover } from "antd";
 import { useWindowScroll } from "@uidotdev/usehooks";
+import Cookies from "js-cookie";
 
 import config from "@/app/config";
 import LogoMobile from "@/app/assets/LogoMobile";
@@ -73,7 +74,7 @@ function Header() {
         })
         .catch((err) => clear());
     } else {
-      localStorage.clear();
+      localStorage.removeItem("user");
       dispatch(actions.set({ ...initState, load: false }));
     }
   }, [state.re_render]);
@@ -170,7 +171,7 @@ function Header() {
           },
         ]);
         break;
-      case config.routes.client.account:
+      case config.routes.client.account.home:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -178,11 +179,11 @@ function Header() {
           },
           {
             name: "Tài khoản",
-            link: config.routes.client.account,
+            link: config.routes.client.account.home,
           },
         ]);
         break;
-      case config.routes.client.accountOrder:
+      case config.routes.client.account.order:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -190,15 +191,15 @@ function Header() {
           },
           {
             name: "Tài khoản",
-            link: config.routes.client.account,
+            link: config.routes.client.account.home,
           },
           {
             name: "Lịch sử mua hàng",
-            link: config.routes.client.accountOrder,
+            link: config.routes.client.account.order,
           },
         ]);
         break;
-      case config.routes.client.accountVoucher:
+      case config.routes.client.account.voucher:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -206,15 +207,15 @@ function Header() {
           },
           {
             name: "Tài khoản",
-            link: config.routes.client.account,
+            link: config.routes.client.account.home,
           },
           {
             name: "Voucher",
-            link: config.routes.client.accountVoucher,
+            link: config.routes.client.account.voucher,
           },
         ]);
         break;
-      case config.routes.client.accountProfile:
+      case config.routes.client.account.profile:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -222,15 +223,15 @@ function Header() {
           },
           {
             name: "Tài khoản",
-            link: config.routes.client.account,
+            link: config.routes.client.account.home,
           },
           {
             name: "Thông tin cá nhân",
-            link: config.routes.client.accountProfile,
+            link: config.routes.client.account.profile,
           },
         ]);
         break;
-      case config.routes.client.accountAddress:
+      case config.routes.client.account.address:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -238,15 +239,15 @@ function Header() {
           },
           {
             name: "Tài khoản",
-            link: config.routes.client.account,
+            link: config.routes.client.account.home,
           },
           {
             name: "Địa chỉ của tôi",
-            link: config.routes.client.accountAddress,
+            link: config.routes.client.account.address,
           },
         ]);
         break;
-      case config.routes.client.accountPassword:
+      case config.routes.client.account.password:
         setBreadCrumb([
           {
             name: "Trang Chủ",
@@ -254,11 +255,11 @@ function Header() {
           },
           {
             name: "Tài khoản",
-            link: config.routes.client.account,
+            link: config.routes.client.account.home,
           },
           {
             name: "Đổi mật khẩu",
-            link: config.routes.client.accountPassword,
+            link: config.routes.client.account.password,
           },
         ]);
         break;
@@ -277,7 +278,9 @@ function Header() {
   }
 
   function clear() {
-    localStorage.clear();
+    localStorage.removeItem("user");
+    Cookies.remove("access_token");
+    Cookies.remove("refresh_token");
     dispatch(actions.set({ ...initState, load: false }));
     router.push(config.routes.client.login);
   }
@@ -453,7 +456,7 @@ function Header() {
               className="hidden w-[92px] h-12 bg-white rounded-lg md:center-flex flex-col cursor-pointer select-none"
               onClick={() => {
                 if (!!state.user) {
-                  router.push(config.routes.client.account);
+                  router.push(config.routes.client.account.home);
                 } else {
                   dispatch(actions.set({ show: { ...state.show, login: true } }));
                 }

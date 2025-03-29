@@ -1,5 +1,6 @@
 import axios from "axios";
 import config from "@/app/config";
+import Cookies from "js-cookie";
 
 export async function login(account: string, password: string) {
   return axios
@@ -54,11 +55,11 @@ export async function wish(id: string, product_id: string) {
 }
 
 export function getAccessToken() {
-  return localStorage.getItem("access_token") || false;
+  return Cookies.get("access_token") || false;
 }
 
 export function getRefreshToken() {
-  return localStorage.getItem("access_token") || false;
+  return Cookies.get("refresh_token") || false;
 }
 
 export async function getToken(refresh_token: string) {

@@ -2,11 +2,12 @@
 
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCircleCheck, FaCircleExclamation, FaEye, FaFacebook } from "react-icons/fa6";
 import Link from "next/link";
 import { Input, Modal } from "antd";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 import config from "@/app/config";
 import { useStore } from "@/app/store";
@@ -27,14 +28,22 @@ function Login() {
     password: Yup.string().required("Vui lòng nhập mật khẩu"),
   });
 
+  useEffect(() => {
+    if (!state.user) {
+      localStorage.removeItem("user");
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
+    }
+  }, []);
+
   async function handleLogin(values: any) {
     setLoading(true);
     authServices.login(values.account, values.password).then((res) => {
       setLoading(false);
       if (res.status === 200) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        localStorage.setItem("access_token", JSON.stringify(res.data.access_token));
-        localStorage.setItem("refresh_token", JSON.stringify(res.data.refresh_token));
+        Cookies.set("access_token", res.data.access_token, { expires: 1 });
+        Cookies.set("refresh_token", res.data.refresh_token, { expires: 1 });
         setLoginStatus(true);
         setShowModal(true);
         setTimeout(() => {

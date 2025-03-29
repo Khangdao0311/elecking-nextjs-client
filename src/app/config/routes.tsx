@@ -1,7 +1,3 @@
-import oderCancle from "../pages/admin/order/list/cancle";
-import oderDelivered from "../pages/admin/order/list/delivered";
-import oderShiping from "../pages/admin/order/list/pending";
-
 const routes = {
   client: {
     home: "/home",
@@ -9,15 +5,17 @@ const routes = {
     productDetail: "/product-detail/",
     cart: "/cart",
     checkout: "/checkout",
-    login: "/login",
-    register: "/register",
-    forgotPassword: "/forgot-password",
-    account: "/account",
-    accountOrder: "/account/order",
-    accountVoucher: "/account/voucher",
-    accountProfile: "/account/profile",
-    accountAddress: "/account/address",
-    accountPassword: "/account/password",
+    login: "/auth/login",
+    register: "/auth/register",
+    forgotPassword: "/auth/forgot-password",
+    account: {
+      home: "/account",
+      order: "/account/order",
+      voucher: "/account/voucher",
+      profile: "/account/profile",
+      address: "/account/address",
+      password: "/account/password",
+    },
   },
   admin: {
     login: "/admin",
@@ -56,13 +54,7 @@ const routes = {
       edit: "/admin/user/edit/",
     },
     order: {
-      list: "/admin/order/list"
-      // {
-      //   delivered: "/admin/order/list/delivered",
-      //   cancle: "/admin/order/list/cancle",
-      //   shiping: "/admin/order/list/shiping",
-      //   pending: "/admin/order/list/pending",
-      // }
+      list: "/admin/order/list",
     },
   },
 };
