@@ -153,7 +153,7 @@ function voucherExpired() {
           />
         </div>
         {totalPages > limit && (
-          <div className="flex w-full justify-end">
+          <div className="flex w-full justify-end mt-auto">
             <Pagination
               current={page}
               onChange={(e) => setPage(e)}

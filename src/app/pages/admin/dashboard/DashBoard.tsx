@@ -346,6 +346,7 @@ function DashBoard() {
           </div>
         </div>
       </div>
+      {contextHolder}
       <Modal
         width={650}
         open={editorder}

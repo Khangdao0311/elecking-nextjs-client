@@ -38,7 +38,8 @@ function OrderList() {
       message: message,
       description: description,
     });
-  }
+  };
+  
 
 
   useEffect(() => {
@@ -265,7 +266,7 @@ function OrderList() {
           Đã hủy
         </div>
       </div>
-      <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+      <div className=" bg-white shadow-xl h-full justify-between rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IOrder>
             columns={columns}
@@ -290,7 +291,7 @@ function OrderList() {
           </div>
         )}
       </div>
-
+      {contextHolder}
       <Modal
         width={650}
         open={editorder}
@@ -409,6 +410,7 @@ function OrderList() {
                 </button>
                 <button className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
                   onClick={() => {
+                    openNotificationWithIcon("success", "Thành công", "Sửa trạng thái thành công");
                     orderServices.updateStatus(selectedOrder.id, Number(selectedStatus))
                       .then(() => {
                         setOrders((prevOrders) =>
@@ -419,7 +421,6 @@ function OrderList() {
                           )
                         );
                         closeeditorder();
-                        openNotificationWithIcon("success", "Thành công", "Sửa trạng thái thành công");
                       });
                   }}
                 >
