@@ -1,19 +1,25 @@
 "use client";
-import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
+
 import { FiEdit } from "react-icons/fi";
 import { GoPlus } from "react-icons/go";
 import { MdDeleteForever } from "react-icons/md";
 import { Pagination } from "antd";
 import { useEffect, useState } from "react";
-import * as categoryServices from "@/app/services/categoryService";
-import Statuscategory from "@/app/pages/admin/Components/Status";
 import Link from "next/link";
-import config from "@/app/config";
 import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 
+import TitleAdmin from "@/app/components/admin/TitleAdmin";
+import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
+import * as categoryServices from "@/app/services/categoryService";
+import Statuscategory from "@/app/pages/admin/Components/Status";
+import config from "@/app/config";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
+
 function CategoryList() {
+  const [state, dispatch] = useStore();
+
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [categories, setCategories] = useState([]);
@@ -32,12 +38,10 @@ function CategoryList() {
     });
   }, [limit, page, search]);
 
-
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
     return { x: 50, y: 460 };
   };
-
 
   const columns: TableProps<ICategory>["columns"] = [
     {
@@ -113,11 +117,15 @@ function CategoryList() {
     "Total:",
     totalPages
   );
-
+  console.log(state.load);
+  
   return (
     <>
-      <TitleAdmin title="Danh Sách Danh Mục" />
-      <Boxsearchlimit
+      {state.load && <Loading />}
+      {state.load ? "" : 
+      <>
+        <TitleAdmin title="Danh Sách Danh Mục" />
+        <Boxsearchlimit
         title="danh mục"
         onLimitChange={(newLimit: any) => {
           setLimit(newLimit);
@@ -160,6 +168,8 @@ function CategoryList() {
           </div>
         )}
       </div>
+      </>}
+     
     </>
   );
 }

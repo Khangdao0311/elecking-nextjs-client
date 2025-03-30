@@ -6,17 +6,13 @@ import { Bar } from "react-chartjs-2";
 import * as orderServices from "@/app/services/orderService";
 import * as userServices from "@/app/services/userService";
 import * as voucherServices from "@/app/services/voucherService";
-import * as productServices from "@/app/services/productService";
-import * as addressServices from "@/app/services/addressService";
 import * as statsServices from "@/app/services/statService";
-import { Button, Modal } from 'antd';
+import { Modal } from 'antd';
 import moment from "moment";
 import { FiEdit } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { Select, Space, Table, TableProps } from "antd";
 import { notification } from 'antd';
-import config from "@/app/config";
-import { useRouter } from "next/navigation";
 import {
   Chart as ChartJS,
   BarElement,
@@ -26,10 +22,9 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
-const handleChange = (value: string) => {
-  console.log(`selected ${value}`);
-};
 
 function DashBoard() {
   const [editorder, setEditorder] = useState(false);
@@ -54,6 +49,7 @@ function DashBoard() {
   const [getUser, setGetUser] = useState<IUser[]>([]);
   const [status, setStatus] = useState<number>(0);
   const [selectedStatus, setSelectedStatus] = useState(selectedOrder?.status);
+  const [state, dispatch] = useStore();
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -295,6 +291,8 @@ function DashBoard() {
 
   return (
     <>
+    {state.load && <Loading />}
+    {state.load ? state.load : <>
       <TitleAdmin title="Bảng điều khiển" yearChange={(newYear: any) => { setYear(newYear) }} />
       <div className="bg-white shadow-lg rounded-lg p-4 flex items-start flex-col gap-4">
         <div className="flex gap-4 justify-between w-full  max-w-full">
@@ -379,6 +377,8 @@ function DashBoard() {
           </div>
         </div>
       </div>
+    </>}
+      
       {contextHolder}
       <Modal
         width={650}

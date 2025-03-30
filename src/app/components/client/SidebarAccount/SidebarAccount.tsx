@@ -19,6 +19,7 @@ function SidebarAccount() {
   const [scroll] = useWindowScroll();
   const { x, y } = scroll as { x: number; y: number };
 
+  
   return (
     <div
       className={`sticky ${

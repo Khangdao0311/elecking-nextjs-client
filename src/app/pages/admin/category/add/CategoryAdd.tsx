@@ -10,8 +10,9 @@ import * as uploadService from "@/app/services/uploadService";
 import * as categoryService from "@/app/services/categoryService";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
-import config from "@/app/config";
 import { Button as ButtonAnt, notification, Space } from "antd";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 function CategoryAdd() {
   const [proptype, setproptype] = useState<IProptype[]>([]);
   const [name, setName] = useState("");
@@ -19,6 +20,7 @@ function CategoryAdd() {
   const [selectedProptype, setSelectedProptype] = useState<string[]>([]);
   const quillRef = useRef<HTMLDivElement>(null);
   const [editorContent, setEditorContent] = useState("");
+  const [state, dispatch] = useStore();
 
 
 
@@ -39,14 +41,13 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
   },[]);
 
   useEffect(() => {
-    if (!quillRef.current) return; // Kiểm tra nếu ref tồn tại
-    if (quillRef.current.querySelector(".ql-editor")) return; // Tránh khởi tạo lại
+    if (!quillRef.current) return;
+    if (quillRef.current.querySelector(".ql-editor")) return;
 
     const quill = new Quill(quillRef.current, {
       theme: "snow",
     });
 
-    // Load dữ liệu cũ nếu có
     quill.root.innerHTML = editorContent;
 
     quill.on("text-change", () => {
@@ -125,7 +126,9 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
   return (
     <>
-      <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
+      {state.load && <Loading />}
+      {state.load ? "" : <>
+        <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
       <div className="bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div className="w-full flex flex-col gap-6">
           <div className="w-full">
@@ -147,11 +150,11 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
             </div>
             <div className="flex gap-0.5 flex-col">
               <div className="text-sm font-medium ">
-                Biến thể <span className="text-primary">*</span>
+                Danh Mục Cấu Hình <span className="text-primary">*</span>
               </div>
               <Select
                 mode="multiple"
-                placeholder="Inserted are removed"
+                placeholder="Chọn Danh Mục Cấu Hình"
                 value={selectedProptype}
                 onChange={handleChange}
                 className=" min-w-[268px] h-[44px] flex items-center justify-center"
@@ -247,6 +250,7 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
         {contextHolder}
         <Button back="category/list" onClick={handleAdd} />
       </div>
+      </>}
     </>
   );
 }

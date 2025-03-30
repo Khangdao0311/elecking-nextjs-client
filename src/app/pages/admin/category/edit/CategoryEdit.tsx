@@ -12,9 +12,10 @@ import * as proptypeService from "@/app/services/proptypeService";
 import * as uploadService from "@/app/services/uploadService";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
-import { HiCheckCircle } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 
 function CategoryEdit() {
   const { id }: any = useParams();
@@ -27,8 +28,8 @@ function CategoryEdit() {
   const [editImage, setEditImage] = useState<any>();
   const [editorContent, setEditorContent] = useState("");
   const quillRef = useRef<HTMLDivElement>(null);
-  const [editSuccess, setEditSuccess] = useState(false);
   const router = useRouter();
+  const [state, dispatch] = useStore();
 
 
 
@@ -153,6 +154,8 @@ function CategoryEdit() {
 
   return (
     <>
+    {state.load && <Loading />}
+    {state.load ? state.load :<>
       <TitleAdmin title="Quản lý danh mục / Sửa danh mục" />
       <div className="bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div className="w-full flex flex-col gap-6">
@@ -291,34 +294,7 @@ function CategoryEdit() {
           <Button onClick={handleEdit} back="category/list" />
         </div>
       </div>
-
-      {/* <Modal
-        open={editSuccess}
-        closeIcon={<div className="hidden" />}
-        onCancel={() => setEditSuccess(false)}
-        footer={null}
-        title={null}
-        centered
-        maskClosable={false}
-      >
-        {editSuccess && (
-          <>
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-5 w-[519px] h-[250px] p-10 bg-white rounded-2xl z-50 items-center justify-center shadow-lg">
-              <div>
-                <HiCheckCircle className="w-24 h-24 fill-green-500 text-white" />
-              </div>
-              <div className="text-2xl font-bold">Sửa danh mục thành công!</div>
-              <button
-                onClick={() => `${router.push(config.routes.admin.category.list)}`}
-                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
-              >
-                Tiếp tục
-              </button>
-            </div>
-          </>
-        )}
-      </Modal> */}
+    </>}
     </>
   );
 }

@@ -12,12 +12,15 @@ import { Space, Table } from "antd";
 import type { TableProps } from "antd";
 import Link from "next/link";
 import config from "@/app/config";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 function voucherExpired() {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
+  const [state, dispatch] = useStore();
   useEffect(() => {
     const query: any = { expired: 1 };
     query.limit = limit;
@@ -123,7 +126,8 @@ function voucherExpired() {
 
   return (
     <>
-      <TitleAdmin title="Quản lý voucher" />
+     {state.load && <Loading />}
+     {state.load ? "" : <><TitleAdmin title="Quản lý voucher" />
       <Boxsearchlimit
         title="voucher"
         onLimitChange={(newLimit: any) => {
@@ -136,12 +140,6 @@ function voucherExpired() {
         }}
       />
       <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        {/* <Link
-          href={config.routes.admin.voucher.add}
-          className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded">
-          <GoPlus className="w-6 h-6" />
-          <p className="text-sm font-bold">Tạo voucher mới</p>
-        </Link> */}
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IVoucher>
             columns={columns}
@@ -165,7 +163,7 @@ function voucherExpired() {
             />
           </div>
         )}
-      </div>
+      </div></>}
     </>
   );
 }

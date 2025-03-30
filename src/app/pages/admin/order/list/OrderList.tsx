@@ -15,10 +15,11 @@ import type { TableProps } from "antd";
 import { notification } from 'antd';
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 
 function OrderList() {
   const [editorder, setEditorder] = useState(false);
-  const showeditorder = () => setEditorder(true);
   const closeeditorder = () => setEditorder(false);
   const [selectedOrder, setSelectedOrder] = useState<IOrder>();
   const [limit, setLimit] = useState(5);
@@ -27,8 +28,8 @@ function OrderList() {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState<number | string>("");
-  const [isDisabledStatus, setIsDisabledStatus] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(selectedOrder?.status);
+  const [state, dispatch] = useStore();
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -182,6 +183,8 @@ function OrderList() {
 
   return (
     <>
+    {state.load && <Loading />}
+    {state.load ? "" : <>
       <TitleAdmin title="Quản lý đơn hàng" />
       <Boxsearchlimit
         title="đơn hàng"
@@ -288,6 +291,8 @@ function OrderList() {
           </div>
         )}
       </div>
+    </>}
+      
       {contextHolder}
       <Modal
         width={650}

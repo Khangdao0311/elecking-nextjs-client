@@ -13,6 +13,8 @@ import config from "@/app/config";
 import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import { Modal } from "antd";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 
 function ProductList() {
   const [statusProductDetail, setStatusProductDetail] = useState(false);
@@ -24,6 +26,7 @@ function ProductList() {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [productDetail, setProductDetail] = useState<IProduct>();
+  const [state, dispatch] = useStore();
 
   useEffect(() => {
     const query: any = {};
@@ -184,7 +187,9 @@ function ProductList() {
 
   return (
     <>
-      <TitleAdmin title="Danh Sách Sản Phẩm" />
+      {state.load && <Loading />}
+      {state.load ? "" : <>
+        <TitleAdmin title="Danh Sách Sản Phẩm" />
       <Boxsearchlimit
         title="Sản Phẩm"
         onLimitChange={(newLimit: any) => {
@@ -228,6 +233,8 @@ function ProductList() {
           </div>
         )}
       </div>
+      </>}
+
       <Modal
         open={statusProductDetail}
         onCancel={() => setStatusProductDetail(false)}

@@ -16,6 +16,8 @@ import {
 import { FiEdit } from "react-icons/fi";
 import BoxSearchLimit from "@/app/components/admin/boxsearchlimtit";
 import { GoPlus } from "react-icons/go";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 
 function ConfigurationList() {
   const [proptype, setProptype] = useState<IProptype[]>([]);
@@ -39,6 +41,7 @@ function ConfigurationList() {
   const [nameConfiguration, setNameConfiguration] = useState("");
   const [showAddConfiguration, setShowAddConfiguration] = useState(false);
   const [showEditConfiguration, setShowEditConfiguration] = useState(false);
+  const [state, dispatch] = useStore();
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
@@ -312,7 +315,9 @@ function ConfigurationList() {
 
   return (
     <>
-      <TitleAdmin title="Danh Sách Cấu Hình" />
+      {state.load && <Loading />}
+      {state.load ? state.load : <>
+        <TitleAdmin title="Danh Sách Cấu Hình" />
       <div className="flex w-full gap-4 ">
         <div className="p-5 flex flex-col gap-4 w-1/2 h-[600px] rounded-lg border border-gray-200 shadow-lg">
           <div className="flex justify-between items-center">
@@ -415,6 +420,8 @@ function ConfigurationList() {
           </div>
         </div>
       </div>
+      </>}
+  
       {contextHolder}
 
       <Modal

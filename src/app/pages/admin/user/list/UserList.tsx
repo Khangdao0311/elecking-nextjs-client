@@ -15,6 +15,8 @@ import type { TableProps } from "antd";
 import { FaEye } from "react-icons/fa6";
 import { LuEyeClosed } from "react-icons/lu";
 import { Switch } from 'antd';
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 
 function UserList() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -24,6 +26,7 @@ function UserList() {
   const [page, setPage] = useState(1);
   const [eyeState, setEyeState] = useState<{ [key: string]: boolean }>({});
   const [hiddenUsers, setHiddenUsers] = useState<Record<string, boolean>>({});
+  const [state, dispatch] = useStore();
 
   useEffect(() => {
     const query: any = {};
@@ -209,6 +212,8 @@ function UserList() {
   ];
   return (
     <>
+    {state.load && <Loading />}
+    {state.load ? "" : <>
       <TitleAdmin title="Quản lý người dùng" />
       <Boxsearchlimit
         title="người dùng"
@@ -222,13 +227,6 @@ function UserList() {
         }}
       />
       <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        {/* <Link
-          href={config.routes.admin.user.add}
-          className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
-        >
-          <GoPlus className="w-6 h-6" />
-          <p className="text-sm font-bold">Tạo người dùng mới</p>
-        </Link> */}
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%"}}>
           <Table<IUser>
             columns={columns}
@@ -257,6 +255,7 @@ function UserList() {
           </div>
         )}
       </div>
+    </>}
     </>
   );
 }

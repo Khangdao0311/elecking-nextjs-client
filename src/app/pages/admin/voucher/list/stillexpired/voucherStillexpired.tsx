@@ -12,12 +12,15 @@ import { Space, Table } from "antd";
 import type { TableProps } from "antd";
 import Link from "next/link";
 import config from "@/app/config";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 function voucherExpired() {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
+  const [state, dispatch] = useStore();
   useEffect(() => {
     const query: any = { expired: 0 };
     query.limit = limit;
@@ -123,6 +126,8 @@ function voucherExpired() {
 
   return (
     <>
+    {state.load && <Loading />}
+    {state.load ? "" : <>
       <TitleAdmin title="Quản lý voucher" />
       <Boxsearchlimit
         title="voucher"
@@ -166,6 +171,7 @@ function voucherExpired() {
           </div>
         )}
       </div>
+    </>}
     </>
   );
 }
