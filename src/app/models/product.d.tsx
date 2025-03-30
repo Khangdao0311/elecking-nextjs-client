@@ -13,7 +13,12 @@ interface IProduct {
 interface IProperty {
     id: string
     name: string
-    proptype_id: string
+    proptype: IProptype[]
+}
+
+interface IProptype {
+    id: string
+    name: string
 }
 
 interface IProductVariant {

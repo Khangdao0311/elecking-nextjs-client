@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BiCategory } from "react-icons/bi";
@@ -39,8 +38,6 @@ function Sidebar() {
       setUser(JSON.parse(userData));
     }
   }, []);
-
-  console.log(user);
   
 
   return (

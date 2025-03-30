@@ -13,12 +13,11 @@ import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
-import { notification, Space } from 'antd';
+import { notification, Space } from "antd";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
-
 
 function ProductEdit() {
   const [imagescolor, setImagescolor] = useState<UploadFile[]>([]);
@@ -47,17 +46,21 @@ function ProductEdit() {
 
   const { id }: any = useParams();
 
-  const router = useRouter()
+  const router = useRouter();
 
-  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+  const openNotificationWithIcon = (
+    type: NotificationType,
+    message: any,
+    description: any
+  ) => {
     api[type]({
       message: message,
       description: description,
     });
-  }
+  };
 
   useEffect(() => {
     if (!images.length || !getimgs.length) return;
@@ -77,23 +80,28 @@ function ProductEdit() {
 
     setFilteredStorageImgColor(filteredFiles);
   }, [storageimgcolor, getimgcolor]);
+  console.log(variants);
 
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => {
       const formattedVariants = res.data.variants.map((variant: any) => ({
         ...variant,
+        property_ids: variant.properties.map(
+          (property: any, index: number) => property.id
+        ),
         colors: variant.colors.map((color: any, index: number) => ({
           ...color,
           image: color.image
             ? {
-              uid: crypto.randomUUID(),
-              name: color.image.split("/").pop(),
-              status: "done",
-              url: color.image,
-            }
+                uid: crypto.randomUUID(),
+                name: color.image.split("/").pop(),
+                status: "done",
+                url: color.image,
+              }
             : null,
         })),
       }));
+      console.log(formattedVariants);
       setVariants(formattedVariants);
       setName(res.data.name);
       setEditorContent(res.data.description);
@@ -157,7 +165,6 @@ function ProductEdit() {
   useEffect(() => {
     async function fetchProperties() {
       if (!selectedcategory) return;
-
       try {
         const propertyData: any = {};
         const propertyIds: string[] = [];
@@ -174,13 +181,6 @@ function ProductEdit() {
         await Promise.all(promises);
 
         setProperties(propertyData);
-
-        setVariants((prev: any) =>
-          prev.map((variant: any) => ({
-            ...variant,
-            property_ids: propertyIds,
-          }))
-        );
       } catch (error) {
         console.error("Lỗi khi lấy thuộc tính:", error);
       }
@@ -294,7 +294,7 @@ function ProductEdit() {
             ...item,
             property_ids: [
               ...((item as Record<string, any>).property_ids || []),
-            ], // Ép kiểu ở đây
+            ],
             colors: [
               ...item.colors,
               {
@@ -374,33 +374,30 @@ function ProductEdit() {
     });
   }, []);
 
-  useEffect(() => {
-    if (!variants || !properties) return;
-
-    setVariants((prevVariants: IProductVariant[]) =>
-      prevVariants.map((variant, iVariant) => {
-        const updatedPropertyIds = selectedcategory?.proptypes.map((item) => {
-          return (
-            properties?.[item.name]?.find(
-              (prop: { id: string; name: string }) =>
-                prop.name ===
-                variants?.[iVariant]?.properties?.find(
-                  (p: any) =>
-                    (p as IProperty & { proptype: string }).proptype ===
-                    item.name
-                )?.name
-            )?.id || ""
-          );
-        });
-
-        return {
-          ...variant,
-          property_ids: updatedPropertyIds,
-        };
+  function handleChangeProperty(
+    value: string,
+    iVariant: number,
+    iItem: number
+  ) {
+    setVariants((prev: IProductVariant[]) =>
+      prev.map((variant: any, i: number) => {
+        if (i === iVariant) {
+          return {
+            ...variant,
+            property_ids: variant.property_ids.map(
+              (proptype_id: any, iProptype_id: number) => {
+                if (iItem === iProptype_id) {
+                  return value;
+                }
+                return proptype_id;
+              }
+            ),
+          };
+        }
+        return variant;
       })
     );
-  }, [properties]);
-
+  }
   return (
     <>
       <TitleAdmin title="Quản sản phẩm/ Sửa sản phẩm" />
@@ -480,8 +477,9 @@ function ProductEdit() {
                         onClick={() => handleToggleVariant(iVariant)}
                       >
                         <GrFormNext
-                          className={`text-white transition-transform  ${expandedVariants[iVariant] ? "rotate-90" : ""
-                            }`}
+                          className={`text-white transition-transform  ${
+                            expandedVariants[iVariant] ? "rotate-90" : ""
+                          }`}
                         />
                       </div>
                       <div
@@ -540,75 +538,14 @@ function ProductEdit() {
                             <div key={iItem} className="flex flex-wrap gap-2">
                               <Select
                                 className="shadow-md flex flex-wrap"
-                                value={
-                                  properties?.[item?.name]?.find(
-                                    (prop: {
-                                      id: string;
-                                      name: string;
-                                      proptype?: any;
-                                    }) =>
-                                      prop.name ===
-                                      variants?.[iVariant]?.properties?.find(
-                                        (p: {
-                                          name: string;
-                                          proptype: string;
-                                        }) => p.proptype === item.name
-                                      )?.name
-                                  )?.id || ""
-                                }
+                                value={variants[iVariant].property_ids[iItem]}
                                 style={{ width: 268, height: 44 }}
                                 onChange={(value) => {
-                                  setVariants((prev: IProductVariant[]) =>
-                                    prev.map((variant, i) => {
-                                      if (i === iVariant) {
-                                        // ✅ Lấy thông tin property theo ID
-
-                                        const selectedProperty = properties?.[
-                                          item?.name
-                                        ]?.find(
-                                          (p: { id: string; name: string }) =>
-                                            p.id === value
-                                        );
-
-                                        const selectedName = selectedProperty
-                                          ? selectedProperty.name
-                                          : "";
-
-                                        return {
-                                          ...variant,
-
-                                          // ✅ Cập nhật property_ids tại đúng vị trí của iItem
-                                          property_ids: [
-                                            ...((variant as Record<string, any>)
-                                              ?.property_ids || []),
-                                          ].map((id, index) =>
-                                            index === iItem ? value : id
-                                          ),
-
-                                          // ✅ Cập nhật properties mà không làm mất dữ liệu cũ
-                                          properties: [
-                                            ...(
-                                              variant?.properties || []
-                                            ).filter(
-                                              (
-                                                prop: IProperty & {
-                                                  proptype?: string;
-                                                }
-                                              ) => prop.proptype !== item.name
-                                            ),
-                                            {
-                                              name: selectedName,
-                                              proptype: item.name,
-                                            },
-                                          ],
-                                        };
-                                      }
-                                      return variant;
-                                    })
-                                  );
+                                  handleChangeProperty(value, iVariant, iItem);
                                 }}
+                                optionFilterProp="name"
                                 fieldNames={{ value: "id", label: "name" }}
-                                options={properties?.[item?.name] || []}
+                                options={properties?.[item.name]}
                               />
                             </div>
                           );
@@ -639,10 +576,11 @@ function ProductEdit() {
                                   onClick={() => toggleColor(iVariant, iColor)}
                                 >
                                   <GrFormNext
-                                    className={`text-white transition-transform ${handleToggleColor[iVariant]?.[iColor]
-                                      ? "rotate-90"
-                                      : ""
-                                      }`}
+                                    className={`text-white transition-transform ${
+                                      handleToggleColor[iVariant]?.[iColor]
+                                        ? "rotate-90"
+                                        : ""
+                                    }`}
                                   />
                                 </div>
                                 <div
@@ -796,45 +734,45 @@ function ProductEdit() {
                                     >
                                       {!variants[iVariant]?.colors[iColor]
                                         ?.image && (
-                                          <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
-                                            <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
-                                              Chọn tệp
-                                            </div>
+                                        <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
+                                          <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
+                                            Chọn tệp
                                           </div>
-                                        )}
+                                        </div>
+                                      )}
                                     </Upload>
 
                                     {/* Hiển thị danh sách ảnh đã chọn */}
                                     <div className="flex items-center flex-wrap gap-3">
                                       {variants[iVariant]?.colors[iColor]
                                         ?.image && (
-                                          <div className="w-20 h-20 relative">
-                                            <img
-                                              src={
-                                                variants[iVariant].colors[iColor]
-                                                  .image.originFileObj
-                                                  ? URL.createObjectURL(
+                                        <div className="w-20 h-20 relative">
+                                          <img
+                                            src={
+                                              variants[iVariant].colors[iColor]
+                                                .image.originFileObj
+                                                ? URL.createObjectURL(
                                                     variants[iVariant].colors[
                                                       iColor
                                                     ].image.originFileObj
                                                   )
-                                                  : variants[iVariant].colors[
+                                                : variants[iVariant].colors[
                                                     iColor
                                                   ].image.url // Sửa lại từ `name` thành `url`
-                                              }
-                                              alt="Color Preview"
-                                              className="w-full h-full object-cover rounded"
-                                            />
-                                            <div
-                                              className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
-                                              onClick={() =>
-                                                removeimagecolor(iVariant, iColor)
-                                              }
-                                            >
-                                              <IoCloseSharp className="text-red-500" />
-                                            </div>
+                                            }
+                                            alt="Color Preview"
+                                            className="w-full h-full object-cover rounded"
+                                          />
+                                          <div
+                                            className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
+                                            onClick={() =>
+                                              removeimagecolor(iVariant, iColor)
+                                            }
+                                          >
+                                            <IoCloseSharp className="text-red-500" />
                                           </div>
-                                        )}
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
@@ -930,7 +868,11 @@ function ProductEdit() {
                 !editorContent.trim() ||
                 variants.length === 0
               ) {
-                openNotificationWithIcon("error", "Lỗi", "Vui lòng nhập đầy đủ dữ liệu");
+                openNotificationWithIcon(
+                  "error",
+                  "Lỗi",
+                  "Vui lòng nhập đầy đủ dữ liệu"
+                );
                 return;
               }
 
@@ -974,16 +916,23 @@ function ProductEdit() {
               });
 
               if (response?.status === 200) {
-                openNotificationWithIcon("success", "Thành công", "Cập nhật thành công");
+                openNotificationWithIcon(
+                  "success",
+                  "Thành công",
+                  "Cập nhật thành công"
+                );
                 setTimeout(() => {
                   router.push(config.routes.admin.product.list);
                 }, 1000);
               } else {
-                openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                openNotificationWithIcon(
+                  "error",
+                  "Lỗi",
+                  "Có lỗi xảy ra, vui lòng thử lại"
+                );
               }
             }}
           />
-
         </div>
       </div>
     </>
