@@ -107,7 +107,7 @@ function UserList() {
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 50, y: 460 };
+    return { x: 50, y: "max-content"  };
   };
 
   console.log(users[0]?.status);
@@ -221,12 +221,12 @@ function UserList() {
           setLimit(newLimit);
           setPage(1);
         }}
-        onSearch={(value) => {
+        onSearch={(value:string) => {
           setSearch(value);
           setPage(1);
         }}
       />
-      <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+      <div className=" bg-white shadow-xl min-h-0 rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%"}}>
           <Table<IUser>
             columns={columns}

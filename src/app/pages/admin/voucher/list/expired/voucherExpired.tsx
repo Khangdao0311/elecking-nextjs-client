@@ -121,7 +121,7 @@ function voucherExpired() {
   
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 1000, y: 460 };
+    return { x: 1000, y: "max-content"  };
   };
 
   return (
@@ -134,12 +134,12 @@ function voucherExpired() {
           setLimit(newLimit);
           setPage(1);
         }}
-        onSearch={(value) => {
+        onSearch={(value:string) => {
           setSearch(value);
           setPage(1);
         }}
       />
-      <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+      <div className=" bg-white shadow-xl min-h-0 rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
           <Table<IVoucher>
             columns={columns}

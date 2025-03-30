@@ -39,12 +39,12 @@ function BrandList() {
   }, [limit, page, search]);
   console.log(brands);
 
-  
+
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 50, y: 460 };
+    return { x: 50, y: "max-content" };
   };
-  
+
   const columns: TableProps<IBrand>["columns"] = [
     {
       title: "STT",
@@ -140,57 +140,57 @@ function BrandList() {
       ),
     },
   ];
-  
+
   return (
     <>
       {state.load && <Loading />}
-      {state.load ? "" : 
-              <>
-              <TitleAdmin title="Danh Sách Thương Hiệu" />
-              <Boxsearchlimit
-                title="thương hiệu"
-                onLimitChange={(newLimit: any) => {
-                  setLimit(newLimit);
-                  setPage(1);
-                }}
-                onSearch={(value) => {
-                  setSearch(value);
-                  setPage(1);
-                }}
+      {state.load ? "" :
+        <>
+          <TitleAdmin title="Danh Sách Thương Hiệu" />
+          <Boxsearchlimit
+            title="thương hiệu"
+            onLimitChange={(newLimit: any) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+            onSearch={(value: string) => {
+              setSearch(value);
+              setPage(1);
+            }}
+          />
+          <div className=" bg-white shadow-xl min-h-0 rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+            <Link
+              href={config.routes.admin.brand.add}
+              className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
+            >
+              <GoPlus className="w-6 h-6" />
+              <p className="text-sm font-bold">Tạo thương hiệu mới</p>
+            </Link>
+            <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
+              <Table<IBrand>
+                columns={columns}
+                dataSource={brands}
+                rowKey="id"
+                scroll={getTableScroll(brands.length)}
+                pagination={false}
+                tableLayout="auto"
               />
-              <div className=" bg-white shadow-xl h-full rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-                <Link
-                  href={config.routes.admin.brand.add}
-                  className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
-                >
-                  <GoPlus className="w-6 h-6" />
-                  <p className="text-sm font-bold">Tạo thương hiệu mới</p>
-                </Link>
-                <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
-                  <Table<IBrand>
-                    columns={columns}
-                    dataSource={brands}
-                    rowKey="id"
-                    scroll={getTableScroll(brands.length)}
-                    pagination={false}
-                    tableLayout="auto"
-                  />
-                </div>
-                {totalPages > limit && (
-                  <div className="flex w-full justify-end mt-auto">
-                    <Pagination
-                      current={page}
-                      onChange={(e) => setPage(e)}
-                      defaultCurrent={1}
-                      align="end"
-                      pageSize={limit}
-                      total={totalPages}
-                      showSizeChanger={false}
-                    />
-                  </div>
-                )}
+            </div>
+            {totalPages > limit && (
+              <div className="flex w-full justify-end mt-auto">
+                <Pagination
+                  current={page}
+                  onChange={(e) => setPage(e)}
+                  defaultCurrent={1}
+                  align="end"
+                  pageSize={limit}
+                  total={totalPages}
+                  showSizeChanger={false}
+                />
               </div>
-            </>}
+            )}
+          </div>
+        </>}
     </>
   );
 }

@@ -40,7 +40,7 @@ function CategoryList() {
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 50, y: 460 };
+    return { x: 50, y: "max-content"  };
   };
 
   const columns: TableProps<ICategory>["columns"] = [
@@ -131,12 +131,12 @@ function CategoryList() {
           setLimit(newLimit);
           setPage(1);
         }}
-        onSearch={(value) => {
+        onSearch={(value:string) => {
           setSearch(value);
           setPage(1);
         }}
       />
-      <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex h-full items-start flex-col gap-4">
+      <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex min-h-0 items-start flex-col gap-4">
         <Link
           href={config.routes.admin.category.add}
           className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"

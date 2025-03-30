@@ -117,8 +117,6 @@ function DashBoard() {
     query.limit = limit;
     orderServices.getQuery(query).then((res) => {
       setGetorders(res.data);
-      // setTotalorder(res.total);
-      // console.log(res);
     });
   }, [year]);
 
@@ -132,27 +130,35 @@ function DashBoard() {
   };
 
   useEffect(() => {
-    const query: any = year ? { year } : { year: moment().year() };
-    statsServices.getQuery(query).then((res) => {
-      console.log("Dữ liệu API trả về:", res.data);
-      setStats(res.data);
-      setTotalprice(res.data.totalPrice);
-      // setTotalorder(res.data.totalOrder);
-      const months = generateLabels();
-      const updatedChartData = months.map((month) => {
-        const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
-        return res.data[formattedMonth]?.price || 0;
-      });
+    const query: any = {};
+    if (year !== null) {
+        query.year = year;
+    }
 
-      const updatedOrderData = months.map((month) => {
-        const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
-        return res.data[formattedMonth]?.order || 0;
-      });
-      console.log("Dữ liệu biểu đồ:", updatedChartData);
-      setChartData(updatedChartData);
-      setTotalorder(updatedOrderData)
+    statsServices.getQuery(query).then((res) => {
+        setStats(res.data);
+        setTotalprice(res.data.totalPrice);
+        
+        const months = generateLabels();
+        const updatedChartData = months.map((month) => {
+            const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+            return Math.round(res.data[formattedMonth]?.price || 0);
+        });
+
+        const updatedOrderData = months.map((month) => {
+            const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+            return Math.round(res.data[formattedMonth]?.order || 0);
+        });
+
+        setChartData(updatedChartData);
+        setTotalorder(updatedOrderData);
     });
-  }, [year]);
+}, [year]);
+
+
+
+  console.log(year);
+  
 
   const data = {
     labels: generateLabels(),
@@ -191,7 +197,11 @@ function DashBoard() {
         },
       },
       y1: {
-        beginAtZero: true,
+        beginAtZero: true, 
+        ticks: {
+          stepSize: 1, 
+          precision: 0, 
+        },
         position: 'right',
         grid: { drawOnChartArea: false },
         title: {
@@ -199,6 +209,7 @@ function DashBoard() {
           text: 'Số Đơn Hàng',
         },
       },
+      
     },
   };
 
@@ -286,8 +297,6 @@ function DashBoard() {
     return { x: 500, y: 230 };
   };
 
-  console.log(totalOrder);
-  
 
   return (
     <>

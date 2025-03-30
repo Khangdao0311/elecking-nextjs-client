@@ -182,7 +182,7 @@ function ProductList() {
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 50, y: 300 };
+    return { x: 50, y: "max-content"  };
   };
 
   return (
@@ -196,12 +196,12 @@ function ProductList() {
           setLimit(newLimit);
           setPage(1);
         }}
-        onSearch={(value) => {
+        onSearch={(value:string) => {
           setSearch(value);
           setPage(1);
         }}
       />
-      <div className=" shadow-xl bg-white rounded-lg px-4 py-4 flex h-full items-start flex-col gap-4">
+      <div className=" shadow-xl bg-white rounded-lg px-4 py-4 flex min-h-0 items-start flex-col gap-4">
         <Link
           href={config.routes.admin.product.add}
           className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"

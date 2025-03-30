@@ -40,7 +40,7 @@ function OrderList() {
       description: description,
     });
   };
-  
+
   useEffect(() => {
     if (selectedOrder) {
       setSelectedStatus(selectedOrder.status);
@@ -81,7 +81,7 @@ function OrderList() {
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 1000, y: 460 };
+    return { x: 1000, y: "max-content" };
   };
 
   const columns: TableProps<IOrder>["columns"] = [
@@ -183,116 +183,49 @@ function OrderList() {
 
   return (
     <>
-    {state.load && <Loading />}
-    {state.load ? "" : <>
-      <TitleAdmin title="Quản lý đơn hàng" />
-      <Boxsearchlimit
-        title="đơn hàng"
-        onLimitChange={(newLimit: any) => {
-          setLimit(newLimit);
-          setPage(1);
-        }}
-        onSearch={(value) => {
-          setSearch(value);
-          setPage(1);
-        }}
-      />
-      <div className="flex gap-2 px-7 py-3 bg-white rounded-lg">
-        <div
-          onClick={() => {
-            if (status !== "") setStatus("");
+      {state.load && <Loading />}
+      {state.load ? "" : <>
+        <TitleAdmin title="Quản lý đơn hàng" />
+        <Boxsearchlimit
+          title="đơn hàng"
+          onLimitChange={(newLimit: any) => {
+            setLimit(newLimit);
+            setPage(1);
           }}
-          className={`${status === ""
-            ? "border-primary bg-primary text-white"
-            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
-        >
-          Tất cả
-        </div>
-        <div
-          onClick={() => {
-            if (status !== 2) setStatus(2);
-          }}
-          className={`${status === 2
-            ? "border-primary bg-primary text-white"
-            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
-        >
-          Chờ xác nhận
-        </div>
-        <div
-          onClick={() => {
-            if (status !== 3) setStatus(3);
-          }}
-          className={`${status === 3
-            ? "border-primary bg-primary text-white"
-            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
-        >
-          Đã xác nhận
-        </div>
-        <div
-          onClick={() => {
-            if (status !== 4) setStatus(4);
-          }}
-          className={`${status === 4
-            ? "border-primary bg-primary text-white"
-            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
-        >
-          Đang vận chuyển
-        </div>
-        <div
-          onClick={() => {
-            if (status !== 1) setStatus(1);
-          }}
-          className={`${status === 1
-            ? "border-primary bg-primary text-white"
-            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
-        >
-          Đã nhận
-        </div>
-        <div
-          onClick={() => {
-            if (status !== 0) setStatus(0);
-          }}
-          className={`${status === 0
-            ? "border-primary bg-primary text-white"
-            : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-            } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
-        >
-          Đã hủy
-        </div>
-      </div>
+          status={status}
+          setStatus={setStatus}
 
-      <div className=" bg-white shadow-xl h-full justify-between rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
-          <Table<IOrder>
-            columns={columns}
-            dataSource={orders}
-            rowKey="id"
-            scroll={getTableScroll(orders.length)}
-            pagination={false}
-            tableLayout="auto"
-          />
-        </div>
-        {totalPages > limit && (
-          <div className="flex w-full justify-end">
-            <Pagination
-              current={page}
-              onChange={(e) => setPage(e)}
-              defaultCurrent={1}
-              align="end"
-              pageSize={limit}
-              total={totalPages}
-              showSizeChanger={false}
-            />
+        />
+        <div className="flex flex-col min-h-0">
+
+          <div className=" bg-white shadow-xl min-h-0 justify-between px-4 py-4 flex items-start flex-col gap-4">
+            <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
+              <Table<IOrder>
+                columns={columns}
+                dataSource={orders}
+                rowKey="id"
+                scroll={getTableScroll(orders.length)}
+                pagination={false}
+                tableLayout="auto"
+              />
+            </div>
+            {totalPages > limit && (
+              <div className="flex w-full justify-end">
+                <Pagination
+                  current={page}
+                  onChange={(e) => setPage(e)}
+                  defaultCurrent={1}
+                  align="end"
+                  pageSize={limit}
+                  total={totalPages}
+                  showSizeChanger={false}
+                />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </>}
-      
+        </div>
+      </>}
+
       {contextHolder}
       <Modal
         width={650}
