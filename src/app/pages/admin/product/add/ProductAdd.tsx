@@ -36,9 +36,6 @@ function ProductAdd() {
   const [properties, setProperties] = useState<any>({});
   const [storageimgcolor, setStorageimgcolor] = useState<File[]>([]);
   const [handleToggleColor, setHandleToggleColor] = useState<boolean[][]>([]);
-  // console.log(variants);
-  // console.log(handleToggleColor);
-  console.log(storageimgcolor);
 
   const router = useRouter()
 
@@ -60,7 +57,6 @@ function ProductAdd() {
       theme: "snow",
     });
 
-    // Load dữ liệu cũ nếu có
     quill.root.innerHTML = editorContent;
 
     quill.on("text-change", () => {
@@ -87,15 +83,12 @@ function ProductAdd() {
         setProperties(properties);
 
         setVariants((prev: IProductVariant[]) => {
-          // Nếu `variants` đã có dữ liệu, chỉ cập nhật property_ids
           if (prev.length > 0) {
             return prev.map((variant) => ({
               ...variant,
-              property_ids: [...propertyIds], // Cập nhật property_ids theo danh mục mới
+              property_ids: [...propertyIds],
             }));
           }
-
-          // Nếu `variants` chưa có dữ liệu, tạo mới một biến thể
           return [
             {
               property_ids: [...propertyIds],
@@ -116,7 +109,7 @@ function ProductAdd() {
         );
         if (!hasInitializedToggleColor.current && selectedcategory) {
           setHandleToggleColor((prev) => [...prev, [true]]);
-          hasInitializedToggleColor.current = true; // Đánh dấu đã chạy
+          hasInitializedToggleColor.current = true;
         }
         setExpandedVariants((prev) => (prev.length === 0 ? [true] : prev));
       } catch (error) {
@@ -125,13 +118,6 @@ function ProductAdd() {
     }
     fetchProperties();
   }, [selectedcategory]);
-
-
-
-
-
-
-
   const beforeUploadcolor = (file: File, iVariant: number, iColor: number) => {
     setVariants((prev: IProductVariant[]) =>
       prev.map((variant, i) => {
@@ -158,8 +144,6 @@ function ProductAdd() {
     setStorageimgcolor((prev: File[]) => [...prev, file]);
     return false;
   };
-
-
   const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),

@@ -49,7 +49,7 @@ function Sidebar() {
       {state.load ? state.load :<>
         <div className="w-full center-flex flex-col gap-1">
         <div className="w-20 h-20 p-1.5 rounded-full border-2 border-white center-flex">
-          <img src={ user.avatar || "https://static.vecteezy.com/system/resources/thumbnails/013/360/247/small/default-avatar-photo-icon-social-media-profile-sign-symbol-vector.jpg"} alt="" className="w-full h-full rounded-full"/>
+          <img src={ user.avatar || "https://static.vecteezy.com/system/resources/thumbnails/013/360/247/small/default-avatar-photo-icon-social-media-profile-sign-symbol-vector.jpg"} alt="" className="w-full h-full rounded-full object-fill"/>
         </div>
         <div className="text-base font-bold text-white">{user.fullname}</div>
         <p className="text-sm font-medium text-white">Chào mừng bạn trở lại</p>

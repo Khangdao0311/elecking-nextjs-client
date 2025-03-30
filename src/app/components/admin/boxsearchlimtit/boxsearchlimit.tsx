@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Select, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { usePathname } from "next/navigation";
 
 const BoxSearchLimit = (props: {
   title: string;
@@ -13,10 +14,13 @@ const BoxSearchLimit = (props: {
   const handleSearch = () => {
     props.onSearch(searchValue); 
   };
-
+  console.log(searchValue);
+  const pathname = usePathname();
+  
   return (
     <div className="flex items-center bg-white shadow-xl rounded-lg px-7 py-3 justify-between">
       <div className="flex w-1/2 gap-4 items-center">
+      {pathname.startsWith("/admin/order") ? "" : <>
         <p>Tìm kiếm:</p>
         <Input
           className="w-80 h-8"
@@ -32,6 +36,7 @@ const BoxSearchLimit = (props: {
             />
           }
         />
+      </>}
       </div>
       <div className="flex w-1/2 gap-2 justify-end items-center">
         <p>Hiện</p>

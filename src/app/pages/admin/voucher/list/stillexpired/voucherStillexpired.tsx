@@ -44,15 +44,15 @@ function voucherExpired() {
     },
     {
       title: "Mã Voucher",
-      dataIndex: "id",
-      key: "id",
-      width: "20%",
+      dataIndex: "code",
+      key: "code",
+      width: "15%",
     },
     {
       title: "Ngày Bắt Đầu",
       dataIndex: "start_date",
       key: "start_date",
-      width: 140,
+      width: 160,
       render: (date) => moment(date, "YYYYMMDD").format("DD/MM/YYYY"),
     },
     {

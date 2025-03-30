@@ -58,19 +58,16 @@ function ProductEdit() {
       description: description,
     });
   }
-  // console.log(filteredImages);
 
   useEffect(() => {
     if (!images.length || !getimgs.length) return;
 
     const newFilteredFiles = images
-      .filter((image) => !getimgs.includes(image.name)) // Lọc ảnh chưa có trong getimgs
-      .map((image) => image.originFileObj as File); // Lấy File từ originFileObj
+      .filter((image) => !getimgs.includes(image.name))
+      .map((image) => image.originFileObj as File);
 
     setFilteredImages(newFilteredFiles);
   }, [images, getimgs]);
-
-  // console.log("Danh sách file:", filteredImages);
 
   useEffect(() => {
     if (!storageimgcolor.length || !getimgcolor.length) return;
