@@ -1,4 +1,4 @@
-import { LOAD, RE_RENDER, SET, SET_WISH } from "./constants";
+import { LOAD, RE_RENDER, SET, SET_WISH, SET_SEARCH } from "./constants";
 
 export const load = () => ({
   type: LOAD,
@@ -17,5 +17,10 @@ export const setWish = (payload: any) => ({
 
 export const set = (payload: any) => ({
   type: SET,
+  payload: payload,
+});
+
+export const set_search = (payload: any) => ({
+  type: SET_SEARCH,
   payload: payload,
 });

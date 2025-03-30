@@ -18,21 +18,20 @@ import { useWindowScroll } from "@uidotdev/usehooks";
 import Cookies from "js-cookie";
 import { useLifecycles } from "react-use";
 
-
 import config from "@/app/config";
 import LogoMobile from "@/app/assets/LogoMobile";
-import MenuCategory from "../MenuCategory";
-import ModalLogin from "../ModalLogin";
+import MenuCategory from "./components/MenuCategory";
+import ModalLogin from "./components/ModalLogin";
 import Logo from "@/app/assets/Logo";
 import * as userServices from "@/app/services/userService";
 import * as authServices from "@/app/services/authService";
 import * as productServices from "@/app/services/productService";
 import { useStore, actions, initState } from "@/app/store";
+import ResultSearch from "./components/ResultSearch";
 
 function Header() {
   const [state, dispatch] = useStore();
-  const [showMenu, setShowMenu] = useState(false);
-  const [search, setSearch] = useState("");
+  const [showModal, setShowModal] = useState({ menu: false, search: false });
   const [breadCrumb, setBreadCrumb] = useState<any>([]);
 
   useLifecycles(() => dispatch(actions.load()));
@@ -80,7 +79,7 @@ function Header() {
   }, [state.re_render]);
 
   useEffect(() => {
-    if (searchParams.get("search")) setSearch(searchParams.get("search") || "");
+    if (searchParams.get("search")) dispatch(actions.set_search(searchParams.get("search") || ""));
   }, [searchParams]);
 
   useEffect(() => {
@@ -271,7 +270,7 @@ function Header() {
 
   function handleSearch() {
     const searchParamsNew = new URLSearchParams(searchParams.toString());
-    searchParamsNew.set("search", `${search}`);
+    searchParamsNew.set("search", `${state.search}`);
     router.push(`${config.routes.client.products}?${searchParamsNew.toString()}`, {
       scroll: false,
     });
@@ -307,8 +306,10 @@ function Header() {
         />
       </Modal>
 
-      {/* overlay popup categpry menu */}
-      {showMenu && <div className="bg-black/30 fixed inset-0 z-20 cursor-pointer"></div>}
+      {/* overlay popup */}
+      {(showModal.search || showModal.menu) && (
+        <div className="bg-black/30 fixed inset-0 z-20 cursor-pointer"></div>
+      )}
       <header
         className={`sticky ${
           y < 100 ? "top-0" : "-top-11"
@@ -388,7 +389,7 @@ function Header() {
         <div className="bg-primary  ">
           <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
             {/* Logo elecking */}
-            <Link href={config.routes.client.home} className=" w-12 md:w-[200px] h-12">
+            <Link href={config.routes.client.home} className="w-[200px] h-12">
               <Logo className="hidden md:block" />
               <LogoMobile className="block md:hidden" />
             </Link>
@@ -398,12 +399,13 @@ function Header() {
               placement="bottomLeft"
               title={null}
               trigger="click"
-              open={showMenu}
-              onOpenChange={(e) => setShowMenu(e)}
-              zIndex={20}
+              open={showModal.menu}
+              onOpenChange={(e) => setShowModal({ menu: e, search: false })}
+              zIndex={50}
               styles={{ body: { padding: 0, overflow: "hidden", minWidth: "240px" } }}
-              overlayStyle={{ zIndex: 1050 }}
-              content={<MenuCategory onClick={() => setShowMenu(false)} />}
+              content={
+                <MenuCategory onClick={() => setShowModal({ menu: false, search: false })} />
+              }
               className="hidden md:flex w-[92px] h-12 items-center justify-center  hover:bg-white/20 cursor-pointer rounded-lg  transition-all duration-300"
             >
               <BiCategory className="w-9 h-9 text-white" />
@@ -411,24 +413,44 @@ function Header() {
             </Popover>
 
             {/* Search */}
-            <form className=" flex-1 h-12 relative">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-full rounded-lg border border-stone-300 pl-4 pr-20 outline-primaryDark"
-                placeholder="Bạn cần tìm gì ?"
-              />
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleSearch();
-                }}
-                className="w-16 h-9 center-flex bg-primary rounded-md absolute top-1/2 -translate-y-1/2 right-2"
+            <Popover
+              placement="bottomLeft"
+              title={null}
+              trigger="click"
+              open={showModal.search}
+              onOpenChange={(e) => setShowModal({ menu: false, search: e })}
+              zIndex={50}
+              styles={{
+                body: { padding: 0, overflow: "hidden", minWidth: "100%", width: "100%" },
+              }}
+              content={
+                <ResultSearch onClose={() => setShowModal({ menu: false, search: false })} />
+              }
+              className="hidden md:flex w-[740px] h-12 items-center justify-center hover:bg-white/20 cursor-pointer rounded-lg transition-all duration-300"
+            >
+              <form
+                onClick={() => setShowModal({ menu: false, search: true })}
+                className="w-[740px] h-12 relative"
               >
-                <IoSearchSharp className="w-6 h-6 text-white" />
-              </button>
-            </form>
+                <input
+                  type="text"
+                  value={state.search}
+                  onFocus={() => setShowModal({ menu: false, search: true })}
+                  onChange={(e) => dispatch(actions.set_search(e.target.value))}
+                  className="w-full h-full rounded-lg border border-stone-300 pl-4 pr-20 outline-primaryDark"
+                  placeholder="Bạn cần tìm gì ?"
+                />
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSearch();
+                  }}
+                  className="w-16 h-9 center-flex bg-primary rounded-md absolute top-1/2 -translate-y-1/2 right-2"
+                >
+                  <IoSearchSharp className="w-6 h-6 text-white" />
+                </button>
+              </form>
+            </Popover>
 
             {/* Icon Cart */}
             <div

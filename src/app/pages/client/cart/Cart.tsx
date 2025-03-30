@@ -432,13 +432,15 @@ function Cart() {
                               ]?.price_extra
                             ).toLocaleString("vi-VN")}
                             đ
-                            <del className="text-gray-700 text-sm font-normal ">
-                              {(
-                                product.variants[state.cart?.[iProduct]?.product?.variant]?.price ||
-                                0
-                              ).toLocaleString("vi-VN")}
-                              đ
-                            </del>
+                            {product.variants[0]?.price_sale !== 0 && (
+                              <del className="text-gray-700 text-sm font-normal ">
+                                {(
+                                  product.variants[state.cart?.[iProduct]?.product?.variant]
+                                    ?.price || 0
+                                ).toLocaleString("vi-VN")}
+                                đ
+                              </del>
+                            )}
                           </div>
                         </div>
 
