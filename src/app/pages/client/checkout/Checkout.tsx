@@ -570,12 +570,15 @@ function Checkout() {
                 <div className="flex gap-6 items-center">
                   <img
                     src={
+                      paymentMethod?.image ||
                       "https://www.shutterstock.com/image-vector/credit-card-cartoon-vector-illustration-600nw-2472976831.jpg"
                     }
                     alt="payment"
                     className="w-20 h-20"
                   />
-                  <p className="text-xl font-bold text-primary">Chọn phương thức thanh toán</p>
+                  <p className="text-xl font-bold text-primary">
+                    {paymentMethod?.name || "Chọn phương thức thanh toán"}
+                  </p>
                 </div>
                 <FaChevronRight className="w-6 h-6 " />
               </div>

@@ -162,7 +162,7 @@ function Home() {
             <p className="text-4xl font-bold text-white">HOT SALE</p>
           </div>
           <Link
-            href={`${config.routes.client.products}?orderby=sale-decs`}
+            href={`${config.routes.client.products}?orderby=sale-desc`}
             className="flex gap-1 items-center cursor-pointer relative group "
           >
             <em className="text-white text-sm font-base px-1">Xem tất cả </em>
