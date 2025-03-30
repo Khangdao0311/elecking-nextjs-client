@@ -22,6 +22,7 @@ function Review(props: { order_id: any; productOrder: any; onClose: any }) {
       order_id: props.order_id,
       product_id: props.productOrder.product.id,
     };
+    
     reviewServices.create(reviewNew).then((res) => {
       setRating(5);
       setContent("");
@@ -29,6 +30,7 @@ function Review(props: { order_id: any; productOrder: any; onClose: any }) {
       props.onClose();
       dispatch(actions.re_render());
     });
+
     if (fileList.length > 0) {
       const formDataUpload = new FormData();
       fileList.forEach((image: any) => {

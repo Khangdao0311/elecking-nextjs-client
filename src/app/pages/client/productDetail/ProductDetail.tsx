@@ -178,16 +178,20 @@ function ProductDetail() {
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
             <div className="flex gap-4">
               <p className="text-lg font-bold">{product?.name}</p>
-              <div className="center-flex gap-1">
-                <Rate
-                  className="text-secondaryDark text-xl"
-                  defaultValue={Math.ceil(product!.rating * 2) / 2}
-                  allowHalf
-                  disabled
-                  characterRender={(char) => <span style={{ marginInlineEnd: "6px" }}>{char}</span>}
-                />
-                <span className="text-base  select-none">( {product?.rating} )</span>
-              </div>
+              {product?.rating !== null && (
+                <div className="center-flex gap-1">
+                  <Rate
+                    className="text-secondaryDark text-xl"
+                    defaultValue={Math.ceil(product!.rating * 2) / 2}
+                    allowHalf
+                    disabled
+                    characterRender={(char) => (
+                      <span style={{ marginInlineEnd: "6px" }}>{char}</span>
+                    )}
+                  />
+                  <span className="text-base  select-none">( {product?.rating} )</span>
+                </div>
+              )}
             </div>
             <hr className="my-4" />
 
