@@ -9,7 +9,7 @@ import config from "@/app/config";
 import * as categoryService from "@/app/services/categoryService";
 import { useStore, actions } from "@/app/store";
 
-function MenuCategory({ onClick }: any) {
+function MenuCategory(props: { onClose: any }) {
   const [state, dispatch] = useStore();
   const [categories, setCategories] = useState<ICategory[]>([]);
   const pathname = usePathname();
@@ -27,7 +27,7 @@ function MenuCategory({ onClick }: any) {
           href={`${config.routes.client.products}?categoryid=${category.id}`}
           key={category.id}
           onClick={() => {
-            onClick();
+            props.onClose();
             if (pathname !== config.routes.client.products) dispatch(actions.set_routing(true));
           }}
         >

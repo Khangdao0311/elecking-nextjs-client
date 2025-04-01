@@ -9,7 +9,7 @@ import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 function Footer() {
   return (
     <footer>
-      <div className="container-custom grid grid-cols-2 lg:grid-cols-4">
+      <div className="container-custom grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <div className="p-4">
           <div className="text-base font-bold bg-gradient-to-r from-thirdaryDark to-thirdary text-transparent bg-clip-text py-3">
             CHĂM SÓC KHÁCH HÀNG

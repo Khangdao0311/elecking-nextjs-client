@@ -33,14 +33,14 @@ function ResultSearch({ onClose }: any) {
   }, [debouncedValue]);
 
   return (
-    <div className="w-[740px] flex flex-col ">
+    <div className="w-[80vw] sm:w-[500px] xl:w-[600px] flex flex-col ">
       <p className=" px-4 py-2 bg-gray-100 text-sm shrink-0 font-medium">Sản phẩm gợi ý:</p>
       <div className="w-full h-full flex flex-col overflow-auto">
         {searchResult.length === 0 && (
           <div className="w-full min-h-40 p-20 center-flex flex-col gap-2">
             <TbMoodEmpty className="w-36 h-36 text-gray-300" />
-            <p className="text-3xl text-gray-400 font-medium">
-              Không có sản phẩm "{debouncedValue}"
+            <p className="text-3xl text-center text-gray-400 font-medium">
+              Không tìm thấy sản phẩm "{debouncedValue}"
             </p>
           </div>
         )}

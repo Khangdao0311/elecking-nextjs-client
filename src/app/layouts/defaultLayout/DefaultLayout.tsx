@@ -12,8 +12,8 @@ export default function DefaultLayout({
   return (
     <Fragment>
       <Header />
-      {children}
-      <div className="md:block hidden">
+      {/* {children} */}
+      <div className="sm:block hidden">
         <Footer />
       </div>
       <BottomNavigation />

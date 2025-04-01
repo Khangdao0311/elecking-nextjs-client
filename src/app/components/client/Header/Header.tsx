@@ -15,20 +15,21 @@ import { IoIosArrowForward } from "react-icons/io";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FloatButton, Modal, Popover } from "antd";
 import { useWindowScroll } from "@uidotdev/usehooks";
-import { useLifecycles } from "react-use";
+import { useLifecycles, useWindowSize } from "react-use";
 import Cookies from "js-cookie";
 
 import { useStore, actions, initState } from "@/app/store";
 import config from "@/app/config";
 import Logo from "@/app/assets/Logo";
 import LogoMobile from "@/app/assets/LogoMobile";
-import MenuCategory from "./components/MenuCategory";
+import MenuCategory from "../MenuCategory";
 import ModalLogin from "./components/ModalLogin";
 import ResultSearch from "./components/ResultSearch";
 import * as userServices from "@/app/services/userService";
 import * as authServices from "@/app/services/authService";
 import * as productServices from "@/app/services/productService";
 import Loading from "@/app/components/client/Loading";
+import Shimmer from "../Shimmer";
 
 function Header() {
   const [state, dispatch] = useStore();
@@ -42,8 +43,11 @@ function Header() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const { width, height } = useWindowSize();
   const [scroll] = useWindowScroll();
   const { x, y } = scroll as { x: number; y: number };
+
+  if (width < 640 && showModal.menu) setShowModal({ ...showModal, menu: false });
 
   useEffect(() => {
     dispatch(actions.set_routing(false));
@@ -298,7 +302,7 @@ function Header() {
       <FloatButton.BackTop
         visibilityHeight={200}
         icon={<FaAnglesUp className="text-black" />}
-        className="w-12 h-12 !z-10"
+        className="w-12 h-full !z-10"
       />
       {/* modal login */}
       <Modal
@@ -323,31 +327,16 @@ function Header() {
           y < 100 ? "top-0" : "-top-11"
         } transition-all duration-200 w-full z-30 shadow-lg`}
       >
-        {state.load ? (
-          <div className="bg-[#E9EFFF] h-11 p-2 hidden md:block">
-            <div className="container-custom h-full relative grid grid-cols-3 gap-4">
-              <div className="relative bg-gray-300 rounded-lg  shadow !w-full h-full overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                      w-full h-full animate-[shimmer_1.5s_infinite]"
-                ></div>
-              </div>
-              <div className="relative bg-gray-300 rounded-lg  shadow !w-full h-full overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                      w-full h-full animate-[shimmer_1.5s_infinite]"
-                ></div>
-              </div>
-              <div className="relative bg-gray-300 rounded-lg  shadow !w-full h-full overflow-hidden">
-                <div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
-                      w-full h-full animate-[shimmer_1.5s_infinite]"
-                ></div>
+        <div className="bg-[#E9EFFF] h-8 lg:h-11 p-1.5 lg:p-2 hidden md:block">
+          {state.load ? (
+            <div className="container-custom h-full relative grid grid-cols-2 lg:grid-cols-3 gap-4">
+              <Shimmer classNam="w-full h-full" />
+              <Shimmer classNam="w-full h-full" />
+              <div className={"!hidden lg:flex"}>
+                <Shimmer classNam="w-full h-full " />
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="bg-[#E9EFFF] h-11 p-2 hidden md:block">
+          ) : (
             <Swiper
               className="container-custom h-full relative "
               slidesPerView={3}
@@ -391,21 +380,21 @@ function Header() {
                 />
               </SwiperSlide>
             </Swiper>
-          </div>
-        )}
+          )}
+        </div>
 
-        <div className="bg-primary  ">
-          <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+        <div className="bg-primary py-3 lg:py-4 ">
+          <div className="h-10 lg:h-12 container-custom flex gap-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
             {/* Logo elecking */}
             <Link
+              className="w-2/12 sm:w-1/12 lg:w-2/12 !shrink-0 h-full"
               onClick={() => {
                 if (pathname !== config.routes.client.home) dispatch(actions.set_routing(true));
               }}
               href={config.routes.client.home}
-              className="w-[200px] h-12"
             >
-              <Logo className="hidden md:block" />
-              <LogoMobile className="block md:hidden" />
+              <Logo className="hidden lg:block" />
+              <LogoMobile className="block lg:hidden h-full !shrink-0" />
             </Link>
 
             {/* Icon category list */}
@@ -418,17 +407,22 @@ function Header() {
               zIndex={50}
               styles={{ body: { padding: 0, overflow: "hidden", minWidth: "240px" } }}
               content={
-                <MenuCategory onClick={() => setShowModal({ menu: false, search: false })} />
+                <MenuCategory onClose={() => setShowModal({ menu: false, search: false })} />
               }
-              className="hidden md:flex w-[92px] h-12 items-center justify-center  hover:bg-white/20 cursor-pointer rounded-lg  transition-all duration-300"
             >
-              <BiCategory className="w-9 h-9 text-white" />
-              <FaCaretDown className="w-6 h-6 text-white" />
+              <div className="!hidden sm:center-flex w-1/12 h-full shrink-0 center-flex hover:bg-white/20 cursor-pointer rounded-lg  transition-all duration-300">
+                <div className="h-3/4 aspect-square cneter-flex">
+                  <BiCategory className="w-full h-full text-white" />
+                </div>
+                <div className="h-1/2 w-auto cneter-flex">
+                  <FaCaretDown className="w-auto h-full text-white" />
+                </div>
+              </div>
             </Popover>
 
             {/* Search */}
             <Popover
-              placement="bottomLeft"
+              placement={width < 640 ? "bottom" : "bottomLeft"}
               title={null}
               trigger="click"
               open={showModal.search}
@@ -440,11 +434,10 @@ function Header() {
               content={
                 <ResultSearch onClose={() => setShowModal({ menu: false, search: false })} />
               }
-              className="hidden md:flex w-[740px] h-12 items-center justify-center hover:bg-white/20 cursor-pointer rounded-lg transition-all duration-300"
             >
               <form
                 onClick={() => setShowModal({ menu: false, search: true })}
-                className="w-[740px] h-12 relative"
+                className="w-full h-full relative flex flex-1 items-center justify-center hover:bg-white/20 cursor-pointer rounded-lg transition-all duration-300"
               >
                 <input
                   type="text"
@@ -459,16 +452,18 @@ function Header() {
                     e.preventDefault();
                     handleSearch();
                   }}
-                  className="w-16 h-9 center-flex bg-primary rounded-md absolute top-1/2 -translate-y-1/2 right-2"
+                  className="aspect-[2/1] h-5/6 center-flex bg-primary rounded-md absolute top-1/2 -translate-y-1/2 right-1"
                 >
-                  <IoSearchSharp className="w-6 h-6 text-white" />
+                  <div className="h-3/4 !aspect-square">
+                    <IoSearchSharp className="w-full h-full text-white" />
+                  </div>
                 </button>
               </form>
             </Popover>
 
             {/* Icon Cart */}
             <div
-              className="w-[92px] h-12 center-flex rounded-lg hover:bg-white/20 transition-all duration-300 select-none cursor-pointer"
+              className="w-2/12 sm:w-1/12 shrink-0 h-full center-flex rounded-lg hover:bg-white/20 transition-all duration-300 select-none cursor-pointer"
               onClick={() => {
                 if (!!state.user) {
                   if (pathname !== config.routes.client.cart) dispatch(actions.set_routing(true));
@@ -490,7 +485,7 @@ function Header() {
 
             {/* Icon login / register */}
             <div
-              className="hidden w-[92px] h-12 bg-white rounded-lg md:center-flex flex-col cursor-pointer select-none"
+              className="hidden sm:center-flex w-2/12 lg:w-1/12 p-1 shrink-0 h-full bg-white rounded-lg  flex-col cursor-pointer select-none"
               onClick={() => {
                 if (!!state.user) {
                   if (pathname !== config.routes.client.account.home)
@@ -503,7 +498,7 @@ function Header() {
             >
               {state.user ? (
                 state.user.avatar ? (
-                  <div className=" w-6 h-6 rounded-full overflow-hidden">
+                  <div className=" w-6 h-6 shrink-0 rounded-full overflow-hidden">
                     <img
                       className="w-full h-full object-fill"
                       src={state.user.avatar}
@@ -524,7 +519,7 @@ function Header() {
         </div>
         {breadCrumb.length > 0 && (
           <div className="bg-white">
-            <div className="container-custom flex py-2 items-center gap-2.5 ">
+            <div className="container-custom flex py-1.5 sm:py-2 px-3 md:px-3.5 lg:px-4 xl:px-0 items-center gap-2.5 ">
               {breadCrumb.map((e: any, i: number) => (
                 <Fragment key={i}>
                   {i != 0 && <IoIosArrowForward />}
