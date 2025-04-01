@@ -302,7 +302,7 @@ function Header() {
       <FloatButton.BackTop
         visibilityHeight={200}
         icon={<FaAnglesUp className="text-black" />}
-        className="w-12 h-full !z-10"
+        className="w-12 h-12 !z-10"
       />
       {/* modal login */}
       <Modal
