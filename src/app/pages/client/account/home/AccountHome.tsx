@@ -8,7 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Grid } from "swiper/modules";
 
 import config from "@/app/config";
-import { useStore } from "@/app/store";
+import { actions, useStore } from "@/app/store";
 import SidebarAccount from "@/app/components/client/SidebarAccount";
 import ProductLoad from "@/app/components/client/ProductLoad";
 import Product from "@/app/components/client/Product";
@@ -72,7 +72,7 @@ function AccountHome() {
                 {state?.user?.fullname || "Họ Và Tên"}
               </p>
               <p className="text-base text-gray-700 font-medium px-6 py-1 border border-primary rounded-lg">
-                {state?.user?.phone || "Số điện thoại"}
+                {state?.user?.email || "Email"}
               </p>
             </div>
           </div>
@@ -83,6 +83,7 @@ function AccountHome() {
                 <p className="text-3xl font-bold text-white uppercase">HOT SALE</p>
               </div>
               <Link
+                onClick={() => dispatch(actions.set_routing(true))}
                 href={`${config.routes.client.products}?orderby=sale-decs`}
                 className="flex gap-1 items-center cursor-pointer relative group "
               >
@@ -158,6 +159,7 @@ function AccountHome() {
                 ))}
               {categories.map((category: ICategory, iCategory: number) => (
                 <Link
+                  onClick={() => dispatch(actions.set_routing(true))}
                   href={`${config.routes.client.products}?categoryid=${category.id}`}
                   key={iCategory}
                   className="relative bg-primary rounded-lg w-28 h-28 shadow-lg p-1 hover:scale-110 hover:shadow-2xl transition-all duration-200"
@@ -213,6 +215,7 @@ function AccountHome() {
                 {brands.map((brand: IBrand, iBrand: number) => (
                   <SwiperSlide key={iBrand} className="overflow-hidden rounded-lg shadow-xl">
                     <Link
+                      onClick={() => dispatch(actions.set_routing(true))}
                       href={`${config.routes.client.products}?brandid=${brand.id}`}
                       className="h-36 select-none "
                     >

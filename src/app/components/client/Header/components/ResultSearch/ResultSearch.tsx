@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { TbMoodEmpty } from "react-icons/tb";
+import { usePathname } from "next/navigation";
 
 import config from "@/app/config";
 import { useDebounce } from "@/app/hooks";
-import { useStore } from "@/app/store";
+import { useStore, actions } from "@/app/store";
 import * as productServices from "@/app/services/productService";
-import { TbMoodEmpty } from "react-icons/tb";
 
 function ResultSearch({ onClose }: any) {
   const [state, dispatch] = useStore();
   const [searchResult, setSearchResult] = useState<IProduct[]>([]);
+  const pathname = usePathname();
 
   const debouncedValue = useDebounce(state.search, 500);
 
@@ -29,6 +31,7 @@ function ResultSearch({ onClose }: any) {
         setSearchResult(res.data);
       });
   }, [debouncedValue]);
+
   return (
     <div className="w-[740px] flex flex-col ">
       <p className=" px-4 py-2 bg-gray-100 text-sm shrink-0 font-medium">Sản phẩm gợi ý:</p>
@@ -43,7 +46,11 @@ function ResultSearch({ onClose }: any) {
         )}
         {searchResult.map((product: IProduct, iProduct: number) => (
           <Link
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              if (!pathname.startsWith(config.routes.client.productDetail))
+                dispatch(actions.set_routing(true));
+            }}
             href={`${config.routes.client.productDetail}/${product.id}`}
             className="px-6 py-2 flex gap-4 hover:bg-gray-100 cursor-pointer"
             key={iProduct}

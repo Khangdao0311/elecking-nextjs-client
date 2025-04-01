@@ -9,25 +9,26 @@ import { BiCategory } from "react-icons/bi";
 import { FaCaretDown } from "react-icons/fa";
 import { IoSearchSharp } from "react-icons/io5";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import { FaAngleLeft, FaAngleRight, FaAnglesUp, FaCircleUser } from "react-icons/fa6";
+import { FaAnglesUp, FaCircleUser } from "react-icons/fa6";
 import { Fragment, useEffect, useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FloatButton, Modal, Popover } from "antd";
 import { useWindowScroll } from "@uidotdev/usehooks";
-import Cookies from "js-cookie";
 import { useLifecycles } from "react-use";
+import Cookies from "js-cookie";
 
+import { useStore, actions, initState } from "@/app/store";
 import config from "@/app/config";
+import Logo from "@/app/assets/Logo";
 import LogoMobile from "@/app/assets/LogoMobile";
 import MenuCategory from "./components/MenuCategory";
 import ModalLogin from "./components/ModalLogin";
-import Logo from "@/app/assets/Logo";
+import ResultSearch from "./components/ResultSearch";
 import * as userServices from "@/app/services/userService";
 import * as authServices from "@/app/services/authService";
 import * as productServices from "@/app/services/productService";
-import { useStore, actions, initState } from "@/app/store";
-import ResultSearch from "./components/ResultSearch";
+import Loading from "@/app/components/client/Loading";
 
 function Header() {
   const [state, dispatch] = useStore();
@@ -43,6 +44,10 @@ function Header() {
 
   const [scroll] = useWindowScroll();
   const { x, y } = scroll as { x: number; y: number };
+
+  useEffect(() => {
+    dispatch(actions.set_routing(false));
+  }, [pathname]);
 
   useEffect(() => {
     const userJSON = localStorage.getItem("user") || "null";
@@ -113,7 +118,7 @@ function Header() {
             },
             {
               name: `${res.data.name}`,
-              link: `${config.routes.client.productDetail}/${id}`,
+              link: `${config.routes.client.productDetail}${id}`,
             },
           ]);
         });
@@ -271,6 +276,7 @@ function Header() {
   function handleSearch() {
     const searchParamsNew = new URLSearchParams(searchParams.toString());
     searchParamsNew.set("search", `${state.search}`);
+    if (pathname !== config.routes.client.products) dispatch(actions.set_routing(true));
     router.push(`${config.routes.client.products}?${searchParamsNew.toString()}`, {
       scroll: false,
     });
@@ -281,11 +287,13 @@ function Header() {
     Cookies.remove("access_token");
     Cookies.remove("refresh_token");
     dispatch(actions.set({ ...initState, load: false }));
+    if (pathname !== config.routes.client.login) dispatch(actions.set_routing(true));
     router.push(config.routes.client.login);
   }
 
   return (
     <>
+      {state.routing && <Loading />}
       {/* nút scroll top  */}
       <FloatButton.BackTop
         visibilityHeight={200}
@@ -389,7 +397,13 @@ function Header() {
         <div className="bg-primary  ">
           <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
             {/* Logo elecking */}
-            <Link href={config.routes.client.home} className="w-[200px] h-12">
+            <Link
+              onClick={() => {
+                if (pathname !== config.routes.client.home) dispatch(actions.set_routing(true));
+              }}
+              href={config.routes.client.home}
+              className="w-[200px] h-12"
+            >
               <Logo className="hidden md:block" />
               <LogoMobile className="block md:hidden" />
             </Link>
@@ -457,6 +471,7 @@ function Header() {
               className="w-[92px] h-12 center-flex rounded-lg hover:bg-white/20 transition-all duration-300 select-none cursor-pointer"
               onClick={() => {
                 if (!!state.user) {
+                  if (pathname !== config.routes.client.cart) dispatch(actions.set_routing(true));
                   router.push(config.routes.client.cart);
                 } else {
                   dispatch(actions.set({ show: { ...state.show, login: true } }));
@@ -478,6 +493,8 @@ function Header() {
               className="hidden w-[92px] h-12 bg-white rounded-lg md:center-flex flex-col cursor-pointer select-none"
               onClick={() => {
                 if (!!state.user) {
+                  if (pathname !== config.routes.client.account.home)
+                    dispatch(actions.set_routing(true));
                   router.push(config.routes.client.account.home);
                 } else {
                   dispatch(actions.set({ show: { ...state.show, login: true } }));
@@ -511,7 +528,14 @@ function Header() {
               {breadCrumb.map((e: any, i: number) => (
                 <Fragment key={i}>
                   {i != 0 && <IoIosArrowForward />}
-                  <Link href={e.link} className="text-xs font-normal text-gray-700">
+
+                  <Link
+                    onClick={() => {
+                      if (pathname !== e.link) dispatch(actions.set_routing(true));
+                    }}
+                    href={e.link}
+                    className="text-xs font-normal text-gray-700"
+                  >
                     {e.name}
                   </Link>
                 </Fragment>

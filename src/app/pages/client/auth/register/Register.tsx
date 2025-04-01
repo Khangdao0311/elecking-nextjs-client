@@ -11,7 +11,7 @@ import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
-import { useStore } from "@/app/store";
+import { actions, useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
 
 function Register() {
@@ -43,6 +43,7 @@ function Register() {
           setRegisterStatus(true);
           setShowModal(true);
           setTimeout(() => {
+            dispatch(actions.set_routing(true));
             router.push(config.routes.client.login);
           }, 1000);
         } else {
@@ -245,6 +246,7 @@ function Register() {
                     <div className="flex items-center justify-center w-full gap-1.5">
                       <div>Bạn đã có tài khoản ?</div>
                       <Link
+                        onClick={() => dispatch(actions.set_routing(true))}
                         href={config.routes.client.login}
                         className="text-primary font-semibold text-sm hover:underline cursor-pointer"
                       >

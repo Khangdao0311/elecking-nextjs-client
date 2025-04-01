@@ -2,14 +2,17 @@
 import Link from "next/link";
 import { FaRegHeart, FaStar, FaRegStar, FaHeart } from "react-icons/fa6";
 import { Fragment, useEffect, useState } from "react";
+import { Rate } from "antd";
 
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
-import { Rate } from "antd";
+import { usePathname } from "next/navigation";
 
 function Product(props: { product: IProduct }) {
   const [state, dispatch] = useStore();
+
+  const pathname = usePathname();
 
   function handleAddToWish(id: string) {
     authServices.wish(state.user.id, id).then((res) => {
@@ -27,6 +30,10 @@ function Product(props: { product: IProduct }) {
     <div className="border rounded-2xl shadow-lg p-4 w-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:border-primary hover:shadow-2xl  ">
       <Link
         href={`${config.routes.client.productDetail}/${props.product.id}`}
+        onClick={() => {
+          if (pathname !== `${config.routes.client.productDetail}/${props.product.id}`)
+            dispatch(actions.set_routing(true));
+        }}
         className="w-full aspect-square"
       >
         <img
@@ -37,6 +44,10 @@ function Product(props: { product: IProduct }) {
       </Link>
       <Link
         href={`${config.routes.client.productDetail}/${props.product.id}`}
+        onClick={() => {
+          if (pathname !== `${config.routes.client.productDetail}/${props.product.id}`)
+            dispatch(actions.set_routing(true));
+        }}
         className="text-base w-full h-12 line-clamp-2 font-medium"
       >
         {props.product.name}

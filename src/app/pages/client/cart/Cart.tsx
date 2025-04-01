@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
 import { HiOutlineTicket } from "react-icons/hi";
@@ -22,6 +22,7 @@ function Cart() {
   const [productsCart, setProductsCart] = useState<IProduct[]>([]);
   const [voucher, setVoucher] = useState<IVoucher | null>(null);
   const [showModalVoucher, setShowModalVoucher] = useState(false);
+  const [itemCartRemove, setItemCartRemove] = useState<any>(null);
 
   const [total, setTotal] = useState<any>({
     original: 0,
@@ -29,6 +30,7 @@ function Cart() {
   });
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const [api, contextHolder] = notification.useNotification();
   const openNotification = (message: string) => {
@@ -266,6 +268,7 @@ function Cart() {
           .filter((item: any) => item !== null),
       };
       localStorage.setItem("checkout", JSON.stringify(checkout));
+      dispatch(actions.set_routing(true));
       router.push(config.routes.client.checkout);
     } else {
       openNotification("Vui lòng chọn sản phẩm !");
@@ -275,6 +278,7 @@ function Cart() {
   return (
     <>
       {contextHolder}
+      {/* Modal voucher */}
       <Modal
         open={showModalVoucher}
         onCancel={() => setShowModalVoucher(false)}
@@ -291,6 +295,41 @@ function Cart() {
           setVoucher={setVoucher}
           onClose={() => setShowModalVoucher(false)}
         />
+      </Modal>
+      {/* Modal bạn có muốn xóa sản phẩm này không ? */}
+      <Modal
+        open={!!itemCartRemove}
+        onCancel={() => setItemCartRemove(null)}
+        footer={null}
+        title={null}
+        centered
+        maskClosable={false}
+        closable={false}
+        width="auto"
+      >
+        <div className="p-2 flex flex-col gap-4 w-[400px]">
+          <p className="w-full text-center text-lg font-bold text-primary">
+            Bạn có muốn xóa sản phẩm này không ?
+          </p>
+          <p className="font-medium text-base py-4">{itemCartRemove?.name}</p>
+          <div className="w-full flex gap-2 items-center justify-between">
+            <button
+              className="w-1/2 center-flex py-2 rounded-sm border border-primary text-primary text-base font-bold"
+              onClick={() => {
+                handleRemoveItem(itemCartRemove?.index);
+                setItemCartRemove(null);
+              }}
+            >
+              Có
+            </button>
+            <button
+              className="w-1/2 center-flex py-2 rounded-sm border border-primary text-white bg-primary text-base font-bold"
+              onClick={() => setItemCartRemove(null)}
+            >
+              Không
+            </button>
+          </div>
+        </div>
       </Modal>
       <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <section>
@@ -417,8 +456,9 @@ function Cart() {
                         </label>
                         <div className="flex w-64 flex-col gap-3">
                           <Link
-                            className="font-bold text-base"
+                            onClick={() => dispatch(actions.set_routing(true))}
                             href={`${config.routes.client.productDetail}/${product.id}`}
+                            className="font-bold text-base"
                           >
                             {product.name}
                           </Link>
@@ -564,7 +604,28 @@ function Cart() {
                           <button
                             onClick={() => {
                               if (state.cart?.[iProduct]?.quantity - 1 === 0) {
-                                openNotification("????");
+                                setItemCartRemove({
+                                  index: iProduct,
+                                  name: `${product.name} ${
+                                    product.variants[
+                                      state.cart[iProduct].product.variant
+                                    ].properties
+                                      .map((e: any) => e.name)
+                                      .join(" - ") !== ""
+                                      ? `- ${product.variants[
+                                          state.cart[iProduct].product.variant
+                                        ].properties
+                                          .map((e: any) => e.name)
+                                          .join(" - ")}`
+                                      : ""
+                                  }
+                 - ${
+                   product.variants[state.cart[iProduct].product.variant].colors[
+                     state.cart[iProduct].product.color
+                   ].name
+                 }
+                  `,
+                                });
                               } else {
                                 handleChangeQuantity(
                                   iProduct,
@@ -811,6 +872,7 @@ function Cart() {
             </div>
           ) : (
             <Link
+              onClick={() => dispatch(actions.set_routing(true))}
               href={config.routes.client.products}
               className="text-white text-lg font-medium w-full h-full center-flex container-custom cursor-pointer p-4 bg-primary border border-gray-300 rounded-2xl shadow-xl center-flex"
             >

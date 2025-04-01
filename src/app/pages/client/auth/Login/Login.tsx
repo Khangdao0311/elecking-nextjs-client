@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 import config from "@/app/config";
-import { useStore } from "@/app/store";
+import { actions, useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
 import Shimmer from "@/app/components/client/Shimmer";
 import * as authServices from "@/app/services/authService";
@@ -47,6 +47,7 @@ function Login() {
         setLoginStatus(true);
         setShowModal(true);
         setTimeout(() => {
+          dispatch(actions.set_routing(true));  
           router.push(config.routes.client.home);
         }, 1000);
       } else {
@@ -164,6 +165,7 @@ function Login() {
 
                     <div className="text-right w-full">
                       <Link
+                        onClick={() => dispatch(actions.set_routing(true))}
                         href={config.routes.client.forgotPassword}
                         className="text-blue-500 text-sm font-bold hover:underline"
                       >
@@ -198,6 +200,7 @@ function Login() {
                     <div className="flex items-center justify-center w-full gap-1.5">
                       <div>Bạn mới đến ElecKing ?</div>
                       <Link
+                        onClick={() => dispatch(actions.set_routing(true))}
                         href={config.routes.client.register}
                         className="text-primary font-semibold text-sm hover:underline cursor-pointer"
                       >

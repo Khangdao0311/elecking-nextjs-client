@@ -8,7 +8,7 @@ import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 import { Input, Modal } from "antd";
 
 import Loading from "@/app/components/client/Loading";
-import { useStore } from "@/app/store";
+import { actions, useStore } from "@/app/store";
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
@@ -22,7 +22,10 @@ function ResetPassword() {
   const { token } = useParams();
   const router = useRouter();
 
-  if (!token) router.push(config.routes.client.forgotPassword);
+  if (!token) {
+    dispatch(actions.set_routing(true));
+    router.push(config.routes.client.forgotPassword);
+  }
 
   const validationSchema = Yup.object().shape({
     passwordNew: Yup.string()
@@ -45,6 +48,7 @@ function ResetPassword() {
         setStatus(true);
         setShowModal(true);
         setTimeout(() => {
+          dispatch(actions.set_routing(true));
           router.push(config.routes.client.login);
         }, 1500);
       }
@@ -52,6 +56,7 @@ function ResetPassword() {
         setStatus(false);
         setShowModal(true);
         setTimeout(() => {
+          dispatch(actions.set_routing(true));
           router.push(config.routes.client.forgotPassword);
         }, 1500);
       }

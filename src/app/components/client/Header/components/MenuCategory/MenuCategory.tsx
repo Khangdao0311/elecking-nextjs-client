@@ -3,12 +3,16 @@
 import Link from "next/link";
 import { FaChevronRight } from "react-icons/fa6";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import config from "@/app/config";
 import * as categoryService from "@/app/services/categoryService";
+import { useStore, actions } from "@/app/store";
 
 function MenuCategory({ onClick }: any) {
+  const [state, dispatch] = useStore();
   const [categories, setCategories] = useState<ICategory[]>([]);
+  const pathname = usePathname();
 
   useEffect(() => {
     categoryService
@@ -22,7 +26,10 @@ function MenuCategory({ onClick }: any) {
         <Link
           href={`${config.routes.client.products}?categoryid=${category.id}`}
           key={category.id}
-          onClick={onClick}
+          onClick={() => {
+            onClick();
+            if (pathname !== config.routes.client.products) dispatch(actions.set_routing(true));
+          }}
         >
           <div className="group flex gap-2 p-2 items-center hover:bg-gray-200 cursor-pointer">
             <i

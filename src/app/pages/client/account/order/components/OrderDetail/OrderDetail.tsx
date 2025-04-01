@@ -88,6 +88,7 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
     };
 
     localStorage.setItem("checkout", JSON.stringify(checkout));
+    dispatch(actions.set_routing(true));
     router.push(config.routes.client.checkout);
   }
 

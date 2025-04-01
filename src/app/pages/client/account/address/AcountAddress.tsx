@@ -50,7 +50,10 @@ function AccountAddress() {
           closable={false}
           width="auto"
         >
-          <ModalAddressNew onClose={() => setShowModal({ new: false, edit: false })} />
+          <ModalAddressNew
+            status={true}
+            onClose={() => setShowModal({ new: false, edit: false })}
+          />
         </Modal>
         {/* modal address edit */}
         <Modal

@@ -1,20 +1,20 @@
 "use client";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Grid } from "swiper/modules";
-import { ImFire } from "react-icons/im";
+
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation } from "swiper/modules";
+import { ImFire } from "react-icons/im";
 import { Fragment, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
-import Product from "@/app/components/client/Product";
-import { BsCardImage } from "react-icons/bs";
 
 import config from "@/app/config";
-import * as productServices from "@/app/services/productService";
+import { useStore, actions } from "@/app/store";
 import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
-import * as userServices from "@/app/services/userService";
+import * as productServices from "@/app/services/productService";
 import ProductLoad from "@/app/components/client/ProductLoad";
-import { useStore } from "@/app/store";
+import Product from "@/app/components/client/Product";
 import Shimmer from "@/app/components/client/Shimmer";
 
 const imageSlide = [
@@ -30,57 +30,51 @@ function Home() {
   const [state, dispatch] = useStore();
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
-  const [load, setLoad] = useState<Boolean>(false);
+  const [productSale, setProductSale] = useState([]);
+  const [productHot, setProductHot] = useState([]);
+  const [productLaptop, setProductLaptop] = useState([]);
+  const [productTablet, setProductTablet] = useState([]);
+  const [headPhone, setHeadPhone] = useState([]);
+
+  const pathname = usePathname();
 
   useEffect(() => {
     categoryServices
-      .getQuery({ limit: 0, orderby: "id-asc" })
+      .getQuery({ limit: 0, orderby: "id-asc", status: 1 })
       .then((res) => setCategories(res.data));
-    brandServices.getQuery({ limit: 0, orderby: "id-asc" }).then((res) => setBrands(res.data));
-  }, []);
 
-  // Lấy Sản Phẩm Sale
-  const [productSale, setProductSale] = useState([]);
-  useEffect(() => {
-    const query = { orderby: "sale-desc", limit: 5 };
-    productServices.getQuery(query).then((res) => setProductSale(res.data));
-  }, []);
+    brandServices
+      .getQuery({ limit: 0, orderby: "id-asc", status: 1 })
+      .then((res) => setBrands(res.data));
 
-  // Lấy Sản Phẩm Hot
-  const [productHot, setProductHot] = useState([]);
-  useEffect(() => {
-    const query = { orderby: "view-desc", limit: 5 };
-    productServices.getQuery(query).then((res) => setProductHot(res.data));
-  }, []);
+    productServices
+      .getQuery({ orderby: "sale-desc", limit: 5 })
+      .then((res) => setProductSale(res.data));
 
-  // Lấy Sản Phẩm theo danh mục laptop
-  const [productLaptop, setProductLaptop] = useState([]);
-  useEffect(() => {
-    const query = {
-      categoryid: "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
-      limit: 10,
-    };
-    productServices.getQuery(query).then((res) => setProductLaptop(res.data));
-  }, []);
+    productServices
+      .getQuery({ orderby: "view-desc", limit: 5 })
+      .then((res) => setProductHot(res.data));
 
-  // Lấy Sản Phẩm theo danh mục máy tính bảng
-  const [productTablet, setProductTablet] = useState([]);
-  useEffect(() => {
-    const query = {
-      categoryid: "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
-      limit: 10,
-    };
-    productServices.getQuery(query).then((res) => setProductTablet(res.data));
-  }, []);
+    productServices
+      .getQuery({
+        categoryid: "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
+        limit: 10,
+      })
+      .then((res) => setProductLaptop(res.data));
 
-  // Lấy Sản Phẩm theo danh mục tai nghe
-  const [headPhone, setHeadPhone] = useState([]);
-  useEffect(() => {
-    const query = {
-      categoryid: "67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a",
-      limit: 10,
-    };
-    productServices.getQuery(query).then((res) => setHeadPhone(res.data));
+    productServices
+      .getQuery({
+        categoryid: "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
+        limit: 10,
+      })
+      .then((res) => setProductTablet(res.data));
+
+    productServices
+      .getQuery({
+        categoryid: "67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a",
+        limit: 10,
+      })
+      .then((res) => setHeadPhone(res.data));
   }, []);
 
   return (
@@ -162,6 +156,7 @@ function Home() {
             <p className="text-4xl font-bold text-white">HOT SALE</p>
           </div>
           <Link
+            onClick={() => dispatch(actions.set_routing(true))}
             href={`${config.routes.client.products}?orderby=sale-desc`}
             className="flex gap-1 items-center cursor-pointer relative group "
           >
@@ -206,6 +201,7 @@ function Home() {
             </p>
           </div>
           <Link
+            onClick={() => dispatch(actions.set_routing(true))}
             href={`${config.routes.client.products}?orderby=view-desc`}
             className="flex gap-1 items-center cursor-pointer relative group "
           >
@@ -214,7 +210,8 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-4">
-          {productHot.length === 0 &&
+          {state.load &&
+            productHot.length === 0 &&
             Array.from({ length: 5 }).map((_, i: number) => (
               <Fragment key={i}>
                 <ProductLoad />
@@ -237,6 +234,7 @@ function Home() {
             </p>
           </div>
           <Link
+            onClick={() => dispatch(actions.set_routing(true))}
             href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578`}
             className="flex gap-1 items-center cursor-pointer relative group "
           >
@@ -245,7 +243,8 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          {productTablet.length === 0 &&
+          {state.load &&
+            productTablet.length === 0 &&
             Array.from({ length: 5 }).map((_, i: number) => (
               <Fragment key={i}>
                 <ProductLoad />
@@ -268,6 +267,7 @@ function Home() {
             </p>
           </div>
           <Link
+            onClick={() => dispatch(actions.set_routing(true))}
             href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574`}
             className="flex gap-1 items-center cursor-pointer relative group "
           >
@@ -276,7 +276,8 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          {productLaptop.length === 0 &&
+          {state.load &&
+            productLaptop.length === 0 &&
             Array.from({ length: 5 }).map((_, i: number) => (
               <Fragment key={i}>
                 <ProductLoad />
@@ -299,6 +300,7 @@ function Home() {
             </p>
           </div>
           <Link
+            onClick={() => dispatch(actions.set_routing(true))}
             href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a`}
             className="flex gap-1 items-center cursor-pointer relative group "
           >
@@ -307,7 +309,8 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-5 container-custom gap-2.5">
-          {headPhone.length === 0 &&
+          {state.load &&
+            headPhone.length === 0 &&
             Array.from({ length: 5 }).map((_, i: number) => (
               <Fragment key={i}>
                 <ProductLoad />
@@ -331,7 +334,7 @@ function Home() {
           </div>
         </div>
         <div className="flex flex-wrap container-custom gap-3.5">
-          {categories.length === 0 &&
+          {(state.load && categories.length) === 0 &&
             Array.from({ length: 9 }).map((_, i: number) => (
               <div
                 key={i}
@@ -343,6 +346,7 @@ function Home() {
             ))}
           {categories.map((category: ICategory, iCategory: number) => (
             <Link
+            onClick={() => dispatch(actions.set_routing(true))}
               href={`${config.routes.client.products}?categoryid=${category.id}`}
               key={iCategory}
               className="relative bg-primary rounded-lg w-32 h-32 shadow-lg p-1 hover:scale-110 hover:shadow-2xl transition-all duration-200"
@@ -364,7 +368,7 @@ function Home() {
           </div>
         </div>
 
-        {categories.length === 0 && (
+        {state.load && brands.length === 0 && (
           <div className="grid grid-cols-4 container-custom gap-4 !h-36">
             {Array.from({ length: 4 }).map((_, i: number) => (
               <Fragment key={i}>
@@ -373,7 +377,7 @@ function Home() {
             ))}
           </div>
         )}
-        {categories.length !== 0 && (
+        {brands.length !== 0 && (
           <Swiper
             spaceBetween={16}
             slidesPerView={4}
@@ -395,6 +399,7 @@ function Home() {
             {brands.map((brand: IBrand, iBrand: number) => (
               <SwiperSlide key={iBrand} className="overflow-hidden rounded-lg shadow-xl">
                 <Link
+                  onClick={() => dispatch(actions.set_routing(true))}
                   href={`${config.routes.client.products}?brandid=${brand.id}`}
                   className="h-36 select-none "
                 >

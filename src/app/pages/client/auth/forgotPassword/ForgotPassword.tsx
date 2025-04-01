@@ -6,13 +6,15 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { MdMailLock } from "react-icons/md";
 
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import Loading from "@/app/components/client/Loading";
-import { MdMailLock } from "react-icons/md";
+import { useStore, actions } from "@/app/store";
 
 function ForgotPassword() {
+  const [state, dispatch] = useStore();
   const [sent, setSent] = useState(false);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -69,7 +71,9 @@ function ForgotPassword() {
                     <div className="flex items-center w-[100%] gap-28">
                       <button
                         className="text-primary"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
+                          dispatch(actions.set_routing(true));
                           router.push(config.routes.client.login);
                         }}
                       >
@@ -127,8 +131,10 @@ function ForgotPassword() {
 
                 <button
                   onClick={() => {
+                    dispatch(actions.set_routing(true));
                     router.push(config.routes.client.login);
                   }}
+                  type="submit"
                   className={`text-lg text-center font-bold text-white py-2.5 w-full bg-primary rounded`}
                 >
                   OK

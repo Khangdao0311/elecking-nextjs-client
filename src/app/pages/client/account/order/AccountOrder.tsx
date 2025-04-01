@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import {
   BsFillClipboard2CheckFill,
-  BsFillClipboard2Fill,
   BsFillClipboard2XFill,
 } from "react-icons/bs";
 import { TbMoodEmpty } from "react-icons/tb";
@@ -21,6 +20,7 @@ function AccountOrder() {
   const [state, dispatch] = useStore();
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [order, setOrder] = useState<IOrder | null>(null);
+  const [totalOrder, setTotalOrder] = useState<any>();
   const [productOrder, setProductOrder] = useState<any>(null);
   const [status, setStatus] = useState<string>("");
   const [show, setShow] = useState({
@@ -32,7 +32,12 @@ function AccountOrder() {
     if (state.user) {
       orderServices
         .getQuery({ user_id: state.user.id, limit: null, status: status })
-        .then((res) => setOrders(res.data));
+        .then((res) => {
+          console.log(res);
+
+          setOrders(res.data);
+          setTotalOrder(res.total);
+        });
     }
   }, [state.user, status, state.re_render]);
 
@@ -85,10 +90,10 @@ function AccountOrder() {
               className={`${
                 status === ""
                   ? "border-primary bg-primary text-white"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-              } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
-              Tất cả
+              Tất cả ({totalOrder?.["all"] || 0})
             </div>
             <div
               onClick={() => {
@@ -97,10 +102,10 @@ function AccountOrder() {
               className={`${
                 status === "2"
                   ? "border-primary bg-primary text-white"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-              } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
-              Chờ xác nhận
+              Chờ xác nhận ({totalOrder?.["2"] || 0})
             </div>
             <div
               onClick={() => {
@@ -109,10 +114,10 @@ function AccountOrder() {
               className={`${
                 status === "3"
                   ? "border-primary bg-primary text-white"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-              } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
-              Đã xác nhận
+              Đã xác nhận ({totalOrder?.["3"] || 0})
             </div>
             <div
               onClick={() => {
@@ -121,10 +126,10 @@ function AccountOrder() {
               className={`${
                 status === "4"
                   ? "border-primary bg-primary text-white"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-              } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
-              Đang vận chuyển
+              Đang vận chuyển ({totalOrder?.["4"] || 0})
             </div>
             <div
               onClick={() => {
@@ -133,10 +138,10 @@ function AccountOrder() {
               className={`${
                 status === "1"
                   ? "border-primary bg-primary text-white"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-              } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
-              Đã nhận
+              Đã nhận ({totalOrder?.["1"] || 0})
             </div>
             <div
               onClick={() => {
@@ -145,10 +150,10 @@ function AccountOrder() {
               className={`${
                 status === "0"
                   ? "border-primary bg-primary text-white"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary"
-              } px-8 py-2.5 text-base font-medium border rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200`}
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
-              Đã hủy
+              Đã hủy ({totalOrder?.["0"] || 0})
             </div>
           </div>
           <div className="w-full flex flex-col gap-4 relative">
@@ -299,7 +304,7 @@ function AccountOrder() {
                       </g>
                       <defs>
                         <clipPath id="clip0_553_10">
-                          <rect width="24" height="24" fill="white" />  
+                          <rect width="24" height="24" fill="white" />
                         </clipPath>
                       </defs>
                     </svg>

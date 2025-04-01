@@ -10,6 +10,7 @@ import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
   FaAngleLeft,
   FaAngleRight,
+  FaCircleCheck,
   FaCircleUser,
   FaHeart,
   FaMinus,
@@ -22,7 +23,6 @@ import moment from "moment";
 import { TbMoodEmpty } from "react-icons/tb";
 
 import Product from "@/app/components/client/Product";
-import ModalAddProduct from "@/app/pages/client/productDetail/components/ModalAddProduct";
 import * as productServices from "@/app/services/productService";
 import * as authServices from "@/app/services/authService";
 import * as reviewServices from "@/app/services/reviewService";
@@ -32,8 +32,7 @@ import config from "@/app/config";
 import { useStore, actions, initState } from "@/app/store";
 import ProductLoad from "@/app/components/client/ProductLoad";
 import Shimmer from "@/app/components/client/Shimmer";
-
-SwiperCore.use([Navigation, Thumbs]);
+import Loading from "@/app/components/client/Loading";
 
 function ProductDetail() {
   const [state, dispatch] = useStore();
@@ -50,6 +49,7 @@ function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [rating, setRating] = useState("");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const { id }: any = useParams();
 
@@ -83,6 +83,7 @@ function ProductDetail() {
   }, [id, rating, state.re_render, page]);
 
   function handleAddToCart() {
+    setLoading(true);
     let isSame = false;
 
     const cartNew = state.cart.map((item: any) => {
@@ -118,7 +119,10 @@ function ProductDetail() {
     }
 
     authServices.cart(state.user.id, cartNew).then((res) => {
+      setLoading(false);
       dispatch(actions.re_render());
+      setShowModal(true);
+      setTimeout(() => setShowModal(false), 1000);
     });
   }
 
@@ -143,6 +147,7 @@ function ProductDetail() {
       voucher: null,
     };
     localStorage.setItem("checkout", JSON.stringify(checkout));
+    setLoading(true);
     router.push(config.routes.client.checkout);
   }
 
@@ -166,12 +171,23 @@ function ProductDetail() {
 
   return (
     <>
-      {showModal && (
-        <div onClick={() => setShowModal(false)}>
-          <ModalAddProduct />
-          <div className="overlay"></div>
+      {loading && <Loading />}
+      <Modal
+        open={showModal}
+        footer={null}
+        title={null}
+        centered
+        maskClosable={false}
+        closable={false}
+        width="auto"
+      >
+        <div className="center-flex flex-col gap-4">
+          <div>
+            <FaCircleCheck className="w-20 h-20 text-green-500 " />
+          </div>
+          <div className="text-lg font-medium text-green-700">Thêm giỏ hàng thành công !</div>
         </div>
-      )}
+      </Modal>
       {!state.load && product ? (
         <>
           {/* Chi tiết sản phẩm, giá và type */}
@@ -199,53 +215,55 @@ function ProductDetail() {
               {/* hình ảnh */}
               <div className="w-7/12 flex flex-col gap-4">
                 <div className="w-full h-[365px] border border-gray-200 rounded-2xl relative overflow-hidden select-none shadow-lg">
-                  <Swiper
-                    centeredSlides={true}
-                    autoplay={{
-                      delay: 2500,
-                      disableOnInteraction: false,
-                    }}
-                    navigation={{
-                      nextEl: ".custom-next",
-                      prevEl: ".custom-prev",
-                    }}
-                    modules={[Autoplay, Navigation]}
-                    thumbs={{ swiper: thumbsSwiper }}
-                    className="!w-full !h-full group"
-                    onSlideChangeTransitionEnd={(swiper) => setIndexSwiper(swiper.realIndex)} // Sử dụng `realIndex`
-                    onSwiper={setMainSwiper}
-                  >
-                    <SwiperSlide>
-                      <img
-                        className="w-full h-full object-contain"
-                        src={
-                          product.variants[iVariant === -1 ? 0 : iVariant].colors[
-                            iColor === -1 ? 0 : iColor
-                          ].image
-                        }
-                      />
-                    </SwiperSlide>
-                    {product?.images.map((img, index) => (
-                      <SwiperSlide key={index}>
-                        <img className="w-full h-full object-contain" src={img} />
+                  <Image.PreviewGroup>
+                    <Swiper
+                      centeredSlides={true}
+                      autoplay={{
+                        delay: 2500,
+                        disableOnInteraction: false,
+                      }}
+                      navigation={{
+                        nextEl: ".custom-next",
+                        prevEl: ".custom-prev",
+                      }}
+                      modules={[Autoplay, Navigation, Thumbs]}
+                      thumbs={{ swiper: thumbsSwiper }}
+                      className="!w-full !h-full group"
+                      onSlideChangeTransitionEnd={(swiper) => setIndexSwiper(swiper.realIndex)} // Sử dụng `realIndex`
+                      onSwiper={setMainSwiper}
+                    >
+                      <SwiperSlide className="center-flex">
+                        <Image
+                          className="w-full h-full object-contain"
+                          src={
+                            product.variants[iVariant === -1 ? 0 : iVariant].colors[
+                              iColor === -1 ? 0 : iColor
+                            ].image
+                          }
+                        />
                       </SwiperSlide>
-                    ))}
+                      {product?.images.map((img, index) => (
+                        <SwiperSlide className="center-flex" key={index}>
+                          <Image className="w-full h-full object-contain" src={img} />
+                        </SwiperSlide>
+                      ))}
 
-                    <button
-                      className={`custom-prev ${
-                        !mainSwiper?.isBeginning ? "group-hover:left-0" : ""
-                      }  absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10  -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center `}
-                    >
-                      <FaAngleLeft className="w-8 h-8 text-white" />
-                    </button>
-                    <button
-                      className={`custom-next ${
-                        !mainSwiper?.isEnd ? "group-hover:right-0" : ""
-                      }  absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10  -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center`}
-                    >
-                      <FaAngleRight className="w-8 h-8 text-white" />
-                    </button>
-                  </Swiper>
+                      <button
+                        className={`custom-prev ${
+                          !mainSwiper?.isBeginning ? "group-hover:left-0" : ""
+                        }  absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10  -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center `}
+                      >
+                        <FaAngleLeft className="w-8 h-8 text-white" />
+                      </button>
+                      <button
+                        className={`custom-next ${
+                          !mainSwiper?.isEnd ? "group-hover:right-0" : ""
+                        }  absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10  -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center`}
+                      >
+                        <FaAngleRight className="w-8 h-8 text-white" />
+                      </button>
+                    </Swiper>
+                  </Image.PreviewGroup>
                   <div className="absolute top-4 left-4 w-6 h6 z-30 cursor-pointer group">
                     {state.wish.includes(product.id) ? (
                       <div
@@ -278,6 +296,7 @@ function ProductDetail() {
                     )}
                   </div>
                 </div>
+                {/* list image */}
                 <Swiper
                   onSwiper={setThumbsSwiper}
                   spaceBetween={10}
@@ -481,8 +500,6 @@ function ProductDetail() {
                           dispatch(actions.set({ show: { ...state.show, login: true } }));
                         } else {
                           handleAddToCart();
-                          setShowModal(true);
-                          setTimeout(() => setShowModal(false), 1000);
                         }
                       }
                     }}
