@@ -12,7 +12,7 @@ export default function DefaultLayout({
   return (
     <Fragment>
       <Header />
-      {/* {children} */}
+      {children}
       <div className="sm:block hidden">
         <Footer />
       </div>
