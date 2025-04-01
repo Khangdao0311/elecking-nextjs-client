@@ -303,6 +303,7 @@ function Header() {
         visibilityHeight={200}
         icon={<FaAnglesUp className="text-black" />}
         className="w-12 h-12 !z-10"
+        style={{ bottom: `${width < 640 ? "80px" : "40px"}` }}
       />
       {/* modal login */}
       <Modal
