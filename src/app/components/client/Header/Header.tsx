@@ -325,7 +325,7 @@ function Header() {
       )}
       <header
         className={`sticky ${
-          y < 100 ? "top-0" : "-top-11"
+          y < 100 ? "top-0" : "top-0 md:-top-8 lg:-top-11"
         } transition-all duration-200 w-full z-30 shadow-lg`}
       >
         <div className="bg-[#E9EFFF] h-8 lg:h-11 p-1.5 lg:p-2 hidden md:block">
@@ -384,7 +384,7 @@ function Header() {
           )}
         </div>
 
-        <div className="bg-primary py-3 lg:py-4 ">
+        <div className="bg-primary py-4 ">
           <div className="h-10 lg:h-12 container-custom flex gap-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
             {/* Logo elecking */}
             <Link

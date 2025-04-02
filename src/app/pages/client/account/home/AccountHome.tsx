@@ -26,7 +26,7 @@ function AccountHome() {
   const [brands, setBrands] = useState<IBrand[]>([]);
 
   useEffect(() => {
-    const query = { orderby: "sale-desc", limit: 4 };
+    const query = { orderby: "sale-desc", limit: 10 };
     productServices.getQuery(query).then((res) => setProductsSale(res.data));
   }, []);
 
@@ -55,7 +55,7 @@ function AccountHome() {
   return (
     <>
       <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 bg">
-        <div className="w-3/12 bg-slate-50 rounded-xl p-4">
+        <div className="w-3/12 bg-slate-50 rounded-xl p-4 min-h-[calc(100vh-190px)]">
           <SidebarAccount />
         </div>
         <div className="w-9/12 flex flex-col gap-6 rounded-xl min-h-[calc(100vh-190px)]">
@@ -91,27 +91,71 @@ function AccountHome() {
                 <hr className="w-[0%] group-hover:w-[100%] transition-all duration-300 border-white absolute bottom-0" />
               </Link>
             </div>
-            <div className="grid grid-cols-4 container-custom gap-2.5">
-              {productsSale.length === 0 &&
-                Array.from({ length: 4 }).map((_, i: number) => (
+            {state.load && productsSale.length === 0 ? (
+              <div className="grid grid-cols-3 gap-2.5">
+                {Array.from({ length: 3 }).map((_, i: number) => (
                   <Fragment key={i}>
                     <ProductLoad />
                   </Fragment>
                 ))}
-              {productsSale.map((product: IProduct) => (
-                <Fragment key={product.id}>
-                  <Product product={product} />
-                </Fragment>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <Swiper
+                autoplay={{
+                  delay: 2500,
+                  disableOnInteraction: false,
+                }}
+                navigation={{
+                  nextEl: ".custom-next",
+                  prevEl: ".custom-prev",
+                }}
+                loop={true}
+                modules={[Autoplay, Navigation]}
+                breakpoints={{
+                  0: {
+                    slidesPerView: 2,
+                    spaceBetween: 10,
+                  },
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 10,
+                  },
+                  768: {
+                    slidesPerView: 2,
+                    spaceBetween: 10,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 10,
+                  },
+                  1280: {
+                    slidesPerView: 3,
+                    spaceBetween: 10,
+                  },
+                }}
+                className=" w-full relative group/container container-custom"
+              >
+                {productsSale.map((product: IProduct) => (
+                  <SwiperSlide key={product.id}>
+                    <Product product={product} />
+                  </SwiperSlide>
+                ))}
+                <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+                  <FaAngleLeft className="w-8 h-8 text-white" />
+                </button>
+                <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+                  <FaAngleRight className="w-8 h-8 text-white" />
+                </button>
+              </Swiper>
+            )}
           </section>
           <section className="container-custom flex flex-col gap-4 ">
             <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-thirdaryDark to-thirdary">
               Sản Phẩm Bạn Yêu Thích
             </p>
-            <div className="grid grid-cols-4 container-custom gap-2.5">
+            <div className="grid grid-cols-3 container-custom gap-2.5">
               {state.load &&
-                Array.from({ length: 4 }).map((_, i: number) => (
+                Array.from({ length: 3 }).map((_, i: number) => (
                   <Fragment key={i}>
                     <ProductLoad />
                   </Fragment>

@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  BsFillClipboard2CheckFill,
-  BsFillClipboard2XFill,
-} from "react-icons/bs";
+import { BsFillClipboard2CheckFill, BsFillClipboard2XFill } from "react-icons/bs";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Modal } from "antd";
 import moment from "moment";
@@ -33,10 +30,8 @@ function AccountOrder() {
       orderServices
         .getQuery({ user_id: state.user.id, limit: null, status: status })
         .then((res) => {
-          console.log(res);
-
           setOrders(res.data);
-          setTotalOrder(res.total);
+          setTotalOrder(res.totalOrder);
         });
     }
   }, [state.user, status, state.re_render]);
@@ -77,11 +72,12 @@ function AccountOrder() {
         />
       </Modal>
       <div className="container-custom flex gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 bg">
-        <div className="w-3/12 bg-slate-50 rounded-xl p-4">
+        <div className="w-3/12 bg-slate-50 rounded-xl p-4 min-h-[calc(100vh-190px)]">
           <SidebarAccount />
         </div>
         <div className="w-9/12 flex flex-col gap-6 rounded-xl min-h-[calc(100vh-190px)]">
           <h2 className="text-2xl font-bold uppercase">Lịch Sử Mua Hàng</h2>
+
           <div className="w-full flex gap-2.5 flex-wrap">
             <div
               onClick={() => {
@@ -91,7 +87,7 @@ function AccountOrder() {
                 status === ""
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
               Tất cả ({totalOrder?.["all"] || 0})
             </div>
@@ -103,7 +99,7 @@ function AccountOrder() {
                 status === "2"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
               Chờ xác nhận ({totalOrder?.["2"] || 0})
             </div>
@@ -115,7 +111,7 @@ function AccountOrder() {
                 status === "3"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
               Đã xác nhận ({totalOrder?.["3"] || 0})
             </div>
@@ -127,7 +123,7 @@ function AccountOrder() {
                 status === "4"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
               Đang vận chuyển ({totalOrder?.["4"] || 0})
             </div>
@@ -139,7 +135,7 @@ function AccountOrder() {
                 status === "1"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
               Đã nhận ({totalOrder?.["1"] || 0})
             </div>
@@ -151,11 +147,12 @@ function AccountOrder() {
                 status === "0"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-5 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
             >
               Đã hủy ({totalOrder?.["0"] || 0})
             </div>
           </div>
+
           <div className="w-full flex flex-col gap-4 relative">
             {/*  */}
 

@@ -395,8 +395,8 @@ function ProductDetail() {
                 </div>
                 {/* price */}
                 <div className="flex gap-4 items-center py-4">
-                  <p className="text-base font-medium w-[92px]">Giá</p>
-                  <p className="text-3xl font-bold text-red-500 w-[204px]">
+                  <p className="text-base font-medium">Giá</p>
+                  <p className="text-3xl font-bold text-red-500 ">
                     {(
                       product!.variants[iVariant === -1 ? 0 : iVariant].price -
                       product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
@@ -425,15 +425,7 @@ function ProductDetail() {
                       đ
                     </del>
                   )}
-                  {product!.variants[iVariant === -1 ? 0 : iVariant].price -
-                    product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
-                    product!.variants[iVariant === -1 ? 0 : iVariant].colors[
-                      iColor === -1 ? 0 : iColor
-                    ].price_extra <
-                    product!.variants[iVariant === -1 ? 0 : iVariant].price +
-                      product!.variants[iVariant === -1 ? 0 : iVariant].colors[
-                        iColor === -1 ? 0 : iColor
-                      ].price_extra && (
+                  {product!.variants[iVariant === -1 ? 0 : iVariant].price_sale > 0 && (
                     <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
                       {Math.ceil(
                         100 -
@@ -507,7 +499,7 @@ function ProductDetail() {
                       iVariant !== -1 && iColor !== -1 ? "cursor-pointer" : "opacity-50"
                     }`}
                   >
-                    <AiOutlineShoppingCart className="w-8 h-8 shrink-0 text-primary font-bold" />
+                    <AiOutlineShoppingCart className="w-7 h-7 shrink-0 text-primary font-bold" />
                     <p className="text-primary text-md font-medium">Thêm vào giỏ hàng</p>
                   </div>
                   <div

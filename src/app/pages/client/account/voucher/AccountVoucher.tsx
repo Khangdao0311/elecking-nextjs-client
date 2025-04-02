@@ -22,8 +22,8 @@ function AccountVoucher() {
   }, [state.user]);
 
   return (
-    <div className="container-custom flex items-start gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
-      <div className="w-3/12 bg-slate-50 rounded-xl p-4">
+    <div className="container-custom flex  gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
+      <div className="w-3/12 !h-full bg-slate-50 rounded-xl p-4 min-h-[calc(100vh-190px)]">
         <SidebarAccount />
       </div>
       <div className="w-9/12 flex flex-col gap-6 rounded-xl min-h-[calc(100vh-190px)]">
@@ -33,7 +33,7 @@ function AccountVoucher() {
             Array.from({ length: 5 }).map((_, i: number) => (
               <div
                 key={i}
-                className="flex items-start gap-5 p-2.5 relative rounded-lg shadow-xl w-[474px] border border-gray-200 overflow-hidden"
+                className="flex items-start gap-5 p-2.5 relative rounded-lg shadow-xl w-full border border-gray-200 overflow-hidden"
               >
                 <Shimmer className="w-20 h-20 shrink-0" image />
 
@@ -59,7 +59,7 @@ function AccountVoucher() {
           {vouchers.map((voucher: IVoucher, iVoucher: number) => (
             <div
               key={iVoucher}
-              className="flex items-start gap-5 p-2.5 relative rounded-lg shadow-xl w-[474px] border border-gray-200 overflow-hidden"
+              className="flex items-start gap-5 p-2.5 relative rounded-lg shadow-xl border border-gray-200 overflow-hidden"
             >
               <div className="flex items-center justify-center w-20 h-20 bg-primary rounded">
                 <SlTag className="w-1/2 h-1/2 text-white" />

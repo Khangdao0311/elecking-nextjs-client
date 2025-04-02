@@ -339,19 +339,19 @@ function Cart() {
                 {/*  */}
                 <Fragment>
                   {/*  */}
-                  <div className="flex items-center border rounded-xl shadow-lg p-4 gap-2.5 ">
+                  <div className="w-full flex items-center border rounded-xl shadow-lg p-4 gap-2.5 ">
                     <Shimmer className={"w-16 h-6"} />
-                    <Shimmer className={"w-[660px] h-6"} />
-                    <Shimmer className={"w-40 h-6"} />
-                    <Shimmer className={"w-40 h-6"} />
-                    <Shimmer className={"w-40 h-6"} />
+                    <Shimmer className={"w-6/12 flex-1 h-6"} />
+                    <Shimmer className={"w-2/12 h-6"} />
+                    <Shimmer className={"w-2/12 h-6"} />
+                    <Shimmer className={"w-2/12 h-6"} />
                   </div>
 
-                  <div className="flex items-center border rounded-xl shadow-lg p-4 gap-2.5  ">
+                  <div className="w-full flex items-center border rounded-xl shadow-lg p-4 gap-2.5  ">
                     <div className="w-16 flex justify-center">
                       <Shimmer className={"w-6 h-6"} />
                     </div>
-                    <div className="w-[660px] flex gap-2.5">
+                    <div className="w-6/12 flex-1 flex gap-2.5">
                       <Shimmer className={"w-24 h-24"} image />
                       <div className="flex w-64 flex-col gap-3">
                         <Shimmer className={"w-full h-6"} />
@@ -363,37 +363,13 @@ function Cart() {
                         <Shimmer className={"w-1/2 h-10"} />
                       </div>
                     </div>
-                    <div className="flex w-40 h-10 gap-0.5 rounded-lg overflow-hidden">
+                    <div className="flex w-2/12 h-10 gap-0.5 rounded-lg overflow-hidden">
                       <Shimmer className={"shrink-0 w-10 h-10 !rounded-none"} />
                       <Shimmer className={"w-full h-10 !rounded-none"} />
                       <Shimmer className={"shrink-0 w-10 h-10 !rounded-none"} />
                     </div>
-                    <Shimmer className={"w-40 h-6"} />
-                    <Shimmer className={"w-40 h-6"} />
-                  </div>
-                  <div className="flex items-center border rounded-xl shadow-lg p-4 gap-2.5  ">
-                    <div className="w-16 flex justify-center">
-                      <Shimmer className={"w-6 h-6"} />
-                    </div>
-                    <div className="w-[660px] flex gap-2.5">
-                      <Shimmer className={"w-24 h-24"} image />
-                      <div className="flex w-64 flex-col gap-3">
-                        <Shimmer className={"w-full h-6"} />
-                        <Shimmer className={"w-5/6 h-6"} />
-                        <Shimmer className={"w-full h-6"} />
-                      </div>
-                      <div className="w-72 flex gap-2 items-center select-none">
-                        <Shimmer className={"w-1/2 h-10"} />
-                        <Shimmer className={"w-1/2 h-10"} />
-                      </div>
-                    </div>
-                    <div className="flex w-40 h-10 gap-0.5 rounded-lg overflow-hidden">
-                      <Shimmer className={"shrink-0 w-10 h-10 !rounded-none"} />
-                      <Shimmer className={"w-full h-10 !rounded-none"} />
-                      <Shimmer className={"shrink-0 w-10 h-10 !rounded-none"} />
-                    </div>
-                    <Shimmer className={"w-40 h-6"} />
-                    <Shimmer className={"w-40 h-6"} />
+                    <Shimmer className={"w-2/12 h-6"} />
+                    <Shimmer className={"w-1/12 h-6"} />
                   </div>
                 </Fragment>
                 {/*  */}
@@ -401,7 +377,7 @@ function Cart() {
             ) : (
               state.cart.length > 0 && (
                 <Fragment>
-                  <div className="flex items-center border rounded-xl shadow-lg p-4 gap-2.5 ">
+                  <div className=" w-full flex items-center border rounded-xl shadow-lg p-4 gap-2.5 ">
                     <div className="w-16 flex justify-center">
                       <input
                         type="checkbox"
@@ -416,14 +392,16 @@ function Cart() {
                         }}
                       />
                     </div>
-                    <div className="w-[660px] flex-shrink-0 font-normal text-base">Sản Phẩm</div>
-                    <span className="w-40 text-center text-base font-normal flex-shrink-0">
+                    <div className="w-6/12 flex-1 flex-shrink-0 font-normal text-base">
+                      Sản Phẩm
+                    </div>
+                    <span className="w-2/12 text-center text-base font-normal flex-shrink-0">
                       Số Lượng
                     </span>
-                    <span className="w-40 text-center text-base font-normal flex-shrink-0">
+                    <span className="w-2/12 text-center text-base font-normal flex-shrink-0">
                       Số Tiền
                     </span>
-                    <span className="w-40 text-center text-base font-normal flex-shrink-0">
+                    <span className="w-1/12 text-center text-base font-normal flex-shrink-0">
                       Thao Tác
                     </span>
                   </div>
@@ -442,7 +420,8 @@ function Cart() {
                           onChange={() => handleCheckItem(iProduct)}
                         />
                       </div>
-                      <div className="w-[660px] flex gap-2.5">
+
+                      <div className="w-6/12 flex-1 flex gap-2.5">
                         <label htmlFor={`${iProduct}`} className="cursor-pointer">
                           <img
                             src={
@@ -451,10 +430,10 @@ function Cart() {
                               ]?.image
                             }
                             alt="Sản Phẩm"
-                            className="w-24 h-24 object-cover rounded"
+                            className="w-24 h-24 object-cover shrink-0 rounded"
                           />
                         </label>
-                        <div className="flex w-64 flex-col gap-3">
+                        <div className="flex flex-1 flex-col gap-3">
                           <Link
                             onClick={() => dispatch(actions.set_routing(true))}
                             href={`${config.routes.client.productDetail}/${product.id}`}
@@ -484,7 +463,7 @@ function Cart() {
                           </div>
                         </div>
 
-                        <div className="w-72 flex gap-2 items-center select-none">
+                        <div className="flex-1 flex gap-2 items-center select-none">
                           {product.variants.length > 1 && (
                             <Popover
                               placement="bottomLeft"
@@ -599,8 +578,9 @@ function Cart() {
                           )}
                         </div>
                       </div>
-                      <div className="w-40 flex justify-center items-center">
-                        <div className="w-[136px] flex justify-center items-center border rounded-lg">
+
+                      <div className="w-2/12 flex justify-center items-center">
+                        <div className=" flex justify-center items-center border rounded-lg">
                           <button
                             onClick={() => {
                               if (state.cart?.[iProduct]?.quantity - 1 === 0) {
@@ -663,7 +643,7 @@ function Cart() {
                         </div>
                       </div>
 
-                      <div className="w-40 text-center text-primary text-base font-bold">
+                      <div className="w-2/12 text-center text-primary text-base font-bold">
                         {(
                           (product.variants[state.cart?.[iProduct]?.product?.variant]?.price -
                             product.variants[state.cart?.[iProduct]?.product?.variant]?.price_sale +
@@ -674,12 +654,13 @@ function Cart() {
                         ).toLocaleString("vi-VN")}
                         đ
                       </div>
+
                       <button
+                        className="w-1/12 text-center text-black text-base font-bold hover:text-red-600"
                         onClick={() => {
                           handleRemoveItem(iProduct);
                           setCheckItems((prev) => prev.filter((e, i) => i !== iProduct));
                         }}
-                        className="w-40 text-center text-black text-base font-bold hover:text-red-600"
                       >
                         Xóa
                       </button>

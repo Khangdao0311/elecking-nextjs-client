@@ -73,7 +73,7 @@ function AccountAddress() {
         </Modal>
       </Fragment>
       <div className="container-custom flex items-start gap-4 py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
-        <div className="w-3/12 bg-slate-50 rounded-xl p-4">
+        <div className="w-3/12 bg-slate-50 rounded-xl p-4 min-h-[calc(100vh-190px)]">
           <SidebarAccount />
         </div>
         <div className="w-9/12 flex flex-col gap-6 rounded-xl min-h-[calc(100vh-190px)]">

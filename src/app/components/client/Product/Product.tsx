@@ -27,7 +27,8 @@ function Product(props: { product: IProduct }) {
   }
 
   return (
-    <div className="border rounded-2xl shadow-lg p-4 w-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:border-primary hover:shadow-2xl  ">
+    // <div className="border rounded-2xl shadow-lg p-4 w-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:border-primary hover:shadow-2xl  ">
+    <div className="border rounded-2xl shadow-lg p-4 w-full !h-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150  ">
       <Link
         href={`${config.routes.client.productDetail}/${props.product.id}`}
         onClick={() => {
@@ -58,47 +59,46 @@ function Product(props: { product: IProduct }) {
         )}{" "}
         đ
       </div>
-      <div className="flex gap-2.5">
+
+      <div
+        className={`flex gap-2.5 ${
+          props.product.variants[0].price_sale === 0 ? "opacity-0" : "opacity-100"
+        }`}
+      >
         {props.product.variants[0].price - props.product.variants[0].price_sale <
           props.product.variants[0].price && (
           <del className="text-base font-normal text-gray-400">
             {props.product.variants[0].price.toLocaleString("vi-VN")} đ
           </del>
         )}
-        {Math.ceil(
-          100 -
-            ((props.product.variants[0].price - props.product.variants[0].price_sale) /
-              props.product.variants[0].price) *
-              100
-        ) > 0 && (
-          <div className="bg-primary text-white px-1.5 py-1 rounded-md text-xs font-bold">
-            {Math.ceil(
-              100 -
-                ((props.product.variants[0].price - props.product.variants[0].price_sale) /
-                  props.product.variants[0].price) *
-                  100
-            )}{" "}
-            %
-          </div>
-        )}
+        <div className={`bg-primary text-white px-1.5 py-1 rounded-md text-xs font-bold`}>
+          {Math.ceil(
+            100 -
+              ((props.product.variants[0].price - props.product.variants[0].price_sale) /
+                props.product.variants[0].price) *
+                100
+          )}{" "}
+          %
+        </div>
       </div>
+
       <div className="flex items-center justify-between w-full">
         <div className="center-flex justify-start items-start ">
           {props.product.rating !== null && (
             <Fragment>
               <Rate
-                className="text-secondaryDark text-base"
+                className="text-secondaryDark text-base shrink-0"
                 defaultValue={Math.ceil(props.product.rating * 2) / 2}
                 allowHalf
                 disabled
                 characterRender={(char) => <span style={{ marginInlineEnd: "2px" }}>{char}</span>}
               />{" "}
-              <span className="text-xs select-none"> ({props.product.rating})</span>
+              <span className="hidden sm:flex text-xs select-none"> ({props.product.rating})</span>
             </Fragment>
           )}
         </div>
         <div className="center-flex gap-1 cursor-pointer">
-          <p className="text-gray-700">Yêu thích</p>
+          <p className="text-gray-700 line-clamp-1">Yêu thích</p>
           {state.wish.includes(props.product.id) ? (
             <div
               className="group relative"
