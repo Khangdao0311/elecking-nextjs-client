@@ -192,11 +192,11 @@ function CategoryEdit() {
             </div>
             <div className="flex gap-0.5 flex-col">
               <div className="text-sm font-medium ">
-                Biến thể <span className="text-primary">*</span>
+                Tên Danh Mục Cấu Hình <span className="text-primary">*</span>
               </div>
               <Select
                 mode="multiple"
-                placeholder="Chọn biến thể"
+                placeholder="Chọn tên danh mục cấu hình"
                 value={editProptype?.map((item) => item.id)}
                 onChange={(selectedIds) => {
                   const updatedList = proptype.filter((item) => selectedIds.includes(item.id));
