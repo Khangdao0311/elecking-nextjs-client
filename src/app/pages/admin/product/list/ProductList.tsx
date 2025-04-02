@@ -4,7 +4,7 @@ import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { GoPlus } from "react-icons/go";
-import { Pagination } from "antd";
+import { Pagination, Rate } from "antd";
 import { CiCircleMore } from "react-icons/ci";
 import * as productServices from "@/app/services/productService";
 import Statusproduct from "@/app/pages/admin/Components/Status";
@@ -41,6 +41,7 @@ function ProductList() {
     });
   }, [limit, page, search]);
 
+
   const columns: TableProps<IProduct>["columns"] = [
     {
       title: "STT",
@@ -51,49 +52,69 @@ function ProductList() {
       render: (_, __, index) => (page - 1) * limit + index + 1,
     },
     {
-      title: "Ảnh",
-      dataIndex: "variants",
-      align: "center",
-      width: 96,
-      key: "image",
-      render: (variants) => {
-        const image =
-          variants?.[0]?.colors?.[0]?.image ||
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQegZDhYp7xib4Rc4ZxRGe_cHEH5WrGL1wupA&s";
-        return (
-          <div className="flex items-center justify-center">
-            <img src={image} alt="Sản phẩm" className="w-8 h-8 rounded" />
-          </div>
-        );
-      },
-    },
-    {
       title: "Tên Sản Phẩm",
       dataIndex: "name",
+      width: 150,
       key: "name",
+      render:e =>  <div className="line-clamp-2">{e}</div>
     },
     {
-      title: "Giá Sản Phẩm",
+      title: "Tên Danh Mục",
+      dataIndex: "category",
+      key: "category",
+      width: 150,
+      render: (e) => e.name,
+    },
+    {
+      title: "Tên Thương Hiệu",
+      dataIndex: "brand",
+      key: "brand",
+      width: 150,
+      render: (e) => e.name,
+    },
+    {
+      title: "Lượt Xem",
+      dataIndex: "view",
+      key: "view",
+      width: 120,
+      render: (view) => view.toLocaleString("vi-VN"),
+    },
+    {
+      title: "Mô Tả",
+      dataIndex: "description",
+      width: 200,
+      key: "description",
+      render: (e) => (
+        <div
+          className="line-clamp-2"
+          dangerouslySetInnerHTML={{
+            __html: ` ${e}`,
+          }}
+        ></div>
+      ),
+    },
+    {
+      title: "Đánh giá",
       align: "center",
-      dataIndex: "variants",
       width: 130,
-      key: "price",
-      render: (variants) => {
-        const variant = variants[0];
-        const finalPrice =
-          variant.price + variant.colors[0].price_extra - variant.price_sale;
-
-        return (
-          <div className="text-xs font-medium text-red-500">
-            {finalPrice.toLocaleString("vi-VN")} đ
-            {variant.price > finalPrice && (
-              <del className="text-xs font-light text-gray-500 block">
-                {variant.price.toLocaleString("vi-VN")} đ
-              </del>
-            )}
+      dataIndex: "rating",
+      key: "rating",
+      render: (rating) =>
+        rating ? (
+          <div className="center-flex justify-start items-start ">
+            <Rate
+              className="text-secondaryDark text-sm"
+              defaultValue={Math.ceil(rating * 2) / 2}
+              allowHalf
+              disabled
+              characterRender={(char) => (
+                <span style={{ marginInlineEnd: "2px" }}>{char}</span>
+              )}
+            />
           </div>
-        );
-      },
+        ) : (
+          "Chưa có đánh giá"
+        ),
     },
     {
       title: "Số Lượng",
@@ -101,56 +122,18 @@ function ProductList() {
       dataIndex: "variants",
       width: 130,
       key: "quantity",
-      render: (variants) => variants?.[0]?.colors?.[0]?.quantity || 0,
+      render: (variants) =>
+        (variants.reduce(
+          (total: number, variant: IProductVariant) =>
+            (total += variant.colors.reduce(
+              (sumQuatity: number, color: IProductColor) =>
+                (sumQuatity += color.quantity),
+              0
+            )),
+          0
+        )).toLocaleString('vi-VN')
     },
-    {
-      title: "Biến Thể",
-      align: "center",
-      dataIndex: "variants",
-      width: 130,
-      key: "variant",
-      render: (variants) => variants?.[0]?.properties?.[0]?.name || "-",
-    },
-    {
-      title: "Màu Sắc",
-      align: "center",
-      dataIndex: "variants",
-      width: 130,
-      key: "color",
-      render: (variants) => variants?.[0]?.colors?.[0]?.name || "-",
-    },
-    {
-      title: "Trạng thái",
-      align: "center",
-      dataIndex: "variants",
-      width: 130,
-      key: "status",
-      render: (variants) => {
-        const status = variants?.[0]?.colors?.[0]?.status;
-        let text = "";
-        switch (status) {
-          case 0:
-            text = "Hết hàng";
-            break;
-          case 1:
-            text = "Còn hàng";
-            break;
-          case 2:
-            text = "Ẩn";
-            break;
-          case 3:
-            text = "Đang nhập hàng";
-            break;
-          default:
-            text = "Không xác định";
-        }
-        return (
-          <div className="flex items-center justify-center">
-            <Statusproduct status={status} text={text} />
-          </div>
-        );
-      },
-    },
+
     {
       title: "Chức năng",
       align: "center",
@@ -182,58 +165,62 @@ function ProductList() {
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 50, y: "max-content"  };
+    return { x: 50, y: "max-content" };
   };
 
   return (
     <>
       {state.load && <Loading />}
-      {state.load ? "" : <>
-        <TitleAdmin title="Danh Sách Sản Phẩm" />
-      <Boxsearchlimit
-        title="Sản Phẩm"
-        onLimitChange={(newLimit: any) => {
-          setLimit(newLimit);
-          setPage(1);
-        }}
-        onSearch={(value:string) => {
-          setSearch(value);
-          setPage(1);
-        }}
-      />
-      <div className=" shadow-xl bg-white rounded-lg px-4 py-4 flex min-h-0 items-start flex-col gap-4">
-        <Link
-          href={config.routes.admin.product.add}
-          className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
-        >
-          <GoPlus className="w-6 h-6" />
-          <p className="text-sm font-bold">Tạo sản phẩm mới</p>
-        </Link>
-        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
-          <Table<IProduct>
-            columns={columns}
-            dataSource={products}
-            rowKey="id"
-            scroll={getTableScroll(products.length)}
-            pagination={false}
-            tableLayout="auto"
+      {state.load ? (
+        ""
+      ) : (
+        <>
+          <TitleAdmin title="Danh Sách Sản Phẩm" />
+          <Boxsearchlimit
+            title="Sản Phẩm"
+            onLimitChange={(newLimit: any) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+            onSearch={(value: string) => {
+              setSearch(value);
+              setPage(1);
+            }}
           />
-        </div>
-        {totalPages > limit && (
-          <div className="flex w-full justify-end">
-            <Pagination
-              current={page}
-              onChange={(e) => setPage(e)}
-              defaultCurrent={1}
-              align="end"
-              pageSize={limit}
-              total={totalPages}
-              showSizeChanger={false}
-            />
+          <div className=" shadow-xl bg-white rounded-lg px-4 py-4 flex min-h-0 items-start flex-col gap-4">
+            <Link
+              href={config.routes.admin.product.add}
+              className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
+            >
+              <GoPlus className="w-6 h-6" />
+              <p className="text-sm font-bold">Tạo sản phẩm mới</p>
+            </Link>
+            <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
+              <Table<IProduct>
+                columns={columns}
+                dataSource={products}
+                rowKey="id"
+                scroll={getTableScroll(products.length)}
+                pagination={false}
+                tableLayout="auto"
+              />
+            </div>
+            {totalPages > limit && (
+              <div className="flex w-full justify-end">
+                <Pagination
+                  current={page}
+                  onChange={(e) => setPage(e)}
+                  defaultCurrent={1}
+                  align="end"
+                  pageSize={limit}
+                  total={totalPages}
+                  showSizeChanger={false}
+                />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      </>}
+        </>
+      )}
 
       <Modal
         open={statusProductDetail}
@@ -281,9 +268,6 @@ function ProductList() {
                       </th>
                       <th className="min-w-[150px] px-3 py-3 text-center font-semibold text-gray-700">
                         Giá bán
-                      </th>
-                      <th className="w-[140px] min-w-[140px] px-3 py-3 text-center font-semibold text-gray-700">
-                        Giá thêm
                       </th>
                       <th className="w-[144px] min-w-[144px] px-3 py-3 text-center font-semibold text-gray-700">
                         Trạng Thái
@@ -347,9 +331,6 @@ function ProductList() {
                                     )} đ`}{" "}
                               </del>
                             </div>
-                          </td>
-                          <td className="px-3 py-3 text-center text-gray-700">
-                            {color.price_extra.toLocaleString("vi-VN")} đ
                           </td>
                           <td className="px-3 py-3 text-center">
                             <span
