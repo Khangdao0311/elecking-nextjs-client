@@ -53,7 +53,9 @@ function BottomNavigation() {
       >
         <Footer />
       </Drawer>
-      <div className="block sm:hidden h-16 mt-4"></div>
+      {/* ô trống fixed  */}
+      <div className="block sm:hidden h-16 mt-4"></div> 
+      {/*  */}
       <nav className="z-[1001] sm:hidden fixed bottom-0 w-full h-16 bg-white border-t border-gray-200 flex justify-between px-3">
         <Link href={config.routes.client.home} className="center-flex flex-col w-24 h-full gap-0.5">
           <AiFillHome className="w-7 h-7 " />

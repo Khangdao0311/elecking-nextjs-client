@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Grid } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/grid";
 import { ImFire } from "react-icons/im";
 import { Fragment, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -52,27 +54,27 @@ function Home() {
       .then((res) => setProductsSale(res.data));
 
     productServices
-      .getQuery({ orderby: "view-desc", limit: 10 })
+      .getQuery({ orderby: "view-desc", limit: 16 })
       .then((res) => setProductsHot(res.data));
 
     productServices
       .getQuery({
         categoryid: "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
-        limit: 10,
+        limit: 16,
       })
       .then((res) => setProductsLaptop(res.data));
 
     productServices
       .getQuery({
         categoryid: "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
-        limit: 10,
+        limit: 16,
       })
       .then((res) => setProductsTablet(res.data));
 
     productServices
       .getQuery({
         categoryid: "67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a",
-        limit: 10,
+        limit: 16,
       })
       .then((res) => setProductsHeadPhone(res.data));
   }, []);
@@ -103,7 +105,7 @@ function Home() {
                 prevEl: ".custom-prev",
               }}
               loop={true}
-              modules={[Autoplay, Navigation]}
+              modules={[Autoplay, Navigation, Grid]}
               className="!aspect-[3/1] w-full relative group rounded-lg shadow-xl border border-gray-300"
             >
               {imageSlide.map((e, index) => (
@@ -189,7 +191,7 @@ function Home() {
               prevEl: ".custom-prev",
             }}
             loop={true}
-            modules={[Autoplay, Navigation]}
+            modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
@@ -288,7 +290,7 @@ function Home() {
               prevEl: ".custom-prev",
             }}
             loop={true}
-            modules={[Autoplay, Navigation]}
+            modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
@@ -301,14 +303,17 @@ function Home() {
               768: {
                 slidesPerView: 3,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               1024: {
                 slidesPerView: 4,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               1280: {
                 slidesPerView: 5,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
             }}
             className=" w-full relative group/container container-custom"
@@ -318,7 +323,7 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
             <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
@@ -374,7 +379,7 @@ function Home() {
               prevEl: ".custom-prev",
             }}
             loop={true}
-            modules={[Autoplay, Navigation]}
+            modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
@@ -387,14 +392,17 @@ function Home() {
               768: {
                 slidesPerView: 3,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               1024: {
                 slidesPerView: 4,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               1280: {
                 slidesPerView: 5,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
             }}
             className=" w-full relative group/container container-custom"
@@ -404,7 +412,7 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
             <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
@@ -460,7 +468,7 @@ function Home() {
               prevEl: ".custom-prev",
             }}
             loop={true}
-            modules={[Autoplay, Navigation]}
+            modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
@@ -473,14 +481,17 @@ function Home() {
               768: {
                 slidesPerView: 3,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               1024: {
                 slidesPerView: 4,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               1280: {
                 slidesPerView: 5,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
             }}
             className=" w-full relative group/container container-custom"
@@ -490,7 +501,7 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
             <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
@@ -546,7 +557,7 @@ function Home() {
               prevEl: ".custom-prev",
             }}
             loop={true}
-            modules={[Autoplay, Navigation]}
+            modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
@@ -559,14 +570,17 @@ function Home() {
               768: {
                 slidesPerView: 3,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               1024: {
                 slidesPerView: 4,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               1280: {
                 slidesPerView: 5,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
             }}
             className=" w-full relative group/container container-custom"
@@ -576,7 +590,7 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
             <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
@@ -696,7 +710,7 @@ function Home() {
                 spaceBetween: 16,
               },
             }}
-            modules={[Autoplay, Navigation]}
+            modules={[Autoplay, Navigation, Grid]}
             className="!h-36 w-full relative group overflow-auto"
           >
             {brands.map((brand: IBrand, iBrand: number) => (

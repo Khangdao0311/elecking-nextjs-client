@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { Suspense } from "react";
+
 import { StoreProvider } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 
 export const metadata: Metadata = {
   title: "ElecKing",
@@ -16,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <StoreProvider>{children}</StoreProvider>
+        <Suspense fallback={<Loading />}>
+          <StoreProvider>{children}</StoreProvider>
+        </Suspense>
       </body>
     </html>
   );

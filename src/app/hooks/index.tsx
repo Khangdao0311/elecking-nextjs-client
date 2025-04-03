@@ -1,1 +1,1 @@
-export { default as useDebounce } from './useDebounce.tsx';
+export { default as useDebounce } from './useDebounce';
