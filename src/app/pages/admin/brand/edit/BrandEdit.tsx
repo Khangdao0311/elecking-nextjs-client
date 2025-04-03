@@ -1,7 +1,6 @@
 "use client";
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Upload, Select } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { UploadFile } from "antd/es/upload/interface";
 import { IoCloseSharp } from "react-icons/io5";
@@ -13,8 +12,8 @@ import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
+import { Input, Upload, Select } from "antd";
 import { notification, Space } from 'antd';
-
 
 function BrandEdit() {
   const quillRef = useRef<HTMLDivElement>(null);
@@ -41,7 +40,6 @@ function BrandEdit() {
       description: description,
     });
   }
-
 
   useEffect(() => {
     brandServices.getById(`${id}`).then((res) => {
@@ -90,7 +88,6 @@ function BrandEdit() {
     });
   }, [editorContent]);
 
-
   const handleRemove = (file: UploadFile, type: "logo" | "banner") => {
     if (type === "logo") {
       setLogo([]);
@@ -100,6 +97,7 @@ function BrandEdit() {
       setStorageimgbanner("");
     }
   };
+
   const handleBeforeUpload = (file: File, type: "logo" | "banner") => {
     const newFile: UploadFile = {
       uid: crypto.randomUUID(),

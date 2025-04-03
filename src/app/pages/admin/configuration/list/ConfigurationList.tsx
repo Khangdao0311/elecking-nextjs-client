@@ -338,7 +338,7 @@ function ConfigurationList() {
                 setLimitProptype(newLimit);
                 setPageProptype(1);
               }}
-              onSearch={(value) => {
+              onSearch={(value: string) => {
                 setSearchProptype(value);
                 setPageProptype(1);
               }}
@@ -389,7 +389,7 @@ function ConfigurationList() {
                 setLimitProperty(newLimit);
                 setPageProperty(1);
               }}
-              onSearch={(value) => {
+              onSearch={(value:string) => {
                 setSearchProperty(value);
                 setPageProperty(1);
               }}

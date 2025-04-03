@@ -7,14 +7,14 @@ import Statusbrand from "@/app/pages/admin/Components/Status";
 import { GoPlus } from "react-icons/go";
 import { useEffect, useState } from "react";
 import * as brandServices from "@/app/services/brandService";
-import { Pagination, Tooltip } from "antd";
 import config from "@/app/config";
 import Link from "next/link";
-import { Space, Table, Tag } from "antd";
-import type { TableProps } from "antd";
-import { Spin } from 'antd';
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
+import { Pagination, Tooltip } from "antd";
+import { Space, Table, Tag } from "antd";
+import type { TableProps } from "antd";
+
 function BrandList() {
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
@@ -37,8 +37,6 @@ function BrandList() {
       setLoad(false);
     });
   }, [limit, page, search]);
-  console.log(brands);
-
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;

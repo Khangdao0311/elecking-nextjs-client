@@ -1,21 +1,18 @@
 "use client";
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Upload } from "antd";
-import { UploadFile } from "antd/es/upload/interface";
 import React, { useEffect, useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
-import Quill from "quill";
-import "quill/dist/quill.snow.css";
 import type { RcFile } from "antd/es/upload/interface";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
-import axios from "axios";
-import { notification, Space } from 'antd';
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
-
-
+import { Input, Upload } from "antd";
+import { UploadFile } from "antd/es/upload/interface";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
+import { notification, Space } from 'antd';
 
 function BrandAdd() {
   const [name, setName] = useState("");
@@ -54,9 +51,6 @@ function BrandAdd() {
     });
   }, []);
 
-
-
-
   const handleRemove = (file: UploadFile, type: "logo" | "banner") => {
     if (type === "logo") {
       setLogo((prev) => prev.filter((item) => item.uid !== file.uid));
@@ -80,8 +74,6 @@ function BrandAdd() {
       const newFiles = [newFile];
       return newFiles;
     });
-
-    // setState((prev) => [...prev, newFile]);
 
     setTimeout(() => {
       setState((prev) =>
@@ -184,7 +176,7 @@ function BrandAdd() {
               Ảnh Bìa <span className="text-primary">*</span>
             </div>
             <div className="flex flex-col gap-2.5">
-              
+
               <Upload
                 multiple={false}
                 listType="picture"

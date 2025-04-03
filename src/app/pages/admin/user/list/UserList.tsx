@@ -1,22 +1,17 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
-import { Pagination, TabPaneProps } from "antd";
 import * as userServices from "@/app/services/userService";
-import { FiEdit } from "react-icons/fi";
-import { GoPlus } from "react-icons/go";
-import { MdDeleteForever } from "react-icons/md";
 import { useEffect, useState } from "react";
 import Statususer from "@/app/pages/admin/Components/Status";
-import Link from "next/link";
-import config from "@/app/config";
-import { Space, Table, Tag } from "antd";
-import type { TableProps } from "antd";
 import { FaEye } from "react-icons/fa6";
 import { LuEyeClosed } from "react-icons/lu";
-import { Switch } from 'antd';
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
+import { Pagination} from "antd";
+import { Space, Table} from "antd";
+import type { TableProps } from "antd";
+import { Switch } from 'antd';
 
 function UserList() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -109,8 +104,6 @@ function UserList() {
     if (dataLength <= 5) return undefined;
     return { x: 50, y: "max-content"  };
   };
-
-  console.log(users[0]?.status);
 
   const columns: TableProps<IUser>["columns"] = [
     {
@@ -210,6 +203,7 @@ function UserList() {
       ),
     },
   ];
+  
   return (
     <>
     {state.load && <Loading />}

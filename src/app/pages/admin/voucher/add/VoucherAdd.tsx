@@ -2,25 +2,16 @@
 import { Select } from "antd";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import { Input } from 'antd';
-import { IoCloseSharp } from 'react-icons/io5';
-import type { DatePickerProps } from 'antd';
-import { DatePicker, Space } from 'antd';
 import Button from "@/app/components/admin/Button";
-import dayjs from 'dayjs';
 import { useEffect, useState } from "react";
-import { number } from "yup";
 import * as userServices from "@/app/services/userService";
-import axios from "axios";
-import { useParams } from "next/navigation";
 import * as voucherServices from "@/app/services/voucherService";
-import { notification, } from 'antd';
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
-
-
-
-
-
+import type { DatePickerProps } from 'antd';
+import { DatePicker, Space } from 'antd';
+import dayjs from 'dayjs';
+import { notification, } from 'antd';
 
 function VoucherAdd() {
   const [code, setCode] = useState("");
@@ -45,7 +36,6 @@ function VoucherAdd() {
     });
   }
 
-
   useEffect(() => {
     const query = { limit: 7 };
     userServices.getQuery(query).then((res) => {
@@ -53,7 +43,6 @@ function VoucherAdd() {
     });
   }, []);
 
-  // console.log(getUser);
 
   const handleChangeUser = (value: string) => {
     setUser(value);
@@ -73,10 +62,6 @@ function VoucherAdd() {
     } else {
       setEndDate("");
     }
-  };
-
-  const onChange: DatePickerProps['onChange'] = (date, dateString) => {
-    console.log(date, dateString);
   };
 
   return (
@@ -147,19 +132,6 @@ function VoucherAdd() {
               <div className='text-sm font-medium'>Số Lượng<span className="text-primary"> *</span></div>
               <Input onChange={(e) => setQuantity(Number(e.target.value))} className='w-[268px] h-11 shadow-md' placeholder="Số lượng" />
             </div>
-            {/* <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Trạng Thái <span className='text-primary'>*</span></div>
-              <Select className='shadow-md'
-                placeholder = "Chọn trạng thái"
-                style={{ width: 268, height: 44 }}
-                onChange={handleChange}
-                options={[
-                  { value: 0, label: 'Hoạt Động' },
-                  { value: 1, label: 'Hết Hạn' },
-                  { value: 2, label: 'Hết Voucher' },
-                ]}
-              />
-            </div> */}
             <div className='flex gap-0.5 flex-col'>
               <div className='text-sm font-medium'>Người Dùng <span className='text-primary'>*</span></div>
               <Select

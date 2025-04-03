@@ -1,19 +1,20 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
-import { Pagination } from "antd";
-import { FiEdit } from "react-icons/fi";
-import { GoPlus } from "react-icons/go";
 import * as voucherServices from "@/app/services/voucherService";
 import { useEffect, useState } from "react";
 import Statusvoucher from "@/app/pages/admin/Components/Status";
-import moment from "moment";
-import { Space, Table } from "antd";
-import type { TableProps } from "antd";
 import Link from "next/link";
 import config from "@/app/config";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
+import moment from "moment";
+import { Pagination } from "antd";
+import { FiEdit } from "react-icons/fi";
+import { Space, Table } from "antd";
+import type { TableProps } from "antd";
+
+
 function voucherExpired() {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [limit, setLimit] = useState(5);
@@ -46,7 +47,7 @@ function voucherExpired() {
       title: "Mã Voucher",
       dataIndex: "code",
       key: "code",
-      width: "15%",
+      width: "10%",
     },
     {
       title: "Ngày Bắt Đầu",
@@ -94,6 +95,13 @@ function voucherExpired() {
       align: "center",
     },
     {
+      title: "Đã sử dụng",
+      dataIndex: "used",
+      key: "used",
+      width: 140,
+      align: "center",
+    },
+    {
       title: "Trạng Thái",
       dataIndex: "status",
       key: "status",
@@ -123,7 +131,7 @@ function voucherExpired() {
     if (dataLength <= 5) return undefined;
     return { x: 1000, y: "max-content"  };
   };
-
+  
   return (
     <>
      {state.load && <Loading />}

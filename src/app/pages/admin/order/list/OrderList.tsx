@@ -1,22 +1,19 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
-import { Modal } from 'antd';
-import { Pagination } from "antd";
 import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
-import { Select } from "antd";
 import * as orderServices from "@/app/services/orderService";
 import Statusorder from "@/app/pages/admin/Components/Status";
-import moment from "moment";
-import { Space, Table, Tag } from "antd";
-import axios from "axios";
-import type { TableProps } from "antd";
-import { notification } from 'antd';
-import config from "@/app/config";
-import { useRouter } from "next/navigation";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
+import { Modal } from 'antd';
+import { Pagination } from "antd";
+import { Select } from "antd";
+import { Space, Table} from "antd";
+import moment from "moment";
+import type { TableProps } from "antd";
+import { notification } from 'antd';
 
 function OrderList() {
   const [editorder, setEditorder] = useState(false);
@@ -27,9 +24,13 @@ function OrderList() {
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
+  const [quantityOder, setQuantityOder] = useState(0);
   const [status, setStatus] = useState<number | string>("");
+  const [paymentStatus, setPaymentStatus] = useState<boolean>(false);
   const [selectedStatus, setSelectedStatus] = useState(selectedOrder?.status);
   const [state, dispatch] = useStore();
+  const [totalOrders, setTotalOrders] = useState(0);
+
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -61,12 +62,17 @@ function OrderList() {
       const query: any = {};
       query.limit = limit;
       query.page = page;
-      query.status = status;
-
+  
+      if (paymentStatus) {
+        query.payment_status = paymentStatus;
+      } else if (status !== "") {
+        query.status = status;
+      }
+      
       if (search !== "") {
         query.search = search;
       }
-
+      
       orderServices.getQuery(query).then((res) => {
         const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
           if (a.status === 2 && b.status !== 2) return -1;
@@ -75,9 +81,11 @@ function OrderList() {
         });
         setOrders(sortedOrders);
         setTotalPages(res.total);
+        setQuantityOder(res.totalOrder);
       });
     }
-  }, [limit, page, search, status, editorder]);
+  }, [limit, page, search, status, paymentStatus, editorder]);
+  
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
@@ -98,6 +106,7 @@ function OrderList() {
       dataIndex: "id",
       key: "id",
       width: 140,
+      render: (id) => id.toUpperCase(),
     },
     {
       title: "Ngày Đặt Hàng",
@@ -194,10 +203,11 @@ function OrderList() {
           }}
           status={status}
           setStatus={setStatus}
-
+          paymentStatus={paymentStatus}
+          setPaymentStatus={setPaymentStatus}
+          quantityOder={quantityOder}
         />
         <div className="flex flex-col min-h-0">
-
           <div className=" bg-white shadow-xl min-h-0 justify-between px-4 py-4 flex items-start flex-col gap-4">
             <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
               <Table<IOrder>
@@ -299,6 +309,12 @@ function OrderList() {
                   {selectedOrder.address.type === 2 && (
                     <p className="text-sm font-bold text-primary">Văn phòng</p>
                   )}
+                </div>
+                <div className="flex w-full gap-1.5">
+                  <p className="text-sm font-medium">Xác nhận:</p>
+                  <p className="text-sm font-normal">
+                    {selectedOrder.payment_status ? "Đã thanh toán" : "Chưa thanh toán"}
+                  </p>
                 </div>
               </div>
               <div className="px-3 py-2 flex flex-col gap-2 rounded border border-gray-200 shadow-lg">

@@ -2,24 +2,17 @@
 
 import { Select } from "antd";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input } from 'antd';
-import { IoCloseSharp } from 'react-icons/io5';
-import type { DatePickerProps } from 'antd';
 import * as userServices from "@/app/services/userService";
-import { DatePicker, Space } from 'antd';
 import Button from "@/app/components/admin/Button";
-import dayjs from 'dayjs';
 import { useParams } from "next/navigation";
 import * as voucherService from "@/app/services/voucherService";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import { useEffect, useState } from "react";
 import config from "@/app/config";
-import { notification, } from 'antd';
 import { useRouter } from "next/navigation";
-import axios from "axios";
-
-
-
+import { Input } from 'antd';
+import { useEffect, useState } from "react";
+import { DatePicker, Space } from 'antd';
+import dayjs from 'dayjs';
+import { notification, } from 'antd';
 
 function VoucherEdit() {
   const [voucher, setVoucher] = useState<IVoucher>();
@@ -34,6 +27,9 @@ function VoucherEdit() {
   const [quantity, setQuantity] = useState<number | null>(null);
   const [user, setUser] = useState<number | null>(null);
   const router = useRouter()
+  const { id }: any = useParams();
+  const createDateNew = dayjs(startDate, "YYYYMMDD");
+  const endDatevNew = dayjs(endDate, 'YYYYMMDD');
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -82,17 +78,11 @@ function VoucherEdit() {
     });
   }, []);
 
-  const { id }: any = useParams();
 
   useEffect(() => {
     voucherService.getVoucherById(`${id}`).then((res) => setVoucher(res.data));
   }, [id]);
 
-  const createDateNew = dayjs(startDate, "YYYYMMDD");
-  const endDatevNew = dayjs(endDate, 'YYYYMMDD');
-  
-  console.log(voucher);
-  
   return (
     <>
       <TitleAdmin title="Quản lý voucher / Sửa voucher" />
@@ -113,7 +103,6 @@ function VoucherEdit() {
                 value={discountType}
                 style={{ width: 268, height: 44 }}
                 onChange={(value) => {
-                  console.log(value);
                   setDiscountType(Number(value));
                 }
                 }
@@ -133,10 +122,10 @@ function VoucherEdit() {
               <Input className='w-[268px] h-11 shadow-md' value={minOrderValue ?? ''} onChange={(e) => setMinOrderValue(Number(e.target.value) || null)} />
             </div>
             {discountType === 2 && (
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Giá Trị Cao Nhất<span className="text-primary"> *</span></div>
-              <Input className='w-[268px] h-11 shadow-md' value={maxDiscount ?? ''} onChange={(e) => setMaxDiscount(Number(e.target.value) || null)} />
-            </div>
+              <div className='flex gap-0.5 flex-col'>
+                <div className='text-sm font-medium'>Giá Trị Cao Nhất<span className="text-primary"> *</span></div>
+                <Input className='w-[268px] h-11 shadow-md' value={maxDiscount ?? ''} onChange={(e) => setMaxDiscount(Number(e.target.value) || null)} />
+              </div>
             )}
             <div className='flex gap-0.5 flex-col'>
               <div className='text-sm font-medium'>Ngày Bắt Đầu <span className='text-primary'>*</span></div>
@@ -169,7 +158,6 @@ function VoucherEdit() {
                 value={user}
                 style={{ width: 268, height: 44 }}
                 onChange={(value) => {
-                  console.log("Người dùng đã chọn:", value);
                   setUser(value);
                 }}
                 options={getUser.map((e) => ({
@@ -183,7 +171,7 @@ function VoucherEdit() {
           {contextHolder}
           <Space>
             <Button
-            back = "voucher/list/stillexpired"
+              back="voucher/list/stillexpired"
               onClick={async () => {
                 const start = dayjs(startDate, "YYYYMMDD");
                 const end = dayjs(endDate, "YYYYMMDD");
