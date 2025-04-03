@@ -303,7 +303,7 @@ function Header() {
         visibilityHeight={200}
         icon={<FaAnglesUp className="text-black" />}
         className="w-12 h-12 !z-10"
-        style={{ bottom: `${width < 640 ? "80px" : "40px"}` }}
+        style={{ bottom: `${width < 640 ? "100px" : "40px"}` }}
       />
       {/* modal login */}
       <Modal
@@ -520,7 +520,7 @@ function Header() {
         </div>
         {breadCrumb.length > 0 && (
           <div className="bg-white">
-            <div className="container-custom flex py-1.5 sm:py-2 px-3 md:px-3.5 lg:px-4 xl:px-0 items-center gap-2.5 ">
+            <div className="container-custom flex py-1.5 sm:py-2 px-3 md:px-3.5 lg:px-4 xl:px-0 items-center gap-1 ">
               {breadCrumb.map((e: any, i: number) => (
                 <Fragment key={i}>
                   {i != 0 && <IoIosArrowForward />}
@@ -530,7 +530,7 @@ function Header() {
                       if (pathname !== e.link) dispatch(actions.set_routing(true));
                     }}
                     href={e.link}
-                    className="text-xs font-normal text-gray-700"
+                    className="text-xs font-normal text-gray-700 line-clamp-1"
                   >
                     {e.name}
                   </Link>

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
 function ProductColor({ disabled, image, color, price, checked, onClick }: any) {
@@ -9,7 +8,7 @@ function ProductColor({ disabled, image, color, price, checked, onClick }: any) 
       }}
       className={`relative border rounded-lg shadow-lg ${
         checked ? "border-primary" : ""
-      } p-2.5 w-full h-full flex gap-2.5 items-center  overflow-hidden transition-all duration-200 select-none ${
+       } p-4 lg:py-2.5 lg:px-1.5 w-full h-full flex gap-2.5 items-center  overflow-hidden transition-all duration-200 select-none ${
         disabled ? "opacity-30" : "cursor-pointer"
       }`}
     >

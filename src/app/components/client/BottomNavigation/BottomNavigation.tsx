@@ -31,7 +31,7 @@ function BottomNavigation() {
     <>
       <Drawer
         closable={false}
-        height="70vh"
+        height="50vh"
         placement={"bottom"}
         open={showDrawer.menu}
         onClose={() => setShoDrawer({ more: false, menu: false })}
@@ -43,7 +43,7 @@ function BottomNavigation() {
       </Drawer>
       <Drawer
         closable={false}
-        height="90vh"
+        height="80vh"
         placement={"bottom"}
         open={showDrawer.more}
         onClose={() => setShoDrawer({ more: false, menu: false })}
@@ -54,10 +54,16 @@ function BottomNavigation() {
         <Footer />
       </Drawer>
       {/* ô trống fixed  */}
-      <div className="block sm:hidden h-16 mt-4"></div> 
+      <div className="block sm:hidden h-20 mt-4"></div>
       {/*  */}
-      <nav className="z-[1001] sm:hidden fixed bottom-0 w-full h-16 bg-white border-t border-gray-200 flex justify-between px-3">
-        <Link href={config.routes.client.home} className="center-flex flex-col w-24 h-full gap-0.5">
+      <nav className="z-[1001] sm:hidden fixed bottom-0 w-full h-20 bg-white border-t border-gray-200 flex justify-between px-3">
+        <Link
+          onClick={() => {
+            if (pathname !== config.routes.client.home) dispatch(actions.set_routing(true));
+          }}
+          href={config.routes.client.home}
+          className="center-flex flex-col w-24 h-full gap-0.5"
+        >
           <AiFillHome className="w-7 h-7 " />
           <p className=" text-xs font-semibold line-clamp-1 text-center">Trang chủ</p>
         </Link>
@@ -69,6 +75,9 @@ function BottomNavigation() {
           <p className=" text-xs font-semibold line-clamp-1 text-center">Danh mục</p>
         </div>
         <Link
+          onClick={() => {
+            if (pathname !== config.routes.client.products) dispatch(actions.set_routing(true));
+          }}
           href={config.routes.client.products}
           className="center-flex flex-col w-24 h-full gap-0.5"
         >

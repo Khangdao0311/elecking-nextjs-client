@@ -1,9 +1,9 @@
 "use client";
 
-import { Fragment, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
-import { FaChevronRight, FaMapLocationDot, FaPlus } from "react-icons/fa6";
-import { LuLoaderCircle, LuTicket } from "react-icons/lu";
+import { FaChevronRight, FaMapLocationDot } from "react-icons/fa6";
+import { LuTicket } from "react-icons/lu";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Modal, notification } from "antd";
 
@@ -107,10 +107,8 @@ function Checkout() {
   }, [query.toString(), state.user]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const checkoutJSON = localStorage.getItem("checkout");
-      setCheckout(checkoutJSON ? JSON.parse(checkoutJSON) : []);
-    }
+    const checkoutJSON = localStorage.getItem("checkout") || "[]";
+    setCheckout(checkoutJSON ? JSON.parse(checkoutJSON) : []);
   }, []);
 
   useEffect(() => {

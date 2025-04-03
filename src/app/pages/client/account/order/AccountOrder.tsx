@@ -5,6 +5,9 @@ import { BsFillClipboard2CheckFill, BsFillClipboard2XFill } from "react-icons/bs
 import { TbMoodEmpty } from "react-icons/tb";
 import { Modal } from "antd";
 import moment from "moment";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import { FreeMode } from "swiper/modules";
 
 import { useStore } from "@/app/store";
 import SidebarAccount from "@/app/components/client/SidebarAccount";
@@ -77,9 +80,18 @@ function AccountOrder() {
         </div>
         <div className="w-9/12 flex flex-col gap-6 rounded-xl min-h-[calc(100vh-190px)]">
           <h2 className="text-2xl font-bold uppercase">Lịch Sử Mua Hàng</h2>
-
-          <div className="w-full flex gap-2.5 flex-wrap">
-            <div
+          <Swiper
+            slidesPerView={"auto"}
+            spaceBetween={16}
+            navigation={{
+              nextEl: "#next",
+              prevEl: "#prev",
+            }}
+            freeMode={true}
+            modules={[FreeMode]}
+            className="w-full flex gap-2.5 flex-wrap"
+          >
+            <SwiperSlide
               onClick={() => {
                 if (status !== "") setStatus("");
               }}
@@ -87,11 +99,11 @@ function AccountOrder() {
                 status === ""
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
             >
               Tất cả ({totalOrder?.["all"] || 0})
-            </div>
-            <div
+            </SwiperSlide>
+            <SwiperSlide
               onClick={() => {
                 if (status !== "2") setStatus("2");
               }}
@@ -99,11 +111,11 @@ function AccountOrder() {
                 status === "2"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
             >
               Chờ xác nhận ({totalOrder?.["2"] || 0})
-            </div>
-            <div
+            </SwiperSlide>
+            <SwiperSlide
               onClick={() => {
                 if (status !== "3") setStatus("3");
               }}
@@ -111,11 +123,11 @@ function AccountOrder() {
                 status === "3"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
             >
               Đã xác nhận ({totalOrder?.["3"] || 0})
-            </div>
-            <div
+            </SwiperSlide>
+            <SwiperSlide
               onClick={() => {
                 if (status !== "4") setStatus("4");
               }}
@@ -123,11 +135,11 @@ function AccountOrder() {
                 status === "4"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
             >
               Đang vận chuyển ({totalOrder?.["4"] || 0})
-            </div>
-            <div
+            </SwiperSlide>
+            <SwiperSlide
               onClick={() => {
                 if (status !== "1") setStatus("1");
               }}
@@ -135,11 +147,11 @@ function AccountOrder() {
                 status === "1"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
             >
               Đã nhận ({totalOrder?.["1"] || 0})
-            </div>
-            <div
+            </SwiperSlide>
+            <SwiperSlide
               onClick={() => {
                 if (status !== "0") setStatus("0");
               }}
@@ -147,11 +159,11 @@ function AccountOrder() {
                 status === "0"
                   ? "border-primary bg-primary text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-              } px-4 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg `}
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
             >
               Đã hủy ({totalOrder?.["0"] || 0})
-            </div>
-          </div>
+            </SwiperSlide>
+          </Swiper>
 
           <div className="w-full flex flex-col gap-4 relative">
             {/*  */}

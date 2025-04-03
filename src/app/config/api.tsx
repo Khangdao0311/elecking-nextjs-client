@@ -1,4 +1,5 @@
-const url = "http://localhost:8000";
+// const url = "http://localhost:8000";
+const url = "http://192.168.1.3:8000";
 
 const api = {
   product: `${url}/product`,

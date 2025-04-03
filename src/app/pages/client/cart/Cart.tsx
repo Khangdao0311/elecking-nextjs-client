@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
 import { HiOutlineTicket } from "react-icons/hi";
@@ -30,7 +30,6 @@ function Cart() {
   });
 
   const router = useRouter();
-  const pathname = usePathname();
 
   const [api, contextHolder] = notification.useNotification();
   const openNotification = (message: string) => {

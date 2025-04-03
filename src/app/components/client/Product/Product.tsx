@@ -35,10 +35,9 @@ function Product(props: { product: IProduct }) {
           if (pathname !== `${config.routes.client.productDetail}/${props.product.id}`)
             dispatch(actions.set_routing(true));
         }}
-        className="w-full aspect-square"
       >
         <img
-          className="w-full h-full object-contain"
+          className="w-full !aspect-square object-contain opacity-"
           src={props.product.variants[0].colors[0].image}
           alt=""
         />
@@ -91,7 +90,7 @@ function Product(props: { product: IProduct }) {
                 defaultValue={Math.ceil(props.product.rating * 2) / 2}
                 allowHalf
                 disabled
-                characterRender={(char) => <span style={{ marginInlineEnd: "2px" }}>{char}</span>}
+                characterRender={(char) => <span style={{ marginInlineEnd: "1px" }}>{char}</span>}
               />{" "}
               <span className="hidden sm:flex text-xs select-none"> ({props.product.rating})</span>
             </Fragment>

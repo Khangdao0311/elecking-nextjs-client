@@ -10,7 +10,7 @@ function ProductVariant({ disabled, name, price, checked, onClick }: any) {
       }}
       className={` relative  border shadow-lg ${
         checked ? "border-primary" : "border-white"
-      } rounded-lg p-2.5 w-full h-full flex flex-col items-center overflow-hidden transition-all duration-200 ${
+      } p-4 lg:py-2.5 lg:px-1.5 rounded-lg  w-full h-full flex flex-col items-center overflow-hidden transition-all duration-200 ${
         disabled ? "opacity-30" : "cursor-pointer"
       }`}
     >

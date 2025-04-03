@@ -38,8 +38,6 @@ function Home() {
   const [productsTablet, setProductsTablet] = useState([]);
   const [productsheadPhone, setProductsHeadPhone] = useState([]);
 
-  const pathname = usePathname();
-
   useEffect(() => {
     categoryServices
       .getQuery({ limit: 0, orderby: "id-asc", status: 1 })
@@ -104,8 +102,8 @@ function Home() {
                 nextEl: ".custom-next",
                 prevEl: ".custom-prev",
               }}
-              loop={true}
-              modules={[Autoplay, Navigation, Grid]}
+              // loop={true}
+              modules={[Autoplay, Navigation]}
               className="!aspect-[3/1] w-full relative group rounded-lg shadow-xl border border-gray-300"
             >
               {imageSlide.map((e, index) => (
@@ -190,8 +188,8 @@ function Home() {
               nextEl: ".custom-next",
               prevEl: ".custom-prev",
             }}
-            loop={true}
-            modules={[Autoplay, Navigation, Grid]}
+            // loop={true}
+            modules={[Autoplay, Navigation]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
@@ -289,16 +287,19 @@ function Home() {
               nextEl: ".custom-next",
               prevEl: ".custom-prev",
             }}
-            loop={true}
+            // loop={true}
             modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               640: {
                 slidesPerView: 2,
+
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               768: {
                 slidesPerView: 3,
@@ -318,7 +319,7 @@ function Home() {
             }}
             className=" w-full relative group/container container-custom"
           >
-            {productsHot.map((product: IProduct) => (
+            {productsSale.map((product: IProduct) => (
               <SwiperSlide key={product.id}>
                 <Product product={product} />
               </SwiperSlide>
@@ -378,16 +379,19 @@ function Home() {
               nextEl: ".custom-next",
               prevEl: ".custom-prev",
             }}
-            loop={true}
+            // loop={true}
             modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               640: {
                 slidesPerView: 2,
+
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               768: {
                 slidesPerView: 3,
@@ -467,16 +471,19 @@ function Home() {
               nextEl: ".custom-next",
               prevEl: ".custom-prev",
             }}
-            loop={true}
+            // loop={true}
             modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               640: {
                 slidesPerView: 2,
+
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               768: {
                 slidesPerView: 3,
@@ -556,16 +563,19 @@ function Home() {
               nextEl: ".custom-next",
               prevEl: ".custom-prev",
             }}
-            loop={true}
+            // loop={true}
             modules={[Autoplay, Navigation, Grid]}
             breakpoints={{
               0: {
                 slidesPerView: 2,
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               640: {
                 slidesPerView: 2,
+
                 spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
               },
               768: {
                 slidesPerView: 3,
@@ -710,7 +720,7 @@ function Home() {
                 spaceBetween: 16,
               },
             }}
-            modules={[Autoplay, Navigation, Grid]}
+            modules={[Autoplay, Navigation]}
             className="!h-36 w-full relative group overflow-auto"
           >
             {brands.map((brand: IBrand, iBrand: number) => (

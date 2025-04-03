@@ -2,9 +2,8 @@
 
 import React, { Fragment, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Thumbs } from "swiper/modules";
+import { Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { useParams, useRouter } from "next/navigation";
-import SwiperCore from "swiper/core";
 import { Image, Modal, Pagination, Rate } from "antd";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
@@ -29,7 +28,7 @@ import * as reviewServices from "@/app/services/reviewService";
 import ProductColor from "./components/ProductColor";
 import ProductVariant from "./components/ProductVariant";
 import config from "@/app/config";
-import { useStore, actions, initState } from "@/app/store";
+import { useStore, actions } from "@/app/store";
 import ProductLoad from "@/app/components/client/ProductLoad";
 import Shimmer from "@/app/components/client/Shimmer";
 import Loading from "@/app/components/client/Loading";
@@ -43,6 +42,7 @@ function ProductDetail() {
   const [product, setProduct] = useState<IProduct>();
   const [reviews, setReviews] = useState<IReview[]>([]);
   const [totalReviews, setTotalReviews] = useState<number>(0);
+  const [totalsReviews, setTotalsReviews] = useState<any>();
   const [productsSame, setProductsSame] = useState<IProduct[]>([]);
   const [iVariant, setIVariant] = useState(-1);
   const [iColor, setIColor] = useState(-1);
@@ -76,9 +76,10 @@ function ProductDetail() {
     reviewServices
       .getQuery({ product_id: id, rating: rating, orderby: "id-desc", limit: 5, page: page })
       .then((res) => {
-        setReviews([]);
+        // setReviews([]);
         setReviews(res.data);
         setTotalReviews(res.total);
+        setTotalsReviews(res.totalReview);
       });
   }, [id, rating, state.re_render, page]);
 
@@ -192,7 +193,7 @@ function ProductDetail() {
         <>
           {/* Chi tiết sản phẩm, giá và type */}
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row items-start gap-4">
               <p className="text-lg font-bold">{product?.name}</p>
               {product?.rating !== null && (
                 <div className="center-flex gap-1">
@@ -211,9 +212,9 @@ function ProductDetail() {
             </div>
             <hr className="my-4" />
 
-            <div className="flex gap-4">
+            <div className="flex flex-col lg:flex-row gap-4">
               {/* hình ảnh */}
-              <div className="w-7/12 flex flex-col gap-4">
+              <div className="w-full lg:w-6/12 xl:w-7/12 flex flex-col gap-4">
                 <div className="w-full h-[365px] border border-gray-200 rounded-2xl relative overflow-hidden select-none shadow-lg">
                   <Image.PreviewGroup>
                     <Swiper
@@ -264,7 +265,7 @@ function ProductDetail() {
                       </button>
                     </Swiper>
                   </Image.PreviewGroup>
-                  <div className="absolute top-4 left-4 w-6 h6 z-30 cursor-pointer group">
+                  <div className="absolute top-4 left-4 w-6 h6 z-20 cursor-pointer group">
                     {state.wish.includes(product.id) ? (
                       <div
                         className="relative "
@@ -299,15 +300,35 @@ function ProductDetail() {
                 {/* list image */}
                 <Swiper
                   onSwiper={setThumbsSwiper}
-                  spaceBetween={10}
-                  slidesPerView={9.5}
                   watchSlidesProgress={true}
                   className="w-full !pb-4"
+                  breakpoints={{
+                    0: {
+                      slidesPerView: 5.2,
+                      spaceBetween: 10,
+                    },
+                    640: {
+                      slidesPerView: 5.2,
+                      spaceBetween: 10,
+                    },
+                    768: {
+                      slidesPerView: 8.2,
+                      spaceBetween: 10,
+                    },
+                    1024: {
+                      slidesPerView: 7.2,
+                      spaceBetween: 10,
+                    },
+                    1280: {
+                      slidesPerView: 8.2,
+                      spaceBetween: 10,
+                    },
+                  }}
                 >
                   <SwiperSlide
                     className={` ${
                       indexSwiper === 0 ? " border-2 border-primary" : "border border-gray-200 "
-                    }  rounded-lg overflow-hidden center-flex cursor-pointer shadow-lg`}
+                    } !h-full !aspect-square rounded-lg overflow-hidden center-flex cursor-pointer shadow-lg`}
                   >
                     <FaRegStar className=" w-1/2 h-1/2 text-primary" />
                   </SwiperSlide>
@@ -318,7 +339,7 @@ function ProductDetail() {
                         indexSwiper === index + 1
                           ? " border-2 border-primary"
                           : "border border-gray-200 "
-                      }  rounded-lg overflow-hidden cursor-pointer shadow-lg`}
+                      } !h-full !aspect-square rounded-lg overflow-hidden cursor-pointer shadow-lg`}
                     >
                       <img className=" w-full aspect-square" src={img} />
                     </SwiperSlide>
@@ -326,9 +347,9 @@ function ProductDetail() {
                 </Swiper>
               </div>
               {/* Chọn type */}
-              <div className="w-5/12">
+              <div className="w-full lg:w-6/12 xl:w-5/12">
                 {/* variants */}
-                <div className="grid grid-cols-3 flex-wrap gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 flex-wrap gap-2.5">
                   {product!.variants!.length > 1 &&
                     product?.variants?.map((variant, index) => (
                       <div key={index}>
@@ -359,9 +380,9 @@ function ProductDetail() {
                     ))}
                 </div>
                 {/* colors */}
-                <div>
+                <div className="flex flex-col">
                   <div className="py-4">Chọn màu để xem giá</div>
-                  <div className="grid grid-cols-3 flex-wrap gap-2.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3  flex-wrap gap-2.5">
                     {product?.variants[iVariant === -1 ? 0 : iVariant]?.colors.map(
                       (color, index) => (
                         <div key={index}>
@@ -396,59 +417,65 @@ function ProductDetail() {
                 {/* price */}
                 <div className="flex gap-4 items-center py-4">
                   <p className="text-base font-medium">Giá</p>
-                  <p className="text-3xl font-bold text-red-500 ">
-                    {(
-                      product!.variants[iVariant === -1 ? 0 : iVariant].price -
-                      product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
-                      product!.variants[iVariant === -1 ? 0 : iVariant].colors[
-                        iColor === -1 ? 0 : iColor
-                      ].price_extra
-                    ).toLocaleString("vi-VN")}{" "}
-                    đ
-                  </p>
-                  {product!.variants[iVariant === -1 ? 0 : iVariant].price -
-                    product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
-                    product!.variants[iVariant === -1 ? 0 : iVariant].colors[
-                      iColor === -1 ? 0 : iColor
-                    ].price_extra <
-                    product!.variants[iVariant === -1 ? 0 : iVariant].price +
-                      product!.variants[iVariant === -1 ? 0 : iVariant].colors[
-                        iColor === -1 ? 0 : iColor
-                      ].price_extra && (
-                    <del className="text-lg font-normal text-gray-500">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <p className="text-3xl font-bold text-red-500 ">
                       {(
-                        product!.variants[iVariant === -1 ? 0 : iVariant].price +
+                        product!.variants[iVariant === -1 ? 0 : iVariant].price -
+                        product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
                         product!.variants[iVariant === -1 ? 0 : iVariant].colors[
                           iColor === -1 ? 0 : iColor
                         ].price_extra
                       ).toLocaleString("vi-VN")}{" "}
                       đ
-                    </del>
-                  )}
-                  {product!.variants[iVariant === -1 ? 0 : iVariant].price_sale > 0 && (
-                    <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
-                      {Math.ceil(
-                        100 -
-                          ((product.variants[0].price - product.variants[0].price_sale) /
-                            product.variants[0].price) *
-                            100
-                      ) > 0 && (
-                        <div className="w-full text-center text-xs font-bold text-white">
+                    </p>
+                    <div className="flex gap-2">
+                      <span>
+                        {product!.variants[iVariant === -1 ? 0 : iVariant].price -
+                          product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
+                          product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                            iColor === -1 ? 0 : iColor
+                          ].price_extra <
+                          product!.variants[iVariant === -1 ? 0 : iVariant].price +
+                            product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                              iColor === -1 ? 0 : iColor
+                            ].price_extra && (
+                          <del className="text-lg font-normal text-gray-500">
+                            {(
+                              product!.variants[iVariant === -1 ? 0 : iVariant].price +
+                              product!.variants[iVariant === -1 ? 0 : iVariant].colors[
+                                iColor === -1 ? 0 : iColor
+                              ].price_extra
+                            ).toLocaleString("vi-VN")}{" "}
+                            đ
+                          </del>
+                        )}
+                      </span>
+                      {product!.variants[iVariant === -1 ? 0 : iVariant].price_sale > 0 && (
+                        <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
                           {Math.ceil(
                             100 -
                               ((product.variants[0].price - product.variants[0].price_sale) /
                                 product.variants[0].price) *
                                 100
-                          )}{" "}
-                          %
+                          ) > 0 && (
+                            <div className="w-full text-center text-xs font-bold text-white">
+                              {Math.ceil(
+                                100 -
+                                  ((product.variants[0].price - product.variants[0].price_sale) /
+                                    product.variants[0].price) *
+                                    100
+                              )}{" "}
+                              %
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
-                  )}
+                  </div>
                 </div>
                 {/* quantity */}
                 <div className="flex gap-4 items-center py-4">
-                  <p>Số Lượng</p>
+                  <p className="shrink-0">Số Lượng</p>
                   <div className="flex items-center">
                     <div
                       onClick={() => setQuantity(quantity - 1 === 0 ? 1 : quantity - 1)}
@@ -500,7 +527,9 @@ function ProductDetail() {
                     }`}
                   >
                     <AiOutlineShoppingCart className="w-7 h-7 shrink-0 text-primary font-bold" />
-                    <p className="text-primary text-md font-medium">Thêm vào giỏ hàng</p>
+                    <p className="text-primary text-md font-medium line-clamp-1">
+                      Thêm vào giỏ hàng
+                    </p>
                   </div>
                   <div
                     onClick={() => {
@@ -525,7 +554,7 @@ function ProductDetail() {
 
           {/* Mô Tả */}
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex gap-4 items-start">
-            <div className="w-4/5  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
+            <div className="w-full lg:w-4/5  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
               <p className="flex gap-2">
                 <FaRegEdit className="w-6 h-6" />
                 <span className="text-xl font-medium">MÔ TẢ SẢN PHẨM</span>
@@ -537,7 +566,7 @@ function ProductDetail() {
                 }}
               />
             </div>
-            <div className="w-1/5 h-auto rounded-lg overflow-hidden shadow-lg">
+            <div className="hidden lg:flex w-1/5 h-auto rounded-lg overflow-hidden shadow-lg">
               <img
                 className="w-full h-auto  object-contain"
                 src="https://vnpik.com/wp-content/uploads/2024/12/Pikvip.com_20241204_20.jpg"
@@ -556,44 +585,54 @@ function ProductDetail() {
                 </div>
               </div>
               {product.rating !== null && (
-                <div className="flex gap-4 p-4">
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 flex gap-1 items-end">
+                <div className="w-full flex items-center gap-4 p-4">
+                  <div className=" flex flex-col items-center justify-center shrink-0">
+                    <div className="flex gap-2.5 items-end">
                       <span className="text-4xl font-bold text-primary">{product?.rating}</span>
                       <span className="text-primary text-lg font-normal"> trên 5</span>
                     </div>
                     <div className="flex gap-1">
                       <Rate
-                        className="text-secondaryDark text-base"
+                        className="text-secondaryDark text-xl"
                         defaultValue={Math.ceil(product.rating * 2) / 2}
                         allowHalf
                         disabled
                         characterRender={(char) => (
-                          <span style={{ marginInlineEnd: "2px" }}>{char}</span>
+                          <span style={{ marginInlineEnd: "6px" }}>{char}</span>
                         )}
                       />
                     </div>
                   </div>
-                  <div className="flex gap-2.5 p-2.5">
+                  <Swiper
+                    slidesPerView={"auto"}
+                    spaceBetween={10}
+                    navigation={{
+                      nextEl: "#next",
+                      prevEl: "#prev",
+                    }}
+                    freeMode={true}
+                    modules={[FreeMode]}
+                    className="w-full"
+                  >
                     {[
-                      { key: "", value: `Tất cả` },
-                      { key: "5", value: "5 Sao" },
-                      { key: "4", value: "4 Sao" },
-                      { key: "3", value: "3 Sao" },
-                      { key: "2", value: "2 Sao" },
-                      { key: "1", value: "1 Sao" },
+                      { key: "", value: `Tất cả (${totalsReviews?.["all"]})` },
+                      { key: "5", value: `5 Sao (${totalsReviews?.["5"]})` },
+                      { key: "4", value: `4 Sao (${totalsReviews?.["4"]})` },
+                      { key: "3", value: `3 Sao (${totalsReviews?.["3"]})` },
+                      { key: "2", value: `2 Sao (${totalsReviews?.["2"]})` },
+                      { key: "1", value: `1 Sao (${totalsReviews?.["1"]})` },
                     ].map((e) => (
-                      <div
+                      <SwiperSlide
                         key={e.key}
-                        className={`px-8 py-2 center-flex rounded-lg shadow-lg ${
+                        className={`!w-auto h-auto px-8 py-2.5 center-flex rounded-lg shadow-lg ${
                           e.key === rating ? "bg-primary text-white" : "text-gray-700"
                         } text-base font-bold select-none cursor-pointer transition-all duration-300 border border-gray-200 hover:shadow-xl hover:border-gray-300 hover:scale-105 `}
                         onClick={() => setRating(e.key)}
                       >
                         {e.value}
-                      </div>
+                      </SwiperSlide>
                     ))}
-                  </div>
+                  </Swiper>
                 </div>
               )}
               <hr />
@@ -608,7 +647,7 @@ function ProductDetail() {
                 )}
                 {reviews.map((review: IReview, index: number) => (
                   <div key={index} className="flex items-start gap-4 py-4 ">
-                    <div className="w-16 h-16 center-flex rounded-full overflow-hidden  shadow-lg">
+                    <div className="shrink-0 w-12 sm:w-14 lg:16 aspect-square center-flex rounded-full overflow-hidden  shadow-lg">
                       {review.user.avatar ? (
                         <img
                           className="w-full h-full object-contain"
@@ -619,7 +658,7 @@ function ProductDetail() {
                         <FaCircleUser className="w-full h-full text-gray-300" />
                       )}
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2">
                       <p className="text-lg font-medium">{review.user.fullname}</p>
                       <div className="flex gap-1">
                         <Rate
@@ -717,19 +756,56 @@ function ProductDetail() {
             <div className="flex gap-2.5 p-2.5">
               <p className="text-3xl font-medium">Sản Phẩm Tương Tự</p>
             </div>
-            <div className="grid grid-cols-5 container-custom gap-2.5">
-              {productsSame.length === 0 &&
-                Array.from({ length: 5 }).map((_, i: number) => (
-                  <Fragment key={i}>
-                    <ProductLoad />
-                  </Fragment>
-                ))}
-              {productsSame.map((product) => (
-                <Fragment key={product.id}>
+
+            <Swiper
+              slidesPerView={5}
+              spaceBetween={10}
+              autoplay={{
+                delay: 2500,
+                disableOnInteraction: false,
+              }}
+              navigation={{
+                nextEl: ".custom-next",
+                prevEl: ".custom-prev",
+              }}
+              loop={true}
+              modules={[Autoplay, Navigation]}
+              breakpoints={{
+                0: {
+                  slidesPerView: 2,
+                  spaceBetween: 10,
+                },
+                640: {
+                  slidesPerView: 2,
+                  spaceBetween: 10,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 10,
+                },
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 10,
+                },
+                1280: {
+                  slidesPerView: 5,
+                  spaceBetween: 10,
+                },
+              }}
+              className=" w-full relative group/container container-custom"
+            >
+              {productsSame.map((product: IProduct) => (
+                <SwiperSlide key={product.id}>
                   <Product product={product} />
-                </Fragment>
+                </SwiperSlide>
               ))}
-            </div>
+              <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+                <FaAngleLeft className="w-8 h-8 text-white" />
+              </button>
+              <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+                <FaAngleRight className="w-8 h-8 text-white" />
+              </button>
+            </Swiper>
           </section>
         </>
       ) : (
@@ -739,10 +815,9 @@ function ProductDetail() {
               <Shimmer className="w-1/2 h-7" />
             </div>
             <hr className="my-4" />
-
-            <div className="flex gap-4">
+            <div className="flex flex-col lg:flex-row gap-4">
               {/* hình ảnh */}
-              <div className="w-7/12 flex flex-col gap-4">
+              <div className="w-full xl:w-7/12 flex flex-col gap-4">
                 <Shimmer image={true} className="w-full  h-[365px]" />
 
                 <div className="grid grid-cols-9 gap-2.5">
@@ -757,7 +832,7 @@ function ProductDetail() {
                   <Shimmer image={true} className="aspect-square" />
                 </div>
               </div>
-              <div className="flex flex-col gap-4 w-5/12">
+              <div className="w-full xl:w-5/12 flex flex-col gap-4 ">
                 <div className="grid grid-cols-3 flex-wrap gap-2.5">
                   <Shimmer className="h-16" />
                   <Shimmer className="h-16" />
@@ -782,6 +857,7 @@ function ProductDetail() {
               </div>
             </div>
           </section>
+
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex ">
             <div className="flex gap-4 w-full">
               <div className="w-4/5  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
@@ -807,6 +883,7 @@ function ProductDetail() {
               <Shimmer image={true} className="w-1/5 " />
             </div>
           </section>
+
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 ">
             <div className="shadow-xl border border-gray-300  rounded-lg p-4">
               <Shimmer className="w-1/3 h-10" />
@@ -815,7 +892,7 @@ function ProductDetail() {
                   <Shimmer className="w-20 h-10" />
                   <Shimmer className="w-20 h-5" />
                 </div>
-                <div className="flex gap-2.5 p-2.5">
+                <div className="flex gap-2.5 p-2.5 overflow-hidden">
                   <Shimmer className="w-32 h-11" />
                   <Shimmer className="w-32 h-11" />
                   <Shimmer className="w-32 h-11" />
@@ -854,12 +931,18 @@ function ProductDetail() {
             <div className="flex gap-2.5 py-2.5">
               <Shimmer className="w-2/5 h-9" />
             </div>
-            <div className="grid grid-cols-5 container-custom gap-2.5">
-              {Array.from({ length: 5 }).map((_, i: number) => (
-                <Fragment key={i}>
-                  <ProductLoad />
-                </Fragment>
-              ))}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 container-custom gap-2.5">
+              <ProductLoad />
+              <ProductLoad />
+              <div className="hidden md:flex">
+                <ProductLoad />
+              </div>
+              <div className="hidden lg:flex">
+                <ProductLoad />
+              </div>
+              <div className="hidden xl:flex">
+                <ProductLoad />
+              </div>
             </div>
           </section>
         </>
