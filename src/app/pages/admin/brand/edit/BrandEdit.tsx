@@ -325,7 +325,7 @@ function BrandEdit() {
               
             )
             if (brandResponse?.status == 200) {
-              openNotificationWithIcon("success", "Thành công", "Sửa thành công");
+              openNotificationWithIcon("success", "Thành công", "Sửa thương hiệu thành công");
               setTimeout(() => {
                 router.push(config.routes.admin.brand.list);
               }, 1000);

@@ -1,20 +1,20 @@
 "use client";
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Select, Upload } from "antd";
 import React, { useEffect, useState, useRef } from "react";
-import { GrFormNext } from "react-icons/gr";
-import { IoIosClose } from "react-icons/io";
-import { RcFile, UploadFile } from "antd/es/upload/interface";
-import { IoCloseSharp } from "react-icons/io5";
 import * as categoryServices from "@/app/services/categoryService";
 import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
-import { notification, Space } from 'antd';
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
+import { notification, Space } from 'antd';
+import { Input, Select, Upload } from "antd";
+import { GrFormNext } from "react-icons/gr";
+import { IoIosClose } from "react-icons/io";
+import { RcFile, UploadFile } from "antd/es/upload/interface";
+import { IoCloseSharp } from "react-icons/io5";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
 
@@ -171,7 +171,7 @@ function ProductAdd() {
               if (j === iColor) {
                 return {
                   ...color,
-                  image: null, // Xóa ảnh bằng cách đặt lại thành `null`
+                  image: null,
                 };
               }
               return color;
@@ -182,7 +182,6 @@ function ProductAdd() {
       })
     );
 
-    // 🟢 Xóa ảnh khỏi storageimgcolor
     setStorageimgcolor((prev) => prev.filter((_, index) => index !== iColor));
   };
 
@@ -192,14 +191,13 @@ function ProductAdd() {
 
   function handleAddVariant() {
     setVariants((prev: IProductVariant[]) => {
-      // Lấy số lượng property_ids dựa trên selectedcategory.proptypes.length
       const propertyIds =
         selectedcategory?.proptypes.map(() => "") || [];
 
       return [
         ...prev,
         {
-          property_ids: [...propertyIds], // Đảm bảo số lượng đúng
+          property_ids: [...propertyIds],
           price: "",
           price_sale: "",
           colors: [
@@ -257,7 +255,7 @@ function ProductAdd() {
         if (i === variantIndex) {
           return toggleArray.map((val, j) => (j === colorIndex ? !val : val));
         }
-        return [...toggleArray]; // Giữ nguyên mảng khác
+        return [...toggleArray]; 
       });
     });
   };
@@ -286,8 +284,8 @@ function ProductAdd() {
     setHandleToggleColor((prev: boolean[][]) =>
       prev.map((toggleArray, i) =>
         i === iVariant
-          ? toggleArray.filter((_, index) => index !== iColor) // Xoá màu đúng cách
-          : [...toggleArray] // Giữ nguyên mảng cho các variant khác
+          ? toggleArray.filter((_, index) => index !== iColor) 
+          : [...toggleArray] 
       )
     );
   }
@@ -808,7 +806,7 @@ function ProductAdd() {
               }
               const productResponse = await productServices.addProduct(productData)
               if (productResponse?.status === 200) {
-                openNotificationWithIcon("success", "Thành công", "Thêm thành công");
+                openNotificationWithIcon("success", "Thành công", "Thêm sản phẩm thành công");
                 setTimeout(() => {
                   router.push(config.routes.admin.product.list);
                 }, 1000);

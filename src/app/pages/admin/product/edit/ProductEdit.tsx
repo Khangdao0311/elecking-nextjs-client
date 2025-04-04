@@ -1,21 +1,21 @@
 "use client";
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Select, Upload } from "antd";
 import React, { useEffect, useState, useRef } from "react";
-import { GrFormNext } from "react-icons/gr";
-import { IoIosClose } from "react-icons/io";
-import { RcFile, UploadFile } from "antd/es/upload/interface";
-import { IoCloseSharp } from "react-icons/io5";
 import { useParams } from "next/navigation";
+import { RcFile, UploadFile } from "antd/es/upload/interface";
 import * as categoryServices from "@/app/services/categoryService";
 import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
-import { notification, Space } from "antd";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
+import { notification, Space } from "antd";
+import { Input, Select, Upload } from "antd";
+import { GrFormNext } from "react-icons/gr";
+import { IoIosClose } from "react-icons/io";
+import { IoCloseSharp } from "react-icons/io5";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
 
@@ -80,7 +80,6 @@ function ProductEdit() {
 
     setFilteredStorageImgColor(filteredFiles);
   }, [storageimgcolor, getimgcolor]);
-  console.log(variants);
 
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => {
@@ -101,7 +100,6 @@ function ProductEdit() {
             : null,
         })),
       }));
-      console.log(formattedVariants);
       setVariants(formattedVariants);
       setName(res.data.name);
       setEditorContent(res.data.description);
@@ -919,7 +917,7 @@ function ProductEdit() {
                 openNotificationWithIcon(
                   "success",
                   "Thành công",
-                  "Cập nhật thành công"
+                  "Sửa sản phẩm thành công"
                 );
                 setTimeout(() => {
                   router.push(config.routes.admin.product.list);

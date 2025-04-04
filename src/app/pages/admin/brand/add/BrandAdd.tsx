@@ -264,7 +264,7 @@ function BrandAdd() {
                   };
                   const brandResponse = await brandServices.addBrand(brandData);
                   if (brandResponse?.status === 200) {
-                    openNotificationWithIcon("success", "Thành công", "Thêm thành công");
+                    openNotificationWithIcon("success", "Thành công", "Thêm thương hiệu thành công");
                     setTimeout(() => {
                       router.push(config.routes.admin.brand.list);
                     }, 1000);

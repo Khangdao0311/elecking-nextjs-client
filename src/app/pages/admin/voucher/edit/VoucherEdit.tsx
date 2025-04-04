@@ -218,7 +218,7 @@ function VoucherEdit() {
 
                 const voucherResponse = await voucherService.editVoucher(id, voucherData);
                 if (voucherResponse?.status == 200) {
-                  openNotificationWithIcon('success', "Thành công", "Cập nhật voucher thành công");
+                  openNotificationWithIcon('success', "Thành công", "Sửa voucher thành công");
                   setTimeout(() => {
                     router.push(config.routes.admin.voucher.list.stillexpired);
                   }, 1000);

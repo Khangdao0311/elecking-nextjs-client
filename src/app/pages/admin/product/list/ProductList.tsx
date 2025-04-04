@@ -2,19 +2,18 @@
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import React, { useEffect, useState } from "react";
+import * as productServices from "@/app/services/productService";
+import Link from "next/link";
+import config from "@/app/config";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
 import { FiEdit } from "react-icons/fi";
 import { GoPlus } from "react-icons/go";
 import { Pagination, Rate } from "antd";
 import { CiCircleMore } from "react-icons/ci";
-import * as productServices from "@/app/services/productService";
-import Statusproduct from "@/app/pages/admin/Components/Status";
-import Link from "next/link";
-import config from "@/app/config";
 import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import { Modal } from "antd";
-import { useStore } from "@/app/store";
-import Loading from "@/app/components/client/Loading";
 
 function ProductList() {
   const [statusProductDetail, setStatusProductDetail] = useState(false);

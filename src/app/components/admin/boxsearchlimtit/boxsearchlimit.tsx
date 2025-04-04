@@ -23,9 +23,9 @@ const BoxSearchLimit = ({
 
   return (
     <div className="flex items-center bg-white shadow-xl rounded-lg px-7 py-3 justify-between">
-      <div className={`flex ${pathname.startsWith("/admin/order") ? "w-4/5" : "w-1/5"} gap-4 items-center`}>
+      <div className={`flex ${pathname.startsWith("/admin/order") ? "w-5/6" : "w-1/2"} gap-4 items-center`}>
         {pathname.startsWith("/admin/order") ? (
-          <div className="flex gap-2 px-4 py-2 bg-white rounded-tl-lg rounded-tr-lg">
+          <div className="flex w-[100%] gap-2 bg-white rounded-tl-lg rounded-tr-lg">
             <div
               onClick={() => {
                 if (status !== "") setStatus("");
@@ -130,7 +130,7 @@ const BoxSearchLimit = ({
           />
         </>}
       </div>
-      <div className="flex w-1/3 gap-2 justify-end items-center">
+      <div className="flex 1/3 gap-2 justify-end items-center">
         <p>Hiện</p>
         <Select
           defaultValue={5}

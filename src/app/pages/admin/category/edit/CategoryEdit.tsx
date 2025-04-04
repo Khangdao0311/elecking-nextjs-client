@@ -4,18 +4,18 @@ import { Input, Modal, notification, Upload } from "antd";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Button from "@/app/components/admin/Button";
-import { Select } from "antd";
-import { IoCloseSharp } from "react-icons/io5";
 import * as categoryService from "@/app/services/categoryService";
 import { useParams } from "next/navigation";
 import * as proptypeService from "@/app/services/proptypeService";
 import * as uploadService from "@/app/services/uploadService";
-import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
+import { Select } from "antd";
+import Quill from "quill";
+import { IoCloseSharp } from "react-icons/io5";
 
 function CategoryEdit() {
   const { id }: any = useParams();
@@ -32,7 +32,6 @@ function CategoryEdit() {
   const [state, dispatch] = useStore();
 
 
-
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
 
@@ -42,7 +41,6 @@ function CategoryEdit() {
       description: description,
     });
   }
-
 
   useEffect(() => {
     const query = { limit: 0 };
@@ -115,12 +113,12 @@ function CategoryEdit() {
         })
         .then((res) => {
           if (res.status === 200) {
-            openNotificationWithIcon('success', "Thành công", "Sửa thành công");
+            openNotificationWithIcon('success', "Thành công", "Sửa danh mục thành công");
             setTimeout(() => {
               router.push(`${config.routes.admin.category.list}`)
             }, 1000)
           } else {
-            openNotificationWithIcon('error', "Thất bại", "Sửa thất bại");
+            openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
           }
         });
       
@@ -249,7 +247,6 @@ function CategoryEdit() {
                 </div>
               </Upload>
 
-              {/* Hiển thị danh sách ảnh đã chọn */}
               <div className="flex items-center flex-wrap gap-3">
                 {image.map((file) => {
                   const imageSrc = file.originFileObj

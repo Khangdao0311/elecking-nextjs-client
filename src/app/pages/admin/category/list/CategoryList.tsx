@@ -1,14 +1,8 @@
 "use client";
-
 import { FiEdit } from "react-icons/fi";
 import { GoPlus } from "react-icons/go";
-import { MdDeleteForever } from "react-icons/md";
-import { Pagination } from "antd";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Space, Table, Tag } from "antd";
-import type { TableProps } from "antd";
-
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import * as categoryServices from "@/app/services/categoryService";
@@ -16,11 +10,13 @@ import Statuscategory from "@/app/pages/admin/Components/Status";
 import config from "@/app/config";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
-import * as proptypeService from "@/app/services/proptypeService";
+import { Pagination } from "antd";
+import { Space, Table, Tag } from "antd";
+import type { TableProps } from "antd";
 
 function CategoryList() {
-  const [state, dispatch] = useStore();
 
+  const [state, dispatch] = useStore();
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [categories, setCategories] = useState([]);
@@ -120,15 +116,6 @@ function CategoryList() {
       ),
     },
   ];
-  console.log(
-    "Products:",
-    categories.length,
-    "Limit:",
-    limit,
-    "Total:",
-    totalPages
-  );
-  console.log(state.load);
 
   return (
     <>

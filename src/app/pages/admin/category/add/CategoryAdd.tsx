@@ -1,18 +1,19 @@
 "use client";
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Modal, Select, Upload } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
-import { IoCloseSharp } from "react-icons/io5";
 import * as proptypeService from "@/app/services/proptypeService";
 import * as uploadService from "@/app/services/uploadService";
 import * as categoryService from "@/app/services/categoryService";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
+import { Input, Modal, Select, Upload } from "antd";
+import { IoCloseSharp } from "react-icons/io5";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import { Button as ButtonAnt, notification, Space } from "antd";
-import { useStore } from "@/app/store";
-import Loading from "@/app/components/client/Loading";
+
 function CategoryAdd() {
   const [proptype, setproptype] = useState<IProptype[]>([]);
   const [name, setName] = useState("");
@@ -21,8 +22,6 @@ function CategoryAdd() {
   const quillRef = useRef<HTMLDivElement>(null);
   const [editorContent, setEditorContent] = useState("");
   const [state, dispatch] = useStore();
-
-
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -33,7 +32,6 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
       description: description,
     });
   }
-
 
   useEffect(() => {
     const query = { limit: 0 };
@@ -107,7 +105,7 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
         })
         .then((res) => {
           if(res.status === 200){
-            openNotificationWithIcon('success', "Thành công", "Thêm thành công");
+            openNotificationWithIcon('success', "Thành công", "Thêm danh mục thành công");
             setName("");
             setDescription("");
             setSelectedProptype([]);
@@ -120,7 +118,7 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
           }
         });
     } else {
-      openNotificationWithIcon('error', "Thêm thất bại", "Lỗi dữ liệu");
+      openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
     }
   }
 
@@ -205,7 +203,6 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
                 </div>
               </Upload>
 
-              {/* Hiển thị danh sách ảnh đã chọn */}
               <div className="flex items-center flex-wrap gap-3">
                 {image.map((file) => {
                   const imageSrc = file.originFileObj

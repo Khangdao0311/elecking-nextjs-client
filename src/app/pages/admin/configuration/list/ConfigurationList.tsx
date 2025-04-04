@@ -3,6 +3,11 @@ import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import * as proptypeService from "@/app/services/proptypeService";
 import * as propertyService from "@/app/services/propertyService";
 import { useEffect, useState } from "react";
+import BoxSearchLimit from "@/app/components/admin/boxsearchlimtit";
+import { useStore } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
+import { GoPlus } from "react-icons/go";
+import { FiEdit } from "react-icons/fi";
 import {
   Input,
   Modal,
@@ -13,11 +18,6 @@ import {
   Table,
   type TableProps,
 } from "antd";
-import { FiEdit } from "react-icons/fi";
-import BoxSearchLimit from "@/app/components/admin/boxsearchlimtit";
-import { GoPlus } from "react-icons/go";
-import { useStore } from "@/app/store";
-import Loading from "@/app/components/client/Loading";
 
 function ConfigurationList() {
   const [proptype, setProptype] = useState<IProptype[]>([]);
@@ -168,7 +168,7 @@ function ConfigurationList() {
 
   async function handleAddCatConfiguration() {
     if (!nameCatConfiguration) {
-      openNotificationWithIcon("error", "Thất bại", "Thiếu dữ liệu");
+      openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
     }
     if (nameCatConfiguration) {
       await proptypeService
@@ -261,8 +261,8 @@ function ConfigurationList() {
     } else {
       openNotificationWithIcon(
         "error",
-        "Thêm dữ liệu thất bại",
-        "Thiếu dữ liệu"
+        "Lỗi dữ liệu",
+        "Vui lòng nhập đầy đủ thông tin"
       );
     }
   }
