@@ -183,12 +183,6 @@ function UserList() {
       width: 150,
       render: (_, record) => (
         <Space size="middle">
-          {/* <Link
-            href={`${config.routes.admin.user.edit}/${record.id}`}
-            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center"
-          >
-            <FiEdit className="w-5 h-5" />
-          </Link> */}
           <Switch
             checked={record.role === 1} 
             onChange={(checked) => handleRoleChange(checked, record.id)}

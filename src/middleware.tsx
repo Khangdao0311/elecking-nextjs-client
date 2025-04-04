@@ -7,7 +7,7 @@ import * as authServices from "@/app/services/authService";
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  const pathname = request.nextUrl.pathname; // Lấy path name
+  const pathname = request.nextUrl.pathname; 
 
   const access_token = request.cookies.get("access_token")?.value;
   const refresh_token = request.cookies.get("refresh_token")?.value;
@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
     return responseLoginAdmin;
   }
 
-  // client
+
   if (pathname.startsWith("/auth")) {
     if (access_token && refresh_token)
       return NextResponse.redirect(new URL(config_.routes.client.account.home, request.url));
@@ -85,7 +85,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // admin
+
   if (pathname === "/admin") {
     if (access_token_admin && refresh_token_admin)
       return NextResponse.redirect(new URL(config_.routes.admin.dashboard, request.url));
@@ -123,7 +123,7 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-// See "Matching Paths" below to learn more
+
 export const config = {
   matcher: [
     "/admin/:path*",

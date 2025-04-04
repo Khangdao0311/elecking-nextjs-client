@@ -1,18 +1,23 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { FaBasketShopping, FaTicketSimple, FaUser } from "react-icons/fa6";
+import {
+  FaBasketShopping,
+  FaCircleUser,
+  FaTicketSimple,
+  FaUser,
+} from "react-icons/fa6";
 import { HiCash } from "react-icons/hi";
 import { Bar } from "react-chartjs-2";
 import * as orderServices from "@/app/services/orderService";
 import * as userServices from "@/app/services/userService";
 import * as voucherServices from "@/app/services/voucherService";
 import * as statsServices from "@/app/services/statService";
-import { Modal } from 'antd';
+import { Modal } from "antd";
 import moment from "moment";
 import { FiEdit } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { Select, Space, Table, TableProps } from "antd";
-import { notification } from 'antd';
+import { notification } from "antd";
 import {
   Chart as ChartJS,
   BarElement,
@@ -32,42 +37,42 @@ function DashBoard() {
   const showeditorder = () => setEditorder(true);
   const closeeditorder = () => setEditorder(false);
   const [getorders, setGetorders] = useState<IOrder[]>([]);
-  const [vouchers, setVoucher] = useState()
+  const [vouchers, setVoucher] = useState();
   const [users, setUsers] = useState<IUser[]>([]);
   const [limit, setLimit] = useState(1000);
   const [totalOrder, setTotalorder] = useState<number[]>([]);
-  const [stats, setStats] = useState([])
+  const [stats, setStats] = useState([]);
   const [year, setYear] = useState<number | null>(null);
 
-
   const [chartData, setChartData] = useState<number[]>(new Array(12).fill(0));
-  const [totalprice, setTotalprice] = useState()
+  const [totalprice, setTotalprice] = useState();
   const [selectedOrder, setSelectedOrder] = useState<IOrder>();
-  const [selectedAddress, setSelectedAddress] = useState<IAddress | null>(null);
-  const [getaddress, setGetaddress] = useState<IAddress[]>([]);
-  const [isDisabledStatus, setIsDisabledStatus] = useState(false);
   const [getUser, setGetUser] = useState<IUser[]>([]);
   const [status, setStatus] = useState<number>(0);
   const [selectedStatus, setSelectedStatus] = useState(selectedOrder?.status);
   const [state, dispatch] = useStore();
+  const [userDetail, setUserDetail] = useState<IUser>();
+  const [showUser, setShowUser] = useState(false);
 
-  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+  const openNotificationWithIcon = (
+    type: NotificationType,
+    message: any,
+    description: any
+  ) => {
     api[type]({
       message: message,
       description: description,
     });
-  }
-
+  };
 
   useEffect(() => {
     if (selectedOrder) {
       setSelectedStatus(selectedOrder.status);
     }
   }, [selectedOrder]);
-
 
   useEffect(() => {
     const query = { limit: 7 };
@@ -86,7 +91,7 @@ function DashBoard() {
   }, [selectedOrder, getUser]);
 
   const showEditOrder = (orderId: string) => {
-    const order = getorders.find(order => order.id === orderId);
+    const order = getorders.find((order) => order.id === orderId);
     if (order) {
       setSelectedOrder(order);
       setSelectedStatus(order.status);
@@ -123,42 +128,41 @@ function DashBoard() {
   const generateLabels = () => {
     if (!year) {
       return Array.from({ length: 6 }, (_, i) =>
-        moment().subtract(5 - i, "months").format("MM/YYYY")
+        moment()
+          .subtract(5 - i, "months")
+          .format("MM/YYYY")
       );
     }
-    return Array.from({ length: 12 }, (_, i) => moment().month(i).year(year).format("MM/YYYY"));
+    return Array.from({ length: 12 }, (_, i) =>
+      moment().month(i).year(year).format("MM/YYYY")
+    );
   };
 
   useEffect(() => {
     const query: any = {};
     if (year !== null) {
-        query.year = year;
+      query.year = year;
     }
 
     statsServices.getQuery(query).then((res) => {
-        setStats(res.data);
-        setTotalprice(res.data.totalPrice);
-        
-        const months = generateLabels();
-        const updatedChartData = months.map((month) => {
-            const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
-            return Math.round(res.data[formattedMonth]?.price || 0);
-        });
+      setStats(res.data);
+      setTotalprice(res.data.totalPrice);
 
-        const updatedOrderData = months.map((month) => {
-            const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
-            return Math.round(res.data[formattedMonth]?.order || 0);
-        });
+      const months = generateLabels();
+      const updatedChartData = months.map((month) => {
+        const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+        return Math.round(res.data[formattedMonth]?.price || 0);
+      });
 
-        setChartData(updatedChartData);
-        setTotalorder(updatedOrderData);
+      const updatedOrderData = months.map((month) => {
+        const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+        return Math.round(res.data[formattedMonth]?.order || 0);
+      });
+
+      setChartData(updatedChartData);
+      setTotalorder(updatedOrderData);
     });
-}, [year]);
-
-
-
-  console.log(year);
-  
+  }, [year]);
 
   const data = {
     labels: generateLabels(),
@@ -168,15 +172,15 @@ function DashBoard() {
         data: chartData,
         backgroundColor: "#4F46E5",
         borderRadius: 6,
-        yAxisID: 'y',
+        yAxisID: "y",
       },
       {
         label: "Đơn Hàng",
         data: totalOrder,
         backgroundColor: "#FF5733",
         borderRadius: 6,
-        yAxisID: 'y1',
-      }
+        yAxisID: "y1",
+      },
     ],
   };
 
@@ -190,26 +194,25 @@ function DashBoard() {
       x: { grid: { display: false } },
       y: {
         beginAtZero: true,
-        position: 'left',
+        position: "left",
         title: {
           display: true,
-          text: 'Doanh Thu (VNĐ)',
+          text: "Doanh Thu (VNĐ)",
         },
       },
       y1: {
-        beginAtZero: true, 
+        beginAtZero: true,
         ticks: {
-          stepSize: 1, 
-          precision: 0, 
+          stepSize: 1,
+          precision: 0,
         },
-        position: 'right',
+        position: "right",
         grid: { drawOnChartArea: false },
         title: {
           display: true,
-          text: 'Số Đơn Hàng',
+          text: "Số Đơn Hàng",
         },
       },
-      
     },
   };
 
@@ -221,8 +224,10 @@ function DashBoard() {
       width: 150,
       align: "left",
       render: (id) => (
-        <span className="line-clamp-1">{id.length > 10 ? `${id.slice(0, 10)}...` : id}</span>
-      )
+        <span className="line-clamp-1">
+          {id.length > 10 ? `${id.slice(0, 10)}...` : id}
+        </span>
+      ),
     },
     {
       title: "Tên Khách Hàng",
@@ -247,7 +252,10 @@ function DashBoard() {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
-          <button onClick={() => showEditOrder(record.id)} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
+          <button
+            onClick={() => showEditOrder(record.id)}
+            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center"
+          >
             <FiEdit className="w-5 h-5" />
           </button>
         </Space>
@@ -256,40 +264,55 @@ function DashBoard() {
   ];
   const usercolumns: TableProps<IUser>["columns"] = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      align: "left",
-      render: (id) => (
-        <span className="line-clamp-1">{id.length > 10 ? `${id.slice(0, 10)}...` : id}</span>
-      )
+      title: "Ảnh",
+      dataIndex: "avatar",
+      width: 100,
+      key: "avatar",
+      align: "center",
+      render: (avatar: any) => (
+        <div className="flex justify-center items-center">
+          {avatar ? (
+            <img
+              className="w-[50px] h-[50px]  items-center"
+              src={avatar}
+              alt="name"
+            />
+          ) : (
+            <FaCircleUser className="w-[50px] h-[50px]   text-gray-800" />
+          )}
+        </div>
+      ),
     },
     {
       title: "Tên Khách Hàng",
       dataIndex: "fullname",
+      width: 140,
       key: "fullname",
-      width: 220,
       align: "left",
-      render: (fullname) => (
-        <span className="line-clamp-1">{fullname}</span>
-      )
     },
     {
       title: "Email",
       dataIndex: "email",
+      width: 150,
       key: "email",
-      width: 200,
       align: "left",
-      render: (email) => (
-        <span className="line-clamp-1">{email}</span>
-      )
+      render: (email) => <span className="line-clamp-1">{email}</span>,
     },
     {
-      title: "Số Điện Thoại",
-      dataIndex: "phone",
-      key: "phone",
-      width: 180,
-      align: "left",
+      title: "Chức Năng",
+      key: "action",
+      width: 100,
+      align: "center",
+      render: (_, record) => (
+        <Space size="middle">
+          <button
+            onClick={() => showUserDetail(record.id)}
+            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center"
+          >
+            <FiEdit className="w-5 h-5" />
+          </button>
+        </Space>
+      ),
     },
   ];
   const getTableScroll = (dataLength: any) => {
@@ -297,97 +320,126 @@ function DashBoard() {
     return { x: 500, y: 230 };
   };
 
+  function showUserDetail(id: string) {
+    setShowUser(true);
+    userServices.getById(id).then((res) => setUserDetail(res.data));
+  }
 
   return (
     <>
-    {state.load && <Loading />}
-    {state.load ? state.load : <>
-      <TitleAdmin title="Bảng điều khiển" yearChange={(newYear: any) => { setYear(newYear) }} />
-      <div className="bg-white shadow-lg rounded-lg p-4 flex items-start flex-col gap-4">
-        <div className="flex gap-4 justify-between w-full  max-w-full">
-          <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
-            <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
-              <HiCash className="w-[60px] h-[60px] text-amber-600" />
+      {state.load && <Loading />}
+      {state.load ? (
+        state.load
+      ) : (
+        <>
+          <TitleAdmin
+            title="Bảng điều khiển"
+            yearChange={(newYear: any) => {
+              setYear(newYear);
+            }}
+          />
+          <div className="bg-white shadow-lg rounded-lg p-4 flex items-start flex-col gap-4">
+            <div className="flex gap-4 justify-between w-full  max-w-full">
+              <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
+                <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
+                  <HiCash className="w-[60px] h-[60px] text-amber-600" />
+                </div>
+                <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
+                  <p className="text-base font-bold text-red-500">
+                    Tổng doanh thu
+                  </p>
+                  <p className="text-base font-bold">
+                    {(totalprice ?? 0).toLocaleString("vi-VN")} đ
+                  </p>
+                  <div className="border border-dotted text-neutral-300"></div>
+                </div>
+              </div>
+              <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
+                <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
+                  <FaUser className="w-[50px] h-[50px] text-amber-600" />
+                </div>
+                <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
+                  <p className="text-base font-bold text-red-500">
+                    Tổng khách hàng
+                  </p>
+                  <p className="text-base font-bold">
+                    {Object.keys(users).length}
+                  </p>
+                  <div className="border border-dotted text-neutral-300"></div>
+                </div>
+              </div>
+              <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
+                <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
+                  <FaTicketSimple className="w-[50px] h-[50px] text-amber-600" />
+                </div>
+                <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
+                  <p className="text-base font-bold text-red-500">
+                    Tổng voucher
+                  </p>
+                  <p className="text-base font-bold">{vouchers}</p>
+                  <div className="border border-dotted text-neutral-300"></div>
+                </div>
+              </div>
+              <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
+                <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
+                  <FaBasketShopping className="w-[50px] h-[50px] text-amber-600" />
+                </div>
+                <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
+                  <p className="text-base font-bold text-red-500">
+                    Tổng đơn hàng
+                  </p>
+                  <p className="text-base font-bold">
+                    {totalOrder.reduce((acc, val) => acc + val, 0)}
+                  </p>
+                  <div className="border border-dotted text-neutral-300"></div>
+                </div>
+              </div>
             </div>
-            <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-              <p className="text-base font-bold text-red-500">Tổng doanh thu</p>
-              <p className="text-base font-bold">{(totalprice ?? 0).toLocaleString("vi-VN")} đ</p>
-              <div className="border border-dotted text-neutral-300"></div>
-            </div>
-          </div>
-          <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
-            <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
-              <FaUser className="w-[50px] h-[50px] text-amber-600" />
-            </div>
-            <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-              <p className="text-base font-bold text-red-500">
-                Tổng khách hàng
-              </p>
-              <p className="text-base font-bold">{Object.keys(users).length}</p>
-              <div className="border border-dotted text-neutral-300"></div>
-            </div>
-          </div>
-          <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
-            <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
-              <FaTicketSimple className="w-[50px] h-[50px] text-amber-600" />
-            </div>
-            <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-              <p className="text-base font-bold text-red-500">Tổng voucher</p>
-              <p className="text-base font-bold">{vouchers}</p>
-              <div className="border border-dotted text-neutral-300"></div>
-            </div>
-          </div>
-          <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
-            <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
-              <FaBasketShopping className="w-[50px] h-[50px] text-amber-600" />
-            </div>
-            <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-              <p className="text-base font-bold text-red-500">Tổng đơn hàng</p>
-              <p className="text-base font-bold">{totalOrder.reduce((acc, val) => acc + val, 0)}</p>
-              <div className="border border-dotted text-neutral-300"></div>
-            </div>
-          </div>
-        </div>
 
-        <div className="min-w-full p-64  bg-white flex flex-col gap-2.5 py-5 shadow-lg border rounded-xl">
-          <h2 className="text-xl font-bold text-center mb-4">
-            Doanh Thu Hàng Tháng
-          </h2>
-          <Bar data={data} options={options} />
-        </div>
-        <div className="flex w-full gap-4">
-          <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
-            <p className="text-xl font-bold">Đơn hàng chờ xác nhận</p>
-            <div className="border border-zinc-300"></div>
-            <div style={{ width: "100%", overflowY: "auto", maxWidth: "100%" }}>
-              <Table<IOrder>
-                columns={ordercolumns}
-                dataSource={getorders.filter(order => order.status === 2)}
-                rowKey="id"
-                scroll={getTableScroll(getorders.filter(order => order.status === 2).length)}
-                pagination={false}
-                tableLayout="auto"
-              />
+            <div className="min-w-full p-64  bg-white flex flex-col gap-2.5 py-5 shadow-lg border rounded-xl">
+              <h2 className="text-xl font-bold text-center mb-4">
+                Doanh Thu Hàng Tháng
+              </h2>
+              <Bar data={data} options={options} />
+            </div>
+            <div className="flex w-full gap-4">
+              <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
+                <p className="text-xl font-bold">Đơn hàng chờ xác nhận</p>
+                <div className="border border-zinc-300"></div>
+                <div
+                  style={{ width: "100%", overflowY: "auto", maxWidth: "100%" }}
+                >
+                  <Table<IOrder>
+                    columns={ordercolumns}
+                    dataSource={getorders.filter((order) => order.status === 2)}
+                    rowKey="id"
+                    scroll={getTableScroll(
+                      getorders.filter((order) => order.status === 2).length
+                    )}
+                    pagination={false}
+                    tableLayout="auto"
+                  />
+                </div>
+              </div>
+              <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
+                <p className="text-xl font-bold">Khách hàng mới</p>
+                <div className="border border-zinc-300"></div>
+                <div style={{ width: "100%", maxWidth: "100%" }}>
+                  <Table<IUser>
+                    columns={usercolumns}
+                    dataSource={users}
+                    rowKey="id"
+                    scroll={getTableScroll(users.length)}
+                    pagination={false}
+                    tableLayout="fixed"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
-            <p className="text-xl font-bold">Khách hàng mới</p>
-            <div className="border border-zinc-300"></div>
-            <div style={{ width: "100%", overflowY: "auto", maxWidth: "100%" }}>
-              <Table<IUser>
-                columns={usercolumns}
-                dataSource={users}
-                rowKey="id"
-                scroll={getTableScroll(users.length)}
-                pagination={false}
-                tableLayout="auto"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </>}
-      
+        </>
+      )}
+
       {contextHolder}
       <Modal
         width={650}
@@ -410,16 +462,22 @@ function DashBoard() {
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Voucher:</p>
                   <p className="text-sm font-normal">
-                    {selectedOrder.voucher_id ? selectedOrder.voucher_id : "Không có"}
+                    {selectedOrder.voucher_id
+                      ? selectedOrder.voucher_id
+                      : "Không có"}
                   </p>
                 </div>
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Người nhận hàng:</p>
-                  <p className="text-sm font-normal">{selectedOrder.address.fullname}</p>
+                  <p className="text-sm font-normal">
+                    {selectedOrder.address.fullname}
+                  </p>
                 </div>
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Số điện thoại:</p>
-                  <p className="text-sm font-normal">{selectedOrder.address.phone}</p>
+                  <p className="text-sm font-normal">
+                    {selectedOrder.address.phone}
+                  </p>
                 </div>
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Tỉnh/Thành phố:</p>
@@ -438,16 +496,30 @@ function DashBoard() {
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
                     value={selectedStatus}
-                    disabled={selectedOrder?.status === 0 || selectedOrder?.status === 1}
+                    disabled={
+                      selectedOrder?.status === 0 || selectedOrder?.status === 1
+                    }
                     onChange={(value) => {
                       setSelectedStatus(Number(value));
                     }}
                     options={[
-                      { value: 2, label: "Chờ xác nhận", disabled: ![2].includes(selectedOrder?.status) },
-                      { value: 3, label: "Đã xác nhận", disabled: ![2, 3].includes(selectedOrder?.status) },
-                      { value: 4, label: "Đang vận chuyển", disabled: ![2, 3, 4].includes(selectedOrder?.status) },
+                      {
+                        value: 2,
+                        label: "Chờ xác nhận",
+                        disabled: ![2].includes(selectedOrder?.status),
+                      },
+                      {
+                        value: 3,
+                        label: "Đã xác nhận",
+                        disabled: ![2, 3].includes(selectedOrder?.status),
+                      },
+                      {
+                        value: 4,
+                        label: "Đang vận chuyển",
+                        disabled: ![2, 3, 4].includes(selectedOrder?.status),
+                      },
                       { value: 1, label: "Đã giao hàng" },
-                      { value: 0, label: "Đã hủy" }
+                      { value: 0, label: "Đã hủy" },
                     ]}
                   />
                 </div>
@@ -473,24 +545,22 @@ function DashBoard() {
                   </p>
                 </div>
                 {selectedOrder.products.map((e: any, index) => (
-                  <div key={index} className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]">
+                  <div
+                    key={index}
+                    className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]"
+                  >
                     <div className="flex w-full items-center gap-2.5">
-                      <img
-                        src={e.product.image}
-                        alt=""
-                        className="w-16 h-16"
-                      />
+                      <img src={e.product.image} alt="" className="w-16 h-16" />
                       <div className="flex py-1.5 flex-col gap-1.5">
-                        <p className="text-sm font-normal">
-                          {e.product.name}
-                        </p>
+                        <p className="text-sm font-normal">{e.product.name}</p>
                       </div>
                     </div>
                     <p className="min-w-24 text-center text-sm font-normal">
-                      {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
+                      {selectedOrder?.products?.[index]?.quantity ??
+                        "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
-                      {selectedOrder.total.toLocaleString('vn-VN')} đ
+                      {selectedOrder.total.toLocaleString("vn-VN")} đ
                     </p>
                   </div>
                 ))}
@@ -504,9 +574,11 @@ function DashBoard() {
                 >
                   Trở lại
                 </button>
-                <button className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
+                <button
+                  className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
                   onClick={() => {
-                    orderServices.updateStatus(selectedOrder.id, Number(selectedStatus))
+                    orderServices
+                      .updateStatus(selectedOrder.id, Number(selectedStatus))
                       .then(() => {
                         setGetorders((prevOrders) =>
                           prevOrders.map((order) =>
@@ -516,7 +588,11 @@ function DashBoard() {
                           )
                         );
                         closeeditorder();
-                        openNotificationWithIcon("success", "Thành công", "Sửa trạng thái thành công");
+                        openNotificationWithIcon(
+                          "success",
+                          "Thành công",
+                          "Sửa trạng thái thành công"
+                        );
                       });
                   }}
                 >
@@ -525,6 +601,60 @@ function DashBoard() {
               </div>
             </div>
           </>
+        )}
+      </Modal>
+
+      <Modal
+        width={500}
+        open={showUser}
+        onCancel={() => setShowUser(false)}
+        footer={null}
+        centered
+      >
+        {showUser && (
+          <div className="flex justify-center items-center gap-3">
+            <div className="w-1/4 border rounded-lg flex justify-center items-center h-[110px]">
+              {userDetail?.avatar ? (
+                <img
+                  className="w-14 h-14"
+                  src={userDetail?.avatar}
+                  alt={userDetail?.username}
+                />
+              ) : (
+                <FaCircleUser className="w-[50px] h-[50px] text-gray-800" />
+              )}
+            </div>
+            <div className="flex flex-col w-3/4" >
+              <div className="flex gap-2">
+                <p>Họ và Tên: </p>
+                <p> {userDetail?.fullname}</p>
+              </div>
+              <div className="flex gap-2">
+                <p> Email: </p>
+                <p> {userDetail?.email}</p>
+              </div>
+              <div className="flex gap-2">
+                <p> Số điện thoại: </p>
+                <p>{userDetail?.phone || "Chưa cập nhật số điện thoại"} </p>
+              </div>
+              <div className="flex gap-2">
+                <p> Ngày khởi tạo:</p>
+                <p>
+                  {moment(userDetail?.register_date, "YYYYMMDDHHmmss").format(
+                    "DD/MM/YYYY"
+                  )}
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <p> Vai trò: </p>
+                <p>
+                  {" "}
+                  {userDetail?.role === 1 ? "Quản Trị Viên" : "Khách Hàng"}
+                </p>
+              </div>
+            </div>
+          </div>
         )}
       </Modal>
     </>
