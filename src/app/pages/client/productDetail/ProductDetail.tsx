@@ -193,7 +193,7 @@ function ProductDetail() {
         <>
           {/* Chi tiết sản phẩm, giá và type */}
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
-            <div className="flex flex-col sm:flex-row items-start gap-4">
+            <div className="flex flex-wrap items-start gap-4">
               <p className="text-lg font-bold">{product?.name}</p>
               {product?.rating !== null && (
                 <div className="center-flex gap-1">
@@ -501,7 +501,7 @@ function ProductDetail() {
                       <FaPlus />
                     </div>
                   </div>
-                  <p className="select-none text-gray-700">
+                  <p className="select-none text-gray-700 line-clamp-1">
                     {
                       product.variants[iVariant === -1 ? 0 : iVariant].colors[
                         iColor === -1 ? 0 : iColor
@@ -646,8 +646,8 @@ function ProductDetail() {
                   </div>
                 )}
                 {reviews.map((review: IReview, index: number) => (
-                  <div key={index} className="flex items-start gap-4 py-4 ">
-                    <div className="shrink-0 w-12 sm:w-14 lg:16 aspect-square center-flex rounded-full overflow-hidden  shadow-lg">
+                  <div key={index} className="flex items-start gap-4 py-2 sm:py-4 ">
+                    <div className="shrink-0 w-8 sm:w-12 lg:16 aspect-square center-flex rounded-full overflow-hidden  shadow-lg">
                       {review.user.avatar ? (
                         <img
                           className="w-full h-full object-contain"
@@ -820,32 +820,35 @@ function ProductDetail() {
               <div className="w-full xl:w-7/12 flex flex-col gap-4">
                 <Shimmer image={true} className="w-full  h-[365px]" />
 
-                <div className="grid grid-cols-9 gap-2.5">
+                <div className="grid grid-cols-5 md:grid-cols-8 lg:grid-cols-7 xl:grid-cols-8 gap-2.5">
                   <Shimmer image={true} className="aspect-square" />
                   <Shimmer image={true} className="aspect-square" />
                   <Shimmer image={true} className="aspect-square" />
                   <Shimmer image={true} className="aspect-square" />
                   <Shimmer image={true} className="aspect-square" />
-                  <Shimmer image={true} className="aspect-square" />
-                  <Shimmer image={true} className="aspect-square" />
-                  <Shimmer image={true} className="aspect-square" />
-                  <Shimmer image={true} className="aspect-square" />
+                  <Shimmer image={true} className="aspect-square !hidden sm:flex" />
+                  <Shimmer image={true} className="aspect-square !hidden sm:flex" />
+                  <Shimmer
+                    image={true}
+                    className="aspect-square !hidden sm:flex lg:!hidden xl:flex"
+                  />
                 </div>
               </div>
               <div className="w-full xl:w-5/12 flex flex-col gap-4 ">
-                <div className="grid grid-cols-3 flex-wrap gap-2.5">
-                  <Shimmer className="h-16" />
-                  <Shimmer className="h-16" />
-                  <Shimmer className="h-16" />
+                <div className="grid grid-cols-2 sm:grid-cols-3 flex-wrap gap-2.5">
+                  <Shimmer className="h-20 md:h-16" />
+                  <Shimmer className="h-20 md:h-16" />
+                  <Shimmer className="h-20 md:h-16 !hidden sm:flex" />
                 </div>
                 <Shimmer className="w-1/2 h-6" />
 
-                <div className="grid grid-cols-3 flex-wrap gap-2.5">
-                  <Shimmer className="h-16" />
-                  <Shimmer className="h-16" />
-                  <Shimmer className="h-16" />
-                  <Shimmer className="h-16" />
-                  <Shimmer className="h-16" />
+                <div className="grid grid-cols-2 sm:grid-cols-3 flex-wrap gap-2.5">
+                  <Shimmer className="h-20 md:h-16" />
+                  <Shimmer className="h-20 md:h-16" />
+                  <Shimmer className="h-20 md:h-16" />
+                  <Shimmer className="h-20 md:h-16" />
+                  <Shimmer className="h-20 md:h-16 !hidden sm:flex" />
+                  <Shimmer className="h-20 md:h-16 !hidden sm:flex" />
                 </div>
                 <Shimmer className="w-full h-9" />
                 <Shimmer className="w-full h-10" />
@@ -860,7 +863,7 @@ function ProductDetail() {
 
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex ">
             <div className="flex gap-4 w-full">
-              <div className="w-4/5  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
+              <div className="w-full lg:w-4/5  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
                 <Shimmer className="w-2/5 h-7" />
                 <hr />
                 <Shimmer className="w-1/2 h-6" />
@@ -880,7 +883,7 @@ function ProductDetail() {
                 <Shimmer className="w-3/5 h-6" />
                 <Shimmer className="w-5/5 h-6" />
               </div>
-              <Shimmer image={true} className="w-1/5 " />
+              <Shimmer image={true} className="w-1/5  !hidden lg:flex" />
             </div>
           </section>
 
@@ -888,37 +891,40 @@ function ProductDetail() {
             <div className="shadow-xl border border-gray-300  rounded-lg p-4">
               <Shimmer className="w-1/3 h-10" />
               <div className="flex gap-4 p-4">
-                <div className="flex flex-col items-center justify-center gap-1">
-                  <Shimmer className="w-20 h-10" />
-                  <Shimmer className="w-20 h-5" />
+                <div className="w-32 flex flex-col items-center justify-center gap-1 shrink-0">
+                  <Shimmer className="w-full h-10" />
+                  <Shimmer className="w-full h-5" />
                 </div>
                 <div className="flex gap-2.5 p-2.5 overflow-hidden">
-                  <Shimmer className="w-32 h-11" />
-                  <Shimmer className="w-32 h-11" />
-                  <Shimmer className="w-32 h-11" />
-                  <Shimmer className="w-32 h-11" />
-                  <Shimmer className="w-32 h-11" />
-                  <Shimmer className="w-32 h-11" />
+                  <Shimmer className="w-36 shrink-0 h-11" />
+                  <Shimmer className="w-36 shrink-0 h-11" />
+                  <Shimmer className="w-36 shrink-0 h-11" />
+                  <Shimmer className="w-36 shrink-0 h-11" />
+                  <Shimmer className="w-36 shrink-0 h-11" />
+                  <Shimmer className="w-36 shrink-0 h-11" />
                 </div>
               </div>
               <hr />
               <div className=" flex flex-col px-4">
                 <div className="flex items-start gap-4 py-4 ">
-                  <Shimmer image className="w-16 h-16 !rounded-full shrink-0" />
-                  <div className="flex flex-col gap-3 w-full">
+                  <Shimmer
+                    image
+                    className="shrink-0 w-8 sm:w-12 lg:16 aspect-square !rounded-full"
+                  />
+                  <div className="flex flex-col gap-3 w-full overflow-hidden">
                     <Shimmer className="w-1/5 h-7" />
                     <Shimmer className="w-1/12 h-7" />
                     <Shimmer className="w-2/12 h-7" />
                     <Shimmer className="w-9/12 h-7" />
                     <Shimmer className="w-full h-7" />
 
-                    <div className="flex gap-4">
-                      <Shimmer className="w-20 h-20" image />
-                      <Shimmer className="w-20 h-20" image />
-                      <Shimmer className="w-20 h-20" image />
-                      <Shimmer className="w-20 h-20" image />
-                      <Shimmer className="w-20 h-20" image />
-                      <Shimmer className="w-20 h-20" image />
+                    <div className="flex gap-4 ">
+                      <Shimmer className="w-20 aspect-square shrink-0" image />
+                      <Shimmer className="w-20 aspect-square shrink-0" image />
+                      <Shimmer className="w-20 aspect-square shrink-0" image />
+                      <Shimmer className="w-20 aspect-square shrink-0" image />
+                      <Shimmer className="w-20 aspect-square shrink-0" image />
+                      <Shimmer className="w-20 aspect-square shrink-0" image />
                     </div>
                     <Shimmer className="w-14 h-7" />
                   </div>
