@@ -35,6 +35,7 @@ function Product(props: { product: IProduct }) {
           if (pathname !== `${config.routes.client.productDetail}/${props.product.id}`)
             dispatch(actions.set_routing(true));
         }}
+        className="w-full !aspect-square "
       >
         <img
           className="w-full !aspect-square object-contain opacity-"

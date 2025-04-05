@@ -20,7 +20,7 @@ function ModalVoucher({ orderPrice, voucher, setVoucher, onClose }: any) {
   }, []);
 
   return (
-    <div className=" w-[500px] flex flex-col gap-5 h-[70vh]">
+    <div className="w-[80vw] max-w-[500px] flex flex-col gap-5 h-[70vh]">
       <div className="flex items-center w-full gap-3 bg-white rounded-t-2xl shrink-0">
         <TbTicket className="w-8 h-8 text-blue-600 " />
         <h2 className="text-blue-600 font-bold text-lg flex items-center">KHUYẾN MÃI</h2>

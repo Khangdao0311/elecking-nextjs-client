@@ -321,12 +321,12 @@ function Header() {
 
       {/* overlay popup */}
       {(showModal.search || showModal.menu) && (
-        <div className="bg-black/30 fixed inset-0 z-20 cursor-pointer"></div>
+        <div className="bg-black/30 fixed inset-0 z-[99] cursor-pointer"></div>
       )}
       <header
         className={`sticky ${
           y < 100 ? "top-0" : "top-0 md:-top-8 lg:-top-11"
-        } transition-all duration-200 w-full z-30 shadow-lg`}
+        } transition-all duration-200 w-full z-[100] shadow-lg`}
       >
         <div className="bg-[#E9EFFF] h-8 lg:h-11 p-1.5 lg:p-2 hidden md:block">
           {state.load ? (
@@ -405,7 +405,7 @@ function Header() {
               trigger="click"
               open={showModal.menu}
               onOpenChange={(e) => setShowModal({ menu: e, search: false })}
-              zIndex={50}
+              zIndex={101}
               styles={{ body: { padding: 0, overflow: "hidden", minWidth: "240px" } }}
               content={
                 <MenuCategory onClose={() => setShowModal({ menu: false, search: false })} />
@@ -428,7 +428,7 @@ function Header() {
               trigger="click"
               open={showModal.search}
               onOpenChange={(e) => setShowModal({ menu: false, search: e })}
-              zIndex={50}
+              zIndex={101}
               styles={{
                 body: { padding: 0, overflow: "hidden", minWidth: "100%", width: "100%" },
               }}
@@ -452,6 +452,7 @@ function Header() {
                   onClick={(e) => {
                     e.preventDefault();
                     handleSearch();
+                    setShowModal({ menu: false, search: false });
                   }}
                   className="aspect-[2/1] h-5/6 center-flex bg-primary rounded-md absolute top-1/2 -translate-y-1/2 right-1"
                 >
