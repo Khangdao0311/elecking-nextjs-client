@@ -28,7 +28,7 @@ function Product(props: { product: IProduct }) {
 
   return (
     // <div className="border rounded-2xl shadow-lg p-4 w-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:border-primary hover:shadow-2xl  ">
-    <div className="border rounded-2xl shadow-lg p-4 w-full !h-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150  ">
+    <div className="border rounded-2xl p-4 w-full !h-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150  ">
       <Link
         href={`${config.routes.client.productDetail}/${props.product.id}`}
         onClick={() => {
