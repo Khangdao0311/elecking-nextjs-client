@@ -39,23 +39,23 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
   },[]);
 
   useEffect(() => {
-    if (!quillRef.current) return;
-    if (quillRef.current.querySelector(".ql-editor")) return;
-
-    const quill = new Quill(quillRef.current, {
-      theme: "snow",
-    });
-
-    quill.root.innerHTML = editorContent;
-
-    quill.on("text-change", () => {
-      setEditorContent(quill.root.innerHTML);
-    });
-
-    quill.on("text-change", () => {
-      setDescription(quill.getText().trim());
-    });
-  }, [editorContent]);
+      if (typeof window === "undefined") return;
+      if (!quillRef.current) return;
+      if (quillRef.current.querySelector(".ql-editor")) return;
+    
+      const Quill = require("quill").default; 
+      const quill = new Quill(quillRef.current, {
+        theme: "snow",
+      });
+    
+      quill.root.innerHTML = editorContent;
+    
+      quill.on("text-change", () => {
+        setEditorContent(quill.root.innerHTML);
+        
+      });
+    }, []);
+    
 
   const handleChange = (value: string[]) => {
     setSelectedProptype(value);
@@ -100,22 +100,22 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
         .addCategory({
           name: name,
           image: image[0].name,
-          description: description,
+          description: description.trim(),
           proptypes: JSON.stringify(selectedProptype),
         })
         .then((res) => {
-          if(res.status === 200){
-            openNotificationWithIcon('success', "Thành công", "Thêm danh mục thành công");
-            setName("");
-            setDescription("");
-            setSelectedProptype([]);
-            setImage([]);
-            setEditorContent("");
-            if (quillRef.current) {
-              const quill = new Quill(quillRef.current);
-              quill.root.innerHTML = "";
-            }
-          }
+          // if(res.status === 200){
+          //   openNotificationWithIcon('success', "Thành công", "Thêm danh mục thành công");
+          //   setName("");
+          //   setDescription("");
+          //   setSelectedProptype([]);
+          //   setImage([]);
+          //   setEditorContent("");
+          //   if (quillRef.current) {
+          //     const quill = new Quill(quillRef.current);
+          //     quill.root.innerHTML = "";
+          //   }
+          // }
         });
     } else {
       openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");

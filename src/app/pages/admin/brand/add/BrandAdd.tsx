@@ -14,13 +14,14 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { notification, Space } from 'antd';
 
+
+
 function BrandAdd() {
   const [name, setName] = useState("");
   const [description, setdescription] = useState("");
   const [imgBanner, setImgBanner] = useState<any>();
   const [imgBrand, setImgBrand] = useState<any>();
   const quillRef = useRef<HTMLDivElement>(null);
-  const [editorContent, setEditorContent] = useState("");
   const [logo, setLogo] = useState<UploadFile[]>([]);
   const [banner, setBanner] = useState<UploadFile[]>([]);
   const router = useRouter()
@@ -35,21 +36,20 @@ function BrandAdd() {
     });
   }
 
-  useEffect(() => {
-    if (!quillRef.current) return;
-    if (quillRef.current.querySelector(".ql-editor")) return;
+  //   if (!quillRef.current) return;
+  //   if (quillRef.current.querySelector(".ql-editor")) return;
 
-    const quill = new Quill(quillRef.current, {
-      theme: "snow",
-    });
+  //   const quill = new Quill(quillRef.current, {
+  //     theme: "snow",
+  //   });
 
-    quill.root.innerHTML = editorContent;
+  //   quill.root.innerHTML = editorContent;
 
-    quill.on("text-change", () => {
-      setEditorContent(quill.root.innerHTML);
-      setdescription(quill.root.innerHTML);
-    });
-  }, []);
+  //   quill.on("text-change", () => {
+  //     setEditorContent(quill.root.innerHTML);
+  //     setdescription(quill.root.innerHTML);
+  //   });
+  // }, []);
 
   const handleRemove = (file: UploadFile, type: "logo" | "banner") => {
     if (type === "logo") {
@@ -66,7 +66,6 @@ function BrandAdd() {
       status: "uploading",
       originFileObj: file as RcFile,
     };
-
 
     const setState = type === "logo" ? setLogo : setBanner;
 
@@ -85,6 +84,27 @@ function BrandAdd() {
 
     return false;
   };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!quillRef.current) return;
+    if (quillRef.current.querySelector(".ql-editor")) return;
+  
+    const Quill = require("quill").default; 
+    const quill = new Quill(quillRef.current, {
+      theme: "snow",
+    });
+  
+    quill.root.innerHTML = description;
+  
+    quill.on("text-change", () => {
+      setdescription(quill.root.innerHTML);
+      
+    });
+  }, []);
+  
+  console.log(description);
+  
 
   return (
     <>
@@ -246,6 +266,8 @@ function BrandAdd() {
               <Button
                 back="brand/list"
                 onClick={async () => {
+                  console.log(name, imgBrand[0].name, imgBanner[0].name, description);
+
                   if (!name.trim() || !imgBrand?.length || !imgBanner?.length || !description.trim()) {
                     openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
                     return;
@@ -271,6 +293,7 @@ function BrandAdd() {
                   } else {
                     openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
                   }
+                  
                 }}
               >
               </Button>
