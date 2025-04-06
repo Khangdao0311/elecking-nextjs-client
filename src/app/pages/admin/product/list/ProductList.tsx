@@ -163,7 +163,7 @@ function ProductList() {
   ];
 
   const getTableScroll = (dataLength: any) => {
-    if (dataLength <= 5) return undefined;
+    if (dataLength <= 30) return undefined;
     return { x: 50, y: "max-content" };
   };
 

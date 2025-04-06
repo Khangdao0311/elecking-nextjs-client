@@ -278,7 +278,7 @@ function DashBoard() {
               alt="name"
             />
           ) : (
-            <FaCircleUser className="w-[50px] h-[50px]   text-gray-800" />
+            <FaCircleUser className="w-[50px] h-[50px] text-gray-800" />
           )}
         </div>
       ),
@@ -324,6 +324,7 @@ function DashBoard() {
     setShowUser(true);
     userServices.getById(id).then((res) => setUserDetail(res.data));
   }
+
 
   return (
     <>
@@ -560,7 +561,7 @@ function DashBoard() {
                         "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
-                      {selectedOrder.total.toLocaleString("vn-VN")} đ
+                      {e.product.price.toLocaleString('vn-VN')}đ
                     </p>
                   </div>
                 ))}

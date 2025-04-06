@@ -88,7 +88,7 @@ function OrderList() {
   
 
   const getTableScroll = (dataLength: any) => {
-    if (dataLength <= 5) return undefined;
+    if (dataLength <= 30) return undefined;
     return { x: 1000, y: "max-content" };
   };
 
@@ -345,7 +345,7 @@ function OrderList() {
                       {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
-                      {selectedOrder.total.toLocaleString("vn-VN")} đ
+                      {e.product.price.toLocaleString("vn-VN")} đ
                     </p>
                   </div>
                 ))}

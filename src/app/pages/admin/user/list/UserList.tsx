@@ -42,8 +42,6 @@ function UserList() {
     });
   }, [limit, page, search]);
 
-
-
   const originalError = console.error;
   console.error = (...args) => {
     if (
@@ -101,7 +99,7 @@ function UserList() {
   };
 
   const getTableScroll = (dataLength: any) => {
-    if (dataLength <= 5) return undefined;
+    if (dataLength <= 30) return undefined;
     return { x: 50, y: "max-content"  };
   };
 

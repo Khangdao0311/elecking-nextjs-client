@@ -15,25 +15,47 @@ import { Space, Table } from "antd";
 import type { TableProps } from "antd";
 
 
-function voucherExpired() {
+function Voucher() {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [state, dispatch] = useStore();
+  const [status, setStatus] = useState<number | string>("");
+  const [quantityVoucher, setQuantityVoucher] = useState(0);
+  const [totalActiveVoucher, setTotalActiveVoucher] = useState(0);
+  const [totalExpiredVoucher, setTotalExpiredVoucher] = useState(0);
+
   useEffect(() => {
-    const query: any = { expired: 1 };
+    const query: any = {};
     query.limit = limit;
     query.page = page;
-    if (search != "") {
+    if (search !== "") {
       query.search = search;
     }
+    if (status !== "") {
+      query.expired = status;
+    }
+  
     voucherServices.getQuery(query).then((res) => {
       setTotalPages(res.total);
       setVouchers(res.data);
+      setQuantityVoucher(res.total);
     });
-  }, [limit, page, search]);
+  
+    voucherServices.getQuery({ expired: 0 }).then((res) => {
+      setTotalActiveVoucher(res.total);
+    });
+  
+    voucherServices.getQuery({ expired: 1 }).then((res) => {
+      setTotalExpiredVoucher(res.total);
+    });
+
+  
+  }, [limit, page, search, status,]);
+  
+
   const columns: TableProps<IVoucher>["columns"] = [
     {
       title: "STT",
@@ -103,12 +125,25 @@ function voucherExpired() {
     },
     {
       title: "Trạng Thái",
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "end_date",
+      key: "end_date_status",
       width: 160,
       align: "center",
-      render: (status) =>
-        <Statusvoucher status={0} text={"Hết hạn"} />
+      render: (endDate) => {
+        const isExpired = moment(endDate, "YYYYMMDD").isBefore(moment(), "day");
+        return (
+          <div className="flex justify-center">
+            <p
+              className={`px-3 py-1 w-[140px] text-xs font-normal rounded-lg ${isExpired
+                ? "text-red-800 bg-red-100"
+                : "text-green-800 bg-green-100"
+                }`}
+            >
+              {isExpired ? "Hết hạn" : "Còn hạn"}
+            </p>
+          </div>
+        );
+      },
     },
     {
       title: "Chức năng",
@@ -126,54 +161,60 @@ function voucherExpired() {
       ),
     },
   ];
-  
+
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
-    return { x: 1000, y: "max-content"  };
+    return { x: 1000, y: "max-content" };
   };
-  
+
   return (
     <>
-     {state.load && <Loading />}
-     {state.load ? "" : <><TitleAdmin title="Quản lý voucher" />
-      <Boxsearchlimit
-        title="voucher"
-        onLimitChange={(newLimit: any) => {
-          setLimit(newLimit);
-          setPage(1);
-        }}
-        onSearch={(value:string) => {
-          setSearch(value);
-          setPage(1);
-        }}
-      />
-      <div className=" bg-white shadow-xl min-h-0 rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
-          <Table<IVoucher>
-            columns={columns}
-            dataSource={vouchers}
-            rowKey="id"
-            scroll={getTableScroll(vouchers.length)}
-            pagination={false}
-            tableLayout="auto"
-          />
-        </div>
-        {totalPages > limit && (
-          <div className="flex w-full justify-end mt-auto">
-            <Pagination
-              current={page}
-              onChange={(e) => setPage(e)}
-              defaultCurrent={1}
-              align="end"
-              pageSize={limit}
-              total={totalPages}
-              showSizeChanger={false}
+      {state.load && <Loading />}
+      {state.load ? "" : <><TitleAdmin title="Quản lý voucher" />
+        <Boxsearchlimit
+          title="voucher"
+          onLimitChange={(newLimit: any) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+          onSearch={(value: string) => {
+            setSearch(value);
+            setPage(1);
+          }}
+          status={status}
+          setStatus={setStatus}
+          quantityVoucher={quantityVoucher}
+          totalActiveVoucher={totalActiveVoucher}
+          totalExpiredVoucher={totalExpiredVoucher}
+        />
+
+        <div className=" bg-white shadow-xl min-h-0 rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+          <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
+            <Table<IVoucher>
+              columns={columns}
+              dataSource={vouchers}
+              rowKey="id"
+              scroll={getTableScroll(vouchers.length)}
+              pagination={false}
+              tableLayout="auto"
             />
           </div>
-        )}
-      </div></>}
+          {totalPages > limit && (
+            <div className="flex w-full justify-end mt-auto">
+              <Pagination
+                current={page}
+                onChange={(e) => setPage(e)}
+                defaultCurrent={1}
+                align="end"
+                pageSize={limit}
+                total={totalPages}
+                showSizeChanger={false}
+              />
+            </div>
+          )}
+        </div></>}
     </>
   );
 }
 
-export default voucherExpired;
+export default Voucher;
