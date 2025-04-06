@@ -198,7 +198,7 @@ function VoucherAdd() {
                 if (voucherResponse?.status == 200) {
                   openNotificationWithIcon('success', "Thành công", "Thêm voucher thành công");
                   setTimeout(() => {
-                    router.push(config.routes.admin.voucher.list.stillexpired);
+                    router.push(config.routes.admin.voucher.list);
                   }, 1000);
                 } else {
                   openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
