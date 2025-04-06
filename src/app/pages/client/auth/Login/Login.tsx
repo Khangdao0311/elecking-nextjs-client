@@ -18,7 +18,7 @@ import * as authServices from "@/app/services/authService";
 function Login() {
   const [state, dispatch] = useStore();
   const [loginStatus, setLoginStatus] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [notification, setNotification] = useState("");
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -29,11 +29,13 @@ function Login() {
   });
 
   useEffect(() => {
-    if (!state.user) {
-      localStorage.removeItem("user");
-      Cookies.remove("access_token");
-      Cookies.remove("refresh_token");
-    }
+    // if (!state.user) {
+    localStorage.removeItem("user");
+    Cookies.remove("access_token");
+    Cookies.remove("refresh_token");
+    dispatch(actions.set({ user: null, wish: [], cart: [] }));
+
+    // }
   }, []);
 
   async function handleLogin(values: any) {
@@ -45,16 +47,16 @@ function Login() {
         Cookies.set("access_token", res.data.access_token, { expires: 1 });
         Cookies.set("refresh_token", res.data.refresh_token, { expires: 1 });
         setLoginStatus(true);
-        setShowModal(true);
+        setNotification("Đăng nhập thành công !");
         setTimeout(() => {
-          dispatch(actions.set_routing(true));  
+          dispatch(actions.set_routing(true));
           router.push(config.routes.client.home);
         }, 1000);
       } else {
         setLoginStatus(false);
-        setShowModal(true);
+        setNotification(res.message);
         setTimeout(() => {
-          setShowModal(false);
+          setNotification("");
         }, 1000);
       }
     });
@@ -64,7 +66,7 @@ function Login() {
     <>
       {loading && <Loading />}
       <Modal
-        open={showModal}
+        open={!!notification}
         footer={null}
         title={null}
         centered
@@ -77,14 +79,14 @@ function Login() {
             <div>
               <FaCircleCheck className="w-20 h-20 text-green-500 " />
             </div>
-            <div className="text-lg font-medium text-green-700">Đăng nhập thành công !</div>
+            <div className="text-lg font-medium text-green-700">{notification}</div>
           </div>
         ) : (
           <div className="center-flex flex-col gap-4">
             <div>
               <FaCircleExclamation className="w-20 h-20 text-red-500 " />
             </div>
-            <div className="text-lg font-medium text-red-700">Đăng nhập thất bại !</div>
+            <div className="text-lg font-medium text-red-700">{notification}</div>
           </div>
         )}
       </Modal>

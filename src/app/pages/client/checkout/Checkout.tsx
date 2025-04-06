@@ -1,9 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
-import TextArea from "antd/es/input/TextArea";
 import { FaChevronRight, FaMapLocationDot } from "react-icons/fa6";
-import { LuTicket } from "react-icons/lu";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Modal, notification } from "antd";
 
@@ -22,6 +20,9 @@ import ModalPaymentMethod from "./components/ModalPaymentMethod";
 import ModalOrderStatus from "./components/ModalOrderStatus";
 import Loading from "@/app/components/client/Loading";
 import Shimmer from "@/app/components/client/Shimmer";
+import { BsChevronRight } from "react-icons/bs";
+import TextArea from "antd/es/input/TextArea";
+import { LuTicket } from "react-icons/lu";
 
 function Checkout() {
   const [state, dispatch] = useStore();
@@ -355,131 +356,179 @@ function Checkout() {
       <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 flex flex-col gap-6">
         {state.load ? (
           <Fragment>
-            <div className="bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
-              <Shimmer className={"w-1/4 h-8"} />
-              <div className="flex justify-between items-center gap-10">
-                <Shimmer className={"w-full h-8"} />
-                <Shimmer className={"w-20 h-11 shrink-0"} />
+            <section className="bg-white shadow-xl rounded-2xl p-4 flex flex-col gap-4">
+              <div className="flex gap-4 items-center">
+                <Shimmer className={"w-8 h-8"} />
+                <Shimmer className={"w-1/2 h-8"} />
               </div>
-            </div>
-            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4 ">
-              <div className="flex gap-2.5 pb-4 border-b border-gray-300">
-                <Shimmer className={"w-[730px] h-6"} />
-                <Shimmer className={"w-[160px] h-6"} />
-                <Shimmer className={"w-[160px] h-6"} />
-                <Shimmer className={"w-[160px] h-6"} />
-              </div>
-              <div className="center-flex gap-2.5 ">
-                <div className="w-[730px]  flex gap-4 items-center">
-                  <Shimmer className={"w-24 h-24 shrink-0"} image />
+              <div className="flex items-center gap-4 w-full place-content-between">
+                <div className="flex flex-1 flex-col lg:flex-row gap-2 lg:gap-4 items-start lg:items-center">
+                  <div className="flex w-full sm:flex-nowrap flex-wrap gap-x-4 gap-y-2 text-lg font-semibold">
+                    <Shimmer className={"w-5/12 md:w-1/3 lg:w-1/2  h-8"} />
+                    <Shimmer className={"w-5/12 md:w-1/3 lg:w-1/2  h-8"} />
+                  </div>
                   <Shimmer className={"w-full h-6"} />
                 </div>
-                <Shimmer className={"w-[160px] h-6"} />
-                <Shimmer className={"w-[160px] h-6"} />
-                <Shimmer className={"w-[160px] h-6"} />
+                <Shimmer className={"w-20 h-6 !hidden sm:!flex shrink-0"} />
+                <Shimmer className={"w-6 h-10 flex sm:!hidden shrink-0"} />
               </div>
-            </div>
-            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
-              <Shimmer className={"w-1/6 h-7"} />
-              <Shimmer className={"w-full h-14"} />
-            </div>
-            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
-              <Shimmer className={"w-1/5 h-7"} />
-              <div className="flex place-content-between border-gray-100 border px-10 py-4 gap-10 items-center rounded-lg cursor-pointer">
+            </section>
+            {/*  */}
+            <section className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+              <div className="hidden lg:flex gap-2.5 pb-4 border-b border-gray-300">
+                <Shimmer className={"w-24 h-6"} />
+                <div className="flex flex-1 gap-2.5">
+                  <Shimmer className={"w-5/12 h-6"} />
+                  <div className="flex gap-2.5 flex-1 ">
+                    <Shimmer className={"w-2/5 h-6"} />
+                    <Shimmer className={"w-1/5 h-6"} />
+                    <Shimmer className={"w-2/5 h-6"} />
+                  </div>
+                </div>
+              </div>
+
+              <div className=" flex flex-col">
+                <div className="flex gap-2.5 items-center py-2.5">
+                  <Shimmer className={"w-24 h-24"} image />
+                  <div className="flex flex-col lg:flex-row gap-1 items-center sm:gap-2.5 flex-1">
+                    <Shimmer className={"w-full lg:w-5/12 h-6"} />
+                    <div className="flex w-full lg:w-7/12 flex-col sm:flex-row gap-1 sm:gap-2.5 ">
+                      <div className="w-full sm:w-2/5 center-flex !justify-start sm:!justify-center flex-row lg:flex-col gap-1 ">
+                        <Shimmer className={"w-full h-6"} />
+                        <Shimmer className={"w-9/12 h-5"} />
+                      </div>
+                      <div className="w-full sm:w-1/5 center-flex !justify-start gap-2.5 sm:!justify-center text-base font-medium ">
+                        <Shimmer className={"w-full h-6"} />
+                      </div>
+                      <div className="w-full sm:w-2/5 center-flex !justify-start sm:!justify-center gap-2.5 text-base font-bold text-primary text-center text-nowrap">
+                        <Shimmer className={"w-full h-6"} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            {/*  */}
+            <section className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+              <Shimmer className={"w-2/6 h-7"} />
+              <Shimmer className={"w-full h-24"} />
+            </section>
+            {/*  */}
+            <section className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+              <Shimmer className={"w-1/2 h-7"} />
+              <div className="flex place-content-between border-gray-300 border px-4 md:px-10 py-4 gap-10 items-center rounded-lg cursor-pointer">
                 <div className="flex w-full gap-6 items-center">
                   <Shimmer className={"w-20 h-20 shrink-0"} image />
                   <Shimmer className={"w-full h-7"} />
                 </div>
                 <Shimmer className="w-6 h-6 " />
               </div>
-            </div>
-            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col">
-              <div className="flex items-center place-content-between px-5 py-2.5">
-                <Shimmer className={"w-1/5 h-8"} />
-                <Shimmer className={"w-20 h-7"} />
+            </section>
+            {/*  */}
+            <section className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col">
+              <div className="flex items-center place-content-between py-2.5">
+                <Shimmer className={"w-1/2 max-w-40 h-8"} />
+                <Shimmer className={"w-1/2 max-w-20 h-8"} />
               </div>
-
-              <div className="flex justify-end gap-32 py-4 border-y border-gray-300 border-dashed">
-                <div className="flex flex-col gap-7">
-                  <Shimmer className={"w-40 h-7"} />
-                  <Shimmer className={"w-40 h-7"} />
-                  <Shimmer className={"w-40 h-7"} />
-                  <Shimmer className={"w-40 h-7"} />
-                  <Shimmer className={"w-44 h-8"} />
+              {/*  */}
+              <div className="flex justify-between sm:justify-end gap-0 sm:gap-32 py-4 border-y border-gray-300 border-dashed">
+                <div className="flex flex-col gap-7 w-5/12 max-w-36">
+                  <Shimmer className={"w-full h-7"} />
+                  <Shimmer className={"w-full h-7"} />
+                  <Shimmer className={"w-full h-7"} />
+                  <Shimmer className={"w-full h-7"} />
+                  <Shimmer className={"w-full h-8"} />
                 </div>
-                <div className="flex flex-col gap-7 items-end">
-                  <Shimmer className={"w-40 h-7"} />
-                  <Shimmer className={"w-40 h-7"} />
-                  <Shimmer className={"w-40 h-7"} />
-                  <Shimmer className={"w-40 h-7"} />
-                  <Shimmer className={"w-44 h-8"} />
+                <div className="flex flex-col gap-7 text-end  w-5/12 max-w-36">
+                  <Shimmer className={"w-full h-7"} />
+                  <Shimmer className={"w-full h-7"} />
+                  <Shimmer className={"w-full h-7"} />
+                  <Shimmer className={"w-full h-7"} />
+                  <Shimmer className={"w-full h-8"} />
                 </div>
               </div>
-
-              <div className="flex justify-between items-center py-4">
-                <Shimmer className={"w-1/2 h-6"} />
-                <Shimmer className={"w-1/4 h-16"} />
+              {/*  */}
+              <div className="flex flex-col lg:flex-row gap-2.5 w-full justify-between items-center py-4">
+                <Shimmer className={"w-full h-8"} />
+                <Shimmer className={"w-full lg:w-1/4 h-16 shrink-0"} />
               </div>
-            </div>
+            </section>
           </Fragment>
         ) : (
           <Fragment>
-            <div className="bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+            <section className="bg-white shadow-xl rounded-2xl p-4 flex flex-col gap-4">
               <div className="flex gap-4 items-center">
                 <FaMapLocationDot className="w-8 h-8 text-primaryDark" />
-                <p className="text-2xl font-bold text-primary text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
+                <p className="text-2xl font-bold text-primary text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
                   Địa chỉ nhận hàng
                 </p>
               </div>
-              <div className="flex items-center gap-10 w-full place-content-between">
-                <div className="flex gap-6 items-center">
+              <div
+                className="flex items-center gap-4 w-full place-content-between"
+                onClick={() =>
+                  setShowModal({
+                    ...showModal,
+                    address: { list: true, new: false, edit: false },
+                  })
+                }
+              >
+                <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 items-start lg:items-center">
                   {address && (
                     <Fragment>
-                      <div className="flex gap-4 text-lg font-semibold shrink-0">
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-lg font-semibold shrink-0">
                         <p>{address?.fullname}</p>
                         <p>{address?.phone}</p>
                       </div>
-                      <p className="text-base font-normal w-[812px]">
+                      <p className="text-base font-normal line-clamp-1">
                         {address?.province?.name}, {address?.district?.name}, {address?.ward?.name}
                       </p>
                     </Fragment>
                   )}
                 </div>
-                <p
-                  className="text-base font-semibold text-blue-500 p-2.5 gap-2.5 cursor-pointer"
-                  onClick={() =>
-                    setShowModal({
-                      ...showModal,
-                      address: { list: true, new: false, edit: false },
-                    })
-                  }
-                >
+                <p className="text-base hidden sm:flex font-semibold text-blue-500 p-2.5 gap-2.5 shrink-0">
                   Thay đổi
                 </p>
+                <BsChevronRight className="felx w-6 h-10 shrink-0 sm:hidden text-base font-semibold text-blue-500" />
               </div>
-            </div>
+            </section>
 
-            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4 ">
-              <div className="flex gap-2.5 pb-4 border-b border-gray-300">
-                <p className="w-[730px] text-base font-medium">Sản phẩm</p>
-                <p className="w-[160px] text-center text-base font-medium">Đơn giá</p>
-                <p className="w-[160px] text-center text-base font-medium">Số lượng</p>
-                <p className="w-[160px] text-center text-base font-medium">Thành tiền</p>
-              </div>
-              {productsOrder.length === 0 && (
-                <div className="center-flex gap-2.5 ">
-                  <div className="w-[730px]  flex gap-4 items-center">
-                    <Shimmer className={"w-24 h-24 shrink-0"} image />
-                    <Shimmer className={"w-full h-6"} />
+            <section className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+              <div className="hidden lg:flex gap-2.5 pb-4 border-b border-gray-300">
+                <p className="w-24 text-base center-flex font-medium">Hình ảnh</p>
+                <div className="flex flex-1 gap-2.5">
+                  <p className="w-5/12 text-base font-medium">Sản phẩm</p>
+                  <div className="flex gap-2.5 flex-1 ">
+                    <p className="w-2/5 text-center text-base font-medium">Đơn giá</p>
+                    <p className="w-1/5 text-center text-base font-medium">Số lượng</p>
+                    <p className="w-2/5 text-center text-base font-medium">Thành tiền</p>
                   </div>
-                  <Shimmer className={"w-[160px] h-6"} />
-                  <Shimmer className={"w-[160px] h-6"} />
-                  <Shimmer className={"w-[160px] h-6"} />
                 </div>
-              )}
-              {productsOrder.map((product: IProduct, iProduct: number) => (
-                <div key={iProduct} className="flex gap-2.5 items-center">
-                  <div className="flex gap-2.5 items-center w-[730px]">
+              </div>
+
+              <div className=" flex flex-col divide-y-2">
+                {productsOrder.length === 0 && (
+                  <div className="flex gap-2.5 items-center py-2.5">
+                    <Shimmer className={"w-24 h-24"} image />
+                    <div className="flex flex-col lg:flex-row gap-1 items-center sm:gap-2.5 flex-1">
+                      <Shimmer className={"w-full lg:w-5/12 h-6"} />
+                      <div className="flex w-full lg:w-7/12 flex-col sm:flex-row gap-1 sm:gap-2.5 ">
+                        <div className="w-full sm:w-2/5 center-flex !justify-start sm:!justify-center flex-row lg:flex-col gap-1 ">
+                          <Shimmer className={"w-full h-6"} />
+                          <Shimmer className={"w-9/12 h-5"} />
+                        </div>
+                        <div className="w-full sm:w-1/5 center-flex !justify-start gap-2.5 sm:!justify-center text-base font-medium ">
+                          <Shimmer className={"w-full h-6"} />
+                        </div>
+                        <div className="w-full sm:w-2/5 center-flex !justify-start sm:!justify-center gap-2.5 text-base font-bold text-primary text-center text-nowrap">
+                          <Shimmer className={"w-full h-6"} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {productsOrder.map((product: IProduct, iProduct: number) => (
+                  <div key={iProduct} className="flex gap-2.5 items-center py-2.5">
                     <img
                       src={
                         product.variants[checkout?.order[iProduct].product.variant]?.colors[
@@ -489,81 +538,91 @@ function Checkout() {
                       alt="Ảnh"
                       className="w-24 h-24"
                     />
-                    <p className="text-base font-medium">{`${product.name} ${
-                      product.variants[checkout?.order[iProduct].product.variant].properties
-                        .map((e: any) => e.name)
-                        .join(" - ") !== ""
-                        ? `- ${product.variants[
-                            checkout?.order[iProduct].product.variant
-                          ].properties
+                    <div className="flex flex-col lg:flex-row gap-1 sm:gap-2.5 flex-1">
+                      <p className="w-full lg:w-5/12 text-base font-medium line-clamp-2">
+                        {`${product.name} ${
+                          product.variants[checkout?.order[iProduct].product.variant].properties
                             .map((e: any) => e.name)
-                            .join(" - ")}`
-                        : ""
-                    }
-                 - ${
-                   product.variants[checkout?.order[iProduct].product.variant].colors[
-                     checkout?.order[iProduct].product.color
-                   ].name
-                 }
-                  `}</p>
+                            .join(" - ") !== ""
+                            ? `- ${product.variants[
+                                checkout?.order[iProduct].product.variant
+                              ].properties
+                                .map((e: any) => e.name)
+                                .join(" - ")}`
+                            : ""
+                        }
+                     - ${
+                       product.variants[checkout?.order[iProduct].product.variant].colors[
+                         checkout?.order[iProduct].product.color
+                       ].name
+                     }`}
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-1 sm:gap-2.5 flex-1 ">
+                        <div className="w-full sm:w-2/5 center-flex !justify-start lg:!justify-center flex-row lg:flex-col gap-1 ">
+                          <p className="text-base font-medium text-primary text-nowrap">
+                            {(
+                              product.variants[checkout?.order[iProduct]?.product?.variant]?.price -
+                              product.variants[checkout?.order[iProduct]?.product?.variant]
+                                ?.price_sale +
+                              product.variants[checkout?.order[iProduct]?.product?.variant]?.colors[
+                                checkout?.order[iProduct]?.product?.color
+                              ].price_extra
+                            ).toLocaleString("vi-VN")}{" "}
+                            đ
+                          </p>
+                          {product.variants[checkout?.order[iProduct]?.product?.variant]
+                            ?.price_sale !== 0 && (
+                            <del className="text-gray-700 text-sm font-normal text-nowrap">
+                              {(
+                                product.variants[checkout?.order[iProduct]?.product?.variant]
+                                  ?.price || 0
+                              ).toLocaleString("vi-VN")}{" "}
+                              đ
+                            </del>
+                          )}
+                        </div>
+                        <p className="w-full sm:w-1/5 center-flex !justify-start gap-2.5 sm:!justify-center text-base font-medium text-center">
+                          <span className="flex sm:hidden">Số lượng</span>
+                          {checkout?.order[iProduct].quantity}
+                        </p>
+                        <p className="w-full sm:w-2/5 center-flex !justify-start sm:!justify-center gap-2.5 text-base font-bold text-primary text-center text-nowrap">
+                          <span className="flex sm:hidden text-black font-medium">Tổng tiền</span>
+                          {(
+                            (product.variants[checkout?.order?.[iProduct]?.product?.variant]
+                              ?.price -
+                              product.variants[checkout?.order?.[iProduct]?.product?.variant]
+                                ?.price_sale +
+                              product.variants[checkout?.order?.[iProduct]?.product?.variant]
+                                ?.colors[checkout?.order?.[iProduct]?.product?.color]
+                                ?.price_extra) *
+                            checkout?.order?.[iProduct]?.quantity
+                          ).toLocaleString("vi-VN")}{" "}
+                          đ
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center w-[160px] ">
-                    <p className="text-base font-medium text-primary">
-                      {(
-                        product.variants[checkout?.order[iProduct]?.product?.variant]?.price -
-                        product.variants[checkout?.order[iProduct]?.product?.variant]?.price_sale +
-                        product.variants[checkout?.order[iProduct]?.product?.variant]?.colors[
-                          checkout?.order[iProduct]?.product?.color
-                        ].price_extra
-                      ).toLocaleString("vi-VN")}{" "}
-                      đ
-                    </p>
-                    {product.variants[checkout?.order[iProduct]?.product?.variant]?.price_sale !==
-                      0 && (
-                      <del className="text-gray-700 text-sm font-normal ">
-                        {(
-                          product.variants[checkout?.order[iProduct]?.product?.variant]?.price || 0
-                        ).toLocaleString("vi-VN")}
-                        đ
-                      </del>
-                    )}
-                  </div>
-                  <p className="text-base font-medium w-[160px] text-center">
-                    {checkout?.order[iProduct].quantity}
-                  </p>
-                  <p className="text-base font-bold text-primary w-[160px] text-center">
-                    {(
-                      (product.variants[checkout?.order?.[iProduct]?.product?.variant]?.price -
-                        product.variants[checkout?.order?.[iProduct]?.product?.variant]
-                          ?.price_sale +
-                        product.variants[checkout?.order?.[iProduct]?.product?.variant]?.colors[
-                          checkout?.order?.[iProduct]?.product?.color
-                        ]?.price_extra) *
-                      checkout?.order?.[iProduct]?.quantity
-                    ).toLocaleString("vi-VN")}{" "}
-                    đ
-                  </p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </section>
 
-            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
-              <p className="text-xl font-bold w-full ">Lời nhắn</p>
+            <section className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+              <p className="text-xl font-bold w-full line-clamp-1">Lời nhắn</p>
               <div>
                 <TextArea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="Lưu ý cho cửa hàng ..."
-                  className="h-[64px]"
+                  className="!min-h-24"
                 ></TextArea>
               </div>
-            </div>
+            </section>
 
-            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
+            <section className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col gap-4">
               <p className="text-xl font-bold w-full">Phương Thức Thanh Toán</p>
               <div
                 onClick={() => setShowModal({ ...showModal, payment_method: true })}
-                className="flex place-content-between border-gray-300 border px-10 py-4 gap-10 items-center rounded-lg cursor-pointer"
+                className="flex place-content-between border-gray-300 border px-4 md:px-10 py-4 gap-10 items-center rounded-lg cursor-pointer"
               >
                 <div className="flex gap-6 items-center">
                   <img
@@ -580,10 +639,10 @@ function Checkout() {
                 </div>
                 <FaChevronRight className="w-6 h-6 " />
               </div>
-            </div>
+            </section>
 
-            <div className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col">
-              <div className="flex items-center place-content-between px-5 py-2.5">
+            <section className=" bg-white shadow-xl rounded-2xl p-5 flex flex-col">
+              <div className="flex items-center place-content-between py-2.5">
                 <div className="flex items-center gap-2">
                   <LuTicket className="w-8 h-8" />
                   <p className="text-lg font-normal">ElecKing Voucher</p>
@@ -595,22 +654,25 @@ function Checkout() {
                   Chọn mã
                 </p>
               </div>
-              <div className="flex justify-end gap-32 py-4 border-y border-gray-300 border-dashed">
+              {/*  */}
+              <div className="flex justify-between sm:justify-end gap-0 sm:gap-32 py-4 border-y border-gray-300 border-dashed">
                 <div className="flex flex-col gap-7">
-                  <p className="text-lg font-normal">Tổng tiền hàng</p>
-                  <p className="text-lg font-normal">Giá giảm sản phẩm</p>
-                  <p className="text-lg font-normal">Vận chuyển</p>
-                  {voucher && <p className="text-lg font-normal">Voucher</p>}
-                  <p className="text-2xl font-medium">Tổng số tiền</p>
+                  <p className="line-clamp-1 text-lg font-normal">Tổng tiền hàng</p>
+                  <p className="line-clamp-1 text-lg font-normal">Giá giảm sản phẩm</p>
+                  <p className="line-clamp-1 text-lg font-normal">Vận chuyển</p>
+                  {voucher && <p className="line-clamp-1 text-lg font-normal">Voucher</p>}
+                  <p className="line-clamp-1 text-2xl font-medium">Tổng số tiền</p>
                 </div>
                 <div className="flex flex-col gap-7 text-end">
-                  <p className="text-lg font-normal">{total.original.toLocaleString("vi-VN")} ₫</p>
-                  <p className="text-lg font-normal">
+                  <p className="text-nowrap text-lg font-normal">
+                    {total.original.toLocaleString("vi-VN")} ₫
+                  </p>
+                  <p className="text-nowrap text-lg font-normal">
                     - {(total.original - total.sale).toLocaleString("vi-VN")} ₫
                   </p>
-                  <p className="text-lg font-normal">0 ₫</p>
+                  <p className="text-nowrap text-lg font-normal">0 ₫</p>
                   {voucher && (
-                    <p className="text-lg font-normal">
+                    <p className="text-nowrap text-lg font-normal">
                       -{" "}
                       {(voucher.discount_type === 1
                         ? voucher.discount_value.toLocaleString("vi-VN")
@@ -622,7 +684,7 @@ function Checkout() {
                       ₫
                     </p>
                   )}
-                  <p className="text-2xl font-bold text-primary">
+                  <p className="text-nowrap text-2xl font-bold text-primary">
                     {(
                       total.sale -
                       (voucher
@@ -638,20 +700,21 @@ function Checkout() {
                   </p>
                 </div>
               </div>
-              <div className="flex justify-between items-center py-4">
-                <p className="text-base font-normal">
+              {/*  */}
+              <div className="flex flex-col lg:flex-row gap-2.5 w-full justify-between items-center py-4">
+                <p className="w-full text-base font-normal">
                   Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo{" "}
                   <span className="text-base font-bold">Điều khoản Elecking</span>
                 </p>
 
                 <button
                   onClick={handleOrder}
-                  className="bg-primary py-4 px-24 text-white text-2xl font-bold rounded-lg"
+                  className="bg-primary p-4 w-full lg:w-1/4 shrink-0 text-white text-2xl font-bold rounded-lg text-nowrap"
                 >
                   Đặt hàng
                 </button>
               </div>
-            </div>
+            </section>
           </Fragment>
         )}
       </div>

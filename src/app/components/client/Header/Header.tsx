@@ -500,7 +500,7 @@ function Header() {
             >
               {state.user ? (
                 state.user.avatar ? (
-                  <div className=" w-6 h-6 shrink-0 rounded-full overflow-hidden">
+                  <div className="w-4 h-4 lg:w-6 lg:h-6 rounded-full overflow-hidden">
                     <img
                       className="w-full h-full object-fill"
                       src={state.user.avatar}
@@ -508,10 +508,10 @@ function Header() {
                     />
                   </div>
                 ) : (
-                  <FaCircleUser className="text-base w-6 h-6 text-gray-800" />
+                  <FaCircleUser className="text-base w-4 h-4 lg:w-6 lg:h-6 text-gray-800" />
                 )
               ) : (
-                <FaCircleUser className="text-base w-6 h-6 text-gray-800" />
+                <FaCircleUser className="text-base w-4 h-4 lg:w-6 lg:h-6 text-gray-800" />
               )}
               <p className="text-gray-800 text-xs font-medium">
                 {!!state.user ? state.user.username : "Emember"}

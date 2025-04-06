@@ -33,7 +33,7 @@ function ResultSearch({ onClose }: any) {
   }, [debouncedValue]);
 
   return (
-    <div className="w-[80vw] sm:w-[500px] xl:w-[600px] flex flex-col ">
+    <div className="w-[80vw] max-w-[460px] md:max-w-[560px] flex flex-col ">
       <p className=" px-4 py-2 bg-gray-100 text-sm shrink-0 font-medium">Sản phẩm gợi ý:</p>
       <div className="w-full h-full flex flex-col overflow-auto">
         {searchResult.length === 0 && (
