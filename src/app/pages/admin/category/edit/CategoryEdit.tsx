@@ -23,6 +23,7 @@ function CategoryEdit() {
   const [editProptype, setEditProptype] = useState<IProptype[]>();
   const [status, setStatus] = useState(1);
   const [categoryName, setCategoryName] = useState("");
+  const [icon, setIcon] = useState('')
   const [image, setImage] = useState<UploadFile[]>([]);
   const [initialImage, setInitialImage] = useState("");
   const [editImage, setEditImage] = useState<any>();
@@ -53,6 +54,7 @@ function CategoryEdit() {
       setCategoryName(res.data.name);
       setEditorContent(res.data.description);
       setInitialImage(res.data.image);
+      setIcon(res.data.icon)
       const oldImageName = res.data.image.split("/").pop();
       setEditImage(oldImageName);
       setStatus(res.data.status ?? 1);
@@ -85,9 +87,6 @@ function CategoryEdit() {
     });
   }, [editorContent]);
 
-  const handleChangeProptype = (value: any) => {
-    setEditProptype(value);
-  };
 
   function handleChange(value: any) {
     setStatus(value);
@@ -102,7 +101,7 @@ function CategoryEdit() {
       finalImage = image[0].name;
     }
 
-    if (editProptype && typeof status === "number" && categoryName && editorContent) {
+    if (editProptype && typeof status === "number" && categoryName && editorContent && icon) {
       categoryService
         .editCategory(id, {
           name: categoryName,
@@ -110,6 +109,7 @@ function CategoryEdit() {
           status: status,
           proptypes: JSON.stringify(editProptype.map(e => e.id)),
           description: editorContent,
+          icon: icon
         })
         .then((res) => {
           if (res.status === 200) {
@@ -216,6 +216,16 @@ function CategoryEdit() {
                   margin-top: 0 !important;
                 }
               `}</style>
+            </div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Biểu Tượng <span className="text-primary">*</span>
+              </div>
+              <Input
+                className="w-[268px] h-11 shadow-md"
+                value={icon}
+                onChange={(e) => setIcon(e.target.value)}
+              />
             </div>
           </div>
           <div>

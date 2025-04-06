@@ -18,7 +18,6 @@ const BoxSearchLimit = ({
   const handleSearch = () => {
     onSearch(searchValue);
   };
-  console.log(paymentStatus);
   const pathname = usePathname();
 
   return (
@@ -113,7 +112,7 @@ const BoxSearchLimit = ({
 
           </div>
         ) : <>
-          <p>Tìm kiếm:</p>
+          <p className="shrink-0">Tìm kiếm:</p>
           <Input
             className="w-80 h-8"
             placeholder="Nhập từ khóa..."

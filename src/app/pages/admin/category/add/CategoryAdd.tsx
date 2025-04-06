@@ -13,15 +13,18 @@ import { IoCloseSharp } from "react-icons/io5";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import { Button as ButtonAnt, notification, Space } from "antd";
+import { useRouter } from "next/navigation";
+import config from "@/app/config";
 
 function CategoryAdd() {
   const [proptype, setproptype] = useState<IProptype[]>([]);
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [icon, setIcon] = useState('')
   const [selectedProptype, setSelectedProptype] = useState<string[]>([]);
   const quillRef = useRef<HTMLDivElement>(null);
   const [editorContent, setEditorContent] = useState("");
   const [state, dispatch] = useStore();
+  const router = useRouter();
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -52,7 +55,6 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
     
       quill.on("text-change", () => {
         setEditorContent(quill.root.innerHTML);
-        
       });
     }, []);
     
@@ -95,27 +97,22 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
     } else {
       console.warn("Không có ảnh được chọn!");
     }
-    if (image[0]?.originFileObj && selectedProptype && name && description) {
+    if (image[0]?.originFileObj && selectedProptype && name && editorContent && icon) {
       categoryService
         .addCategory({
           name: name,
           image: image[0].name,
-          description: description.trim(),
+          description: editorContent.trim(),
           proptypes: JSON.stringify(selectedProptype),
+          icon: icon
         })
         .then((res) => {
-          // if(res.status === 200){
-          //   openNotificationWithIcon('success', "Thành công", "Thêm danh mục thành công");
-          //   setName("");
-          //   setDescription("");
-          //   setSelectedProptype([]);
-          //   setImage([]);
-          //   setEditorContent("");
-          //   if (quillRef.current) {
-          //     const quill = new Quill(quillRef.current);
-          //     quill.root.innerHTML = "";
-          //   }
-          // }
+          if(res.status === 200){
+            openNotificationWithIcon('success', "Thành công", "Thêm danh mục thành công");
+            setTimeout(() => {
+              router.push(`${config.routes.admin.category.list}`)
+            }, 1500);
+          }
         });
     } else {
       openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
@@ -171,6 +168,17 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
                   margin-top: 0 !important;
                 }
               `}</style>
+            </div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Biểu Tượng <span className="text-primary">*</span>
+              </div>
+              <Input
+                value={icon}
+                onChange={(e: any) => setIcon(e.target.value)}
+                className="w-[268px] h-11 "
+                placeholder="Nhập Biểu Tượng"
+              />
             </div>
           </div>
 
