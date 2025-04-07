@@ -269,77 +269,79 @@ function Cart() {
 
   return (
     <>
-      {/* Modal voucher */}
-      <Modal
-        open={showModalVoucher}
-        onCancel={() => setShowModalVoucher(false)}
-        footer={null}
-        title={null}
-        centered
-        maskClosable={false}
-        closable={false}
-        width="auto"
-        zIndex={1002}
-      >
-        <ModalVoucher
-          orderPrice={total.sale}
-          voucher={voucher}
-          setVoucher={setVoucher}
-          onClose={() => setShowModalVoucher(false)}
-        />
-      </Modal>
-      {/* Modal bạn có muốn xóa sản phẩm này không ? */}
-      <Modal
-        open={!!itemCartRemove}
-        onCancel={() => setItemCartRemove(null)}
-        footer={null}
-        title={null}
-        centered
-        maskClosable={false}
-        closable={false}
-        width="auto"
-        zIndex={1002}
-      >
-        <div className="p-2 flex flex-col gap-4 w-[80vw] max-w-[400px]">
-          <p className="w-full text-center text-lg font-bold text-primary">
-            Bạn có muốn xóa sản phẩm này không ?
-          </p>
-          <p className="font-medium text-base py-4">{itemCartRemove?.name}</p>
-          <div className="w-full flex gap-2 items-center justify-between">
-            <button
-              className="w-1/2 center-flex py-2 rounded-sm border border-primary text-primary text-base font-bold"
-              onClick={() => {
-                handleRemoveItem(itemCartRemove?.index);
-                setItemCartRemove(null);
-              }}
-            >
-              Có
-            </button>
-            <button
-              className="w-1/2 center-flex py-2 rounded-sm border border-primary text-white bg-primary text-base font-bold"
-              onClick={() => setItemCartRemove(null)}
-            >
-              Không
-            </button>
+      <Fragment>
+        {/* Modal voucher */}
+        <Modal
+          open={showModalVoucher}
+          onCancel={() => setShowModalVoucher(false)}
+          footer={null}
+          title={null}
+          centered
+          maskClosable={false}
+          closable={false}
+          width="auto"
+          zIndex={1002}
+        >
+          <ModalVoucher
+            orderPrice={total.sale}
+            voucher={voucher}
+            setVoucher={setVoucher}
+            onClose={() => setShowModalVoucher(false)}
+          />
+        </Modal>
+        {/* Modal bạn có muốn xóa sản phẩm này không ? */}
+        <Modal
+          open={!!itemCartRemove}
+          onCancel={() => setItemCartRemove(null)}
+          footer={null}
+          title={null}
+          centered
+          maskClosable={false}
+          closable={false}
+          width="auto"
+          zIndex={1002}
+        >
+          <div className="p-2 flex flex-col gap-4 w-[80vw] max-w-[400px]">
+            <p className="w-full text-center text-lg font-bold text-primary">
+              Bạn có muốn xóa sản phẩm này không ?
+            </p>
+            <p className="font-medium text-base py-4">{itemCartRemove?.name}</p>
+            <div className="w-full flex gap-2 items-center justify-between">
+              <button
+                className="w-1/2 center-flex py-2 rounded-sm border border-primary text-primary text-base font-bold"
+                onClick={() => {
+                  handleRemoveItem(itemCartRemove?.index);
+                  setItemCartRemove(null);
+                }}
+              >
+                Có
+              </button>
+              <button
+                className="w-1/2 center-flex py-2 rounded-sm border border-primary text-white bg-primary text-base font-bold"
+                onClick={() => setItemCartRemove(null)}
+              >
+                Không
+              </button>
+            </div>
           </div>
-        </div>
-      </Modal>
-      {/* notification */}
-      <Modal
-        open={!!notification}
-        footer={null}
-        title={null}
-        centered
-        maskClosable={false}
-        closable={false}
-        width="auto"
-        zIndex={1002}
-      >
-        <div className="w-[50vw] max-w-60 center-flex flex-col gap-4">
-          <FaCircleExclamation className="w-1/3 h-auto text-primary" />
-          <p className="text-primary font-medium text-center">{notification}</p>
-        </div>
-      </Modal>
+        </Modal>
+        {/* notification */}
+        <Modal
+          open={!!notification}
+          footer={null}
+          title={null}
+          centered
+          maskClosable={false}
+          closable={false}
+          width="auto"
+          zIndex={1002}
+        >
+          <div className="w-[50vw] max-w-60 center-flex flex-col gap-4">
+            <FaCircleExclamation className="w-1/3 h-auto text-primary" />
+            <p className="text-primary font-medium text-center">{notification}</p>
+          </div>
+        </Modal>
+      </Fragment>
       <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <section>
           <div className="flex flex-col items-center gap-4 ">
@@ -404,6 +406,24 @@ function Cart() {
                   </div>
                 </div>
               </Fragment>
+            )}
+
+            {!state.load && state.cart.length === 0 && (
+              <div className="center-fixed w-[90vw]">
+                <div className="flex items-center justify-between flex-col gap-5">
+                  <div>
+                    <BsCartX className="w-[96px] h-[96px] text-primary" />
+                  </div>
+                  <div className="flex flex-col gap-2.5 items-center">
+                    <div className="text-2xl font-semibold text-center">
+                      Giỏ hàng của bạn đang trống.
+                    </div>
+                    <div className="text-2xl font-normal text-center">
+                      Hãy chọn thêm sản phẩm để mua sắm nhé
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             {!state.load && state.cart.length > 0 && (
@@ -486,11 +506,11 @@ function Cart() {
                             <Link
                               onClick={() => dispatch(actions.set_routing(true))}
                               href={`${config.routes.client.productDetail}/${product.id}`}
-                              className="font-bold text-base"
+                              className="font-bold text-base line-clamp-2"
                             >
                               {product.name}
                             </Link>
-                            <div className="text-primary text-b font-bold flex gap-2 items-center">
+                            <div className="text-primary text-b font-bold flex gap-2 items-center flex-wrap">
                               {(
                                 product.variants[state.cart?.[iProduct]?.product?.variant]?.price -
                                 product.variants[state.cart?.[iProduct]?.product?.variant]
@@ -518,7 +538,7 @@ function Cart() {
                                 placement="bottomLeft"
                                 title={null}
                                 trigger="click"
-                                zIndex={1002}
+                                zIndex={102}
                                 content={
                                   <div
                                     className="z-10 w-[40vw] max-w-[404px] flex flex-col sm:flex-row flex-wrap gap-2 "
@@ -729,30 +749,11 @@ function Cart() {
                 ))}
               </Fragment>
             )}
-
-            {!state.load && state.cart.length === 0 && (
-              <div className="center-fixed w-[90vw]">
-                <div className="flex items-center justify-between flex-col gap-5">
-                  <div>
-                    <BsCartX className="w-[96px] h-[96px] text-primary" />
-                  </div>
-                  <div className="flex flex-col gap-2.5 items-center">
-                    <div className="text-2xl font-semibold text-center">
-                      Giỏ hàng của bạn đang trống.
-                    </div>
-                    <div className="text-2xl font-normal text-center">
-                      Hãy chọn thêm sản phẩm để mua sắm nhé
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </section>
 
         <div className="h-48"></div>
-
-        <section className="fixed left-0 right-0 bottom-0 z-[1002] sm:bottom-0 w-full">
+        <section className="fixed left-0 right-0 bottom-0 z-[101] sm:bottom-0 w-full">
           {state.load && (
             <div className="container-custom  p-4 bg-white border border-gray-300 rounded-2xl shadow-xl">
               <div className="flex  flex-col lg:flex-row justify-betweens border-t border-b p-2 border-dotted mb-2 gap-2.5 ">
@@ -772,7 +773,6 @@ function Cart() {
                   <Shimmer className={"w-1/3 h-6"} />
                   <Shimmer className={"w-1/5 h-6"} />
                 </div>
-
                 <Shimmer className={"w-full md:w-1/3 h-14"} />
               </div>
             </div>
@@ -829,7 +829,7 @@ function Cart() {
 
               {/*  */}
               <div className="flex flex-col md:flex-row gap-2.5 justify-between items-center relative">
-                <div className="flex w-full items-end gap-2.5 select-none cursor-pointer group">
+                <div className="flex w-full  items-end flex-col sm:flex-row gap-2.5 select-none cursor-pointer group">
                   <span className="text- line-clamp-1">
                     Tổng thanh toán ( <span>{checkedItems.filter((e) => e === true).length}</span>{" "}
                     sản phẩm )
@@ -838,12 +838,12 @@ function Cart() {
                     placement="top"
                     title={null}
                     trigger="hover"
-                    zIndex={1003}
+                    zIndex={102}
                     content={
-                      <div className="w-[100vw] max-w-[600px] flex flex-col divide-y-[1px] divide-gray-200">
-                        <h2 className="text-3xl py-4 px-2 font-medium text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
+                      <div className="w-[95vw] max-w-[600px] flex flex-col divide-y-[1px] divide-gray-200">
+                        <p className="text-3xl w-full py-4 px-2 font-medium text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary">
                           Chi tiết thanh toán
-                        </h2>
+                        </p>
                         <div className="py-4 px-2 flex justify-between">
                           <span className="text-gray-600 text-lg font-normal">Tổng tiền hàng</span>
                           <span className="text-black text-lg font-normal">
@@ -877,8 +877,8 @@ function Cart() {
                           </div>
                         )}
                         <div className="py-4 px-2 flex justify-between">
-                          <span className="font-medium text-xl">Tổng số tiền thanh toán</span>
-                          <span className="text-primary font-bold text-xl">
+                          <span className="font-medium text-xl">Tổng thanh toán</span>
+                          <span className="text-primary font-bold text-xl text-nowrap center-flex">
                             {(
                               total.sale -
                               (voucher

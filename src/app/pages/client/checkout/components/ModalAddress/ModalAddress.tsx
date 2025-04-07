@@ -35,7 +35,7 @@ function ModalAddress({
   }
 
   return (
-    <div className="w-[500px] flex flex-col gap-4">
+    <div className="w-full max-w-[500px] h-[70vh] flex flex-col gap-4">
       <div className="flex text-justify items-center">
         <p className="text-xl font-semibold">Địa chỉ của tôi</p>
       </div>
@@ -46,10 +46,10 @@ function ModalAddress({
         mousewheel={true}
         freeMode={true}
         modules={[Mousewheel, FreeMode]}
-        className="w-full h-[500px]"
+        className="w-full h-full"
       >
         {addresses.map((eAddress: IAddress, iAddress: number) => (
-          <SwiperSlide key={iAddress} className="w-full !h-36 relative">
+          <SwiperSlide key={iAddress} className="w-full !h-auto relative">
             <label
               htmlFor={`${iAddress}`}
               key={iAddress}
@@ -70,7 +70,7 @@ function ModalAddress({
               />
               <div className="flex flex-col w-full items-start gap-1.5">
                 <div className="flex justify-between w-full">
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-1 sm:gap-4">
                     <p className="text-base font-medium">{eAddress.fullname}</p>
                     <p className="text-base font-normal">{eAddress.phone}</p>
                   </div>
@@ -122,7 +122,7 @@ function ModalAddress({
         </SwiperSlide>
       </Swiper>
 
-      <div className="flex gap-4 justify-end px-4">
+      <div className="flex gap-4 justify-end">
         <p
           onClick={() => {
             onClose();

@@ -27,7 +27,6 @@ function Product(props: { product: IProduct }) {
   }
 
   return (
-    // <div className="border rounded-2xl shadow-lg p-4 w-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150 hover:scale-[1.02] hover:border-primary hover:shadow-2xl  ">
     <div className="border rounded-2xl p-4 w-full !h-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150  ">
       <Link
         href={`${config.routes.client.productDetail}/${props.product.id}`}
@@ -35,7 +34,7 @@ function Product(props: { product: IProduct }) {
           if (pathname !== `${config.routes.client.productDetail}/${props.product.id}`)
             dispatch(actions.set_routing(true));
         }}
-        className="w-full !aspect-square "
+        className="w-full !aspect-square"
       >
         <img
           className="w-full !aspect-square object-contain opacity-"
@@ -53,7 +52,7 @@ function Product(props: { product: IProduct }) {
       >
         {props.product.name}
       </Link>
-      <div className="text-lg text-primary font-bold w-full">
+      <div className="text-lg text-primary font-bold w-full text-nowrap">
         {(props.product.variants[0].price - props.product.variants[0].price_sale).toLocaleString(
           "vi-VN"
         )}{" "}
@@ -61,7 +60,7 @@ function Product(props: { product: IProduct }) {
       </div>
 
       <div
-        className={`flex gap-2.5 ${
+        className={`flex gap-2.5 flex-wrap text-nowrap ${
           props.product.variants[0].price_sale === 0 ? "opacity-0" : "opacity-100"
         }`}
       >
@@ -93,12 +92,12 @@ function Product(props: { product: IProduct }) {
                 disabled
                 characterRender={(char) => <span style={{ marginInlineEnd: "1px" }}>{char}</span>}
               />{" "}
-              <span className="hidden sm:flex text-xs select-none"> ({props.product.rating})</span>
+              <span className="text-xs select-none"> ({props.product.rating})</span>
             </Fragment>
           )}
         </div>
         <div className="center-flex gap-1 cursor-pointer">
-          <p className="text-gray-700 line-clamp-1">Yêu thích</p>
+          <p className="text-gray-700 line-clamp-1 hidden sm:flex">Yêu thích</p>
           {state.wish.includes(props.product.id) ? (
             <div
               className="group relative"

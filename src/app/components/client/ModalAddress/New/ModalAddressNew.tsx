@@ -82,11 +82,11 @@ function ModelAddressNew({ onClose, status }: any) {
   }
 
   return (
-    <div className="w-[500px]">
-      <div className="w-full py-4 flex-center">
+    <div className="w-full max-w-[500px] max-h-[70vh] overflow-hidden">
+      <div className="w-full h-auto flex-center">
         <p className="text-xl font-semibold">Địa Chỉ Mới</p>
       </div>
-      <div className="w-full py-4 flex flex-col gap-4  ">
+      <div className="w-full flex-1 py-4 flex flex-col gap-4 overflow-auto ">
         <div className="grid grid-cols-2 gap-2.5 ">
           <div className="h-10">
             <Input
@@ -107,7 +107,7 @@ function ModelAddressNew({ onClose, status }: any) {
             />
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2.5 ">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 ">
           <div className=" h-10">
             <Select
               className="w-full h-full"
@@ -167,7 +167,7 @@ function ModelAddressNew({ onClose, status }: any) {
           placeholder="Địa chỉ cụ thể"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="border border-gray-200 p-2.5 rounded w-full h-auto min-h-24"
+          className="border border-gray-200 p-2.5 rounded w-full h-24 max-h-24"
         ></textarea>
         <div className="flex flex-col gap-2">
           <p className="text-sm font-normal">Loại địa chỉ</p>
@@ -205,7 +205,7 @@ function ModelAddressNew({ onClose, status }: any) {
           <p className="text-sm font-normal text-gray-500 select-none">Đặt làm địa chỉ mặc định</p>
         </div>
       </div>
-      <div className="w-full flex gap-4 justify-end py-4">
+      <div className="w-full h-auto flex gap-4 justify-end">
         <p
           className="px-10 border border-gray-300 py-2 rounded-lg cursor-pointer"
           onClick={() => {
