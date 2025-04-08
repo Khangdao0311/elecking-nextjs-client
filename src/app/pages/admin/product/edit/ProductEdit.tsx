@@ -423,6 +423,10 @@ function ProductEdit() {
                 Loại sản phẩm <span className="text-primary">*</span>
               </div>
               <Select
+              showSearch
+              filterOption={(input: string, option: any) =>
+                option.name.toLowerCase().includes(input.toLowerCase())
+              }
                 className="shadow-md"
                 style={{ width: 268, height: 44 }}
                 onChange={(value, options: any) => setSelectedcategory(options)}
@@ -440,14 +444,17 @@ function ProductEdit() {
                 className="shadow-md"
                 style={{ width: 268, height: 44 }}
                 value={selectedbrand?.id}
+                options={brands}
+
                 onChange={(value) => {
                   const brand = brands.find((b) => b.id === value);
                   setSelectedbrand(brand || null);
                 }}
-                options={brands.map((brand) => ({
-                  value: brand.id,
-                  label: brand.name,
-                }))}
+                showSearch
+                filterOption={(input: string, option: any) =>
+                  option.name.toLowerCase().includes(input.toLowerCase())
+                }
+                fieldNames={{ value: "id", label: "name" }}
               />
             </div>
           </div>
@@ -535,6 +542,12 @@ function ProductEdit() {
                           return (
                             <div key={iItem} className="flex flex-wrap gap-2">
                               <Select
+                                showSearch
+                                filterOption={(input: string, option: any) =>
+                                  option.name
+                                    .toLowerCase()
+                                    .includes(input.toLowerCase())
+                                }
                                 className="shadow-md flex flex-wrap"
                                 value={variants[iVariant].property_ids[iItem]}
                                 style={{ width: 268, height: 44 }}
