@@ -12,12 +12,11 @@ import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
-import { notification, Space } from 'antd';
+import { notification, Space } from "antd";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
-
 
 function ProductAdd() {
   const [imagescolor, setImagescolor] = useState<UploadFile[]>([]);
@@ -37,34 +36,38 @@ function ProductAdd() {
   const [storageimgcolor, setStorageimgcolor] = useState<File[]>([]);
   const [handleToggleColor, setHandleToggleColor] = useState<boolean[][]>([]);
 
-  const router = useRouter()
+  const router = useRouter();
 
-  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+  const openNotificationWithIcon = (
+    type: NotificationType,
+    message: any,
+    description: any
+  ) => {
     api[type]({
       message: message,
       description: description,
     });
-  }
+  };
 
   useEffect(() => {
-       if (typeof window === "undefined") return;
-       if (!quillRef.current) return;
-       if (quillRef.current.querySelector(".ql-editor")) return;
-     
-       const Quill = require("quill").default; 
-       const quill = new Quill(quillRef.current, {
-         theme: "snow",
-       });
-     
-       quill.root.innerHTML = editorContent;
-     
-       quill.on("text-change", () => {
-         setEditorContent(quill.root.innerHTML);
-       });
-     }, []);
+    if (typeof window === "undefined") return;
+    if (!quillRef.current) return;
+    if (quillRef.current.querySelector(".ql-editor")) return;
+
+    const Quill = require("quill").default;
+    const quill = new Quill(quillRef.current, {
+      theme: "snow",
+    });
+
+    quill.root.innerHTML = editorContent;
+
+    quill.on("text-change", () => {
+      setEditorContent(quill.root.innerHTML);
+    });
+  }, []);
 
   const hasInitializedToggleColor = useRef(false);
   useEffect(() => {
@@ -76,7 +79,10 @@ function ProductAdd() {
       try {
         const promises = selectedcategory.proptypes.map(async (item: any) => {
           const res = await propertyServices.getQuery({ proptype_id: item.id });
-          properties[item.name] = [{ id: "", name: `${item.name}` }, ...res.data];
+          properties[item.name] = [
+            { id: "", name: `${item.name}` },
+            ...res.data,
+          ];
         });
 
         await Promise.all(promises);
@@ -108,8 +114,7 @@ function ProductAdd() {
               ],
             },
           ];
-        },
-        );
+        });
         if (!hasInitializedToggleColor.current && selectedcategory) {
           setHandleToggleColor((prev) => [...prev, [true]]);
           hasInitializedToggleColor.current = true;
@@ -196,8 +201,7 @@ function ProductAdd() {
   function handleAddVariant() {
     setVariants((prev: IProductVariant[]) => {
       // Lấy số lượng property_ids dựa trên selectedcategory.proptypes.length
-      const propertyIds =
-        selectedcategory?.proptypes.map(() => "") || [];
+      const propertyIds = selectedcategory?.proptypes.map(() => "") || [];
 
       return [
         ...prev,
@@ -220,8 +224,6 @@ function ProductAdd() {
     setExpandedVariants((prev) => [...prev, true]);
     setHandleToggleColor((prev) => [...prev, [true]]);
   }
-
-
 
   function handleAddColor(iVariant: number) {
     setVariants((prev: any) =>
@@ -287,10 +289,11 @@ function ProductAdd() {
       })
     );
     setHandleToggleColor((prev: boolean[][]) =>
-      prev.map((toggleArray, i) =>
-        i === iVariant
-          ? toggleArray.filter((_, index) => index !== iColor) // Xoá màu đúng cách
-          : [...toggleArray] // Giữ nguyên mảng cho các variant khác
+      prev.map(
+        (toggleArray, i) =>
+          i === iVariant
+            ? toggleArray.filter((_, index) => index !== iColor) // Xoá màu đúng cách
+            : [...toggleArray] // Giữ nguyên mảng cho các variant khác
       )
     );
   }
@@ -332,6 +335,10 @@ function ProductAdd() {
               </div>
               <Select
                 className="shadow-md"
+                showSearch
+                filterOption={(input: string, option: any) =>
+                  option.name.toLowerCase().includes(input.toLowerCase())
+                }
                 style={{ width: 268, height: 44 }}
                 onChange={(value, options: any) => setSelectedcategory(options)}
                 value={selectedcategory?.id}
@@ -345,12 +352,14 @@ function ProductAdd() {
               </div>
               <Select
                 className="shadow-md"
+                showSearch
+                filterOption={(input: string, option: any) =>
+                  option.name.toLowerCase().includes(input.toLowerCase())
+                }
                 style={{ width: 268, height: 44 }}
                 onChange={(value) => setSelectedbrand(value)}
-                options={brands.map((brand) => ({
-                  value: brand.id,
-                  label: brand.name,
-                }))}
+                options={brands}
+                fieldNames={{ value: "id", label: "name" }}
               />
             </div>
           </div>
@@ -377,8 +386,9 @@ function ProductAdd() {
                       onClick={() => handleToggleVariant(iVariant)}
                     >
                       <GrFormNext
-                        className={`text-white transition-transform  ${expandedVariants[iVariant] ? "rotate-90" : ""
-                          }`}
+                        className={`text-white transition-transform  ${
+                          expandedVariants[iVariant] ? "rotate-90" : ""
+                        }`}
                       />
                     </div>
                     <div
@@ -431,8 +441,12 @@ function ProductAdd() {
                       {selectedcategory?.proptypes.map((item, iItem) => (
                         <div key={iItem} className="flex flex-wrap gap-2">
                           <Select
+                            showSearch
+                            filterOption={(input: string, option: any) =>
+                              option.name.toLowerCase().includes(input.toLowerCase())
+                            }
                             className="shadow-md flex flex-wrap"
-                            defaultValue={item.name}
+                            value={variants[iVariant].property_ids[iItem]}
                             style={{ width: 268, height: 44 }}
                             onChange={(value, option) => {
                               setVariants((prev: IProductVariant[]) =>
@@ -488,8 +502,11 @@ function ProductAdd() {
                                 onClick={() => toggleColor(iVariant, iColor)}
                               >
                                 <GrFormNext
-                                  className={`text-white transition-transform ${handleToggleColor[iVariant]?.[iColor] ? "rotate-90" : ""
-                                    }`}
+                                  className={`text-white transition-transform ${
+                                    handleToggleColor[iVariant]?.[iColor]
+                                      ? "rotate-90"
+                                      : ""
+                                  }`}
                                 />
                               </div>
                               <div
@@ -639,45 +656,45 @@ function ProductAdd() {
                                   >
                                     {!variants[iVariant]?.colors[iColor]
                                       ?.image && (
-                                        <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
-                                          <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
-                                            Chọn tệp
-                                          </div>
+                                      <div className="flex items-center w-full gap-2.5 bg-white border border-gray-100 shadow-md p-1.5 cursor-pointer">
+                                        <div className="w-[110px] h-auto text-sm font-normal bg-gray-300 border border-gray-100 rounded p-2 text-center">
+                                          Chọn tệp
                                         </div>
-                                      )}
+                                      </div>
+                                    )}
                                   </Upload>
 
                                   {/* Hiển thị danh sách ảnh đã chọn */}
                                   <div className="flex items-center flex-wrap gap-3">
                                     {variants[iVariant]?.colors[iColor]
                                       ?.image && (
-                                        <div className="w-20 h-20 relative">
-                                          <img
-                                            src={
-                                              variants[iVariant].colors[iColor]
-                                                .image.originFileObj
-                                                ? URL.createObjectURL(
+                                      <div className="w-20 h-20 relative">
+                                        <img
+                                          src={
+                                            variants[iVariant].colors[iColor]
+                                              .image.originFileObj
+                                              ? URL.createObjectURL(
                                                   variants[iVariant].colors[
                                                     iColor
                                                   ].image.originFileObj
                                                 )
-                                                : variants[iVariant].colors[
+                                              : variants[iVariant].colors[
                                                   iColor
                                                 ].image.name
-                                            }
-                                            alt="Color Preview"
-                                            className="w-full h-full object-cover rounded"
-                                          />
-                                          <div
-                                            className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
-                                            onClick={() =>
-                                              removeimagecolor(iVariant, iColor)
-                                            }
-                                          >
-                                            <IoCloseSharp className="text-red-500" />
-                                          </div>
+                                          }
+                                          alt="Color Preview"
+                                          className="w-full h-full object-cover rounded"
+                                        />
+                                        <div
+                                          className="w-5 h-5 bg-white absolute top-0 right-0 flex items-center justify-center mt-1 mr-1 cursor-pointer"
+                                          onClick={() =>
+                                            removeimagecolor(iVariant, iColor)
+                                          }
+                                        >
+                                          <IoCloseSharp className="text-red-500" />
                                         </div>
-                                      )}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -764,8 +781,18 @@ function ProductAdd() {
           <Button
             back="product/list"
             onClick={async () => {
-              if (!name.trim() || !selectedcategory?.id || !selectedbrand || images.length === 0 || variants.length === 0) {
-                openNotificationWithIcon("error", "Lỗi", "Vui lòng nhập đầy đủ dữ liệu");
+              if (
+                !name.trim() ||
+                !selectedcategory?.id ||
+                !selectedbrand ||
+                images.length === 0 ||
+                variants.length === 0
+              ) {
+                openNotificationWithIcon(
+                  "error",
+                  "Lỗi",
+                  "Vui lòng nhập đầy đủ dữ liệu"
+                );
                 return;
               }
 
@@ -808,19 +835,28 @@ function ProductAdd() {
                 brand_id: selectedbrand,
                 variants: JSON.stringify(formattedVariants),
                 description: editorContent.trim(),
-              }
-              const productResponse = await productServices.addProduct(productData)
+              };
+              const productResponse = await productServices.addProduct(
+                productData
+              );
               if (productResponse?.status === 200) {
-                openNotificationWithIcon("success", "Thành công", "Thêm thành công");
+                openNotificationWithIcon(
+                  "success",
+                  "Thành công",
+                  "Thêm thành công"
+                );
                 setTimeout(() => {
                   router.push(config.routes.admin.product.list);
                 }, 1000);
               } else {
-                openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                openNotificationWithIcon(
+                  "error",
+                  "Lỗi",
+                  "Có lỗi xảy ra, vui lòng thử lại"
+                );
               }
             }}
           />
-
         </div>
       </div>
     </>
