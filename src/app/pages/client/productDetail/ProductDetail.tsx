@@ -4,7 +4,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { useParams, useRouter } from "next/navigation";
-import { Image, Modal, Pagination, Rate } from "antd";
+import { Image, Modal, Pagination, Rate, Select } from "antd";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
   FaAngleLeft,
@@ -47,6 +47,7 @@ function ProductDetail() {
   const [iVariant, setIVariant] = useState(-1);
   const [iColor, setIColor] = useState(-1);
   const [quantity, setQuantity] = useState(1);
+  const [heightDescription, setHeightDescription] = useState("500px");
   const [rating, setRating] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -56,6 +57,7 @@ function ProductDetail() {
   const router = useRouter();
 
   useEffect(() => {
+    productServices.viewUp(id);
     productServices.getProById(`${id}`).then((res) => {
       setProduct(res.data);
       // Đặt tên cho vòng lặp ngoài
@@ -211,7 +213,6 @@ function ProductDetail() {
               )}
             </div>
             <hr className="my-4" />
-
             <div className="flex flex-col lg:flex-row gap-4">
               {/* hình ảnh */}
               <div className="w-full lg:w-6/12 xl:w-7/12 flex flex-col gap-4">
@@ -339,9 +340,9 @@ function ProductDetail() {
                         indexSwiper === index + 1
                           ? " border-2 border-primary"
                           : "border border-gray-200 "
-                      } !h-full !aspect-square rounded-lg overflow-hidden cursor-pointer shadow-lg`}
+                      } !h-full !aspect-square rounded-lg overflow-hidden cursor-pointer shadow-lg p-1 select-none`}
                     >
-                      <img className=" w-full aspect-square" src={img} />
+                      <img className=" w-full aspect-square object-contain" src={img} />
                     </SwiperSlide>
                   ))}
                 </Swiper>
@@ -417,7 +418,7 @@ function ProductDetail() {
                 {/* price */}
                 <div className="flex gap-4 items-center py-4">
                   <p className="text-base font-medium">Giá</p>
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 items-center">
                     <p className="text-3xl font-bold text-red-500 ">
                       {(
                         product!.variants[iVariant === -1 ? 0 : iVariant].price -
@@ -428,28 +429,18 @@ function ProductDetail() {
                       ).toLocaleString("vi-VN")}{" "}
                       đ
                     </p>
-                    <div className="flex gap-2">
-                      <span>
-                        {product!.variants[iVariant === -1 ? 0 : iVariant].price -
-                          product!.variants[iVariant === -1 ? 0 : iVariant].price_sale +
-                          product!.variants[iVariant === -1 ? 0 : iVariant].colors[
-                            iColor === -1 ? 0 : iColor
-                          ].price_extra <
-                          product!.variants[iVariant === -1 ? 0 : iVariant].price +
+                    <div className="flex items-center gap-2">
+                      {product!.variants[iVariant === -1 ? 0 : iVariant].price_sale > 0 && (
+                        <del className="text-lg font-normal text-gray-500">
+                          {(
+                            product!.variants[iVariant === -1 ? 0 : iVariant].price +
                             product!.variants[iVariant === -1 ? 0 : iVariant].colors[
                               iColor === -1 ? 0 : iColor
-                            ].price_extra && (
-                          <del className="text-lg font-normal text-gray-500">
-                            {(
-                              product!.variants[iVariant === -1 ? 0 : iVariant].price +
-                              product!.variants[iVariant === -1 ? 0 : iVariant].colors[
-                                iColor === -1 ? 0 : iColor
-                              ].price_extra
-                            ).toLocaleString("vi-VN")}{" "}
-                            đ
-                          </del>
-                        )}
-                      </span>
+                            ].price_extra
+                          ).toLocaleString("vi-VN")}{" "}
+                          đ
+                        </del>
+                      )}
                       {product!.variants[iVariant === -1 ? 0 : iVariant].price_sale > 0 && (
                         <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
                           {Math.ceil(
@@ -554,7 +545,9 @@ function ProductDetail() {
 
           {/* Mô Tả */}
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex gap-4 items-start">
-            <div className="w-full lg:w-4/5  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
+            <div
+              className={`relative w-full lg:w-4/5 h-[${heightDescription}] overflow-hidden  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2`}
+            >
               <p className="flex gap-2">
                 <FaRegEdit className="w-6 h-6" />
                 <span className="text-xl font-medium">MÔ TẢ SẢN PHẨM</span>
@@ -565,6 +558,22 @@ function ProductDetail() {
                   __html: ` ${product?.description}`,
                 }}
               />
+              <div
+                className={`p-4 center-flex bg-white ${
+                  heightDescription !== "auto"
+                    ? "absolute bottom-0 right-0 left-0  shadow-[0_-50px_50px_#fff]"
+                    : ""
+                }`}
+              >
+                <button
+                  onClick={() =>
+                    setHeightDescription(heightDescription === "auto" ? "500px" : "auto")
+                  }
+                  className=" border border-gray-300 font-bold w-full sm:w-1/2 lg:w-1/3 bg-white rounded-md py-2.5"
+                >
+                  {heightDescription !== "auto" ? "Xem thêm" : "Thu gọn"}
+                </button>
+              </div>
             </div>
             <div className="hidden lg:flex w-1/5 h-auto rounded-lg overflow-hidden shadow-lg">
               <img
@@ -585,7 +594,7 @@ function ProductDetail() {
                 </div>
               </div>
               {product.rating !== null && (
-                <div className="w-full flex items-center gap-4 p-4">
+                <div className="w-full flex items-center justify-between sm:justify-start gap-4 p-4">
                   <div className=" flex flex-col items-center justify-center shrink-0">
                     <div className="flex gap-2.5 items-end">
                       <span className="text-4xl font-bold text-primary">{product?.rating}</span>
@@ -603,6 +612,25 @@ function ProductDetail() {
                       />
                     </div>
                   </div>
+
+                  <div className="flex sm:hidden w-1/2 h-16">
+                    <Select
+                      className="w-full h-full text-base font-medium"
+                      value={rating}
+                      options={[
+                        { value: "", label: `Tất cả (${totalsReviews?.["all"]})` },
+                        { value: "5", label: `5 Sao (${totalsReviews?.["5"]})` },
+                        { value: "4", label: `4 Sao (${totalsReviews?.["4"]})` },
+                        { value: "3", label: `3 Sao (${totalsReviews?.["3"]})` },
+                        { value: "2", label: `2 Sao (${totalsReviews?.["2"]})` },
+                        { value: "1", label: `1 Sao (${totalsReviews?.["1"]})` },
+                      ]}
+                      onChange={(value, option) => {
+                        setRating(value);
+                      }}
+                    />
+                  </div>
+
                   <Swiper
                     slidesPerView={"auto"}
                     spaceBetween={10}
@@ -612,7 +640,7 @@ function ProductDetail() {
                     }}
                     freeMode={true}
                     modules={[FreeMode]}
-                    className="w-full"
+                    className="w-full !hidden sm:!flex"
                   >
                     {[
                       { key: "", value: `Tất cả (${totalsReviews?.["all"]})` },
@@ -650,7 +678,7 @@ function ProductDetail() {
                     <div className="shrink-0 w-8 sm:w-12 lg:16 aspect-square center-flex rounded-full overflow-hidden  shadow-lg">
                       {review.user.avatar ? (
                         <img
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-cover"
                           src={review.user.avatar}
                           alt=""
                         />
@@ -826,11 +854,11 @@ function ProductDetail() {
                   <Shimmer image={true} className="aspect-square" />
                   <Shimmer image={true} className="aspect-square" />
                   <Shimmer image={true} className="aspect-square" />
-                  <Shimmer image={true} className="aspect-square !hidden sm:flex" />
-                  <Shimmer image={true} className="aspect-square !hidden sm:flex" />
+                  <Shimmer image={true} className="aspect-square !hidden sm:!flex" />
+                  <Shimmer image={true} className="aspect-square !hidden sm:!flex" />
                   <Shimmer
                     image={true}
-                    className="aspect-square !hidden sm:flex lg:!hidden xl:flex"
+                    className="aspect-square !hidden sm:flex lg:!hidden xl:!flex"
                   />
                 </div>
               </div>

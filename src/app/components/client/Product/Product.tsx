@@ -60,13 +60,13 @@ function Product(props: { product: IProduct }) {
       </div>
 
       <div
-        className={`flex gap-2.5 flex-wrap text-nowrap ${
+        className={`flex gap-2.5  text-nowrap ${
           props.product.variants[0].price_sale === 0 ? "opacity-0" : "opacity-100"
         }`}
       >
         {props.product.variants[0].price - props.product.variants[0].price_sale <
           props.product.variants[0].price && (
-          <del className="text-base font-normal text-gray-400">
+          <del className="text-base font-normal text-gray-400 line-clamp-1">
             {props.product.variants[0].price.toLocaleString("vi-VN")} đ
           </del>
         )}
@@ -81,8 +81,8 @@ function Product(props: { product: IProduct }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between w-full">
-        <div className="center-flex justify-start items-start ">
+      <div className="flex items-center justify-between w-full gap-1 h-6">
+        <div className="center-flex !justify-start shrink-0 ">
           {props.product.rating !== null && (
             <Fragment>
               <Rate
@@ -97,7 +97,7 @@ function Product(props: { product: IProduct }) {
           )}
         </div>
         <div className="center-flex gap-1 cursor-pointer">
-          <p className="text-gray-700 line-clamp-1 hidden sm:flex">Yêu thích</p>
+          <p className="text-gray-700 line-clamp-1 text-nowrap hidden sm:flex">Yêu thích</p>
           {state.wish.includes(props.product.id) ? (
             <div
               className="group relative"

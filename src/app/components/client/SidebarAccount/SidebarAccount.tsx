@@ -14,7 +14,7 @@ import config from "@/app/config";
 import { useWindowScroll } from "@uidotdev/usehooks";
 import { useStore, actions, initState } from "@/app/store";
 
-function SidebarAccount() {
+function SidebarAccount({ onClick }: any) {
   const [state, dispatch] = useStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -61,14 +61,16 @@ function SidebarAccount() {
         </div>
       </Modal>
       <div
-        className={`sticky ${
+        className={`!w-[60vw] max-w-[300px] lg:max-w-none lg:w-full shrink-0 static lg:sticky ${
           y < 100 ? "top-[172px]" : "top-32"
-        } transition-all duration-200 w-full  flex flex-col items-center rounded-lg gap-4`}
+        } transition-all duration-200  flex flex-col items-center rounded-lg gap-4
+        `}
       >
         <Link
           href={config.routes.client.account.home}
           onClick={() => {
             if (pathname !== config.routes.client.account.home) dispatch(actions.set_routing(true));
+            onClick();
           }}
           className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex items-center gap-5 hover:bg-primary rounded-lg ${
             pathname == config.routes.client.account.home ? "bg-primary" : ""
@@ -93,6 +95,7 @@ function SidebarAccount() {
           onClick={() => {
             if (pathname !== config.routes.client.account.order)
               dispatch(actions.set_routing(true));
+            onClick();
           }}
           className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex items-center gap-5 hover:bg-primary rounded-lg ${
             pathname == config.routes.client.account.order ? "bg-primary" : ""
@@ -117,6 +120,7 @@ function SidebarAccount() {
           onClick={() => {
             if (pathname !== config.routes.client.account.voucher)
               dispatch(actions.set_routing(true));
+            onClick();
           }}
           className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex items-center gap-5 hover:bg-primary rounded-lg ${
             pathname == config.routes.client.account.voucher ? "bg-primary" : ""
@@ -141,6 +145,7 @@ function SidebarAccount() {
           onClick={() => {
             if (pathname !== config.routes.client.account.profile)
               dispatch(actions.set_routing(true));
+            onClick();
           }}
           className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex items-center gap-5 hover:bg-primary rounded-lg ${
             pathname == config.routes.client.account.profile ? "bg-primary" : ""
@@ -165,6 +170,7 @@ function SidebarAccount() {
           onClick={() => {
             if (pathname !== config.routes.client.account.address)
               dispatch(actions.set_routing(true));
+            onClick();
           }}
           className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex items-center gap-5 hover:bg-primary rounded-lg ${
             pathname == config.routes.client.account.address ? "bg-primary" : ""
@@ -189,6 +195,7 @@ function SidebarAccount() {
           onClick={() => {
             if (pathname !== config.routes.client.account.password)
               dispatch(actions.set_routing(true));
+            onClick();
           }}
           className={`px-2.5 group w-full h-[50px] py-[5px] justify-center flex items-center gap-5 hover:bg-primary rounded-lg ${
             pathname == config.routes.client.account.password ? "bg-primary" : ""

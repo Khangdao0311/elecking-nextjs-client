@@ -22,13 +22,21 @@ export async function getSame(params: any) {
     .catch((error: any) => error.response.data);
 }
 
+export async function viewUp(id: string) {
+  return axios
+    .get(`${config.api.product}/view_up/${id}`)
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
+}
+
 export async function addProduct(body: any) {
   return axios
     .post(`${config.api.product}`, body)
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
-export async function editProduct(id: any,body: any) {
+
+export async function editProduct(id: any, body: any) {
   return axios
     .put(`${config.api.product}/${id}`, body)
     .then((response: any) => response.data)

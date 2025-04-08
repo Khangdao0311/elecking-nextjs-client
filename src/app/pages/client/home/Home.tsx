@@ -104,17 +104,17 @@ function Home() {
               }}
               // loop={true}
               modules={[Autoplay, Navigation]}
-              className="!aspect-[3/1] w-full relative group rounded-lg shadow-xl border border-gray-300"
+              className="!aspect-[3/1] w-full relative group/container rounded-lg shadow-xl border border-gray-300"
             >
               {imageSlide.map((e, index) => (
                 <SwiperSlide className="h-full" key={index + 1}>
                   <img className="w-full h-full object-cover" src={e} alt="" />
                 </SwiperSlide>
               ))}
-              <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+              <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
                 <FaAngleLeft className="w-8 h-8 text-white" />
               </button>
-              <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+              <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
                 <FaAngleRight className="w-8 h-8 text-white" />
               </button>
             </Swiper>
@@ -219,10 +219,10 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
-            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
               <FaAngleRight className="w-8 h-8 text-white" />
             </button>
           </Swiper>
@@ -324,10 +324,10 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
-            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
               <FaAngleRight className="w-8 h-8 text-white" />
             </button>
           </Swiper>
@@ -416,10 +416,10 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
-            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
               <FaAngleRight className="w-8 h-8 text-white" />
             </button>
           </Swiper>
@@ -508,10 +508,10 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
-            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
               <FaAngleRight className="w-8 h-8 text-white" />
             </button>
           </Swiper>
@@ -600,10 +600,10 @@ function Home() {
                 <Product product={product} />
               </SwiperSlide>
             ))}
-            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
-            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
               <FaAngleRight className="w-8 h-8 text-white" />
             </button>
           </Swiper>
@@ -619,7 +619,7 @@ function Home() {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 flex-wrap container-custom gap-3.5">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 flex-wrap container-custom gap-3.5">
           {state.load || categories.length === 0 ? (
             <>
               <div className="relative bg-white border border-gray-200 rounded-lg aspect-square shadow-lg p-2 flex flex-col gap-2">
@@ -682,9 +682,11 @@ function Home() {
         </div>
 
         {state.load || brands.length === 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 container-custom gap-4 !h-36">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 container-custom gap-4 !h-36">
             <Shimmer image className={`!w-full h-full`} />
-            <Shimmer image className={`!w-full h-full`} />
+            <div className="hidden sm:flex">
+              <Shimmer image className={`!w-full h-full`} />
+            </div>
             <div className="hidden md:flex">
               <Shimmer image className={`!w-full h-full`} />
             </div>
@@ -708,6 +710,10 @@ function Home() {
             }}
             breakpoints={{
               0: {
+                slidesPerView: 1,
+                spaceBetween: 16,
+              },
+              640: {
                 slidesPerView: 2,
                 spaceBetween: 16,
               },
@@ -721,7 +727,7 @@ function Home() {
               },
             }}
             modules={[Autoplay, Navigation]}
-            className="!h-36 w-full relative group overflow-auto"
+            className="!h-36 w-full relative group/container overflow-auto"
           >
             {brands.map((brand: IBrand, iBrand: number) => (
               <SwiperSlide key={iBrand} className="overflow-hidden rounded-lg shadow-xl">
@@ -738,10 +744,10 @@ function Home() {
                 </Link>
               </SwiperSlide>
             ))}
-            <button className="custom-prev-banner absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 left:0 lg:-left-10 md:group-hover:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
               <FaAngleLeft className="w-8 h-8 text-white" />
             </button>
-            <button className="custom-next-banner absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 right-0 lg:-right-10 md:group-hover:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
               <FaAngleRight className="w-8 h-8 text-white" />
             </button>
           </Swiper>

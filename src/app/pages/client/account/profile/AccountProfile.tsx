@@ -88,126 +88,116 @@ function AccountProfile() {
   return (
     <>
       {contextHolder}
-      <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex items-start gap-4">
-        <div className="w-3/12 bg-slate-50 rounded-xl p-4 min-h-[calc(100vh-190px)]">
-          <SidebarAccount />
-        </div>
-        <div className="w-9/12 flex flex-col gap-6 rounded-xl min-h-[calc(100vh-190px)]">
-          <h2 className="text-2xl font-bold uppercase">Tài Khoản Của Bạn</h2>
-          <div className="flex h-full divide-x-2 divide-gray-100">
-            <div className="flex flex-col gap-8 w-2/3 pr-10">
-              {!state.load || user ? (
-                <>
-                  <div className="flex gap-4 h-10 items-center">
-                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                      Tên tài khoản:
-                    </p>
-                    <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
-                      {user?.username}
-                    </p>
-                  </div>
-                  <div className="flex gap-4 h-10 items-center">
-                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                      Họ và Tên:
-                    </p>
-                    <Input
-                      className="w-8/12 h-full flex items-center justify-start select-none font-normal"
-                      placeholder="Nhập Họ và Tên"
-                      value={profile.fullname}
-                      onChange={(e) => setProfile({ ...profile, fullname: e.target.value })}
-                    />
-                  </div>
-                  <div className="flex gap-4 h-10 items-center">
-                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                      Email:
-                    </p>
-                    <Input
-                      className="w-8/12 h-full flex items-center justify-start select-none font-normal"
-                      placeholder="Nhập Email"
-                      value={profile.email}
-                      onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="flex gap-4 h-10 items-center">
-                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                      Số điện thoại:
-                    </p>
-                    <Input
-                      className="w-8/12 h-full flex items-center justify-start select-none font-normal"
-                      placeholder="Nhập số điện thoại"
-                      value={profile.phone}
-                      onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                    />
-                  </div>
-                  <div className="flex gap-4 h-10 items-center">
-                    <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
-                      Ngày Tham Gia:
-                    </p>
-                    <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
-                      {moment(user?.register_date, "YYYYMMDDHHmmss").format("DD/MM/YYYY")}
-                    </p>
-                  </div>
-                </>
+      <div className="flex flex-col gap-6 ">
+        <h2 className="text-2xl font-bold uppercase">Tài Khoản Của Bạn</h2>
+        <div className="flex h-full divide-x-2 divide-gray-100">
+          <div className="flex flex-col gap-8 w-2/3 pr-10">
+            {!state.load || user ? (
+              <>
+                <div className="flex gap-4 h-10 items-center">
+                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                    Tên tài khoản:
+                  </p>
+                  <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
+                    {user?.username}
+                  </p>
+                </div>
+                <div className="flex gap-4 h-10 items-center">
+                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                    Họ và Tên:
+                  </p>
+                  <Input
+                    className="w-8/12 h-full flex items-center justify-start select-none font-normal"
+                    placeholder="Nhập Họ và Tên"
+                    value={profile.fullname}
+                    onChange={(e) => setProfile({ ...profile, fullname: e.target.value })}
+                  />
+                </div>
+                <div className="flex gap-4 h-10 items-center">
+                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                    Email:
+                  </p>
+                  <Input
+                    className="w-8/12 h-full flex items-center justify-start select-none font-normal"
+                    placeholder="Nhập Email"
+                    value={profile.email}
+                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                  />
+                </div>
+                <div className="flex gap-4 h-10 items-center">
+                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                    Số điện thoại:
+                  </p>
+                  <Input
+                    className="w-8/12 h-full flex items-center justify-start select-none font-normal"
+                    placeholder="Nhập số điện thoại"
+                    value={profile.phone}
+                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                  />
+                </div>
+                <div className="flex gap-4 h-10 items-center">
+                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                    Ngày Tham Gia:
+                  </p>
+                  <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
+                    {moment(user?.register_date, "YYYYMMDDHHmmss").format("DD/MM/YYYY")}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex gap-4 h-10 items-center">
+                  <Shimmer className="w-4/12 h-full" />
+                  <Shimmer className="w-8/12 h-full" />
+                </div>
+                <div className="flex gap-4 h-10 items-center">
+                  <Shimmer className="w-4/12 h-full" />
+                  <Shimmer className="w-8/12 h-full" />
+                </div>
+                <div className="flex gap-4 h-10 items-center">
+                  <Shimmer className="w-4/12 h-full" />
+                  <Shimmer className="w-8/12 h-full" />
+                </div>
+                <div className="flex gap-4 h-10 items-center">
+                  <Shimmer className="w-4/12 h-full" />
+                  <Shimmer className="w-8/12 h-full" />
+                </div>
+                <div className="flex gap-4 h-10 items-center">
+                  <Shimmer className="w-4/12 h-full" />
+                  <Shimmer className="w-8/12 h-full" />
+                </div>
+              </>
+            )}
+          </div>
+          <div className=" w-1/3 pl-10 center-flex flex-col gap-6">
+            <div className=" w-2/3 aspect-square rounded-full overflow-hidden center-flex shadow-lg border-2 border-primaryDark">
+              {file || user?.avatar ? (
+                <img
+                  src={file ? URL?.createObjectURL(file!) : user?.avatar}
+                  alt=""
+                  className="w-full h-full object-fill"
+                />
               ) : (
-                <>
-                  <div className="flex gap-4 h-10 items-center">
-                    <Shimmer className="w-4/12 h-full" />
-                    <Shimmer className="w-8/12 h-full" />
-                  </div>
-                  <div className="flex gap-4 h-10 items-center">
-                    <Shimmer className="w-4/12 h-full" />
-                    <Shimmer className="w-8/12 h-full" />
-                  </div>
-                  <div className="flex gap-4 h-10 items-center">
-                    <Shimmer className="w-4/12 h-full" />
-                    <Shimmer className="w-8/12 h-full" />
-                  </div>
-                  <div className="flex gap-4 h-10 items-center">
-                    <Shimmer className="w-4/12 h-full" />
-                    <Shimmer className="w-8/12 h-full" />
-                  </div>
-                  <div className="flex gap-4 h-10 items-center">
-                    <Shimmer className="w-4/12 h-full" />
-                    <Shimmer className="w-8/12 h-full" />
-                  </div>
-                </>
+                <FaUser className="w-1/2 h-1/2 text-gray-400" />
               )}
             </div>
-            <div className=" w-1/3 pl-10 center-flex flex-col gap-6">
-              <div className=" w-2/3 aspect-square rounded-full overflow-hidden center-flex shadow-lg border-2 border-primaryDark">
-                {file || user?.avatar ? (
-                  <img
-                    src={file ? URL?.createObjectURL(file!) : user?.avatar}
-                    alt=""
-                    className="w-full h-full object-fill"
-                  />
-                ) : (
-                  <FaUser className="w-1/2 h-1/2 text-gray-400" />
-                )}
-              </div>
-              <label
-                htmlFor="avatar"
-                className="center-flex gap-2 px-10 py-2 border border-primary rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl transition-all hover:scale-105"
-              >
-                <FiUpload className="text-primary w-5 h-5" />
-                <span className="text-primary font-bold">Upload</span>
-                <input
-                  type="file"
-                  hidden
-                  id="avatar"
-                  onChange={(e) => setFile(e.target.files![0])}
-                />
-              </label>
-            </div>
-          </div>
-          <div>
-            <button
-              onClick={handleUpdateProfile}
-              className="text-lg font-bold text-white px-16 py-2 rounded-lg bg-primary shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+            <label
+              htmlFor="avatar"
+              className="center-flex gap-2 px-10 py-2 border border-primary rounded-lg select-none cursor-pointer shadow-lg hover:shadow-xl transition-all hover:scale-105"
             >
-              Lưu
-            </button>
+              <FiUpload className="text-primary w-5 h-5" />
+              <span className="text-primary font-bold">Upload</span>
+              <input type="file" hidden id="avatar" onChange={(e) => setFile(e.target.files![0])} />
+            </label>
           </div>
+        </div>
+        <div>
+          <button
+            onClick={handleUpdateProfile}
+            className="text-lg font-bold text-white px-16 py-2 rounded-lg bg-primary shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+          >
+            Lưu
+          </button>
         </div>
       </div>
     </>
