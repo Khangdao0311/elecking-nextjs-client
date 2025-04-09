@@ -90,57 +90,65 @@ function AccountProfile() {
       {contextHolder}
       <div className="flex flex-col gap-6 ">
         <h2 className="text-2xl font-bold uppercase">Tài Khoản Của Bạn</h2>
-        <div className="flex h-full divide-x-2 divide-gray-100">
-          <div className="flex flex-col gap-8 w-2/3 pr-10">
+        <div className=" flex flex-col-reverse md:flex-row gap-6 h-full md:divide-x-2 md:divide-gray-100">
+          <div className="flex flex-col flex-1 gap-6 md:gap-8 md:w-2/3 md:pr-10">
             {!state.load || user ? (
               <>
                 <div className="flex gap-4 h-10 items-center">
-                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                  <p className="w-4/12 shrink-0 h-full flex items-center justify-end select-none font-medium text-gray-700">
                     Tên tài khoản:
                   </p>
-                  <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
+                  <p className="w-8/12 shrink-0 h-full flex items-center justify-start select-none font-normal">
                     {user?.username}
                   </p>
                 </div>
                 <div className="flex gap-4 h-10 items-center">
-                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                  <p className="w-4/12 shrink-0 h-full flex items-center justify-end select-none font-medium text-gray-700">
                     Họ và Tên:
                   </p>
                   <Input
                     className="w-8/12 h-full flex items-center justify-start select-none font-normal"
                     placeholder="Nhập Họ và Tên"
                     value={profile.fullname}
-                    onChange={(e) => setProfile({ ...profile, fullname: e.target.value })}
+                    onChange={(e) =>
+                      setProfile({ ...profile, fullname: e.target.value })
+                    }
                   />
                 </div>
                 <div className="flex gap-4 h-10 items-center">
-                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                  <p className="w-4/12 shrink-0 h-full flex items-center justify-end select-none font-medium text-gray-700">
                     Email:
                   </p>
                   <Input
                     className="w-8/12 h-full flex items-center justify-start select-none font-normal"
                     placeholder="Nhập Email"
                     value={profile.email}
-                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                    onChange={(e) =>
+                      setProfile({ ...profile, email: e.target.value })
+                    }
                   />
                 </div>
                 <div className="flex gap-4 h-10 items-center">
-                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                  <p className="w-4/12 shrink-0 h-full flex items-center justify-end select-none font-medium text-gray-700">
                     Số điện thoại:
                   </p>
                   <Input
                     className="w-8/12 h-full flex items-center justify-start select-none font-normal"
                     placeholder="Nhập số điện thoại"
                     value={profile.phone}
-                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                    onChange={(e) =>
+                      setProfile({ ...profile, phone: e.target.value })
+                    }
                   />
                 </div>
                 <div className="flex gap-4 h-10 items-center">
-                  <p className="w-4/12 h-full flex items-center justify-end select-none font-medium text-gray-700">
+                  <p className="w-4/12 shrink-0 h-full flex items-center justify-end select-none font-medium text-gray-700">
                     Ngày Tham Gia:
                   </p>
                   <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
-                    {moment(user?.register_date, "YYYYMMDDHHmmss").format("DD/MM/YYYY")}
+                    {moment(user?.register_date, "YYYYMMDDHHmmss").format(
+                      "DD/MM/YYYY"
+                    )}
                   </p>
                 </div>
               </>
@@ -169,8 +177,8 @@ function AccountProfile() {
               </>
             )}
           </div>
-          <div className=" w-1/3 pl-10 center-flex flex-col gap-6">
-            <div className=" w-2/3 aspect-square rounded-full overflow-hidden center-flex shadow-lg border-2 border-primaryDark">
+          <div className=" w-full md:w-1/3 md:pl-10 center-flex flex-col gap-6">
+            <div className="w-1/3 sm:w-1/4 md:w-2/3 aspect-square rounded-full overflow-hidden center-flex shadow-lg border-2 border-primaryDark">
               {file || user?.avatar ? (
                 <img
                   src={file ? URL?.createObjectURL(file!) : user?.avatar}
@@ -178,7 +186,7 @@ function AccountProfile() {
                   className="w-full h-full object-fill"
                 />
               ) : (
-                <FaUser className="w-1/2 h-1/2 text-gray-400" />
+              <FaUser className="w-1/2 h-1/2 text-gray-400" />
               )}
             </div>
             <label
@@ -187,11 +195,16 @@ function AccountProfile() {
             >
               <FiUpload className="text-primary w-5 h-5" />
               <span className="text-primary font-bold">Upload</span>
-              <input type="file" hidden id="avatar" onChange={(e) => setFile(e.target.files![0])} />
+              <input
+                type="file"
+                hidden
+                id="avatar"
+                onChange={(e) => setFile(e.target.files![0])}
+              />
             </label>
           </div>
         </div>
-        <div>
+        <div className="text-center">
           <button
             onClick={handleUpdateProfile}
             className="text-lg font-bold text-white px-16 py-2 rounded-lg bg-primary shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"

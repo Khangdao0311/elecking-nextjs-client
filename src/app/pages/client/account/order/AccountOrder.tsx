@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BsFillClipboard2CheckFill, BsFillClipboard2XFill } from "react-icons/bs";
+import {
+  BsFillClipboard2CheckFill,
+  BsFillClipboard2XFill,
+} from "react-icons/bs";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Modal } from "antd";
 import moment from "moment";
@@ -64,7 +67,7 @@ function AccountOrder() {
         title={null}
         centered
         maskClosable={false}
-        // closable={false}
+        // closable={false}/
         width="auto"
       >
         <OrderDetail
@@ -76,123 +79,124 @@ function AccountOrder() {
       </Modal>
       <div className="flex flex-col gap-6">
         <h2 className="text-2xl font-bold uppercase">Lịch Sử Mua Hàng</h2>
-        <Swiper
-          slidesPerView={"auto"}
-          spaceBetween={16}
-          navigation={{
-            nextEl: "#next",
-            prevEl: "#prev",
-          }}
-          freeMode={true}
-          modules={[FreeMode]}
-          className="w-full flex gap-2.5 flex-wrap"
-        >
-          <SwiperSlide
-            onClick={() => {
-              if (status !== "") setStatus("");
+
+        {state.load ? (
+          <div className="flex w-full gap-4 overflow-hidden">
+            <Shimmer className="w-1/5 h-11" />
+            <Shimmer className="w-1/5 h-11" />
+            <Shimmer className="w-1/5 h-11" />
+            <Shimmer className="w-1/5 h-11" />
+            <Shimmer className="w-1/5 h-11" />
+          </div>
+        ) : (
+          <Swiper
+            slidesPerView={"auto"}
+            spaceBetween={16}
+            navigation={{
+              nextEl: "#next",
+              prevEl: "#prev",
             }}
-            className={`${
-              status === ""
-                ? "border-primary bg-primary text-white"
-                : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-            } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
+            freeMode={true}
+            modules={[FreeMode]}
+            className="w-full flex gap-2.5 flex-wrap"
           >
-            Tất cả ({totalOrder?.["all"] || 0})
-          </SwiperSlide>
-          <SwiperSlide
-            onClick={() => {
-              if (status !== "2") setStatus("2");
-            }}
-            className={`${
-              status === "2"
-                ? "border-primary bg-primary text-white"
-                : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-            } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
-          >
-            Chờ xác nhận ({totalOrder?.["2"] || 0})
-          </SwiperSlide>
-          <SwiperSlide
-            onClick={() => {
-              if (status !== "3") setStatus("3");
-            }}
-            className={`${
-              status === "3"
-                ? "border-primary bg-primary text-white"
-                : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-            } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
-          >
-            Đã xác nhận ({totalOrder?.["3"] || 0})
-          </SwiperSlide>
-          <SwiperSlide
-            onClick={() => {
-              if (status !== "4") setStatus("4");
-            }}
-            className={`${
-              status === "4"
-                ? "border-primary bg-primary text-white"
-                : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-            } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
-          >
-            Đang vận chuyển ({totalOrder?.["4"] || 0})
-          </SwiperSlide>
-          <SwiperSlide
-            onClick={() => {
-              if (status !== "1") setStatus("1");
-            }}
-            className={`${
-              status === "1"
-                ? "border-primary bg-primary text-white"
-                : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-            } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
-          >
-            Đã nhận ({totalOrder?.["1"] || 0})
-          </SwiperSlide>
-          <SwiperSlide
-            onClick={() => {
-              if (status !== "0") setStatus("0");
-            }}
-            className={`${
-              status === "0"
-                ? "border-primary bg-primary text-white"
-                : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
-            } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
-          >
-            Đã hủy ({totalOrder?.["0"] || 0})
-          </SwiperSlide>
-        </Swiper>
+            <SwiperSlide
+              onClick={() => {
+                if (status !== "") setStatus("");
+              }}
+              className={`${
+                status === ""
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
+            >
+              Tất cả ({totalOrder?.["all"] || 0})
+            </SwiperSlide>
+            <SwiperSlide
+              onClick={() => {
+                if (status !== "2") setStatus("2");
+              }}
+              className={`${
+                status === "2"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
+            >
+              Chờ xác nhận ({totalOrder?.["2"] || 0})
+            </SwiperSlide>
+            <SwiperSlide
+              onClick={() => {
+                if (status !== "3") setStatus("3");
+              }}
+              className={`${
+                status === "3"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
+            >
+              Đã xác nhận ({totalOrder?.["3"] || 0})
+            </SwiperSlide>
+            <SwiperSlide
+              onClick={() => {
+                if (status !== "4") setStatus("4");
+              }}
+              className={`${
+                status === "4"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
+            >
+              Đang vận chuyển ({totalOrder?.["4"] || 0})
+            </SwiperSlide>
+            <SwiperSlide
+              onClick={() => {
+                if (status !== "1") setStatus("1");
+              }}
+              className={`${
+                status === "1"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
+            >
+              Đã nhận ({totalOrder?.["1"] || 0})
+            </SwiperSlide>
+            <SwiperSlide
+              onClick={() => {
+                if (status !== "0") setStatus("0");
+              }}
+              className={`${
+                status === "0"
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer"
+              } px-6 py-2.5 text-base font-medium border rounded-lg select-none shadow-lg !w-auto`}
+            >
+              Đã hủy ({totalOrder?.["0"] || 0})
+            </SwiperSlide>
+          </Swiper>
+        )}
 
         <div className="w-full flex flex-col gap-4 relative">
           {/*  */}
 
-          {state.load && (
+          {!state.load && (
             <>
-              <div className="flex items-start gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300">
-                <Shimmer className={"w-28 h-28 shrink-0"} image />
+              <div className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300">
+                <div className="flex gap-4 flex-1">
+                  <Shimmer
+                    className={"w-20 sm:w-28 aspect-square shrink-0"}
+                    image
+                  />
 
-                <div className="flex flex-col items-start gap-2 w-full">
-                  <Shimmer className={"w-full h-6"} />
-                  <Shimmer className={"w-1/3 h-6"} />
-                  <Shimmer className={"w-1/4 h-9"} />
+                  <div className="flex flex-col items-start gap-2 flex-1">
+                    <Shimmer className={"w-full h-6"} />
+                    <Shimmer className={"w-3/4 sm:w-1/3 h-6"} />
+                    <Shimmer className={"w-1/2 sm:w-1/4 h-9"} />
+                  </div>
                 </div>
-                <div className="flex items-end h-full shrink-0">
+                <div className="flex items-center justify-end sm:items-end sm:justify-center shrink-0">
                   <Shimmer className={"w-36 h-11"} />
                 </div>
-                <em className="absolute top-0 right-0 p-4 text-gray-700">
-                  <Shimmer className={"w-36 h-6"} />
-                </em>
-              </div>
-              <div className="flex items-start gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300">
-                <Shimmer className={"w-28 h-28 shrink-0"} image />
-
-                <div className="flex flex-col items-start gap-2 w-full">
-                  <Shimmer className={"w-full h-6"} />
-                  <Shimmer className={"w-1/3 h-6"} />
-                  <Shimmer className={"w-1/4 h-9"} />
-                </div>
-                <div className="flex items-end h-full shrink-0">
-                  <Shimmer className={"w-36 h-11"} />
-                </div>
-                <em className="absolute top-0 right-0 p-4 text-gray-700">
+                <em className="absolute top-auto right-auto bottom-0 left-0   sm:top-0 sm:right-0 sm:bottom-auto sm:left-auto p-4">
                   <Shimmer className={"w-36 h-6"} />
                 </em>
               </div>
@@ -202,7 +206,9 @@ function AccountOrder() {
           {!state.load && orders.length === 0 && (
             <div className="w-full min-h-80 center-flex flex-col gap-2">
               <TbMoodEmpty className="w-36 h-36 text-gray-300" />
-              <p className="text-3xl text-gray-400 font-medium">Không có đơn hàng !</p>
+              <p className="text-3xl text-gray-400 font-medium">
+                Không có đơn hàng !
+              </p>
             </div>
           )}
 
@@ -212,12 +218,16 @@ function AccountOrder() {
               case 0:
                 status.color = "red";
                 status.text = "Đã hủy";
-                status.icon = <BsFillClipboard2XFill className="text-2xl w-1/2 h-1/2" />;
+                status.icon = (
+                  <BsFillClipboard2XFill className="text-2xl w-1/2 h-1/2" />
+                );
                 break;
               case 1:
                 status.color = "green";
                 status.text = "Đã giao hàng";
-                status.icon = <BsFillClipboard2CheckFill className="text-2xl w-1/2 h-1/2" />;
+                status.icon = (
+                  <BsFillClipboard2CheckFill className="text-2xl w-1/2 h-1/2" />
+                );
                 break;
               case 2:
                 status.color = "yellow";
@@ -343,57 +353,76 @@ function AccountOrder() {
             }
             return (
               <div
+                className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300"
                 key={iOrder}
-                className="flex items-start gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300"
               >
-                <div className="h-full flex items-start shrink-0">
-                  <div className="bg-primary text-white aspect-square w-28 rounded-lg flex items-center justify-center">
-                    {status.icon}
-                  </div>
-                </div>
-                <div className="flex flex-col items-start gap-2 w-full">
-                  <div className="flex  w-full gap-2">
-                    <p className="text-base font-bold text-gray-700 shrink-0">Sản phẩm</p>
-                    <div className="flex flex-col gap-1">
-                      {order.products.map((productOrder: any, iProductOrder: number) => (
-                        <p key={iProductOrder} className="text-base font-medium text-gray-700">
-                          {productOrder.product.name} / x{productOrder.quantity}
-                        </p>
-                      ))}
+                <div className="flex gap-4 flex-1">
+                  <div className="h-full flex items-start shrink-0">
+                    <div className="bg-primary text-white aspect-square w-20 sm:w-28 rounded-lg flex items-center justify-center">
+                      {status.icon}
                     </div>
                   </div>
+                  <div className="flex flex-col items-start gap-2 flex-1">
+                    <div className="flex  w-full gap-2">
+                      <p className="text-base hidden sm:flex font-bold text-gray-700 shrink-0">
+                        Sản phẩm
+                      </p>
+                      <div className="flex flex-col gap-1">
+                        {order.products.map(
+                          (productOrder: any, iProductOrder: number) => (
+                            <p
+                              key={iProductOrder}
+                              className="text-base font-medium text-gray-700"
+                            >
+                              {productOrder.product.name} / x
+                              {productOrder.quantity}
+                            </p>
+                          )
+                        )}
+                      </div>
+                    </div>
 
-                  <div className="flex  gap-2">
-                    <p className="text-base font-bold text-gray-700">Tổng tiền</p>
-                    <span className="text-base font-bold text-red-500">
-                      {order.total.toLocaleString("vi-VN")} đ
-                    </span>
-                  </div>
+                    <div className="flex  gap-2">
+                      <p className="text-base hidden sm:flex font-bold text-gray-700">
+                        Tổng tiền
+                      </p>
+                      <span className="text-base font-bold text-red-500">
+                        {order.total.toLocaleString("vi-VN")} đ
+                      </span>
+                    </div>
 
-                  <div
-                    className={`px-6 py-2 center-flex rounded-lg bg-${status.color}-100 select-none`}
-                  >
-                    <p className={`text-sm font-medium text-${status.color}-800`}>{status.text}</p>
+                    <div
+                      className={`px-6 py-2 center-flex rounded-lg bg-${status.color}-100 select-none`}
+                    >
+                      <p
+                        className={`text-sm font-medium text-${status.color}-800`}
+                      >
+                        {status.text}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-end h-full shrink-0">
+                <div className="flex items-center justify-end sm:items-end sm:justify-center shrink-0">
                   <div
                     onClick={() => {
                       setOrder(order);
                       setShow({ detail: true, review: false });
                     }}
-                    className="px-6 py-2 border border-primary rounded cursor-pointer select-none"
+                    className="px-6 py-1.5 sm:py-2 border border-primary rounded cursor-pointer select-none"
                   >
-                    <p className="text-base font-bold text-primary text-nowrapF">Xem chi tiết</p>
+                    <p className="text-base font-bold text-primary text-nowrap">
+                      Xem chi tiết
+                    </p>
                   </div>
                 </div>
-                <em className="absolute top-0 right-0 p-4 text-gray-700">
-                  {moment(order.ordered_at, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm")}
+                <em className="absolute top-auto right-auto bottom-0 left-0   sm:top-0 sm:right-0 sm:bottom-auto sm:left-auto p-4 text-gray-700">
+                  {moment(order.ordered_at, "YYYYMMDDHHmmss").format(
+                    "DD/MM/YYYY HH:mm"
+                  )}
                 </em>
               </div>
             );
           })}
-          {/*  */}
         </div>
       </div>
     </>

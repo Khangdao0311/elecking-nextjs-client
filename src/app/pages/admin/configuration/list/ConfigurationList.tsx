@@ -168,7 +168,11 @@ function ConfigurationList() {
 
   async function handleAddCatConfiguration() {
     if (!nameCatConfiguration) {
-      openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
+      openNotificationWithIcon(
+        "error",
+        "Lỗi dữ liệu",
+        "Vui lòng nhập đầy đủ thông tin"
+      );
     }
     if (nameCatConfiguration) {
       await proptypeService
@@ -229,15 +233,14 @@ function ConfigurationList() {
       });
   }
 
-  function handleshowAddConfiguration() {
+  async function handleShowAddConfiguration() {
     setShowAddConfiguration(true);
-  }
-
-  async function handleAddConfiguration() {
     await proptypeService
       .getQuery({ limit: 0 })
       .then((res) => setProptype(res.data));
+  }
 
+  async function handleAddConfiguration() {
     if (nameConfiguration && selectedProptype) {
       await propertyService
         .addProperty({ name: nameConfiguration, proptype_id: selectedProptype })
@@ -316,112 +319,116 @@ function ConfigurationList() {
   return (
     <>
       {state.load && <Loading />}
-      {state.load ? state.load : <>
-        <TitleAdmin title="Danh Sách Cấu Hình" />
-      <div className="flex w-full gap-4 ">
-        <div className="p-5 flex flex-col gap-4 w-1/2 h-[600px] rounded-lg border border-gray-200 shadow-lg">
-          <div className="flex justify-between items-center">
-            <p className="text-xl font-bold">Tên Danh Mục Cấu Hình</p>
-            <button
-              onClick={handleshowAddCatConfiguration}
-              className="w-28 flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
-            >
-              <GoPlus className="w-6 h-6" />
-              <p className="text-sm font-bold">Tạo mới</p>
-            </button>
-          </div>
-          <div className="border border-zinc-300"></div>
-          <div className="w-full">
-            <BoxSearchLimit
-              title="danh mục"
-              onLimitChange={(newLimit: any) => {
-                setLimitProptype(newLimit);
-                setPageProptype(1);
-              }}
-              onSearch={(value: string) => {
-                setSearchProptype(value);
-                setPageProptype(1);
-              }}
-            />
-          </div>
-          <div style={{ width: "100%", maxWidth: "100%" }}>
-            <Table<IProptype>
-              columns={columnsProptype}
-              dataSource={proptype}
-              rowKey="id"
-              scroll={getTableScroll(proptype.length)}
-              pagination={false}
-              tableLayout="auto"
-            />
-            {totalPagesProptype > limitProptype && (
-              <div className="flex w-full justify-end mt-2">
-                <Pagination
-                  current={pageProptype}
-                  onChange={(e) => {
-                    setPageProptype(e);
+      {state.load ? (
+        state.load
+      ) : (
+        <>
+          <TitleAdmin title="Danh Sách Cấu Hình" />
+          <div className="flex w-full gap-4 ">
+            <div className="p-5 flex flex-col gap-4 w-1/2 h-[600px] rounded-lg border border-gray-200 shadow-lg">
+              <div className="flex justify-between items-center">
+                <p className="text-xl font-bold">Tên Danh Mục Cấu Hình</p>
+                <button
+                  onClick={handleshowAddCatConfiguration}
+                  className="w-28 flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
+                >
+                  <GoPlus className="w-6 h-6" />
+                  <p className="text-sm font-bold">Tạo mới</p>
+                </button>
+              </div>
+              <div className="border border-zinc-300"></div>
+              <div className="w-full">
+                <BoxSearchLimit
+                  title="danh mục"
+                  onLimitChange={(newLimit: any) => {
+                    setLimitProptype(newLimit);
+                    setPageProptype(1);
                   }}
-                  defaultCurrent={1}
-                  align="end"
-                  pageSize={limitProptype}
-                  total={totalPagesProptype}
-                  showSizeChanger={false}
+                  onSearch={(value: string) => {
+                    setSearchProptype(value);
+                    setPageProptype(1);
+                  }}
                 />
               </div>
-            )}
-          </div>
-        </div>
-        <div className="p-5 flex flex-col gap-4 w-1/2 h-[600px] rounded-lg border border-gray-200 shadow-lg">
-          <div className="flex justify-between items-center">
-            <p className="text-xl font-bold">Tên Các Cấu Hình</p>
-            <button
-              onClick={handleshowAddConfiguration}
-              className="w-28 flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
-            >
-              <GoPlus className="w-6 h-6" />
-              <p className="text-sm font-bold">Tạo mới</p>
-            </button>
-          </div>
-          <div className="border border-zinc-300"></div>
-          <div className="w-full">
-            <BoxSearchLimit
-              title="danh mục"
-              onLimitChange={(newLimit: any) => {
-                setLimitProperty(newLimit);
-                setPageProperty(1);
-              }}
-              onSearch={(value:string) => {
-                setSearchProperty(value);
-                setPageProperty(1);
-              }}
-            />
-          </div>
-          <div style={{ width: "100%", maxWidth: "100%" }}>
-            <Table<IProperty>
-              columns={columnsProperty}
-              dataSource={property}
-              rowKey="id"
-              scroll={getTableScroll(property.length)}
-              pagination={false}
-              tableLayout="auto"
-            />
-            {totalPagesProperty > limitProperty && (
-              <div className="flex w-full justify-end mt-2">
-                <Pagination
-                  current={pageProperty}
-                  onChange={(e) => setPageProperty(e)}
-                  defaultCurrent={1}
-                  align="end"
-                  pageSize={limitProperty}
-                  total={totalPagesProperty}
-                  showSizeChanger={false}
+              <div style={{ width: "100%", maxWidth: "100%" }}>
+                <Table<IProptype>
+                  columns={columnsProptype}
+                  dataSource={proptype}
+                  rowKey="id"
+                  scroll={getTableScroll(proptype.length)}
+                  pagination={false}
+                  tableLayout="auto"
+                />
+                {totalPagesProptype > limitProptype && (
+                  <div className="flex w-full justify-end mt-2">
+                    <Pagination
+                      current={pageProptype}
+                      onChange={(e) => {
+                        setPageProptype(e);
+                      }}
+                      defaultCurrent={1}
+                      align="end"
+                      pageSize={limitProptype}
+                      total={totalPagesProptype}
+                      showSizeChanger={false}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="p-5 flex flex-col gap-4 w-1/2 h-[600px] rounded-lg border border-gray-200 shadow-lg">
+              <div className="flex justify-between items-center">
+                <p className="text-xl font-bold">Tên Các Cấu Hình</p>
+                <button
+                  onClick={handleShowAddConfiguration}
+                  className="w-28 flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
+                >
+                  <GoPlus className="w-6 h-6" />
+                  <p className="text-sm font-bold">Tạo mới</p>
+                </button>
+              </div>
+              <div className="border border-zinc-300"></div>
+              <div className="w-full">
+                <BoxSearchLimit
+                  title="danh mục"
+                  onLimitChange={(newLimit: any) => {
+                    setLimitProperty(newLimit);
+                    setPageProperty(1);
+                  }}
+                  onSearch={(value: string) => {
+                    setSearchProperty(value);
+                    setPageProperty(1);
+                  }}
                 />
               </div>
-            )}
+              <div style={{ width: "100%", maxWidth: "100%" }}>
+                <Table<IProperty>
+                  columns={columnsProperty}
+                  dataSource={property}
+                  rowKey="id"
+                  scroll={getTableScroll(property.length)}
+                  pagination={false}
+                  tableLayout="auto"
+                />
+                {totalPagesProperty > limitProperty && (
+                  <div className="flex w-full justify-end mt-2">
+                    <Pagination
+                      current={pageProperty}
+                      onChange={(e) => setPageProperty(e)}
+                      defaultCurrent={1}
+                      align="end"
+                      pageSize={limitProperty}
+                      total={totalPagesProperty}
+                      showSizeChanger={false}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      </>}
-  
+        </>
+      )}
+
       {contextHolder}
 
       <Modal
@@ -544,8 +551,7 @@ function ConfigurationList() {
               <div className="flex items-center gap-4">
                 <div className="flex gap-0.5 flex-col">
                   <div className="text-sm font-medium">
-                    Tên Danh Mục Cấu Hình{" "}
-                    <span className="text-primary">*</span>
+                    Tên Cấu Hình <span className="text-primary">*</span>
                   </div>
                   <Input
                     value={nameConfiguration}
@@ -557,7 +563,7 @@ function ConfigurationList() {
               </div>
               <div className="flex gap-0.5 flex-col">
                 <div className="text-sm font-medium ">
-                  Tên cấu hình <span className="text-primary">*</span>
+                  Tên Danh Mục Cấu Hình <span className="text-primary">*</span>
                 </div>
                 <Select
                   placeholder="Inserted are removed"

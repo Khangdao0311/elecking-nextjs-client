@@ -93,9 +93,9 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
   }
 
   return (
-    <div className="flex flex-col gap-4 w-[600px] ">
+    <div className="flex flex-col gap-4 w-full sm:w-[600px] ">
       <h2 className="text-xl font-bold uppercase">CHI TIẾT ĐƠN HÀNG</h2>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="sm:grid sm:grid-cols-2 gap-2">
         <div className="flex gap-2">
           <p className="text-base font-normal">Tên người nhận:</p>
           <span className="text-base font-base font-bold uppercase">
@@ -116,7 +116,7 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
           </span>
         </div>
 
-        <div className="flex gap-2 col-span-2 items-center">
+        <div className="flex flex-wrap gap-2 col-span-2 items-center">
           <p className="text-base font-normal shrink-0">Trạng thái thái đơn hàng:</p>
           <div
             className={`px-6 py-2 center-flex shrink-0 rounded-lg bg-${status.color}-100 select-none`}
