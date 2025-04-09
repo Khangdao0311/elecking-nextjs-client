@@ -78,7 +78,6 @@ function VoucherEdit() {
     });
   }, []);
 
-
   useEffect(() => {
     voucherService.getVoucherById(`${id}`).then((res) => setVoucher(res.data));
   }, [id]);
@@ -165,7 +164,6 @@ function VoucherEdit() {
                   label: e.fullname,
                 }))}
               />
-
             </div>
           </div>
           {contextHolder}
@@ -228,7 +226,6 @@ function VoucherEdit() {
               }}
             >
             </Button>
-
           </Space>
         </div>
       </div>
