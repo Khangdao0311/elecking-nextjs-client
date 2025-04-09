@@ -15,6 +15,7 @@ import LogoMobile from "@/app/assets/LogoMobile";
 import Loading from "@/app/components/client/Loading";
 import * as authServices from "@/app/services/authService";
 import config from "@/app/config";
+import Link from "next/link";
 
 function AdminLogin() {
   const [state, dispatch] = useStore();
@@ -145,7 +146,9 @@ function AdminLogin() {
                 ) : null}
               </div>
               <div className="flex justify-end">
-                <p className="text-sm font-bold text-blue-500 select-none">Quên mật khẩu ?</p>
+                <Link
+                href={config.routes.client.forgotPassword}
+                 className="text-sm font-bold text-blue-500 select-none">Quên mật khẩu ?</Link>
               </div>
               <button className="bg-primary h-12 rounded shadow-lg text-white text-lg font-bold">
                 Đăng nhập
