@@ -421,7 +421,6 @@ function Header() {
             </Popover>
 
             {/* Search */}
-            {JSON.stringify(showModal.search)}
             <Popover
               placement={width < 640 ? "bottom" : "bottomLeft"}
               title={null}

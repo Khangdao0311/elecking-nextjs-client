@@ -1,6 +1,5 @@
-const url = "http://localhost:8000";
-// const url = "http://192.168.1.3:8000";
-// const url = "http://172.16.80.67:8000";
+// const url = "http://localhost:8000";
+const url = "https://elecking-api.vercel.app";
 
 const api = {
   product: `${url}/product`,
