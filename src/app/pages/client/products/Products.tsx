@@ -5,7 +5,7 @@ import { Fragment, useEffect, useState } from "react";
 import { AiOutlinePercentage } from "react-icons/ai";
 import { BsSortDown, BsSortDownAlt } from "react-icons/bs";
 import { FaMoneyBill } from "react-icons/fa6";
-import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
+import { IoIosTrendingUp, IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
 import { IoCloseCircle, IoCloseOutline } from "react-icons/io5";
 import { MdRemoveRedEye } from "react-icons/md";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -546,6 +546,21 @@ function Products() {
                     <p>Khuyến mãi</p>
                   </SwiperSlide>
 
+                  {/* Mới nhất */}
+                  <SwiperSlide
+                    onClick={() => {
+                      const searchParamsNew = new URLSearchParams(searchParams.toString());
+                      searchParamsNew.set("orderby", `id-desc`);
+                      searchParamsNew.set("page", `1`);
+                      router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                    }}
+                    className={`!w-auto !flex shrink-0 items-center gap-1.5 px-2.5 py-2 shadow-lg border select-none hover:shadow-xl transition-all rounded-lg cursor-pointer ${
+                      query.orderby === "id-desc" ? "border-primary text-primary" : "text-gray-700"
+                    }`}
+                  >
+                    <IoIosTrendingUp className={`w-6 h-6 x`} />
+                    <p>Mới nhất</p>
+                  </SwiperSlide>
                   {/* Xem nhiều */}
                   <SwiperSlide
                     onClick={() => {

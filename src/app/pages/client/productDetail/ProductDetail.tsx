@@ -342,7 +342,7 @@ function ProductDetail() {
                           : "border border-gray-200 "
                       } !h-full !aspect-square rounded-lg overflow-hidden cursor-pointer shadow-lg p-1 select-none`}
                     >
-                      <img className=" w-full aspect-square object-contain" src={img} />
+                      <img className=" w-full aspect-square object-cover rounded" src={img} />
                     </SwiperSlide>
                   ))}
                 </Swiper>

@@ -23,7 +23,6 @@ const imageSlide = [
   "https://mainguyen.sgp1.digitaloceanspaces.com/231474/banner-samsung.jpg",
   "https://www.homecredit.vn/static/cdf3446968e365f4f8fbc9266010e77a/ab7c8/mua_tra_gop_iphone_16_banner_74273b74f0.webp",
   "https://mainguyen.sgp1.digitaloceanspaces.com/231652/MASS-Pre-Order---Galaxy-Watch6-Combo-KV--.jpg",
-  "https://cuonganhpc.vn/hinhanh/quangcao/man-hinh-1.jpg",
   "https://phonghoa.vn/wp-content/uploads/2023/09/Banner-CTKM-TV.png",
   "https://www.homepaylater.vn/static/b551d25f15763d30e744f2e3cf7eb8e4/dong_ho_thong_minh_banner_518c452056.jpg",
 ];

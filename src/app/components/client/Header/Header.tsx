@@ -278,6 +278,7 @@ function Header() {
   }, [pathname]);
 
   function handleSearch() {
+    // setShowModal({ menu: false, search: false });
     const searchParamsNew = new URLSearchParams(searchParams.toString());
     searchParamsNew.set("search", `${state.search}`);
     if (pathname !== config.routes.client.products) dispatch(actions.set_routing(true));
@@ -333,9 +334,7 @@ function Header() {
             <div className="container-custom h-full relative grid grid-cols-2 lg:grid-cols-3 gap-4">
               <Shimmer classNam="w-full h-full" />
               <Shimmer classNam="w-full h-full" />
-              <div className={"!hidden lg:flex"}>
-                <Shimmer classNam="w-full h-full " />
-              </div>
+              <Shimmer classNam="w-full h-full !hidden lg:!flex " />
             </div>
           ) : (
             <Swiper
@@ -422,6 +421,7 @@ function Header() {
             </Popover>
 
             {/* Search */}
+            {JSON.stringify(showModal.search)}
             <Popover
               placement={width < 640 ? "bottom" : "bottomLeft"}
               title={null}
