@@ -61,7 +61,7 @@ function SidebarAccount({ onClick }: any) {
         </div>
       </Modal>
       <div
-        className={`!w-[60vw] max-w-[300px] lg:max-w-none lg:w-full shrink-0 static lg:sticky ${
+        className={`w-[60vw] lg:w-full max-w-[300px] lg:max-w-none shrink-0 static lg:sticky ${
           y < 100 ? "top-[172px]" : "top-32"
         } transition-all duration-200  flex flex-col items-center rounded-lg gap-4
         `}
