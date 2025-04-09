@@ -445,15 +445,17 @@ function ProductDetail() {
                         <div className="py-1.5 px-1 bg-primary rounded-md w-[42px] h-6 flex items-center ">
                           {Math.ceil(
                             100 -
-                              ((product.variants[0].price - product.variants[0].price_sale) /
-                                product.variants[0].price) *
+                              ((product.variants[iVariant].price -
+                                product.variants[iVariant].price_sale) /
+                                product.variants[iVariant].price) *
                                 100
                           ) > 0 && (
                             <div className="w-full text-center text-xs font-bold text-white">
                               {Math.ceil(
                                 100 -
-                                  ((product.variants[0].price - product.variants[0].price_sale) /
-                                    product.variants[0].price) *
+                                  ((product.variants[iVariant].price -
+                                    product.variants[iVariant].price_sale) /
+                                    product.variants[iVariant].price) *
                                     100
                               )}{" "}
                               %
