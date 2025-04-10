@@ -93,90 +93,88 @@ function ResetPassword() {
           </div>
         )}
       </Modal>
-      <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
-        <div className="flex items-center justify-center min-h-[500px]">
-          {state.load ? (
-            <div className="w-[600px] p-10 shadow-xl flex flex-col gap-5">
-              <div className="w-full center-flex ">
-                <Shimmer className="w-2/3 h-8" />
-              </div>
-              <div className=" flex flex-col gap-4">
-                <Shimmer className="w-1/4 h-6" />
-                <Shimmer className="w-full h-12" />
-                <div className="flex flex-col  gap-2">
-                  <Shimmer className="w-5/12 h-6" />
-                  <Shimmer className="w-2/5 h-6" />
-                  <Shimmer className="w-1/4 h-6" />
-                  <Shimmer className="w-1/2 h-6" />
-                </div>
-              </div>
-              <Shimmer className="w-full h-12" />
+      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 center-flex mt-4">
+        {state.load ? (
+          <div className="w-[90vw] max-w-[500px] p-10 shadow-xl flex flex-col gap-5 rounded-lg">
+            <div className="w-full center-flex ">
+              <Shimmer className="w-2/3 h-8" />
             </div>
-          ) : (
-            <Formik
-              initialValues={{
-                passwordNew: "",
-              }}
-              validationSchema={validationSchema}
-              onSubmit={handleResetPassword}
-            >
-              {({ values, errors, touched, isValid, handleChange, handleBlur }) => {
-                const passwordChecks = [
-                  { regex: /[a-z]/, text: "Ít nhất một ký tự viết thường" },
-                  { regex: /[A-Z]/, text: "Ít nhất một ký tự viết hoa" },
-                  { regex: /^.{8,16}$/, text: "8 - 16 ký tự" },
-                  {
-                    regex: /^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;<>,.?/~`-]+$/,
-                    text: "Chỉ chứa chữ cái, số và ký tự phổ biến",
-                  },
-                ];
+            <div className=" flex flex-col gap-4">
+              <Shimmer className="w-1/4 h-6" />
+              <Shimmer className="w-full h-12" />
+              <div className="flex flex-col gap-2">
+                <Shimmer className="w-5/12 h-6" />
+                <Shimmer className="w-2/5 h-6" />
+                <Shimmer className="w-1/4 h-6" />
+                <Shimmer className="w-1/2 h-6" />
+              </div>
+            </div>
+            <Shimmer className="w-full h-12" />
+          </div>
+        ) : (
+          <Formik
+            initialValues={{
+              passwordNew: "",
+            }}
+            validationSchema={validationSchema}
+            onSubmit={handleResetPassword}
+          >
+            {({ values, errors, touched, isValid, handleChange, handleBlur }) => {
+              const passwordChecks = [
+                { regex: /[a-z]/, text: "Ít nhất một ký tự viết thường" },
+                { regex: /[A-Z]/, text: "Ít nhất một ký tự viết hoa" },
+                { regex: /^.{8,16}$/, text: "8 - 16 ký tự" },
+                {
+                  regex: /^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;<>,.?/~`-]+$/,
+                  text: "Chỉ chứa chữ cái, số và ký tự phổ biến",
+                },
+              ];
 
-                return (
-                  <Form className="w-[600px] p-10 shadow-xl flex items-center justify-center flex-col gap-5">
-                    <div className="w-full text-center text-2xl font-bold text-primary">
-                      Thiết lập lại mật khẩu
+              return (
+                <Form className="w-[90vw] max-w-[500px] rounded-lg p-10 shadow-xl flex items-center justify-center flex-col gap-5">
+                  <div className="w-full text-center text-2xl font-bold text-primary">
+                    Thiết lập lại mật khẩu
+                  </div>
+                  <div className="flex flex-col gap-4 mx-auto w-[100%]">
+                    <div className="text-base font-medium">Mật khẩu Mới</div>
+                    <Input.Password
+                      name="passwordNew"
+                      className="text-base p-2.5 font-normal rounded"
+                      placeholder="Nhập mật khẩu mới"
+                      value={values.passwordNew}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      autoComplete="new-password"
+                    />
+                    <div className="flex flex-col gap-2">
+                      {passwordChecks.map(({ regex, text }, index) => (
+                        <div
+                          key={index}
+                          className={`text-base  ${
+                            regex.test(values.passwordNew)
+                              ? "text-green-600 font-bold"
+                              : "opacity-50"
+                          }`}
+                        >
+                          {text}
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex flex-col gap-4 mx-auto w-[100%]">
-                      <div className="text-base font-medium">Mật khẩu Mới</div>
-                      <Input.Password
-                        name="passwordNew"
-                        className="text-base p-2.5 font-normal rounded"
-                        placeholder="Nhập mật khẩu mới"
-                        value={values.passwordNew}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        autoComplete="new-password"
-                      />
-                      <div className="flex flex-col gap-2">
-                        {passwordChecks.map(({ regex, text }, index) => (
-                          <div
-                            key={index}
-                            className={`text-base  ${
-                              regex.test(values.passwordNew)
-                                ? "text-green-600 font-bold"
-                                : "opacity-50"
-                            }`}
-                          >
-                            {text}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <button
-                      disabled={!isValid}
-                      className={`text-lg text-center font-bold text-white py-2.5 w-full bg-primary rounded ${
-                        !isValid ? "opacity-50" : ""
-                      }`}
-                    >
-                      Tiếp theo
-                    </button>
-                  </Form>
-                );
-              }}
-            </Formik>
-          )}
-        </div>
-      </div>
+                  </div>
+                  <button
+                    disabled={!isValid}
+                    className={`text-lg text-center font-bold text-white py-2.5 w-full bg-primary rounded ${
+                      !isValid ? "opacity-50" : ""
+                    }`}
+                  >
+                    Tiếp theo
+                  </button>
+                </Form>
+              );
+            }}
+          </Formik>
+        )}
+      </section>
     </>
   );
 }

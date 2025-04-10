@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  BsFillClipboard2CheckFill,
-  BsFillClipboard2XFill,
-} from "react-icons/bs";
+import { BsFillClipboard2CheckFill, BsFillClipboard2XFill } from "react-icons/bs";
 import { TbMoodEmpty } from "react-icons/tb";
 import { Modal } from "antd";
 import moment from "moment";
@@ -178,14 +175,28 @@ function AccountOrder() {
         <div className="w-full flex flex-col gap-4 relative">
           {/*  */}
 
-          {!state.load && (
+          {state.load && (
             <>
               <div className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300">
                 <div className="flex gap-4 flex-1">
-                  <Shimmer
-                    className={"w-20 sm:w-28 aspect-square shrink-0"}
-                    image
-                  />
+                  <Shimmer className={"w-20 sm:w-28 aspect-square shrink-0"} image />
+
+                  <div className="flex flex-col items-start gap-2 flex-1">
+                    <Shimmer className={"w-full h-6"} />
+                    <Shimmer className={"w-3/4 sm:w-1/3 h-6"} />
+                    <Shimmer className={"w-1/2 sm:w-1/4 h-9"} />
+                  </div>
+                </div>
+                <div className="flex items-center justify-end sm:items-end sm:justify-center shrink-0">
+                  <Shimmer className={"w-36 h-11"} />
+                </div>
+                <em className="absolute top-auto right-auto bottom-0 left-0   sm:top-0 sm:right-0 sm:bottom-auto sm:left-auto p-4">
+                  <Shimmer className={"w-36 h-6"} />
+                </em>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300">
+                <div className="flex gap-4 flex-1">
+                  <Shimmer className={"w-20 sm:w-28 aspect-square shrink-0"} image />
 
                   <div className="flex flex-col items-start gap-2 flex-1">
                     <Shimmer className={"w-full h-6"} />
@@ -206,9 +217,7 @@ function AccountOrder() {
           {!state.load && orders.length === 0 && (
             <div className="w-full min-h-80 center-flex flex-col gap-2">
               <TbMoodEmpty className="w-36 h-36 text-gray-300" />
-              <p className="text-3xl text-gray-400 font-medium">
-                Không có đơn hàng !
-              </p>
+              <p className="text-3xl text-gray-400 font-medium">Không có đơn hàng !</p>
             </div>
           )}
 
@@ -218,16 +227,12 @@ function AccountOrder() {
               case 0:
                 status.color = "red";
                 status.text = "Đã hủy";
-                status.icon = (
-                  <BsFillClipboard2XFill className="text-2xl w-1/2 h-1/2" />
-                );
+                status.icon = <BsFillClipboard2XFill className="text-2xl w-1/2 h-1/2" />;
                 break;
               case 1:
                 status.color = "green";
                 status.text = "Đã giao hàng";
-                status.icon = (
-                  <BsFillClipboard2CheckFill className="text-2xl w-1/2 h-1/2" />
-                );
+                status.icon = <BsFillClipboard2CheckFill className="text-2xl w-1/2 h-1/2" />;
                 break;
               case 2:
                 status.color = "yellow";
@@ -368,24 +373,16 @@ function AccountOrder() {
                         Sản phẩm
                       </p>
                       <div className="flex flex-col gap-1">
-                        {order.products.map(
-                          (productOrder: any, iProductOrder: number) => (
-                            <p
-                              key={iProductOrder}
-                              className="text-base font-medium text-gray-700"
-                            >
-                              {productOrder.product.name} / x
-                              {productOrder.quantity}
-                            </p>
-                          )
-                        )}
+                        {order.products.map((productOrder: any, iProductOrder: number) => (
+                          <p key={iProductOrder} className="text-base font-medium text-gray-700">
+                            {productOrder.product.name} / x{productOrder.quantity}
+                          </p>
+                        ))}
                       </div>
                     </div>
 
                     <div className="flex  gap-2">
-                      <p className="text-base hidden sm:flex font-bold text-gray-700">
-                        Tổng tiền
-                      </p>
+                      <p className="text-base hidden sm:flex font-bold text-gray-700">Tổng tiền</p>
                       <span className="text-base font-bold text-red-500">
                         {order.total.toLocaleString("vi-VN")} đ
                       </span>
@@ -394,9 +391,7 @@ function AccountOrder() {
                     <div
                       className={`px-6 py-2 center-flex rounded-lg bg-${status.color}-100 select-none`}
                     >
-                      <p
-                        className={`text-sm font-medium text-${status.color}-800`}
-                      >
+                      <p className={`text-sm font-medium text-${status.color}-800`}>
                         {status.text}
                       </p>
                     </div>
@@ -410,15 +405,11 @@ function AccountOrder() {
                     }}
                     className="px-6 py-1.5 sm:py-2 border border-primary rounded cursor-pointer select-none"
                   >
-                    <p className="text-base font-bold text-primary text-nowrap">
-                      Xem chi tiết
-                    </p>
+                    <p className="text-base font-bold text-primary text-nowrap">Xem chi tiết</p>
                   </div>
                 </div>
                 <em className="absolute top-auto right-auto bottom-0 left-0   sm:top-0 sm:right-0 sm:bottom-auto sm:left-auto p-4 text-gray-700">
-                  {moment(order.ordered_at, "YYYYMMDDHHmmss").format(
-                    "DD/MM/YYYY HH:mm"
-                  )}
+                  {moment(order.ordered_at, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm")}
                 </em>
               </div>
             );

@@ -7,7 +7,6 @@ import "swiper/css";
 import "swiper/css/grid";
 import { ImFire } from "react-icons/im";
 import { Fragment, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 
 import config from "@/app/config";
@@ -47,7 +46,7 @@ function Home() {
       .then((res) => setBrands(res.data));
 
     productServices
-      .getQuery({ orderby: "sale-desc", limit: 10 })
+      .getQuery({ orderby: "sale-desc", limit: 16 })
       .then((res) => setProductsSale(res.data));
 
     productServices
@@ -633,11 +632,11 @@ function Home() {
                 <Shimmer className={`!w-full !h-1/5`} />
                 <Shimmer image className={`!w-full h-4/5`} />
               </div>
-              <div className="relative bg-white border border-gray-200 rounded-lg aspect-square shadow-lg p-2 flex flex-col gap-2">
+              <div className="hidden sm:flex relative bg-white border border-gray-200 rounded-lg aspect-square shadow-lg p-2 flex-col gap-2">
                 <Shimmer className={`!w-full !h-1/5`} />
                 <Shimmer image className={`!w-full h-4/5`} />
               </div>
-              <div className="hidden sm:flex relative bg-white border border-gray-200 rounded-lg aspect-square shadow-lg p-2 flex-col gap-2">
+              <div className="hidden md:flex relative bg-white border border-gray-200 rounded-lg aspect-square shadow-lg p-2 flex-col gap-2">
                 <Shimmer className={`!w-full !h-1/5`} />
                 <Shimmer image className={`!w-full h-4/5`} />
               </div>

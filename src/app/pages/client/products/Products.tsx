@@ -36,7 +36,7 @@ function Products() {
   });
   const [filter, setFilter] = useState<any>({
     priceMin: 0,
-    priceMax: 50000000,
+    priceMax: 100000000,
     categoryid: [],
     brandid: [],
   });
@@ -66,7 +66,7 @@ function Products() {
     }
 
     if (query.price) {
-      const [min = 0, max = 50000000] = query.price.split("-");
+      const [min = 0, max = 100000000] = query.price.split("-");
       setFilter({ ...filter, priceMin: +min, priceMax: +max });
     }
 
@@ -131,257 +131,300 @@ function Products() {
               {/* Lọc sản phẩm */}
               <div className="flex flex-col gap-3.5">
                 <h3 className="text-lg font-bold">Chọn theo tiêu chí</h3>
-                <div className="flex gap-4">
-                  {/* Giá */}
-                  <Popover
-                    placement={width < 640 ? "bottom" : "bottomLeft"}
-                    title={null}
-                    trigger="click"
-                    open={popup.price}
-                    onOpenChange={(e) => setPopup({ ...popup, price: e })}
-                    zIndex={20}
-                    content={
-                      <div className=" bg-white rounded-2xl flex flex-col items-center gap-4">
-                        <div className="w-[416px] flex items-center justify-between">
-                          <span className="text-lg font-medium text-primary">
-                            {filter.priceMin.toLocaleString("vi-VN")} đ
-                          </span>
-                          <span className="text-lg font-medium text-primary">
-                            {filter.priceMax.toLocaleString("vi-VN")} đ
-                          </span>
+                <Swiper
+                  slidesPerView={"auto"}
+                  spaceBetween={16}
+                  navigation={{
+                    nextEl: "#next",
+                    prevEl: "#prev",
+                  }}
+                  freeMode={true}
+                  modules={[FreeMode]}
+                  className="w-full flex gap-2.5 flex-wrap"
+                >
+                  <SwiperSlide className="!w-auto">
+                    <Popover
+                      placement={width < 640 ? "bottom" : "bottomLeft"}
+                      title={null}
+                      trigger="click"
+                      open={popup.price}
+                      onOpenChange={(e) => setPopup({ ...popup, price: e })}
+                      zIndex={20}
+                      content={
+                        <div className="w-auto bg-white rounded-2xl flex flex-col items-center gap-4">
+                          <div className="w-[416px] flex items-center justify-between">
+                            <span className="text-lg font-medium text-primary">
+                              {filter.priceMin.toLocaleString("vi-VN")} đ
+                            </span>
+                            <span className="text-lg font-medium text-primary">
+                              {filter.priceMax.toLocaleString("vi-VN")} đ
+                            </span>
+                          </div>
+                          <div className="w-full">
+                            <Slider
+                              range
+                              min={0}
+                              max={100000000}
+                              step={1000}
+                              value={[+filter.priceMin, +filter.priceMax]}
+                              onChange={(value) => {
+                                console.log(value);
+                                const [min, max] = value;
+                                setFilter({ ...filter, priceMin: min, priceMax: max });
+                              }}
+                              tooltip={{ open: false }}
+                              trackStyle={[{ backgroundColor: "#D70018" }]}
+                              handleStyle={[
+                                {
+                                  borderColor: "#D70018",
+                                  backgroundColor: "#D70018",
+                                },
+                                {
+                                  borderColor: "#D70018",
+                                  backgroundColor: "#D70018",
+                                },
+                              ]}
+                            />
+                          </div>
+                          <div className="flex gap-4 w-full">
+                            <button
+                              className="border w-full border-red-500 text-red-500 px-4 py-2 rounded-md"
+                              onClick={() => {
+                                if (query.price) {
+                                  const [min, max] = query.price.split("-");
+                                  setFilter({ ...filter, page: 1, priceMin: +min, priceMax: +max });
+                                } else {
+                                  setFilter({
+                                    ...filter,
+                                    page: 1,
+                                    priceMin: 0,
+                                    priceMax: 100000000,
+                                  });
+                                }
+                                setPopup({ ...popup, price: false });
+                              }}
+                            >
+                              Đóng
+                            </button>
+                            <button
+                              onClick={() => {
+                                const searchParamsNew = new URLSearchParams(
+                                  searchParams.toString()
+                                );
+                                searchParamsNew.set(
+                                  "price",
+                                  `${filter.priceMin}-${filter.priceMax}`
+                                );
+                                searchParamsNew.set("page", `1`);
+                                router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                                setPopup({ ...popup, price: false });
+                              }}
+                              className="bg-red-500 w-full text-white px-4 py-2 rounded-md"
+                            >
+                              Xem kết quả
+                            </button>
+                          </div>
                         </div>
-                        <div className="w-full">
-                          <Slider
-                            range
-                            min={0}
-                            max={50000000}
-                            step={1000}
-                            value={[+filter.priceMin, +filter.priceMax]}
-                            onChange={(value) => {
-                              console.log(value);
-                              const [min, max] = value;
-                              setFilter({ ...filter, priceMin: min, priceMax: max });
-                            }}
-                            tooltip={{ open: false }}
-                            trackStyle={[{ backgroundColor: "#D70018" }]}
-                            handleStyle={[
-                              {
-                                borderColor: "#D70018",
-                                backgroundColor: "#D70018",
-                              },
-                              {
-                                borderColor: "#D70018",
-                                backgroundColor: "#D70018",
-                              },
-                            ]}
-                          />
-                        </div>
-                        <div className="flex gap-4 w-full">
-                          <button
-                            className="border w-full border-red-500 text-red-500 px-4 py-2 rounded-md"
-                            onClick={() => {
-                              if (query.price) {
-                                const [min, max] = query.price.split("-");
-                                setFilter({ ...filter, page: 1, priceMin: +min, priceMax: +max });
-                              } else {
-                                setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 50000000 });
-                              }
-                              setPopup({ ...popup, price: false });
-                            }}
-                          >
-                            Đóng
-                          </button>
-                          <button
-                            onClick={() => {
-                              const searchParamsNew = new URLSearchParams(searchParams.toString());
-                              searchParamsNew.set("price", `${filter.priceMin}-${filter.priceMax}`);
-                              searchParamsNew.set("page", `1`);
-                              router.push(`?${searchParamsNew.toString()}`, { scroll: false });
-                              setPopup({ ...popup, price: false });
-                            }}
-                            className="bg-red-500 w-full text-white px-4 py-2 rounded-md"
-                          >
-                            Xem kết quả
-                          </button>
-                        </div>
-                      </div>
-                    }
-                  >
-                    <div
-                      className={`flex items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer
+                      }
+                    >
+                      <div
+                        className={`w-auto flex flex-nowrap items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer
                         ${
                           popup.price || query.price
                             ? "border-primary text-primary"
                             : "text-gray-700"
                         }`}
-                    >
-                      <FaMoneyBill className={`w-6 h-6`} />
-                      <p className={`text-base `}>Giá</p>
-                    </div>
-                  </Popover>
-                  {/* Danh mục */}
-                  <Popover
-                    placement={width < 640 ? "bottom" : "bottomLeft"}
-                    title={null}
-                    trigger="click"
-                    open={popup.category}
-                    onOpenChange={(e) => setPopup({ ...popup, category: e })}
-                    zIndex={20}
-                    content={
-                      <div className=" bg-white rounded-2xl flex flex-col items-center gap-4">
-                        <div className="w-[416px] flex flex-wrap gap-2">
-                          {categories.map((category: ICategory, iCategory: number) => (
-                            <div
-                              key={iCategory}
-                              onClick={() => handleSelectChange("categoryid", category.id)}
-                              className={`px-4 py-2 border rounded-lg select-none cursor-pointer shadow hover:shadow-lg relative transition-all  ${
-                                filter.categoryid.includes(category.id)
-                                  ? "border-primary bg-red-50"
-                                  : ""
-                              }`}
-                            >
-                              {category.name}
-                              {filter.categoryid.includes(category.id) && (
-                                <div className="absolute top-0 left-0 w-5 h-3 bg-primary rounded-tl-lg rounded-br-lg flex items-center justify-center">
-                                  <IoMdCheckmark className="w-3 h-3 text-white" />
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                        <div className="flex gap-4 w-full">
-                          <button
-                            className="border w-full border-primary text-primary px-4 py-2 rounded-md"
-                            onClick={() => {
-                              if (query.categoryid) {
-                                setFilter({
-                                  ...filter,
-                                  page: 1,
-                                  categoryid: query.categoryid.split("-"),
-                                });
-                              } else {
-                                setFilter({ ...filter, page: 1, categoryid: [] });
-                              }
-                              setPopup({ ...popup, category: false });
-                            }}
-                          >
-                            Đóng
-                          </button>
-                          <button
-                            onClick={() => {
-                              const searchParamsNew = new URLSearchParams(searchParams.toString());
-                              searchParamsNew.set("categoryid", `${filter.categoryid.join("-")}`);
-                              searchParamsNew.set("page", `1`);
-                              router.push(`?${searchParamsNew.toString()}`, { scroll: false });
-                              setPopup({ ...popup, category: false });
-                            }}
-                            className="bg-primary w-full text-white px-4 py-2 rounded-md"
-                          >
-                            Xem kết quả
-                          </button>
-                        </div>
+                      >
+                        <FaMoneyBill className={`w-6 h-6`} />
+                        <p className={`text-base `}>Giá</p>
                       </div>
-                    }
-                  >
-                    <div
-                      className={`flex items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer
+                    </Popover>
+                  </SwiperSlide>
+
+                  <SwiperSlide className="!w-auto">
+                    <Popover
+                      placement={width < 640 ? "bottom" : "bottomLeft"}
+                      title={null}
+                      trigger="click"
+                      open={popup.category}
+                      onOpenChange={(e) => setPopup({ ...popup, category: e })}
+                      zIndex={20}
+                      content={
+                        <div className="w-auto bg-white rounded-2xl flex flex-col items-center gap-4">
+                          <div className="w-[416px] flex flex-wrap gap-2">
+                            {categories.map((category: ICategory, iCategory: number) => (
+                              <div
+                                key={iCategory}
+                                onClick={() => handleSelectChange("categoryid", category.id)}
+                                className={`px-4 py-2 border rounded-lg select-none cursor-pointer shadow hover:shadow-lg relative transition-all  ${
+                                  filter.categoryid.includes(category.id)
+                                    ? "border-primary bg-red-50"
+                                    : ""
+                                }`}
+                              >
+                                {category.name}
+                                {filter.categoryid.includes(category.id) && (
+                                  <div className="absolute top-0 left-0 w-5 h-3 bg-primary rounded-tl-lg rounded-br-lg flex items-center justify-center">
+                                    <IoMdCheckmark className="w-3 h-3 text-white" />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex gap-4 w-full">
+                            <button
+                              className="border w-full border-primary text-primary px-4 py-2 rounded-md"
+                              onClick={() => {
+                                if (query.categoryid) {
+                                  setFilter({
+                                    ...filter,
+                                    page: 1,
+                                    categoryid: query.categoryid.split("-"),
+                                  });
+                                } else {
+                                  setFilter({ ...filter, page: 1, categoryid: [] });
+                                }
+                                setPopup({ ...popup, category: false });
+                              }}
+                            >
+                              Đóng
+                            </button>
+                            <button
+                              onClick={() => {
+                                const searchParamsNew = new URLSearchParams(
+                                  searchParams.toString()
+                                );
+                                searchParamsNew.set("categoryid", `${filter.categoryid.join("-")}`);
+                                searchParamsNew.set("page", `1`);
+                                router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                                setPopup({ ...popup, category: false });
+                              }}
+                              className="bg-primary w-full text-white px-4 py-2 rounded-md"
+                            >
+                              Xem kết quả
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    >
+                      <div
+                        className={`w-auto flex flex-nowrap items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer
                         ${
                           popup.category || query.categoryid
                             ? "border-primary text-primary"
                             : "text-gray-700"
                         } `}
-                    >
-                      <p className={`text-base`}>Danh mục</p>
-                      <IoMdArrowDropdown className={`w-6 h-6`} />
-                    </div>
-                  </Popover>
-                  {/* Thương hiệu */}
-                  <Popover
-                    placement={width < 640 ? "bottom" : "bottomLeft"}
-                    title={null}
-                    trigger="click"
-                    open={popup.brand}
-                    onOpenChange={(e) => setPopup({ ...popup, brand: e })}
-                    zIndex={20}
-                    content={
-                      <div className=" bg-white rounded-2xl flex flex-col items-center gap-4">
-                        <div className="w-[416px] flex flex-wrap gap-2">
-                          {brands.map((brand: IBrand, iBrand: number) => (
-                            <div
-                              key={iBrand}
-                              onClick={() => handleSelectChange("brandid", brand.id)}
-                              className={`px-4 py-2 border rounded-lg select-none cursor-pointer shadow hover:shadow-lg relative transition-all ${
-                                filter.brandid.includes(brand.id) ? "border-primary bg-red-50" : ""
-                              }`}
-                            >
-                              {brand.name}
-                              {filter.brandid.includes(brand.id) && (
-                                <div className="absolute top-0 left-0 w-5 h-3 bg-primary rounded-tl-lg rounded-br-lg flex items-center justify-center">
-                                  <IoMdCheckmark className="w-3 h-3 text-white" />
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                        <div className="flex gap-4 w-full">
-                          <button
-                            className="border w-full border-primary text-primary px-4 py-2 rounded-md"
-                            onClick={() => {
-                              if (query.brandid) {
-                                setFilter({
-                                  ...filter,
-                                  page: 1,
-                                  brandid: query.brandid.split("-"),
-                                });
-                              } else {
-                                setFilter({ ...filter, page: 1, brandid: [] });
-                              }
-                              setPopup({ ...popup, brand: false });
-                            }}
-                          >
-                            Đóng
-                          </button>
-                          <button
-                            onClick={() => {
-                              const searchParamsNew = new URLSearchParams(searchParams.toString());
-                              searchParamsNew.set("brandid", `${filter.brandid.join("-")}`);
-                              searchParamsNew.set("page", `1`);
-                              router.push(`?${searchParamsNew.toString()}`, { scroll: false });
-                              setPopup({ ...popup, brand: false });
-                            }}
-                            className="bg-primary w-full text-white px-4 py-2 rounded-md"
-                          >
-                            Xem kết quả
-                          </button>
-                        </div>
+                      >
+                        <p className={`text-base`}>Danh mục</p>
+                        <IoMdArrowDropdown className={`w-6 h-6`} />
                       </div>
-                    }
-                  >
-                    <div
-                      className={`flex items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer
-                  ${popup.brand || query.brandid ? "border-primary text-primary" : "text-gray-700"}
-                  `}
+                    </Popover>
+                  </SwiperSlide>
+
+                  <SwiperSlide className="!w-auto">
+                    <Popover
+                      placement={width < 640 ? "bottom" : "bottomLeft"}
+                      title={null}
+                      trigger="click"
+                      open={popup.brand}
+                      onOpenChange={(e) => setPopup({ ...popup, brand: e })}
+                      zIndex={20}
+                      content={
+                        <div className="w-auto bg-white rounded-2xl flex flex-col items-center gap-4">
+                          <div className="w-[416px] flex flex-wrap gap-2">
+                            {brands.map((brand: IBrand, iBrand: number) => (
+                              <div
+                                key={iBrand}
+                                onClick={() => handleSelectChange("brandid", brand.id)}
+                                className={`px-4 py-2 border rounded-lg select-none cursor-pointer shadow hover:shadow-lg relative transition-all ${
+                                  filter.brandid.includes(brand.id)
+                                    ? "border-primary bg-red-50"
+                                    : ""
+                                }`}
+                              >
+                                {brand.name}
+                                {filter.brandid.includes(brand.id) && (
+                                  <div className="absolute top-0 left-0 w-5 h-3 bg-primary rounded-tl-lg rounded-br-lg flex items-center justify-center">
+                                    <IoMdCheckmark className="w-3 h-3 text-white" />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex gap-4 w-full">
+                            <button
+                              className="border w-full border-primary text-primary px-4 py-2 rounded-md"
+                              onClick={() => {
+                                if (query.brandid) {
+                                  setFilter({
+                                    ...filter,
+                                    page: 1,
+                                    brandid: query.brandid.split("-"),
+                                  });
+                                } else {
+                                  setFilter({ ...filter, page: 1, brandid: [] });
+                                }
+                                setPopup({ ...popup, brand: false });
+                              }}
+                            >
+                              Đóng
+                            </button>
+                            <button
+                              onClick={() => {
+                                const searchParamsNew = new URLSearchParams(
+                                  searchParams.toString()
+                                );
+                                searchParamsNew.set("brandid", `${filter.brandid.join("-")}`);
+                                searchParamsNew.set("page", `1`);
+                                router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                                setPopup({ ...popup, brand: false });
+                              }}
+                              className="bg-primary w-full text-white px-4 py-2 rounded-md"
+                            >
+                              Xem kết quả
+                            </button>
+                          </div>
+                        </div>
+                      }
                     >
-                      <p className={`text-base`}>Thương hiệu</p>
-                      <IoMdArrowDropdown className={`w-6 h-6`} />
-                    </div>
-                  </Popover>
-                </div>
+                      <div
+                        className={`w-auto flex flex-nowrap items-center gap-1.5 px-4 py-2 shadow-lg select-none border transition-all duration-300 rounded-lg cursor-pointer${
+                          popup.brand || query.brandid
+                            ? "border-primary text-primary"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        <p className={`text-base`}>Thương hiệu</p>
+                        <IoMdArrowDropdown className={`w-6 h-6`} />
+                      </div>
+                    </Popover>
+                  </SwiperSlide>
+                </Swiper>
               </div>
               {(!!query.price || !!query.categoryid || !!query.brandid) && (
                 <div className="flex flex-col gap-3.5">
                   <h3 className="text-lg font-bold">Đang lọc theo</h3>
-                  <div className="flex gap-4">
+                  <Swiper
+                    slidesPerView={"auto"}
+                    spaceBetween={16}
+                    navigation={{
+                      nextEl: "#next",
+                      prevEl: "#prev",
+                    }}
+                    freeMode={true}
+                    modules={[FreeMode]}
+                    className="w-full flex gap-2.5 flex-wrap"
+                  >
                     {!!query.price && (
-                      <div
+                      <SwiperSlide
+                        className="!w-auto !flex flex-nowrap items-center select-none cursor-pointer gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
                         onClick={() => {
                           const searchParamsNew = new URLSearchParams(searchParams.toString());
                           searchParamsNew.delete("price");
                           searchParamsNew.set("page", `1`);
                           router.push(`?${searchParamsNew.toString()}`, { scroll: false });
-                          setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 50000000 });
+                          setFilter({ ...filter, page: 1, priceMin: 0, priceMax: 100000000 });
                         }}
-                        className="flex items-center select-none cursor-pointer gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
                       >
                         <IoCloseCircle className="w-6 h-6 text-red-500 cursor-pointer" />
                         <p className="text-base text-red-500">
@@ -394,11 +437,12 @@ function Products() {
                             {filter.priceMax.toLocaleString("vi-VN")} đ
                           </span>
                         </p>
-                      </div>
+                      </SwiperSlide>
                     )}
 
                     {!!query.categoryid && (
-                      <div
+                      <SwiperSlide
+                        className="!w-auto !flex flex-nowrap items-center select-none cursor-pointer  gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
                         onClick={() => {
                           const searchParamsNew = new URLSearchParams(searchParams.toString());
                           searchParamsNew.delete("categoryid");
@@ -406,7 +450,6 @@ function Products() {
                           router.push(`?${searchParamsNew.toString()}`, { scroll: false });
                           setFilter({ ...filter, categoryid: [] });
                         }}
-                        className="flex items-center select-none cursor-pointer  gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
                       >
                         <IoCloseCircle className="w-6 h-6 text-red-500 cursor-pointer" />
                         <p className="text-base text-red-500">
@@ -420,10 +463,11 @@ function Products() {
                               .join(", ")}
                           </span>
                         </p>
-                      </div>
+                      </SwiperSlide>
                     )}
                     {!!query.brandid && (
-                      <div
+                      <SwiperSlide
+                        className="!w-auto !flex flex-nowrap items-center select-none cursor-pointer  gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
                         onClick={() => {
                           const searchParamsNew = new URLSearchParams(searchParams.toString());
                           searchParamsNew.delete("brandid");
@@ -431,7 +475,6 @@ function Products() {
                           router.push(`?${searchParamsNew.toString()}`, { scroll: false });
                           setFilter({ ...filter, page: 1, brandid: [] });
                         }}
-                        className="flex items-center select-none cursor-pointer  gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
                       >
                         <IoCloseCircle className="w-6 h-6 text-red-500 cursor-pointer" />
                         <p className="text-base text-red-500">
@@ -443,10 +486,11 @@ function Products() {
                               .join(", ")}
                           </span>
                         </p>
-                      </div>
+                      </SwiperSlide>
                     )}
                     {(!!query.price || !!query.categoryid || !!query.brandid) && (
-                      <div
+                      <SwiperSlide
+                        className="!w-auto !flex flex-nowrap items-center select-none gap-1.5 px-2.5 py-2 shadow-lg cursor-pointer border border-red-500 bg-red-50 rounded-lg"
                         onClick={() => {
                           const searchParamsNew = new URLSearchParams(searchParams.toString());
                           searchParamsNew.delete("price");
@@ -458,18 +502,17 @@ function Products() {
                             ...filter,
                             page: 1,
                             priceMin: 0,
-                            priceMax: 50000000,
+                            priceMax: 100000000,
                             categoryid: [],
                             brandid: [],
                           });
                         }}
-                        className="flex items-center  select-none gap-1.5 px-2.5 py-2 shadow-lg cursor-pointer border border-red-500 bg-red-50 rounded-lg"
                       >
                         <IoCloseOutline className="w-6 h-6 text-red-500" />
                         <p className="text-base text-red-500">Bỏ chọn tất cả</p>
-                      </div>
+                      </SwiperSlide>
                     )}
-                  </div>
+                  </Swiper>
                 </div>
               )}
               {/* sắp xếp */}
@@ -636,6 +679,7 @@ function Products() {
                 defaultCurrent={1}
                 pageSize={query.limit}
                 total={totalPages}
+                showSizeChanger={false}
               />
             )}
           </div>
