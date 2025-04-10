@@ -501,7 +501,7 @@ function Header() {
                 state.user.avatar ? (
                   <div className="w-4 h-4 lg:w-6 lg:h-6 rounded-full overflow-hidden">
                     <img
-                      className="w-full h-full object-fill"
+                      className="w-full h-full object-cover"
                       src={state.user.avatar}
                       alt="avarar"
                     />

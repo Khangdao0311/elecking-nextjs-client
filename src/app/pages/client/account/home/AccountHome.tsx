@@ -59,7 +59,7 @@ function AccountHome() {
         <div className="flex items-center gap-4">
           <div className="w-1/5 max-w-40 aspect-square border-2 border-primary rounded-full overflow-hidden shadow-xl">
             {state?.user?.avatar ? (
-              <img src={state?.user?.avatar} alt="Avatar" className="w-full h-full " />
+              <img src={state?.user?.avatar} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
               <FaCircleUser className=" text-gray-400 w-full h-full" />
             )}

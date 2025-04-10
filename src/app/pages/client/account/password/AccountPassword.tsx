@@ -42,7 +42,7 @@ function AccountPassword() {
       <div className="w-full center-flex">
         <div className="w-32 h-32 aspect-square rounded-full overflow-hidden center-flex shadow-lg border-2 border-primaryDark">
           {state.user?.avatar ? (
-            <img src={state.user?.avatar} alt="" className="w-full h-full object-fill" />
+            <img src={state.user?.avatar} alt="" className="w-full h-full object-cover" />
           ) : (
             <FaUser className="w-1/2 h-1/2 text-gray-400" />
           )}

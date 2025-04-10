@@ -35,7 +35,7 @@ function ModalAddress({
   }
 
   return (
-    <div className="w-full max-w-[500px] h-[70vh] flex flex-col gap-4">
+    <div className="w-[80vw] max-w-[600px] h-[70vh] flex flex-col gap-4">
       <div className="flex text-justify items-center">
         <p className="text-xl font-semibold">Địa chỉ của tôi</p>
       </div>

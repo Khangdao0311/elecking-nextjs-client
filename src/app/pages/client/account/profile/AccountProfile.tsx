@@ -183,7 +183,7 @@ function AccountProfile() {
                 <img
                   src={file ? URL?.createObjectURL(file!) : user?.avatar}
                   alt=""
-                  className="w-full h-full object-fill"
+                  className="w-full h-full object-cover"
                 />
               ) : (
               <FaUser className="w-1/2 h-1/2 text-gray-400" />
