@@ -626,7 +626,7 @@ function DashBoard() {
             <div className="w-1/4 border rounded-lg flex justify-center items-center h-[110px]">
               {userDetail?.avatar ? (
                 <img
-                  className="w-14 h-14"
+                  className="w-full h-full rounded-lg"
                   src={userDetail?.avatar}
                   alt={userDetail?.username}
                 />
