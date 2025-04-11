@@ -414,7 +414,7 @@ function DashBoard() {
             </div>
             <div className="flex w-full gap-4">
               <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
-                <p className="text-xl font-bold">Đơn hàng chờ xác nhận</p>
+                <p className="text-xl font-bold">Đơn hàng chờ xác nhận ({getorders.filter((order) => order.status === 2).length})</p>
                 <div className="border border-zinc-300"></div>
                 <div
                   style={{ width: "100%", overflowY: "auto", maxWidth: "100%" }}
@@ -432,7 +432,7 @@ function DashBoard() {
                 </div>
               </div>
               <div className="p-5 flex flex-col gap-4 w-1/2 h-[400px] rounded-lg border border-gray-200 shadow-lg">
-                <p className="text-xl font-bold">Khách hàng mới</p>
+                <p className="text-xl font-bold">Khách hàng mới ({users.length})</p>
                 <div className="border border-zinc-300"></div>
                 <div style={{ width: "100%", maxWidth: "100%" }}>
                   <Table<IUser>
