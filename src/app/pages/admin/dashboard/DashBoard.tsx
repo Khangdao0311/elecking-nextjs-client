@@ -529,7 +529,6 @@ function DashBoard() {
                         disabled: ![2, 3, 4].includes(selectedOrder?.status),
                       },
                       { value: 1, label: "Đã giao hàng" },
-                      { value: 0, label: "Đã hủy" },
                     ]}
                   />
                 </div>
@@ -542,6 +541,14 @@ function DashBoard() {
                   {selectedOrder.address.type === 2 && (
                     <p className="text-sm font-bold text-primary">Văn phòng</p>
                   )}
+                </div>
+                <div className="flex w-full gap-1.5">
+                  <p className="text-sm font-medium">Xác nhận:</p>
+                  <p className="text-sm font-normal">
+                    {selectedOrder.payment_status
+                      ? "Đã thanh toán"
+                      : "Chưa thanh toán"}
+                  </p>
                 </div>
               </div>
               <div className="px-3 py-2 flex flex-col gap-2 rounded border border-gray-200 shadow-lg">

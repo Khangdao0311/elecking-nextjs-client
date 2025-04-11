@@ -381,13 +381,9 @@ function Voucher() {
                 <Space direction="vertical">
                   <DatePicker
                     className="w-[268px] h-11 shadow-md"
-                    value={
-                      voucherCreateDate.isValid()
-                        ? voucherCreateDate
-                        : undefined
-                    }
-                    format="DD-MM-YYYY"
+                    value={startDate ? dayjs(startDate, "YYYYMMDD") : null}
                     onChange={handleDateStart}
+                    disabledDate={(current) => current && current < dayjs().startOf("day")}
                   />
                 </Space>
               </div>
@@ -398,11 +394,9 @@ function Voucher() {
                 <Space direction="vertical">
                   <DatePicker
                     className="w-[268px] h-11 shadow-md"
-                    value={
-                      voucherEndDate.isValid() ? voucherEndDate : undefined
-                    }
-                    format="DD-MM-YYYY"
+                    value={endDate ? dayjs(endDate, "YYYYMMDD") : null}
                     onChange={handleDateEnd}
+                    disabledDate={(current) => current && current < dayjs().startOf("day")}
                   />
                 </Space>
               </div>
@@ -426,6 +420,7 @@ function Voucher() {
                 </div>
                 <Select
                   className="shadow-md"
+                  placeholder="Chọn người dùng"
                   value={user}
                   style={{ width: 268, height: 44 }}
                   onChange={(value) => {
@@ -519,10 +514,10 @@ function Voucher() {
                         prev.map((v) =>
                           v.id === selectedVoucher.id
                             ? {
-                                ...v,
-                                ...voucherData,
-                                id: selectedVoucher.id,
-                              }
+                              ...v,
+                              ...voucherData,
+                              id: selectedVoucher.id,
+                            }
                             : v
                         )
                       );

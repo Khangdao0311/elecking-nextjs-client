@@ -147,8 +147,9 @@ function VoucherAdd() {
               <Space direction="vertical">
                 <DatePicker
                   className="w-[268px] h-11 shadow-md"
-                  placeholder="dd/mm/yyy"
+                  placeholder="dd/mm/yyyy"
                   onChange={handleDateStart}
+                  disabledDate={(current) => current && current < dayjs().startOf("day")}
                 />
               </Space>
             </div>
@@ -161,6 +162,7 @@ function VoucherAdd() {
                   className="w-[268px] h-11 shadow-md"
                   placeholder="dd/mm/yyy"
                   onChange={handleDateEnd}
+                  disabledDate={(current) => current && current < dayjs().startOf("day")}
                 />
               </Space>
             </div>
@@ -193,7 +195,7 @@ function VoucherAdd() {
           {contextHolder}
           <Space>
             <Button
-              back="voucher/list/stillexpired"
+              back="voucher/list"
               onClick={async () => {
                 const start = dayjs(startDate, "YYYYMMDD");
                 const end = dayjs(endDate, "YYYYMMDD");
@@ -203,11 +205,9 @@ function VoucherAdd() {
                   discountType === null ||
                   discountValue === null ||
                   minOrderValue === null ||
-                  maxDiscount === null ||
                   !startDate ||
                   !endDate ||
-                  quantity === null ||
-                  !user
+                  quantity === null
                 ) {
                   errors.push("Vui lòng nhập đầy đủ thông tin.");
                 }
