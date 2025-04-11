@@ -32,9 +32,12 @@ function BrandList() {
       query.search = search;
     }
     brandServices.getQuery(query).then((res) => {
-      setBrands(res.data);
-      setTotalPages(res.total);
-      setLoad(false);
+      if(res.status === 200){
+
+        setBrands(res.data);
+        setTotalPages(res.total);
+        setLoad(false);
+      }
     });
   }, [limit, page, search]);
 

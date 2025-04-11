@@ -35,11 +35,12 @@ function ProductList() {
       query.search = search;
     }
     productServices.getQuery(query).then((res) => {
-      setProducts(res.data);
-      setTotalPages(res.total);
+      if (res.status === 200) {
+        setProducts(res.data);
+        setTotalPages(res.total);
+      }
     });
   }, [limit, page, search]);
-
 
   const columns: TableProps<IProduct>["columns"] = [
     {
@@ -55,7 +56,7 @@ function ProductList() {
       dataIndex: "name",
       width: 150,
       key: "name",
-      render:e =>  <div className="line-clamp-2">{e}</div>
+      render: (e) => <div className="line-clamp-2">{e}</div>,
     },
     {
       title: "Tên Danh Mục",
@@ -122,15 +123,17 @@ function ProductList() {
       width: 130,
       key: "quantity",
       render: (variants) =>
-        (variants.reduce(
-          (total: number, variant: IProductVariant) =>
-            (total += variant.colors.reduce(
-              (sumQuatity: number, color: IProductColor) =>
-                (sumQuatity += color.quantity),
-              0
-            )),
-          0
-        )).toLocaleString('vi-VN')
+        variants
+          .reduce(
+            (total: number, variant: IProductVariant) =>
+              (total += variant.colors.reduce(
+                (sumQuatity: number, color: IProductColor) =>
+                  (sumQuatity += color.quantity),
+                0
+              )),
+            0
+          )
+          .toLocaleString("vi-VN"),
     },
 
     {

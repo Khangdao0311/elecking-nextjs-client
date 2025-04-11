@@ -15,7 +15,6 @@ import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 
 function CategoryList() {
-
   const [state, dispatch] = useStore();
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
@@ -31,8 +30,10 @@ function CategoryList() {
       query.search = search;
     }
     categoryServices.getQuery(query).then((res) => {
-      setTotalPages(res.total);
-      setCategories(res.data);
+      if (res.status === 200) {
+        setTotalPages(res.total);
+        setCategories(res.data);
+      }
     });
   }, [limit, page, search]);
 

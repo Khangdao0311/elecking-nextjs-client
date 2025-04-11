@@ -1,17 +1,17 @@
 "use client";
 import { Select } from "antd";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input } from 'antd';
+import { Input } from "antd";
 import Button from "@/app/components/admin/Button";
 import { useEffect, useState } from "react";
 import * as userServices from "@/app/services/userService";
 import * as voucherServices from "@/app/services/voucherService";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
-import type { DatePickerProps } from 'antd';
-import { DatePicker, Space } from 'antd';
-import dayjs from 'dayjs';
-import { notification, } from 'antd';
+import type { DatePickerProps } from "antd";
+import { DatePicker, Space } from "antd";
+import dayjs from "dayjs";
+import { notification } from "antd";
 
 function VoucherAdd() {
   const [code, setCode] = useState("");
@@ -24,25 +24,30 @@ function VoucherAdd() {
   const [quantity, setQuantity] = useState<number | null>(null);
   const [getUser, setGetUser] = useState([]);
   const [user, setUser] = useState("");
-  const router = useRouter()
+  const router = useRouter();
 
-  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+  const openNotificationWithIcon = (
+    type: NotificationType,
+    message: any,
+    description: any
+  ) => {
     api[type]({
       message: message,
       description: description,
     });
-  }
+  };
 
   useEffect(() => {
     const query = { limit: 7 };
     userServices.getQuery(query).then((res) => {
-      setGetUser(res.data);
+      if (res.status === 200) {
+        setGetUser(res.data);
+      }
     });
   }, []);
-
 
   const handleChangeUser = (value: string) => {
     setUser(value);
@@ -70,15 +75,25 @@ function VoucherAdd() {
       <div className="bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div className="w-full flex flex-col gap-6">
           <div className="w-full">
-            <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">Thêm Voucher</div>
-          </div>
-          <div className='flex items-center flex-wrap gap-4'>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Mã Khuyến Mãi <span className="text-primary">*</span></div>
-              <Input onChange={(e) => setCode(e.target.value)} className='w-[268px] h-11 shadow-md' placeholder="Nhập mã khuyễn mãi" />
+            <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">
+              Thêm Voucher
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Loại Khuyến Mãi <span className='text-primary'> *</span></div>
+          </div>
+          <div className="flex items-center flex-wrap gap-4">
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Mã Khuyến Mãi <span className="text-primary">*</span>
+              </div>
+              <Input
+                onChange={(e) => setCode(e.target.value)}
+                className="w-[268px] h-11 shadow-md"
+                placeholder="Nhập mã khuyễn mãi"
+              />
+            </div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Loại Khuyến Mãi <span className="text-primary"> *</span>
+              </div>
               <Select
                 className="shadow-md"
                 value={discountType}
@@ -86,30 +101,49 @@ function VoucherAdd() {
                 onChange={(value) => {
                   console.log(value);
                   setDiscountType(Number(value));
-                }
-                }
+                }}
                 options={[
-                  { value: 2, label: 'Phần trăm' },
-                  { value: 1, label: 'Giá' },
+                  { value: 2, label: "Phần trăm" },
+                  { value: 1, label: "Giá" },
                 ]}
               />
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Giá Trị Khuyến Mãi<span className="text-primary"> *</span></div>
-              <Input onChange={(e) => setDiscountValue(Number(e.target.value))} className='w-[268px] h-11 shadow-md' placeholder="Nhập giá trị của voucher" />
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Giá Trị Khuyến Mãi<span className="text-primary"> *</span>
+              </div>
+              <Input
+                onChange={(e) => setDiscountValue(Number(e.target.value))}
+                className="w-[268px] h-11 shadow-md"
+                placeholder="Nhập giá trị của voucher"
+              />
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Đơn Tối Thiểu<span className="text-primary"> *</span></div>
-              <Input onChange={(e) => setMinOrderValue(Number(e.target.value))} className='w-[268px] h-11 shadow-md' placeholder="Nhập đơn tối nhiểu cho voucher" />
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Đơn Tối Thiểu<span className="text-primary"> *</span>
+              </div>
+              <Input
+                onChange={(e) => setMinOrderValue(Number(e.target.value))}
+                className="w-[268px] h-11 shadow-md"
+                placeholder="Nhập đơn tối nhiểu cho voucher"
+              />
             </div>
             {discountType === 2 && (
-              <div className='flex gap-0.5 flex-col'>
-                <div className='text-sm font-medium'>Giá Trị Cao Nhất<span className="text-primary"> *</span></div>
-                <Input onChange={(e) => setMaxDiscount(Number(e.target.value))} className='w-[268px] h-11 shadow-md' placeholder="Nhập giá trị cao nhất" />
+              <div className="flex gap-0.5 flex-col">
+                <div className="text-sm font-medium">
+                  Giá Trị Cao Nhất<span className="text-primary"> *</span>
+                </div>
+                <Input
+                  onChange={(e) => setMaxDiscount(Number(e.target.value))}
+                  className="w-[268px] h-11 shadow-md"
+                  placeholder="Nhập giá trị cao nhất"
+                />
               </div>
             )}
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Ngày Bắt Đầu <span className='text-primary'>*</span></div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Ngày Bắt Đầu <span className="text-primary">*</span>
+              </div>
               <Space direction="vertical">
                 <DatePicker
                   className="w-[268px] h-11 shadow-md"
@@ -118,8 +152,10 @@ function VoucherAdd() {
                 />
               </Space>
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Ngày Kết Thúc <span className='text-primary'>*</span></div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Ngày Kết Thúc <span className="text-primary">*</span>
+              </div>
               <Space direction="vertical">
                 <DatePicker
                   className="w-[268px] h-11 shadow-md"
@@ -128,12 +164,20 @@ function VoucherAdd() {
                 />
               </Space>
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Số Lượng<span className="text-primary"> *</span></div>
-              <Input onChange={(e) => setQuantity(Number(e.target.value))} className='w-[268px] h-11 shadow-md' placeholder="Số lượng" />
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Số Lượng<span className="text-primary"> *</span>
+              </div>
+              <Input
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className="w-[268px] h-11 shadow-md"
+                placeholder="Số lượng"
+              />
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Người Dùng <span className='text-primary'>*</span></div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Người Dùng <span className="text-primary">*</span>
+              </div>
               <Select
                 className="shadow-md"
                 placeholder="Chọn người dùng"
@@ -149,7 +193,7 @@ function VoucherAdd() {
           {contextHolder}
           <Space>
             <Button
-            back = "voucher/list/stillexpired"
+              back="voucher/list/stillexpired"
               onClick={async () => {
                 const start = dayjs(startDate, "YYYYMMDD");
                 const end = dayjs(endDate, "YYYYMMDD");
@@ -177,10 +221,17 @@ function VoucherAdd() {
                 }
 
                 if (errors.length > 0) {
-                  openNotificationWithIcon('error', 'Lỗi dữ liệu !', <>{errors.map((err, index) => <div key={index}>{err}</div>)}</>);
+                  openNotificationWithIcon(
+                    "error",
+                    "Lỗi dữ liệu !",
+                    <>
+                      {errors.map((err, index) => (
+                        <div key={index}>{err}</div>
+                      ))}
+                    </>
+                  );
                   return;
                 }
-
 
                 const voucherData = {
                   code,
@@ -192,21 +243,29 @@ function VoucherAdd() {
                   end_date: endDate,
                   quantity,
                   user_id: user,
-                  status: 1
+                  status: 1,
                 };
-                const voucherResponse = await voucherServices.addVoucher(voucherData);
+                const voucherResponse = await voucherServices.addVoucher(
+                  voucherData
+                );
                 if (voucherResponse?.status == 200) {
-                  openNotificationWithIcon('success', "Thành công", "Thêm voucher thành công");
+                  openNotificationWithIcon(
+                    "success",
+                    "Thành công",
+                    "Thêm voucher thành công"
+                  );
                   setTimeout(() => {
                     router.push(config.routes.admin.voucher.list);
                   }, 1000);
                 } else {
-                  openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                  openNotificationWithIcon(
+                    "error",
+                    "Lỗi",
+                    "Có lỗi xảy ra, vui lòng thử lại"
+                  );
                 }
-
               }}
-            >
-            </Button>
+            ></Button>
           </Space>
         </div>
       </div>

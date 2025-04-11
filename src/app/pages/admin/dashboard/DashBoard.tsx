@@ -77,7 +77,9 @@ function DashBoard() {
   useEffect(() => {
     const query = { limit: 7 };
     userServices.getQuery(query).then((res) => {
-      setGetUser(res.data);
+      if (res.status === 200) {
+        setGetUser(res.data);
+      }
     });
   }, []);
 
@@ -103,7 +105,9 @@ function DashBoard() {
     const query: any = {};
     query.limit = limit;
     voucherServices.getQuery(query).then((res) => {
-      setVoucher(res.total);
+      if (res.status === 200) {
+        setVoucher(res.total);
+      }
     });
   }, []);
 
@@ -113,7 +117,9 @@ function DashBoard() {
     query.limit = limit;
 
     userServices.getQuery(query).then((res) => {
-      setUsers(res.data);
+      if (res.status === 200) {
+        setUsers(res.data);
+      }
     });
   }, []);
 
@@ -121,7 +127,9 @@ function DashBoard() {
     const query: any = { year: year };
     query.limit = limit;
     orderServices.getQuery(query).then((res) => {
-      setGetorders(res.data);
+      if (res.status === 200) {
+        setGetorders(res.data);
+      }
     });
   }, [year]);
 
@@ -145,8 +153,10 @@ function DashBoard() {
     }
 
     statsServices.getQuery(query).then((res) => {
-      setStats(res.data);
-      setTotalprice(res.data.totalPrice);
+      if (res.status === 200) {
+        setStats(res.data);
+        setTotalprice(res.data.totalPrice);
+      }
 
       const months = generateLabels();
       const updatedChartData = months.map((month) => {
@@ -322,9 +332,12 @@ function DashBoard() {
 
   function showUserDetail(id: string) {
     setShowUser(true);
-    userServices.getById(id).then((res) => setUserDetail(res.data));
+    userServices.getById(id).then((res) => {
+      if (res.status === 200) {
+        setUserDetail(res.data);
+      }
+    });
   }
-
 
   return (
     <>
@@ -561,7 +574,7 @@ function DashBoard() {
                         "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
-                      {e.product.price.toLocaleString('vn-VN')}đ
+                      {e.product.price.toLocaleString("vn-VN")}đ
                     </p>
                   </div>
                 ))}
@@ -625,7 +638,7 @@ function DashBoard() {
                 <FaCircleUser className="w-[50px] h-[50px] text-gray-800" />
               )}
             </div>
-            <div className="flex flex-col w-3/4" >
+            <div className="flex flex-col w-3/4">
               <div className="flex gap-2">
                 <p>Họ và Tên: </p>
                 <p> {userDetail?.fullname}</p>

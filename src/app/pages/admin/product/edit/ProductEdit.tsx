@@ -83,52 +83,53 @@ function ProductEdit() {
 
   useEffect(() => {
     productServices.getProById(`${id}`).then((res) => {
-      const formattedVariants = res.data.variants.map((variant: any) => ({
-        ...variant,
-        property_ids: variant.properties.map(
-          (property: any, index: number) => property.id
-        ),
-        colors: variant.colors.map((color: any, index: number) => ({
-          ...color,
-          image: color.image
-            ? {
-                uid: crypto.randomUUID(),
-                name: color.image.split("/").pop(),
-                status: "done",
-                url: color.image,
-              }
-            : null,
-        })),
-      }));
-      setVariants(formattedVariants);
-      setName(res.data.name);
-      setEditorContent(res.data.description);
-      setSelectedbrand(res.data.brand);
-      const imageNames = res.data.images.map((imgUrl: string) =>
-        imgUrl.split("/").pop()
-      );
-
-      setGetimgs(imageNames);
-      const images = res.data.variants
-        .flatMap((variant: any) =>
-          variant.colors.map((color: any) => color.image.split("/").pop())
-        )
-        .filter(Boolean);
-
-      setGetimgcolor(images);
-      setSelectedcategory(
-        categories.find((e: any) => e.id === res.data.category.id)!
-      );
-
-      if (Array.isArray(res.data.images)) {
-        setImages(
-          res.data.images.map((imgUrl: any, index: any) => ({
-            uid: crypto.randomUUID(),
-            name: imgUrl.split("/").pop(),
-            status: "done",
-            url: imgUrl,
-          }))
+      if (res.status === 200) {
+        const formattedVariants = res.data.variants.map((variant: any) => ({
+          ...variant,
+          property_ids: variant.properties.map(
+            (property: any, index: number) => property.id
+          ),
+          colors: variant.colors.map((color: any, index: number) => ({
+            ...color,
+            image: color.image
+              ? {
+                  uid: crypto.randomUUID(),
+                  name: color.image.split("/").pop(),
+                  status: "done",
+                  url: color.image,
+                }
+              : null,
+          })),
+        }));
+        setVariants(formattedVariants);
+        setName(res.data.name);
+        setEditorContent(res.data.description);
+        setSelectedbrand(res.data.brand);
+        const imageNames = res.data.images.map((imgUrl: string) =>
+          imgUrl.split("/").pop()
         );
+        setGetimgs(imageNames);
+
+        const images = res.data.variants
+          .flatMap((variant: any) =>
+            variant.colors.map((color: any) => color.image.split("/").pop())
+          )
+          .filter(Boolean);
+
+        setGetimgcolor(images);
+        setSelectedcategory(
+          categories.find((e: any) => e.id === res.data.category.id)!
+        );
+        if (Array.isArray(res.data.images)) {
+          setImages(
+            res.data.images.map((imgUrl: any, index: any) => ({
+              uid: crypto.randomUUID(),
+              name: imgUrl.split("/").pop(),
+              status: "done",
+              url: imgUrl,
+            }))
+          );
+        }
       }
       setExpandedVariants(variants.map(() => true));
     });
@@ -363,12 +364,18 @@ function ProductEdit() {
 
   useEffect(() => {
     const query: any = {};
-    brandServices.getQuery(query).then((res) => setBrands(res.data));
+    brandServices.getQuery(query).then((res) => {
+      if (res.status === 200) {
+        setBrands(res.data);
+      }
+    });
   }, []);
   useEffect(() => {
     const query: any = {};
     categoryServices.getQuery(query).then((res) => {
-      setCategories(res.data);
+      if (res.status === 200) {
+        setCategories(res.data);
+      }
     });
   }, []);
 
@@ -423,10 +430,10 @@ function ProductEdit() {
                 Loại sản phẩm <span className="text-primary">*</span>
               </div>
               <Select
-              showSearch
-              filterOption={(input: string, option: any) =>
-                option.name.toLowerCase().includes(input.toLowerCase())
-              }
+                showSearch
+                filterOption={(input: string, option: any) =>
+                  option.name.toLowerCase().includes(input.toLowerCase())
+                }
                 className="shadow-md"
                 style={{ width: 268, height: 44 }}
                 onChange={(value, options: any) => setSelectedcategory(options)}
@@ -445,7 +452,6 @@ function ProductEdit() {
                 style={{ width: 268, height: 44 }}
                 value={selectedbrand?.id}
                 options={brands}
-
                 onChange={(value) => {
                   const brand = brands.find((b) => b.id === value);
                   setSelectedbrand(brand || null);
