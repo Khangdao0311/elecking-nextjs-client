@@ -3,7 +3,6 @@ import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import * as voucherServices from "@/app/services/voucherService";
 import { useEffect, useState } from "react";
-import Statusvoucher from "@/app/pages/admin/Components/Status";
 import * as userServices from "@/app/services/userService";
 import Link from "next/link";
 import config from "@/app/config";
@@ -21,9 +20,6 @@ import { Select } from "antd";
 import dayjs from 'dayjs';
 import { notification } from 'antd';
 import * as voucherService from "@/app/services/voucherService";
-import { useRouter } from "next/navigation";
-
-
 
 function Voucher() {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -52,9 +48,6 @@ function Voucher() {
   const [totalExpiredVoucher, setTotalExpiredVoucher] = useState(0);
   const voucherCreateDate = dayjs(selectedVoucher?.start_date, "YYYYMMDD");
   const voucherEndDate = dayjs(selectedVoucher?.end_date, 'YYYYMMDD');
-  const router = useRouter()
-
-
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -65,7 +58,6 @@ function Voucher() {
       description: description,
     });
   };
-  console.log(voucher);
 
   useEffect(() => {
     if (selectedVoucher) {
@@ -211,28 +203,6 @@ function Voucher() {
       align: "center",
     },
     {
-      title: "Trạng Thái",
-      dataIndex: "end_date",
-      key: "end_date_status",
-      width: 160,
-      align: "center",
-      render: (endDate) => {
-        const isExpired = moment(endDate, "YYYYMMDD").isBefore(moment(), "day");
-        return (
-          <div className="flex justify-center">
-            <p
-              className={`px-3 py-1 w-[140px] text-xs font-normal rounded-lg ${isExpired
-                ? "text-red-800 bg-red-100"
-                : "text-green-800 bg-green-100"
-                }`}
-            >
-              {isExpired ? "Hết hạn" : "Còn hạn"}
-            </p>
-          </div>
-        );
-      },
-    },
-    {
       title: "Chức năng",
       key: "action",
       width: 96,
@@ -319,7 +289,7 @@ function Voucher() {
             <div className="px-4 h-16 flex items-center">
               <p className="text-xl font-semibold w-full">Chỉnh Sửa Voucher</p>
             </div>
-            <div className='flex items-center flex-wrap gap-4'>
+            <div className='flex items-center flex-wrap gap-4 px-4'>
               <div className='flex gap-0.5 flex-col'>
                 <div className='text-sm font-medium'>Mã Khuyến Mãi <span className="text-primary">*</span></div>
                 <Input className='w-[268px] h-11 shadow-md' value={code} onChange={(e) => setCode(e.target.value)} disabled />
