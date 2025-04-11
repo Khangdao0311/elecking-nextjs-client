@@ -4,9 +4,9 @@ import { Input, Modal, notification, Upload } from "antd";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Button from "@/app/components/admin/Button";
-import * as categoryService from "@/app/services/categoryService";
+import * as categoryServices from "@/app/services/categoryService";
 import { useParams } from "next/navigation";
-import * as proptypeService from "@/app/services/proptypeService";
+import * as proptypeServices from "@/app/services/proptypeService";
 import * as uploadService from "@/app/services/uploadService";
 import "quill/dist/quill.snow.css";
 import { useRouter } from "next/navigation";
@@ -48,7 +48,7 @@ function CategoryEdit() {
 
   useEffect(() => {
     const query = { limit: 0 };
-    proptypeService.getQuery(query).then((res) => {
+    proptypeServices.getQuery(query).then((res) => {
       if (res.status === 200) {
         setproptype(res.data);
       }
@@ -56,7 +56,7 @@ function CategoryEdit() {
   }, []);
 
   useEffect(() => {
-    categoryService.getOne(id).then((res) => {
+    categoryServices.getOne(id).then((res) => {
       if (res.status === 200) {
         setEditProptype(res.data.proptypes);
         setCategoryName(res.data.name);
@@ -116,7 +116,7 @@ function CategoryEdit() {
       editorContent &&
       icon
     ) {
-      categoryService
+      categoryServices
         .editCategory(id, {
           name: categoryName,
           image: finalImage,

@@ -1,7 +1,7 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import * as proptypeService from "@/app/services/proptypeService";
-import * as propertyService from "@/app/services/propertyService";
+import * as proptypeServices from "@/app/services/proptypeService";
+import * as propertyServices from "@/app/services/propertyService";
 import { useEffect, useState } from "react";
 import BoxSearchLimit from "@/app/components/admin/boxsearchlimtit";
 import { useStore } from "@/app/store";
@@ -69,9 +69,11 @@ function ConfigurationList() {
     if (searchProptype != "") {
       query.search = searchProptype;
     }
-    proptypeService.getQuery(query).then((res) => {
-      setTotalPagesProptype(res.total);
-      setProptype(res.data);
+    proptypeServices.getQuery(query).then((res) => {
+      if (res.status === 200) {
+        setTotalPagesProptype(res.total);
+        setProptype(res.data);
+      }
     });
   }, [limitProptype, pageProptype, searchProptype]);
 
@@ -83,9 +85,11 @@ function ConfigurationList() {
       query.search = searchProperty;
     }
 
-    propertyService.getQuery(query).then((res) => {
-      setProperTy(res.data);
-      setTotalPagesProperty(res.total);
+    propertyServices.getQuery(query).then((res) => {
+      if (res.status === 200) {
+        setProperTy(res.data);
+        setTotalPagesProperty(res.total);
+      }
     });
   }, [limitProperty, pageProperty, searchProperty]);
 
@@ -175,7 +179,7 @@ function ConfigurationList() {
       );
     }
     if (nameCatConfiguration) {
-      await proptypeService
+      await proptypeServices
         .addProptype({ name: nameCatConfiguration })
         .then((res) => {
           if (res.status === 200) {
@@ -188,24 +192,28 @@ function ConfigurationList() {
           }
         });
     }
-    await proptypeService
+    await proptypeServices
       .getQuery({ limit: limitProptype, page: pageProptype })
       .then((res) => {
-        setTotalPagesProptype(res.total);
-        setProptype(res.data);
+        if (res.status === 200) {
+          setTotalPagesProptype(res.total);
+          setProptype(res.data);
+        }
       });
   }
 
   function handleGetCatConfiguration(id: string) {
     setShowEditCatConfiguration(true);
-    proptypeService.getOne(id).then((res) => {
-      setNameCatConfiguration(res.data.name);
-      setIdCatConfiguration(res.data.id);
+    proptypeServices.getOne(id).then((res) => {
+      if (res.status === 200) {
+        setNameCatConfiguration(res.data.name);
+        setIdCatConfiguration(res.data.id);
+      }
     });
   }
 
   async function handleEditCatConfiguration() {
-    await proptypeService
+    await proptypeServices
       .editProptype(idCatConfiguration, { name: nameCatConfiguration })
       .then((res) => {
         if (res.status === 200) {
@@ -215,34 +223,40 @@ function ConfigurationList() {
             "Sửa danh mục cấu hình thành công"
           );
           setShowEditCatConfiguration(false);
-          return proptypeService.getQuery({
+          return proptypeServices.getQuery({
             limit: limitProptype,
             page: pageProptype,
           });
         }
       })
       .then((res) => {
-        setTotalPagesProptype(res.total);
-        setProptype(res.data);
+        if (res.status === 200) {
+          setTotalPagesProptype(res.total);
+          setProptype(res.data);
+        }
       });
-    await propertyService
+    await propertyServices
       .getQuery({ limit: limitProperty, page: pageProperty })
       .then((res) => {
-        setTotalPagesProperty(res.total);
-        setProperTy(res.data);
+        if (res.status === 200) {
+          setTotalPagesProperty(res.total);
+          setProperTy(res.data);
+        }
       });
   }
 
   async function handleShowAddConfiguration() {
     setShowAddConfiguration(true);
-    await proptypeService
-      .getQuery({ limit: 0 })
-      .then((res) => setProptype(res.data));
+    await proptypeServices.getQuery({ limit: 0 }).then((res) => {
+      if (res.status === 200) {
+        setProptype(res.data);
+      }
+    });
   }
 
   async function handleAddConfiguration() {
     if (nameConfiguration && selectedProptype) {
-      await propertyService
+      await propertyServices
         .addProperty({ name: nameConfiguration, proptype_id: selectedProptype })
         .then((res) => {
           if (res.status == 200) {
@@ -254,11 +268,13 @@ function ConfigurationList() {
             setNameConfiguration("");
             setSelectedProptype([]);
           }
-          propertyService
+          propertyServices
             .getQuery({ limit: limitProperty, page: pageProperty })
             .then((res) => {
-              setProperTy(res.data);
-              setTotalPagesProperty(res.total);
+              if (res.status === 200) {
+                setProperTy(res.data);
+                setTotalPagesProperty(res.total);
+              }
             });
         });
     } else {
@@ -272,18 +288,22 @@ function ConfigurationList() {
 
   async function handleGetConfiguration(id: string) {
     setShowEditConfiguration(true);
-    await proptypeService.getQuery({ limit: 0 }).then((res) => {
-      setProptype(res.data);
+    await proptypeServices.getQuery({ limit: 0 }).then((res) => {
+      if (res.status === 200) {
+        setProptype(res.data);
+      }
     });
-    await propertyService.getOne(id).then((res) => {
-      setNameConfiguration(res.data.name);
-      setSelectedProperty(res.data.proptype.id);
-      setIdConfiguration(res.data.id);
+    await propertyServices.getOne(id).then((res) => {
+      if (res.status === 200) {
+        setNameConfiguration(res.data.name);
+        setSelectedProperty(res.data.proptype.id);
+        setIdConfiguration(res.data.id);
+      }
     });
   }
 
   async function handleEditConfiguration() {
-    await propertyService
+    await propertyServices
       .editProperty(idConfiguration, {
         name: nameConfiguration,
         proptype_id: selectedProperty,
@@ -297,14 +317,16 @@ function ConfigurationList() {
             "Sửa tên cấu hình thành công"
           );
         }
-        return propertyService.getQuery({
+        return propertyServices.getQuery({
           limit: limitProperty,
           page: pageProperty,
         });
       })
       .then((res) => {
-        setTotalPagesProperty(res.total);
-        setProperTy(res.data);
+        if (res.status === 200) {
+          setTotalPagesProperty(res.total);
+          setProperTy(res.data);
+        }
       });
   }
 

@@ -125,7 +125,6 @@ function DashBoard() {
 
   useEffect(() => {
     const query: any = { year: year };
-    query.limit = limit;
     orderServices.getQuery(query).then((res) => {
       if (res.status === 200) {
         setGetorders(res.data);
@@ -156,21 +155,18 @@ function DashBoard() {
       if (res.status === 200) {
         setStats(res.data);
         setTotalprice(res.data.totalPrice);
+        const months = generateLabels();
+        const updatedChartData = months.map((month) => {
+          const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+          return Math.round(res.data[formattedMonth]?.price || 0);
+        });
+        const updatedOrderData = months.map((month) => {
+          const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+          return Math.round(res.data[formattedMonth]?.order || 0);
+        });
+        setChartData(updatedChartData);
+        setTotalorder(updatedOrderData);
       }
-
-      const months = generateLabels();
-      const updatedChartData = months.map((month) => {
-        const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
-        return Math.round(res.data[formattedMonth]?.price || 0);
-      });
-
-      const updatedOrderData = months.map((month) => {
-        const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
-        return Math.round(res.data[formattedMonth]?.order || 0);
-      });
-
-      setChartData(updatedChartData);
-      setTotalorder(updatedOrderData);
     });
   }, [year]);
 

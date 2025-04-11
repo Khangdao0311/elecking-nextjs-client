@@ -13,7 +13,7 @@ import * as brandServices from "@/app/services/brandService";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
 import { Input, Upload, Select } from "antd";
-import { notification, Space } from 'antd';
+import { notification, Space } from "antd";
 
 function BrandEdit() {
   const quillRef = useRef<HTMLDivElement>(null);
@@ -21,55 +21,59 @@ function BrandEdit() {
   const [brandedit, setBrandedit] = useState<IBrand[]>([]);
   const [logo, setLogo] = useState<UploadFile[]>([]);
   const [banner, setBanner] = useState<UploadFile[]>([]);
-  const [storageimglogo, setStorageimglogo] = useState("")
-  const [storageimgbanner, setStorageimgbanner] = useState("")
+  const [storageimglogo, setStorageimglogo] = useState("");
+  const [storageimgbanner, setStorageimgbanner] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<number | undefined>(
     undefined
   );
   const [name, setName] = useState("");
   const { id }: any = useParams();
 
-  const router = useRouter()
+  const router = useRouter();
 
-  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+  const openNotificationWithIcon = (
+    type: NotificationType,
+    message: any,
+    description: any
+  ) => {
     api[type]({
       message: message,
       description: description,
     });
-  }
+  };
 
   useEffect(() => {
     brandServices.getById(`${id}`).then((res) => {
-      if(res.status === 200){
+      if (res.status === 200) {
         setBrandedit(res.data);
         setName(res.data.name);
         setSelectedStatus(res.data.status);
         setEditorContent(res.data.description);
-        setStorageimglogo(res.data.logo)
-        setStorageimgbanner(res.data.banner)
-      }
-      if (res.data.logo) {
-        setLogo([
-          {
-            uid: crypto.randomUUID(),
-            name: "logo.png",
-            status: "done",
-            url: res.data.logo,
-          },
-        ]);
-      }
-      if (res.data.banner) {
-        setBanner([
-          {
-            uid: crypto.randomUUID(),
-            name: "banner.png",
-            status: "done",
-            url: res.data.banner,
-          },
-        ]);
+        setStorageimglogo(res.data.logo);
+        setStorageimgbanner(res.data.banner);
+        if (res.data.logo) {
+          setLogo([
+            {
+              uid: crypto.randomUUID(),
+              name: "logo.png",
+              status: "done",
+              url: res.data.logo,
+            },
+          ]);
+        }
+        if (res.data.banner) {
+          setBanner([
+            {
+              uid: crypto.randomUUID(),
+              name: "banner.png",
+              status: "done",
+              url: res.data.banner,
+            },
+          ]);
+        }
       }
     });
   }, [id]);
@@ -163,7 +167,6 @@ function BrandEdit() {
               />
             </div>
           </div>
-
 
           <div>
             <div className="text-sm font-medium">
@@ -295,49 +298,72 @@ function BrandEdit() {
         <Button
           back="brand/list"
           onClick={async () => {
-            let imgLogoName = storageimglogo ? storageimglogo.split("/").pop() : "";;
-            let imgBannerName = storageimgbanner ? storageimgbanner.split("/").pop() : "";
-            if (logo.length > 0 && logo[0].originFileObj && (logo[0].originFileObj.name !== storageimglogo)) {
+            let imgLogoName = storageimglogo
+              ? storageimglogo.split("/").pop()
+              : "";
+            let imgBannerName = storageimgbanner
+              ? storageimgbanner.split("/").pop()
+              : "";
+            if (
+              logo.length > 0 &&
+              logo[0].originFileObj &&
+              logo[0].originFileObj.name !== storageimglogo
+            ) {
               const imgLogo = logo[0].originFileObj as File;
               const formDataLogo = new FormData();
               formDataLogo.append("image", imgLogo);
-              uploadServices.uploadSingle(formDataLogo)
-              imgLogoName = imgLogo.name
+              uploadServices.uploadSingle(formDataLogo);
+              imgLogoName = imgLogo.name;
             }
-            if (banner.length > 0 && banner[0].originFileObj && (banner[0].originFileObj.name !== storageimgbanner)) {
+            if (
+              banner.length > 0 &&
+              banner[0].originFileObj &&
+              banner[0].originFileObj.name !== storageimgbanner
+            ) {
               const imgBanner = banner[0].originFileObj as File;
               const formDataBanner = new FormData();
               formDataBanner.append("image", imgBanner);
-              uploadServices.uploadSingle(formDataBanner)
-              imgBannerName = imgBanner.name
+              uploadServices.uploadSingle(formDataBanner);
+              imgBannerName = imgBanner.name;
             }
-            if (!name.trim() || !imgLogoName?.length || !imgBannerName?.length || !editorContent.trim()) {
-              openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
+            if (
+              !name.trim() ||
+              !imgLogoName?.length ||
+              !imgBannerName?.length ||
+              !editorContent.trim()
+            ) {
+              openNotificationWithIcon(
+                "error",
+                "Lỗi dữ liệu",
+                "Vui lòng nhập đầy đủ thông tin"
+              );
               return;
             }
-            const brandResponse = await brandServices.editBrand(
-              id,
-              {
-                name: name.trim(),
-                logo: imgLogoName,
-                banner: imgBannerName,
-                status: selectedStatus,
-                description: editorContent.trim(),
-              }
-              
-            )
+            const brandResponse = await brandServices.editBrand(id, {
+              name: name.trim(),
+              logo: imgLogoName,
+              banner: imgBannerName,
+              status: selectedStatus,
+              description: editorContent.trim(),
+            });
             if (brandResponse?.status == 200) {
-              openNotificationWithIcon("success", "Thành công", "Sửa thương hiệu thành công");
+              openNotificationWithIcon(
+                "success",
+                "Thành công",
+                "Sửa thương hiệu thành công"
+              );
               setTimeout(() => {
                 router.push(config.routes.admin.brand.list);
               }, 1000);
             } else {
-              openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+              openNotificationWithIcon(
+                "error",
+                "Lỗi",
+                "Có lỗi xảy ra, vui lòng thử lại"
+              );
             }
-
           }}
         />
-
       </div>
     </>
   );

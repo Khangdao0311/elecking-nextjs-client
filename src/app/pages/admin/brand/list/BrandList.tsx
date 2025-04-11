@@ -32,8 +32,7 @@ function BrandList() {
       query.search = search;
     }
     brandServices.getQuery(query).then((res) => {
-      if(res.status === 200){
-
+      if (res.status === 200) {
         setBrands(res.data);
         setTotalPages(res.total);
         setLoad(false);
@@ -97,7 +96,10 @@ function BrandList() {
       key: "description",
       render: (text) => (
         <Tooltip title={<div dangerouslySetInnerHTML={{ __html: text }} />}>
-          <span className="line-clamp-1" dangerouslySetInnerHTML={{ __html: text }} />
+          <span
+            className="line-clamp-1"
+            dangerouslySetInnerHTML={{ __html: text }}
+          />
         </Tooltip>
       ),
     },
@@ -145,7 +147,9 @@ function BrandList() {
   return (
     <>
       {state.load && <Loading />}
-      {state.load ? "" :
+      {state.load ? (
+        ""
+      ) : (
         <>
           <TitleAdmin title="Danh Sách Thương Hiệu" />
           <Boxsearchlimit
@@ -191,7 +195,8 @@ function BrandList() {
               </div>
             )}
           </div>
-        </>}
+        </>
+      )}
     </>
   );
 }

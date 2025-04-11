@@ -3,9 +3,9 @@ import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import React, { useEffect, useRef, useState } from "react";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
-import * as proptypeService from "@/app/services/proptypeService";
+import * as proptypeServices from "@/app/services/proptypeService";
 import * as uploadService from "@/app/services/uploadService";
-import * as categoryService from "@/app/services/categoryService";
+import * as categoryServices from "@/app/services/categoryService";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
 import { Input, Modal, Select, Upload } from "antd";
@@ -42,7 +42,7 @@ function CategoryAdd() {
 
   useEffect(() => {
     const query = { limit: 0 };
-    proptypeService.getQuery(query).then((res) => {
+    proptypeServices.getQuery(query).then((res) => {
       if (res.status === 200) {
         setproptype(res.data);
       }
@@ -111,7 +111,7 @@ function CategoryAdd() {
       editorContent &&
       icon
     ) {
-      categoryService
+      categoryServices
         .addCategory({
           name: name,
           image: image[0].name,
