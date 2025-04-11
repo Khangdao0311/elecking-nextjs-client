@@ -36,21 +36,6 @@ function BrandAdd() {
     });
   }
 
-  //   if (!quillRef.current) return;
-  //   if (quillRef.current.querySelector(".ql-editor")) return;
-
-  //   const quill = new Quill(quillRef.current, {
-  //     theme: "snow",
-  //   });
-
-  //   quill.root.innerHTML = editorContent;
-
-  //   quill.on("text-change", () => {
-  //     setEditorContent(quill.root.innerHTML);
-  //     setdescription(quill.root.innerHTML);
-  //   });
-  // }, []);
-
   const handleRemove = (file: UploadFile, type: "logo" | "banner") => {
     if (type === "logo") {
       setLogo((prev) => prev.filter((item) => item.uid !== file.uid));
@@ -102,9 +87,6 @@ function BrandAdd() {
       
     });
   }, []);
-  
-  console.log(description);
-  
 
   return (
     <>
@@ -127,7 +109,6 @@ function BrandAdd() {
               />
             </div>
           </div>
-          {/* Ảnh */}
           <div>
             <div className="text-sm font-medium">
               Ảnh <span className="text-primary">*</span>
@@ -159,7 +140,6 @@ function BrandAdd() {
                 </div>
               </Upload>
 
-              {/* Hiển thị danh sách ảnh đã chọn */}
               <div className="flex items-center flex-wrap gap-3">
                 {logo.map((file) => {
                   const imageSrc = file.originFileObj
@@ -218,7 +198,6 @@ function BrandAdd() {
                 </div>
               </Upload>
 
-              {/* Hiển thị danh sách ảnh đã chọn */}
               <div className="flex items-center flex-wrap gap-3">
                 {banner.map((file) => {
                   const imageSrc = file.originFileObj

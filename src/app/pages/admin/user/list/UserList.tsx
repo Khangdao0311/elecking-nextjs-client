@@ -8,10 +8,10 @@ import { FaEye } from "react-icons/fa6";
 import { LuEyeClosed } from "react-icons/lu";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
-import { Pagination} from "antd";
-import { Space, Table} from "antd";
+import { Pagination } from "antd";
+import { Space, Table } from "antd";
 import type { TableProps } from "antd";
-import { Switch } from 'antd';
+import { Switch } from "antd";
 
 function UserList() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -32,8 +32,10 @@ function UserList() {
     }
 
     userServices.getQuery(query).then((res) => {
-      setUsers(res.data);
-      setTotalPages(res.total);
+      if (res.status === 200) {
+        setUsers(res.data);
+        setTotalPages(res.total);
+      }
       const initialEyeState = res.data.reduce((acc: any, user: any) => {
         acc[user.id] = true;
         return acc;
@@ -63,7 +65,7 @@ function UserList() {
         role: role,
       };
       await userServices.updateStatus(id, dataNew);
-  
+
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === id ? { ...user, status: newStatus } : user
@@ -73,7 +75,6 @@ function UserList() {
       console.error("Lỗi khi cập nhật trạng thái người dùng:", error);
     }
   };
-  
 
   const handleRoleChange = async (checked: boolean, id: string) => {
     try {
@@ -100,7 +101,7 @@ function UserList() {
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 30) return undefined;
-    return { x: 50, y: "max-content"  };
+    return { x: 50, y: "max-content" };
   };
 
   const columns: TableProps<IUser>["columns"] = [
@@ -182,66 +183,76 @@ function UserList() {
       render: (_, record) => (
         <Space size="middle">
           <Switch
-            checked={record.role === 1} 
+            checked={record.role === 1}
             onChange={(checked) => handleRoleChange(checked, record.id)}
           />
           <button
             className="w-6 h-6 bg-red-100 rounded text-red-800 flex items-center justify-center"
             onClick={() => toggleEye(record.id, record.role)}
           >
-            {record.status === 1 ? <FaEye className="w-5 h-5" /> : <LuEyeClosed className="w-5 h-5" />}
+            {record.status === 1 ? (
+              <FaEye className="w-5 h-5" />
+            ) : (
+              <LuEyeClosed className="w-5 h-5" />
+            )}
           </button>
         </Space>
       ),
     },
   ];
-  
+
   return (
     <>
-    {state.load && <Loading />}
-    {state.load ? "" : <>
-      <TitleAdmin title="Quản lý người dùng" />
-      <Boxsearchlimit
-        title="người dùng"
-        onLimitChange={(newLimit: any) => {
-          setLimit(newLimit);
-          setPage(1);
-        }}
-        onSearch={(value:string) => {
-          setSearch(value);
-          setPage(1);
-        }}
-      />
-      <div className=" bg-white shadow-xl min-h-0 rounded-lg px-4 py-4 flex items-start flex-col gap-4">
-        <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%"}}>
-          <Table<IUser>
-            columns={columns}
-            dataSource={users}
-            rowKey="id"
-            scroll={getTableScroll(users.length)}
-            pagination={false}
-            rowClassName={(record) => (hiddenUsers[record.id] ? "bg-gray-200" : "")}
-            onRow={() => ({
-              onMouseEnter: (e) => e.stopPropagation(),
-              onMouseLeave: (e) => e.stopPropagation(),
-            })}
+      {state.load && <Loading />}
+      {state.load ? (
+        ""
+      ) : (
+        <>
+          <TitleAdmin title="Quản lý người dùng" />
+          <Boxsearchlimit
+            title="người dùng"
+            onLimitChange={(newLimit: any) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+            onSearch={(value: string) => {
+              setSearch(value);
+              setPage(1);
+            }}
           />
-        </div>
-        {totalPages > limit && (
-          <div className="flex w-full justify-end mt-auto">
-            <Pagination
-              current={page}
-              onChange={(e) => setPage(e)}
-              defaultCurrent={1}
-              align="end"
-              pageSize={limit}
-              total={totalPages}
-              showSizeChanger={false}
-            />
+          <div className=" bg-white shadow-xl min-h-0 rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+            <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
+              <Table<IUser>
+                columns={columns}
+                dataSource={users}
+                rowKey="id"
+                scroll={getTableScroll(users.length)}
+                pagination={false}
+                rowClassName={(record) =>
+                  hiddenUsers[record.id] ? "bg-gray-200" : ""
+                }
+                onRow={() => ({
+                  onMouseEnter: (e) => e.stopPropagation(),
+                  onMouseLeave: (e) => e.stopPropagation(),
+                })}
+              />
+            </div>
+            {totalPages > limit && (
+              <div className="flex w-full justify-end mt-auto">
+                <Pagination
+                  current={page}
+                  onChange={(e) => setPage(e)}
+                  defaultCurrent={1}
+                  align="end"
+                  pageSize={limit}
+                  total={totalPages}
+                  showSizeChanger={false}
+                />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </>}
+        </>
+      )}
     </>
   );
 }

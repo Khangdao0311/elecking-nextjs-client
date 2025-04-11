@@ -7,13 +7,13 @@ import * as orderServices from "@/app/services/orderService";
 import Statusorder from "@/app/pages/admin/Components/Status";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
-import { Modal } from 'antd';
+import { Modal } from "antd";
 import { Pagination } from "antd";
 import { Select } from "antd";
-import { Space, Table} from "antd";
+import { Space, Table } from "antd";
 import moment from "moment";
 import type { TableProps } from "antd";
-import { notification } from 'antd';
+import { notification } from "antd";
 
 function OrderList() {
   const [editorder, setEditorder] = useState(false);
@@ -31,11 +31,14 @@ function OrderList() {
   const [state, dispatch] = useStore();
   const [totalOrders, setTotalOrders] = useState(0);
 
-
-  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+  const openNotificationWithIcon = (
+    type: NotificationType,
+    message: any,
+    description: any
+  ) => {
     api[type]({
       message: message,
       description: description,
@@ -49,7 +52,7 @@ function OrderList() {
   }, [selectedOrder]);
 
   const showEditOrder = (orderId: string) => {
-    const order = orders.find(order => order.id === orderId);
+    const order = orders.find((order) => order.id === orderId);
     if (order) {
       setSelectedOrder(order);
       setSelectedStatus(order.status);
@@ -62,30 +65,31 @@ function OrderList() {
       const query: any = {};
       query.limit = limit;
       query.page = page;
-  
+
       if (paymentStatus) {
         query.payment_status = paymentStatus;
       } else if (status !== "") {
         query.status = status;
       }
-      
+
       if (search !== "") {
         query.search = search;
       }
-      
+
       orderServices.getQuery(query).then((res) => {
-        const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
-          if (a.status === 2 && b.status !== 2) return -1;
-          if (a.status !== 2 && b.status === 2) return 1;
-          return 0;
-        });
-        setOrders(sortedOrders);
-        setTotalPages(res.total);
-        setQuantityOder(res.totalOrder);
+        if (res.status === 200) {
+          const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
+            if (a.status === 2 && b.status !== 2) return -1;
+            if (a.status !== 2 && b.status === 2) return 1;
+            return 0;
+          });
+          setOrders(sortedOrders);
+          setTotalPages(res.total);
+          setQuantityOder(res.totalOrder);
+        }
       });
     }
   }, [limit, page, search, status, paymentStatus, editorder]);
-  
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 30) return undefined;
@@ -113,7 +117,8 @@ function OrderList() {
       dataIndex: "ordered_at",
       key: "ordered_at",
       width: 160,
-      render: (date) => moment(date, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm"),
+      render: (date) =>
+        moment(date, "YYYYMMDDHHmmss").format("DD/MM/YYYY HH:mm"),
     },
     {
       title: "Khách Hàng",
@@ -135,13 +140,15 @@ function OrderList() {
       key: "transaction_code",
       width: 120,
       align: "center",
-      render: (code) => <span className="line-clamp-1">{code || "Không có"}</span>,
+      render: (code) => (
+        <span className="line-clamp-1">{code || "Không có"}</span>
+      ),
     },
     {
       title: "Phương Thức Thanh Toán",
       dataIndex: "payment_method",
       key: "payment_method",
-      align: 'center',
+      align: "center",
       width: 230,
       render: (payment) => payment.name || "N/A",
     },
@@ -182,7 +189,10 @@ function OrderList() {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
-          <button onClick={() => showEditOrder(record.id)} className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center">
+          <button
+            onClick={() => showEditOrder(record.id)}
+            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center"
+          >
             <FiEdit className="w-5 h-5" />
           </button>
         </Space>
@@ -193,48 +203,54 @@ function OrderList() {
   return (
     <>
       {state.load && <Loading />}
-      {state.load ? "" : <>
-        <TitleAdmin title="Quản lý đơn hàng" />
-        <Boxsearchlimit
-          title="đơn hàng"
-          onLimitChange={(newLimit: any) => {
-            setLimit(newLimit);
-            setPage(1);
-          }}
-          status={status}
-          setStatus={setStatus}
-          paymentStatus={paymentStatus}
-          setPaymentStatus={setPaymentStatus}
-          quantityOder={quantityOder}
-        />
-        <div className="flex flex-col min-h-0">
-          <div className=" bg-white shadow-xl min-h-0 justify-between px-4 py-4 flex items-start flex-col gap-4">
-            <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
-              <Table<IOrder>
-                columns={columns}
-                dataSource={orders}
-                rowKey="id"
-                scroll={getTableScroll(orders.length)}
-                pagination={false}
-                tableLayout="auto"
-              />
-            </div>
-            {totalPages > limit && (
-              <div className="flex w-full justify-end">
-                <Pagination
-                  current={page}
-                  onChange={(e) => setPage(e)}
-                  defaultCurrent={1}
-                  align="end"
-                  pageSize={limit}
-                  total={totalPages}
-                  showSizeChanger={false}
+      {state.load ? (
+        ""
+      ) : (
+        <>
+          <TitleAdmin title="Quản lý đơn hàng" />
+          <Boxsearchlimit
+            title="đơn hàng"
+            onLimitChange={(newLimit: any) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+            status={status}
+            setStatus={setStatus}
+            paymentStatus={paymentStatus}
+            setPaymentStatus={setPaymentStatus}
+            quantityOder={quantityOder}
+          />
+          <div className="flex flex-col min-h-0">
+            <div className=" bg-white shadow-xl min-h-0 justify-between px-4 py-4 flex items-start flex-col gap-4">
+              <div
+                style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}
+              >
+                <Table<IOrder>
+                  columns={columns}
+                  dataSource={orders}
+                  rowKey="id"
+                  scroll={getTableScroll(orders.length)}
+                  pagination={false}
+                  tableLayout="auto"
                 />
               </div>
-            )}
+              {totalPages > limit && (
+                <div className="flex w-full justify-end">
+                  <Pagination
+                    current={page}
+                    onChange={(e) => setPage(e)}
+                    defaultCurrent={1}
+                    align="end"
+                    pageSize={limit}
+                    total={totalPages}
+                    showSizeChanger={false}
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </>}
+        </>
+      )}
 
       {contextHolder}
       <Modal
@@ -258,16 +274,22 @@ function OrderList() {
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Voucher:</p>
                   <p className="text-sm font-normal">
-                    {selectedOrder.voucher_id ? selectedOrder.voucher_id : "Không có"}
+                    {selectedOrder.voucher_id
+                      ? selectedOrder.voucher_id
+                      : "Không có"}
                   </p>
                 </div>
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Người nhận hàng:</p>
-                  <p className="text-sm font-normal">{selectedOrder.address.fullname}</p>
+                  <p className="text-sm font-normal">
+                    {selectedOrder.address.fullname}
+                  </p>
                 </div>
                 <div className="flex w-[278px] gap-1.5">
                   <p className="text-sm font-medium">Số điện thoại:</p>
-                  <p className="text-sm font-normal">{selectedOrder.address.phone}</p>
+                  <p className="text-sm font-normal">
+                    {selectedOrder.address.phone}
+                  </p>
                 </div>
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Tỉnh/Thành phố:</p>
@@ -286,19 +308,32 @@ function OrderList() {
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
                     value={selectedStatus}
-                    disabled={selectedOrder?.status === 0 || selectedOrder?.status === 1}
+                    disabled={
+                      selectedOrder?.status === 0 || selectedOrder?.status === 1
+                    }
                     onChange={(value) => {
                       setSelectedStatus(Number(value));
                     }}
                     options={[
-                      { value: 2, label: "Chờ xác nhận", disabled: ![2].includes(selectedOrder?.status) },
-                      { value: 3, label: "Đã xác nhận", disabled: ![2, 3].includes(selectedOrder?.status) },
-                      { value: 4, label: "Đang vận chuyển", disabled: ![2, 3, 4].includes(selectedOrder?.status) },
+                      {
+                        value: 2,
+                        label: "Chờ xác nhận",
+                        disabled: ![2].includes(selectedOrder?.status),
+                      },
+                      {
+                        value: 3,
+                        label: "Đã xác nhận",
+                        disabled: ![2, 3].includes(selectedOrder?.status),
+                      },
+                      {
+                        value: 4,
+                        label: "Đang vận chuyển",
+                        disabled: ![2, 3, 4].includes(selectedOrder?.status),
+                      },
                       { value: 1, label: "Đã giao hàng" },
-                      { value: 0, label: "Hủy đơn" }
+                      { value: 0, label: "Hủy đơn" },
                     ]}
                   />
-
                 </div>
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Loại địa chỉ:</p>
@@ -313,7 +348,9 @@ function OrderList() {
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Xác nhận:</p>
                   <p className="text-sm font-normal">
-                    {selectedOrder.payment_status ? "Đã thanh toán" : "Chưa thanh toán"}
+                    {selectedOrder.payment_status
+                      ? "Đã thanh toán"
+                      : "Chưa thanh toán"}
                   </p>
                 </div>
               </div>
@@ -328,21 +365,19 @@ function OrderList() {
                   </p>
                 </div>
                 {selectedOrder.products.map((e, index) => (
-                  <div key={index} className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]">
+                  <div
+                    key={index}
+                    className="flex gap-2 items-center border-t border-gray-200 h-[78.8px]"
+                  >
                     <div className="flex w-full items-center gap-2.5">
-                      <img
-                        src={e.product.image}
-                        alt=""
-                        className="w-16 h-16"
-                      />
+                      <img src={e.product.image} alt="" className="w-16 h-16" />
                       <div className="flex py-1.5 flex-col gap-1.5">
-                        <p className="text-sm font-normal">
-                          {e.product.name}
-                        </p>
+                        <p className="text-sm font-normal">{e.product.name}</p>
                       </div>
                     </div>
                     <p className="min-w-24 text-center text-sm font-normal">
-                      {selectedOrder?.products?.[index]?.quantity ?? "Không có dữ liệu"}
+                      {selectedOrder?.products?.[index]?.quantity ??
+                        "Không có dữ liệu"}
                     </p>
                     <p className="min-w-24 text-center text-primary text-sm font-normal">
                       {e.product.price.toLocaleString("vn-VN")} đ
@@ -359,10 +394,16 @@ function OrderList() {
                 >
                   Trở lại
                 </button>
-                <button className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
+                <button
+                  className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
                   onClick={() => {
-                    openNotificationWithIcon("success", "Thành công", "Sửa trạng thái thành công");
-                    orderServices.updateStatus(selectedOrder.id, Number(selectedStatus))
+                    openNotificationWithIcon(
+                      "success",
+                      "Thành công",
+                      "Sửa trạng thái thành công"
+                    );
+                    orderServices
+                      .updateStatus(selectedOrder.id, Number(selectedStatus))
                       .then(() => {
                         setOrders((prevOrders) =>
                           prevOrders.map((order) =>

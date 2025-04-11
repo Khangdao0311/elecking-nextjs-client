@@ -43,12 +43,14 @@ function BrandEdit() {
 
   useEffect(() => {
     brandServices.getById(`${id}`).then((res) => {
-      setBrandedit(res.data);
-      setName(res.data.name);
-      setSelectedStatus(res.data.status);
-      setEditorContent(res.data.description);
-      setStorageimglogo(res.data.logo)
-      setStorageimgbanner(res.data.banner)
+      if(res.status === 200){
+        setBrandedit(res.data);
+        setName(res.data.name);
+        setSelectedStatus(res.data.status);
+        setEditorContent(res.data.description);
+        setStorageimglogo(res.data.logo)
+        setStorageimgbanner(res.data.banner)
+      }
       if (res.data.logo) {
         setLogo([
           {

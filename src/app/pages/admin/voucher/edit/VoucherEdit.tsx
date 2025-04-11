@@ -8,11 +8,11 @@ import { useParams } from "next/navigation";
 import * as voucherService from "@/app/services/voucherService";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
-import { Input } from 'antd';
+import { Input } from "antd";
 import { useEffect, useState } from "react";
-import { DatePicker, Space } from 'antd';
-import dayjs from 'dayjs';
-import { notification, } from 'antd';
+import { DatePicker, Space } from "antd";
+import dayjs from "dayjs";
+import { notification } from "antd";
 
 function VoucherEdit() {
   const [voucher, setVoucher] = useState<IVoucher>();
@@ -26,20 +26,24 @@ function VoucherEdit() {
   const [endDate, setEndDate] = useState("");
   const [quantity, setQuantity] = useState<number | null>(null);
   const [user, setUser] = useState<number | null>(null);
-  const router = useRouter()
+  const router = useRouter();
   const { id }: any = useParams();
   const createDateNew = dayjs(startDate, "YYYYMMDD");
-  const endDatevNew = dayjs(endDate, 'YYYYMMDD');
+  const endDatevNew = dayjs(endDate, "YYYYMMDD");
 
-  type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
+  const openNotificationWithIcon = (
+    type: NotificationType,
+    message: any,
+    description: any
+  ) => {
     api[type]({
       message: message,
       description: description,
     });
-  }
+  };
 
   const handleDateStart = (date: dayjs.Dayjs | null) => {
     if (date) {
@@ -74,12 +78,18 @@ function VoucherEdit() {
   useEffect(() => {
     const query = { limit: 7 };
     userServices.getQuery(query).then((res) => {
-      setGetUser(res.data);
+      if (res.status === 200) {
+        setGetUser(res.data);
+      }
     });
   }, []);
 
   useEffect(() => {
-    voucherService.getVoucherById(`${id}`).then((res) => setVoucher(res.data));
+    voucherService.getVoucherById(`${id}`).then((res) => {
+      if (res.status === 200) {
+        setVoucher(res.data);
+      }
+    });
   }, [id]);
 
   return (
@@ -88,70 +98,121 @@ function VoucherEdit() {
       <div className="bg-white shadow-xl rounded-lg px-4 py-4 flex items-start flex-col gap-4">
         <div className="w-full flex flex-col gap-6">
           <div className="w-full">
-            <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">Sửa Voucher</div>
-          </div>
-          <div className='flex items-center flex-wrap gap-4'>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Mã Khuyến Mãi <span className="text-primary">*</span></div>
-              <Input className='w-[268px] h-11 shadow-md' value={code} onChange={(e) => setCode(e.target.value)} disabled />
+            <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">
+              Sửa Voucher
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Loại Khuyến Mãi <span className='text-primary'> *</span></div>
+          </div>
+          <div className="flex items-center flex-wrap gap-4">
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Mã Khuyến Mãi <span className="text-primary">*</span>
+              </div>
+              <Input
+                className="w-[268px] h-11 shadow-md"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                disabled
+              />
+            </div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Loại Khuyến Mãi <span className="text-primary"> *</span>
+              </div>
               <Select
                 className="shadow-md"
                 value={discountType}
                 style={{ width: 268, height: 44 }}
                 onChange={(value) => {
                   setDiscountType(Number(value));
-                }
-                }
+                }}
                 options={[
-                  { value: 2, label: 'Phần trăm' },
-                  { value: 1, label: 'Giá' },
+                  { value: 2, label: "Phần trăm" },
+                  { value: 1, label: "Giá" },
                 ]}
               />
-
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Giá Trị Khuyến Mãi<span className="text-primary"> *</span></div>
-              <Input className='w-[268px] h-11 shadow-md' value={discountValue ?? ''} onChange={(e) => setDiscountValue(Number(e.target.value) || null)} />
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Giá Trị Khuyến Mãi<span className="text-primary"> *</span>
+              </div>
+              <Input
+                className="w-[268px] h-11 shadow-md"
+                value={discountValue ?? ""}
+                onChange={(e) =>
+                  setDiscountValue(Number(e.target.value) || null)
+                }
+              />
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Đơn Tối Thiểu<span className="text-primary"> *</span></div>
-              <Input className='w-[268px] h-11 shadow-md' value={minOrderValue ?? ''} onChange={(e) => setMinOrderValue(Number(e.target.value) || null)} />
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Đơn Tối Thiểu<span className="text-primary"> *</span>
+              </div>
+              <Input
+                className="w-[268px] h-11 shadow-md"
+                value={minOrderValue ?? ""}
+                onChange={(e) =>
+                  setMinOrderValue(Number(e.target.value) || null)
+                }
+              />
             </div>
             {discountType === 2 && (
-              <div className='flex gap-0.5 flex-col'>
-                <div className='text-sm font-medium'>Giá Trị Cao Nhất<span className="text-primary"> *</span></div>
-                <Input className='w-[268px] h-11 shadow-md' value={maxDiscount ?? ''} onChange={(e) => setMaxDiscount(Number(e.target.value) || null)} />
+              <div className="flex gap-0.5 flex-col">
+                <div className="text-sm font-medium">
+                  Giá Trị Cao Nhất<span className="text-primary"> *</span>
+                </div>
+                <Input
+                  className="w-[268px] h-11 shadow-md"
+                  value={maxDiscount ?? ""}
+                  onChange={(e) =>
+                    setMaxDiscount(Number(e.target.value) || null)
+                  }
+                />
               </div>
             )}
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Ngày Bắt Đầu <span className='text-primary'>*</span></div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Ngày Bắt Đầu <span className="text-primary">*</span>
+              </div>
               <Space direction="vertical">
                 <DatePicker
                   className="w-[268px] h-11 shadow-md"
-                  value={createDateNew.isValid() ? createDateNew : undefined} format="DD-MM-YYYY"
+                  value={createDateNew.isValid() ? createDateNew : undefined}
+                  format="DD-MM-YYYY"
                   onChange={handleDateStart}
                 />
               </Space>
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Ngày Kết Thúc <span className='text-primary'>*</span></div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Ngày Kết Thúc <span className="text-primary">*</span>
+              </div>
               <Space direction="vertical">
                 <DatePicker
                   className="w-[268px] h-11 shadow-md"
-                  value={endDatevNew.isValid() ? endDatevNew : undefined} format="DD-MM-YYYY"
+                  value={endDatevNew.isValid() ? endDatevNew : undefined}
+                  format="DD-MM-YYYY"
                   onChange={handleDateEnd}
                 />
               </Space>
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Số Lượng<span className="text-primary"> *</span></div>
-              <Input className='w-[268px] h-11 shadow-md' value={quantity ?? ''} onChange={(e) => setQuantity(e.target.value === '' ? null : Number(e.target.value))} />
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Số Lượng<span className="text-primary"> *</span>
+              </div>
+              <Input
+                className="w-[268px] h-11 shadow-md"
+                value={quantity ?? ""}
+                onChange={(e) =>
+                  setQuantity(
+                    e.target.value === "" ? null : Number(e.target.value)
+                  )
+                }
+              />
             </div>
-            <div className='flex gap-0.5 flex-col'>
-              <div className='text-sm font-medium'>Người Dùng <span className='text-primary'>*</span></div>
+            <div className="flex gap-0.5 flex-col">
+              <div className="text-sm font-medium">
+                Người Dùng <span className="text-primary">*</span>
+              </div>
               <Select
                 className="shadow-md"
                 value={user}
@@ -197,7 +258,15 @@ function VoucherEdit() {
                 }
 
                 if (errors.length > 0) {
-                  openNotificationWithIcon('error', 'Lỗi dữ liệu !', <>{errors.map((err, index) => <div key={index}>{err}</div>)}</>);
+                  openNotificationWithIcon(
+                    "error",
+                    "Lỗi dữ liệu !",
+                    <>
+                      {errors.map((err, index) => (
+                        <div key={index}>{err}</div>
+                      ))}
+                    </>
+                  );
                   return;
                 }
 
@@ -214,18 +283,28 @@ function VoucherEdit() {
                   user_id: user || null,
                 };
 
-                const voucherResponse = await voucherService.editVoucher(id, voucherData);
+                const voucherResponse = await voucherService.editVoucher(
+                  id,
+                  voucherData
+                );
                 if (voucherResponse?.status == 200) {
-                  openNotificationWithIcon('success', "Thành công", "Sửa voucher thành công");
+                  openNotificationWithIcon(
+                    "success",
+                    "Thành công",
+                    "Sửa voucher thành công"
+                  );
                   setTimeout(() => {
-                    router.push(`${config.routes.admin.voucher.list}`); 
+                    router.push(`${config.routes.admin.voucher.list}`);
                   }, 1000);
                 } else {
-                  openNotificationWithIcon('error', "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                  openNotificationWithIcon(
+                    "error",
+                    "Lỗi",
+                    "Có lỗi xảy ra, vui lòng thử lại"
+                  );
                 }
               }}
-            >
-            </Button>
+            ></Button>
           </Space>
         </div>
       </div>
@@ -234,5 +313,3 @@ function VoucherEdit() {
 }
 
 export default VoucherEdit;
-
-

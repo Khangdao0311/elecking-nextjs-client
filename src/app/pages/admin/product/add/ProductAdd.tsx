@@ -179,7 +179,7 @@ function ProductAdd() {
               if (j === iColor) {
                 return {
                   ...color,
-                  image: null, // Xóa ảnh bằng cách đặt lại thành `null`
+                  image: null,
                 };
               }
               return color;
@@ -190,7 +190,6 @@ function ProductAdd() {
       })
     );
 
-    // 🟢 Xóa ảnh khỏi storageimgcolor
     setStorageimgcolor((prev) => prev.filter((_, index) => index !== iColor));
   };
 
@@ -200,13 +199,12 @@ function ProductAdd() {
 
   function handleAddVariant() {
     setVariants((prev: IProductVariant[]) => {
-      // Lấy số lượng property_ids dựa trên selectedcategory.proptypes.length
       const propertyIds = selectedcategory?.proptypes.map(() => "") || [];
 
       return [
         ...prev,
         {
-          property_ids: [...propertyIds], // Đảm bảo số lượng đúng
+          property_ids: [...propertyIds],
           price: "",
           price_sale: "",
           colors: [
@@ -262,7 +260,7 @@ function ProductAdd() {
         if (i === variantIndex) {
           return toggleArray.map((val, j) => (j === colorIndex ? !val : val));
         }
-        return [...toggleArray]; // Giữ nguyên mảng khác
+        return [...toggleArray];
       });
     });
   };
@@ -289,22 +287,29 @@ function ProductAdd() {
       })
     );
     setHandleToggleColor((prev: boolean[][]) =>
-      prev.map(
-        (toggleArray, i) =>
-          i === iVariant
-            ? toggleArray.filter((_, index) => index !== iColor) // Xoá màu đúng cách
-            : [...toggleArray] // Giữ nguyên mảng cho các variant khác
+      prev.map((toggleArray, i) =>
+        i === iVariant
+          ? toggleArray.filter((_, index) => index !== iColor)
+          : [...toggleArray]
       )
     );
   }
   useEffect(() => {
     const query: any = {};
-    categoryServices.getQuery(query).then((res) => setCategories(res.data));
+    categoryServices.getQuery(query).then((res) => {
+      if (res.status === 200) {
+        setCategories(res.data);
+      }
+    });
   }, []);
 
   useEffect(() => {
     const query: any = {};
-    brandServices.getQuery(query).then((res) => setBrands(res.data));
+    brandServices.getQuery(query).then((res) => {
+      if (res.status === 200) {
+        setBrands(res.data);
+      }
+    });
   }, []);
 
   return (
@@ -443,7 +448,9 @@ function ProductAdd() {
                           <Select
                             showSearch
                             filterOption={(input: string, option: any) =>
-                              option.name.toLowerCase().includes(input.toLowerCase())
+                              option.name
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
                             }
                             className="shadow-md flex flex-wrap"
                             value={variants[iVariant].property_ids[iItem]}
