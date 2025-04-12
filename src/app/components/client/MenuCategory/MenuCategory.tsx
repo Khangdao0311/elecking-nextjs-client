@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import config from "@/app/config";
-import * as categoryService from "@/app/services/categoryService";
+import * as categoryServices from "@/app/services/categoryService";
 import { useStore, actions } from "@/app/store";
 
 function MenuCategory(props: { onClose: any }) {
@@ -15,9 +15,9 @@ function MenuCategory(props: { onClose: any }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    categoryService
-      .getQuery({ limit: 0, orderby: "id-asc", status: 1 })
-      .then((res) => setCategories(res.data));
+    categoryServices.getQuery({ limit: 0, orderby: "id-asc", status: 1 }).then((res) => {
+      if (res.status === 200) setCategories(res.data);
+    });
   }, []);
 
   return (

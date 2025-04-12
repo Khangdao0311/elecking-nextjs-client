@@ -7,7 +7,6 @@ import { FiUpload } from "react-icons/fi";
 import moment from "moment";
 
 import { useStore, actions } from "@/app/store";
-import SidebarAccount from "@/app/components/client/SidebarAccount";
 import * as userServices from "@/app/services/userService";
 import * as uploadServices from "@/app/services/uploadService";
 import Shimmer from "@/app/components/client/Shimmer";
@@ -39,12 +38,14 @@ function AccountProfile() {
   useEffect(() => {
     if (state.user) {
       userServices.getById(state.user.id).then((res) => {
-        setProfile({
-          fullname: res.data.fullname,
-          email: res.data.email,
-          phone: res.data.phone,
-        });
-        setUser(res.data);
+        if (res.status === 200) {
+          setProfile({
+            fullname: res.data.fullname,
+            email: res.data.email,
+            phone: res.data.phone,
+          });
+          setUser(res.data);
+        }
       });
     }
   }, [state.user]);
@@ -64,23 +65,23 @@ function AccountProfile() {
         uploadServices.uploadSingle(formDataUpload);
       }
 
-      console.log(profileNew);
-
       userServices.updateProfile(user!.id, profileNew).then((res) => {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: user!.id,
-            avatar: res.data.avatar,
-            username: res.data.username,
-            fullname: res.data.fullname,
-            email: res.data.email,
-            phone: res.data.phone,
-          })
-        );
-        dispatch(actions.re_render());
-        setFile(undefined);
-        openNotification("Cập nhật thành công !");
+        if (res.status === 200) {
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              id: user!.id,
+              avatar: res.data.avatar,
+              username: res.data.username,
+              fullname: res.data.fullname,
+              email: res.data.email,
+              phone: res.data.phone,
+            })
+          );
+          dispatch(actions.re_render());
+          setFile(undefined);
+          openNotification("Cập nhật thành công !");
+        }
       });
     }
   }
@@ -110,9 +111,7 @@ function AccountProfile() {
                     className="w-8/12 h-full flex items-center justify-start select-none font-normal"
                     placeholder="Nhập Họ và Tên"
                     value={profile.fullname}
-                    onChange={(e) =>
-                      setProfile({ ...profile, fullname: e.target.value })
-                    }
+                    onChange={(e) => setProfile({ ...profile, fullname: e.target.value })}
                   />
                 </div>
                 <div className="flex gap-4 h-10 items-center">
@@ -123,9 +122,7 @@ function AccountProfile() {
                     className="w-8/12 h-full flex items-center justify-start select-none font-normal"
                     placeholder="Nhập Email"
                     value={profile.email}
-                    onChange={(e) =>
-                      setProfile({ ...profile, email: e.target.value })
-                    }
+                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                   />
                 </div>
                 <div className="flex gap-4 h-10 items-center">
@@ -136,9 +133,7 @@ function AccountProfile() {
                     className="w-8/12 h-full flex items-center justify-start select-none font-normal"
                     placeholder="Nhập số điện thoại"
                     value={profile.phone}
-                    onChange={(e) =>
-                      setProfile({ ...profile, phone: e.target.value })
-                    }
+                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                   />
                 </div>
                 <div className="flex gap-4 h-10 items-center">
@@ -146,9 +141,7 @@ function AccountProfile() {
                     Ngày Tham Gia:
                   </p>
                   <p className="w-8/12 h-full flex items-center justify-start select-none font-normal">
-                    {moment(user?.register_date, "YYYYMMDDHHmmss").format(
-                      "DD/MM/YYYY"
-                    )}
+                    {moment(user?.register_date, "YYYYMMDDHHmmss").format("DD/MM/YYYY")}
                   </p>
                 </div>
               </>
@@ -186,7 +179,7 @@ function AccountProfile() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-              <FaUser className="w-1/2 h-1/2 text-gray-400" />
+                <FaUser className="w-1/2 h-1/2 text-gray-400" />
               )}
             </div>
             <label
@@ -195,12 +188,7 @@ function AccountProfile() {
             >
               <FiUpload className="text-primary w-5 h-5" />
               <span className="text-primary font-bold">Upload</span>
-              <input
-                type="file"
-                hidden
-                id="avatar"
-                onChange={(e) => setFile(e.target.files![0])}
-              />
+              <input type="file" hidden id="avatar" onChange={(e) => setFile(e.target.files![0])} />
             </label>
           </div>
         </div>

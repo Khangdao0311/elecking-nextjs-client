@@ -37,42 +37,48 @@ function Home() {
   const [productsheadPhone, setProductsHeadPhone] = useState([]);
 
   useEffect(() => {
-    categoryServices
-      .getQuery({ limit: 0, orderby: "id-asc", status: 1 })
-      .then((res) => setCategories(res.data));
+    categoryServices.getQuery({ limit: 0, orderby: "id-asc", status: 1 }).then((res) => {
+      if (res.status === 200) setCategories(res.data);
+    });
 
-    brandServices
-      .getQuery({ limit: 0, orderby: "id-asc", status: 1 })
-      .then((res) => setBrands(res.data));
+    brandServices.getQuery({ limit: 0, orderby: "id-asc", status: 1 }).then((res) => {
+      if (res.status === 200) setBrands(res.data);
+    });
 
-    productServices
-      .getQuery({ orderby: "sale-desc", limit: 16 })
-      .then((res) => setProductsSale(res.data));
+    productServices.getQuery({ orderby: "sale-desc", limit: 16 }).then((res) => {
+      if (res.status === 200) setProductsSale(res.data);
+    });
 
-    productServices
-      .getQuery({ orderby: "view-desc", limit: 16 })
-      .then((res) => setProductsHot(res.data));
+    productServices.getQuery({ orderby: "view-desc", limit: 16 }).then((res) => {
+      if (res.status === 200) setProductsHot(res.data);
+    });
 
     productServices
       .getQuery({
         categoryid: "67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578",
         limit: 16,
       })
-      .then((res) => setProductsLaptop(res.data));
+      .then((res) => {
+        if (res.status === 200) setProductsLaptop(res.data);
+      });
 
     productServices
       .getQuery({
         categoryid: "67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574",
         limit: 16,
       })
-      .then((res) => setProductsTablet(res.data));
+      .then((res) => {
+        if (res.status === 200) setProductsTablet(res.data);
+      });
 
     productServices
       .getQuery({
         categoryid: "67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a",
         limit: 16,
       })
-      .then((res) => setProductsHeadPhone(res.data));
+      .then((res) => {
+        if (res.status === 200) setProductsHeadPhone(res.data);
+      });
   }, []);
 
   return (
@@ -337,12 +343,12 @@ function Home() {
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
             <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
-              ĐiỆN THOẠI, MÁY TÍNH BẢNG
+              ĐIỆN THOẠI, MÁY TÍNH BẢNG
             </p>
           </div>
           <Link
             onClick={() => dispatch(actions.set_routing(true))}
-            href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578`}
+            href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574`}
             className="flex gap-1 items-center cursor-pointer relative group "
           >
             <em className="text-gray-700 text-sm font-base px-1 text-nowrap shrink-0">
@@ -434,7 +440,7 @@ function Home() {
           </div>
           <Link
             onClick={() => dispatch(actions.set_routing(true))}
-            href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398575-67b6cf1a3a893726b5398574`}
+            href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398576-67b6cf1a3a893726b5398577-67b6cf1a3a893726b5398578`}
             className="flex gap-1 items-center cursor-pointer relative group "
           >
             <em className="text-gray-700 text-sm font-base px-1 text-nowrap shrink-0">

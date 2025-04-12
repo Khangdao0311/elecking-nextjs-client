@@ -4,10 +4,8 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { SlTag } from "react-icons/sl";
 
-import SidebarAccount from "@/app/components/client/SidebarAccount";
-import * as voucherService from "@/app/services/voucherService";
+import * as voucherServices from "@/app/services/voucherService";
 import { useStore } from "@/app/store";
-import { stat } from "fs";
 import { TbMoodEmpty } from "react-icons/tb";
 import Shimmer from "@/app/components/client/Shimmer";
 
@@ -16,9 +14,9 @@ function AccountVoucher() {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
 
   useEffect(() => {
-    voucherService
-      .getQuery({ expired: 0, limit: 0, user_id: state.user?.id })
-      .then((res) => setVouchers(res.data));
+    voucherServices.getQuery({ expired: 0, limit: 0, user_id: state.user?.id }).then((res) => {
+      if (res.status === 200) setVouchers(res.data);
+    });
   }, [state.user]);
 
   return (

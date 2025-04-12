@@ -6,7 +6,6 @@ import { FaUser } from "react-icons/fa6";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import SidebarAccount from "@/app/components/client/SidebarAccount";
 import { useStore } from "@/app/store";
 import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
@@ -32,7 +31,9 @@ function AccountPassword() {
     authServices
       .changePassword(state.user.id, values.currentPassword, values.newPassword)
       .then((res) => {
-        if (res.status == 200) resetForm();
+        if (res.status == 200) {
+          resetForm();
+        }
       });
   }
 
@@ -149,7 +150,7 @@ function AccountPassword() {
         <div className="flex flex-col gap-5 md:px-20">
           <input type="text" name="username" autoComplete="username" hidden />
           <div className="flex flex-col gap-4">
-            <Shimmer className= {"w-1/2 md:w-1/5 h-7"} />
+            <Shimmer className={"w-1/2 md:w-1/5 h-7"} />
             <div className="flex gap-4 h-10 items-center">
               <Shimmer className={"!hidden md:!flex w-1/4 h-10"} />
               <Shimmer className={"w-full md:w-3/4 h-10"} />
@@ -158,18 +159,17 @@ function AccountPassword() {
           <div className="flex flex-col gap-4">
             <Shimmer className={"w-1/2 md:w-1/5 h-7"} />
             <div className="flex gap-4 h-10 items-center">
-            <Shimmer className={"!hidden md:!flex w-1/4 h-10"} />
-            <Shimmer className={"w-full md:w-3/4 h-10"} />
+              <Shimmer className={"!hidden md:!flex w-1/4 h-10"} />
+              <Shimmer className={"w-full md:w-3/4 h-10"} />
             </div>
             <div className="flex gap-4 h-10 items-center">
-            <Shimmer className={"!hidden md:!flex w-1/4 h-10"} />
-            <Shimmer className={"w-full md:w-3/4 h-10"} />
+              <Shimmer className={"!hidden md:!flex w-1/4 h-10"} />
+              <Shimmer className={"w-full md:w-3/4 h-10"} />
             </div>
           </div>
           <Shimmer className={"w-full h-14"} />
         </div>
       )}
-
     </div>
   );
 }

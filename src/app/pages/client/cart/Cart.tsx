@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
 import { HiOutlineTicket } from "react-icons/hi";
 import { FaCaretDown, FaCircleExclamation, FaMinus, FaPlus } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
-import { Modal, notification, Popover } from "antd";
+import { Modal, Popover } from "antd";
 
 import config from "@/app/config";
 import * as productServices from "@/app/services/productService";
@@ -38,7 +38,7 @@ function Cart() {
         const _: IProduct[] = [];
         for (const item of state.cart) {
           await productServices.getProById(item.product.id).then((res: any) => {
-            _.push(res.data);
+            if (res.status === 200) _.push(res.data);
           });
         }
         setProductsCart(_);
@@ -136,7 +136,9 @@ function Cart() {
       return acc;
     }, []);
 
-    authServices.cart(state.user.id, cartFinal).then((res) => dispatch(actions.re_render()));
+    authServices.cart(state.user.id, cartFinal).then((res) => {
+      if (res.status === 200) dispatch(actions.re_render());
+    });
   }
 
   function handleChangeColor(iProduct: number, iColor: number) {
@@ -178,7 +180,9 @@ function Cart() {
       return acc;
     }, []);
 
-    authServices.cart(state.user.id, cartFinal).then((res) => dispatch(actions.re_render()));
+    authServices.cart(state.user.id, cartFinal).then((res) => {
+      if (res.status === 200) dispatch(actions.re_render());
+    });
   }
 
   function handleChangeQuantity(iProduct: number, quantity: number) {
@@ -192,19 +196,25 @@ function Cart() {
       return item;
     });
 
-    authServices.cart(state.user.id, cartNew).then((res) => dispatch(actions.re_render()));
+    authServices.cart(state.user.id, cartNew).then((res) => {
+      if (res.status === 200) dispatch(actions.re_render());
+    });
   }
 
   function handleRemoveItem(iProduct: number) {
     const cartNew = state.cart.filter((item: any, index: number) => index !== iProduct);
     setProductsCart([]);
-    authServices.cart(state.user.id, cartNew).then((res) => dispatch(actions.re_render()));
+    authServices.cart(state.user.id, cartNew).then((res) => {
+      if (res.status === 200) dispatch(actions.re_render());
+    });
   }
 
   function handleRemoveItems() {
     const cartNew = state.cart.filter((item: any, index: number) => !checkedItems[index]);
     setProductsCart([]);
-    authServices.cart(state.user.id, cartNew).then((res) => dispatch(actions.re_render()));
+    authServices.cart(state.user.id, cartNew).then((res) => {
+      if (res.status === 200) dispatch(actions.re_render());
+    });
   }
 
   function handleCheckItem(iProduct: number) {
@@ -541,7 +551,7 @@ function Cart() {
                                 zIndex={102}
                                 content={
                                   <div
-                                    className="z-10 w-[40vw] max-w-[404px] flex flex-col sm:flex-row flex-wrap gap-2 "
+                                    className="z-10  max-w-[404px] flex flex-col sm:flex-row flex-wrap gap-2 "
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     {product.variants.map((variant: any, ivariant: number) => (
@@ -596,10 +606,10 @@ function Cart() {
                                 placement="bottomLeft"
                                 title={null}
                                 trigger="click"
-                                zIndex={1002}
+                                zIndex={102}
                                 content={
                                   <div
-                                    className="z-10 w-[40vw] max-w-[404px] flex flex-col sm:flex-row flex-wrap gap-2 "
+                                    className="z-10 max-w-[404px] flex flex-col sm:flex-row flex-wrap gap-2 "
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     {product?.variants[

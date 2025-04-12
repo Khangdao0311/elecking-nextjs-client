@@ -10,7 +10,6 @@ import "swiper/css";
 import { FreeMode } from "swiper/modules";
 
 import { useStore } from "@/app/store";
-import SidebarAccount from "@/app/components/client/SidebarAccount";
 import * as orderServices from "@/app/services/orderService";
 import OrderDetail from "./components/OrderDetail";
 import Review from "./components/Review";
@@ -33,14 +32,17 @@ function AccountOrder() {
       orderServices
         .getQuery({ user_id: state.user.id, limit: null, status: status })
         .then((res) => {
-          setOrders(res.data);
-          setTotalOrder(res.totalOrder);
+          if (res.status === 200) {
+            setOrders(res.data);
+            setTotalOrder(res.totalOrder);
+          }
         });
     }
   }, [state.user, status, state.re_render]);
 
   return (
     <>
+      {}
       <Modal
         open={show.review}
         onCancel={() => setShow({ detail: true, review: false })}
@@ -64,7 +66,6 @@ function AccountOrder() {
         title={null}
         centered
         maskClosable={false}
-        // closable={false}/
         width="auto"
       >
         <OrderDetail

@@ -66,10 +66,12 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
   }
 
   function handleCancelOrder() {
+    dispatch(actions.set_routing(true));
     orderServices.updateStatus(props.order!.id, 0).then((res) => {
       if (res.status === 200) {
-        props.onClose();
         dispatch(actions.re_render());
+        dispatch(actions.set_routing(false));
+        props.onClose();
       }
     });
   }

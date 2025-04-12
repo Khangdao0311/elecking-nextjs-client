@@ -1,6 +1,6 @@
 import { BsCardImage } from "react-icons/bs";
 
-function Shimmer({ className, image = false}: any) {
+function Shimmer({ className, image = false }: any) {
   return (
     <div
       className={`relative center-flex bg-gray-200 rounded-lg shadow overflow-hidden ${className}`}
