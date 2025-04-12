@@ -876,7 +876,7 @@ function ProductEdit() {
           </div>
           {contextHolder}
           <Button
-            back="product/list"
+            back={config.routes.admin.product}
             onClick={async () => {
               if (
                 !name.trim() ||

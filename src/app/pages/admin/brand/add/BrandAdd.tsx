@@ -243,7 +243,7 @@ function BrandAdd() {
           <div className="mt-[60px]">
             <Space>
               <Button
-                back="brand/list"
+                back={config.routes.admin.brand}
                 onClick={async () => {
                   console.log(name, imgBrand[0].name, imgBanner[0].name, description);
 

@@ -12,7 +12,7 @@ function Button({ back = "", onClick }: any) {
         Lưu lại
       </button>
       <button
-        onClick={() => router.push(`/admin/${back}`)}
+        onClick={() => router.push(back)}
         className="text-sm font-bold text-red-800 bg-red-100 rounded px-5 py-2"
       >
         Hủy bỏ
