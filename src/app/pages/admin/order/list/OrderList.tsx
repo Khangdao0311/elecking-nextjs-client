@@ -14,6 +14,8 @@ import { Space, Table } from "antd";
 import moment from "moment";
 import type { TableProps } from "antd";
 import { notification } from "antd";
+import { useRouter, useSearchParams } from "next/navigation";
+
 
 function OrderList() {
   const [editorder, setEditorder] = useState(false);
@@ -27,12 +29,29 @@ function OrderList() {
   const [quantityOder, setQuantityOder] = useState(0);
   const [status, setStatus] = useState<number | string>("");
   const [paymentStatus, setPaymentStatus] = useState<boolean>(false);
+  const [selectedYear, setSelectedYear] = useState<number>();
+  const [selectedMonth, setSelectedMonth] = useState<number>();
+  const [selectedDay, setSelectedDay] = useState<number>();
   const [selectedStatus, setSelectedStatus] = useState(selectedOrder?.status);
   const [state, dispatch] = useStore();
-  const [totalOrders, setTotalOrders] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const updateQueryParams = (key: string, value: any | null) => {
+    const current = new URLSearchParams(window.location.search);
+    if (value === null || value === "") {
+      current.delete(key);
+    } else {
+      current.set(key, value);
+    }
+    router.push(`?${current}`);
+  };
+
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -44,6 +63,34 @@ function OrderList() {
       description: description,
     });
   };
+
+  useEffect(() => {
+    const yearParam = searchParams.get("year");
+    const monthParam = searchParams.get("month");
+    const dayParam = searchParams.get("day");
+
+    if (!yearParam) {
+      const currentYear = new Date().getFullYear();
+      setSelectedYear(currentYear);
+      updateQueryParams("year", currentYear);
+    } else {
+      setSelectedYear(Number(yearParam));
+    }
+
+    if (monthParam) {
+      setSelectedMonth(Number(monthParam));
+    } else {
+      setSelectedMonth(undefined);
+    }
+
+    if (dayParam) {
+      setSelectedDay(Number(dayParam));
+    } else {
+      setSelectedDay(undefined);
+    }
+  }, [searchParams]);
+
+
 
   useEffect(() => {
     if (selectedOrder) {
@@ -61,21 +108,30 @@ function OrderList() {
   };
 
   useEffect(() => {
-    if (!editorder) {
+    if (selectedYear || selectedMonth) {
       const query: any = {};
       query.limit = limit;
       query.page = page;
+      query.year = selectedYear;
+      query.month = selectedMonth;
+      if (selectedDay) {
+        query.day = selectedDay;
+      }
+
 
       if (paymentStatus) {
         query.payment_status = paymentStatus;
-      } else if (status !== "") {
+      }
+      if (status !== "") {
         query.status = status;
       }
-
       if (search !== "") {
         query.search = search;
       }
 
+      console.log(query);
+
+      setLoading(true);
       orderServices.getQuery(query).then((res) => {
         if (res.status === 200) {
           const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
@@ -87,9 +143,10 @@ function OrderList() {
           setTotalPages(res.total);
           setQuantityOder(res.totalOrder);
         }
+        setLoading(false);
       });
     }
-  }, [limit, page, search, status, paymentStatus, editorder]);
+  }, [limit, page, search, status, paymentStatus, selectedYear, selectedMonth, selectedDay]);
 
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 30) return undefined;
@@ -219,7 +276,23 @@ function OrderList() {
             paymentStatus={paymentStatus}
             setPaymentStatus={setPaymentStatus}
             quantityOder={quantityOder}
+            setSelectedYear={(value: any) => {
+              setSelectedYear(Number(value));
+              updateQueryParams("year", value);
+            }}
+            setSelectedMonth={(value: any) => {
+              setSelectedMonth(Number(value));
+              updateQueryParams("month", value);
+            }}
+            setSelectedDay={(value: any) => {
+              setSelectedDay(Number(value));
+              updateQueryParams("day", value);
+            }}
+            selectedYear={selectedYear}
+            selectedMonth={selectedMonth}
+            selectedDay={selectedDay}
           />
+
           <div className="flex flex-col min-h-0">
             <div className=" bg-white shadow-xl min-h-0 justify-between px-4 py-4 flex items-start flex-col gap-4">
               <div
@@ -402,6 +475,7 @@ function OrderList() {
                       "Thành công",
                       "Sửa trạng thái thành công"
                     );
+
                     orderServices
                       .updateStatus(selectedOrder.id, Number(selectedStatus))
                       .then(() => {
@@ -412,6 +486,30 @@ function OrderList() {
                               : order
                           )
                         );
+                        const query: any = {
+                          limit,
+                          page,
+                          year: selectedYear,
+                          month: selectedMonth,
+                        };
+                        if (selectedDay) query.day = selectedDay;
+                        if (paymentStatus) query.payment_status = paymentStatus;
+                        if (status !== "") query.status = status;
+                        if (search !== "") query.search = search;
+
+                        orderServices.getQuery(query).then((res) => {
+                          if (res.status === 200) {
+                            const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
+                              if (a.status === 2 && b.status !== 2) return -1;
+                              if (a.status !== 2 && b.status === 2) return 1;
+                              return 0;
+                            });
+                            setOrders(sortedOrders);
+                            setTotalPages(res.total);
+                            setQuantityOder(res.totalOrder);
+                          }
+                        });
+
                         closeeditorder();
                       });
                   }}

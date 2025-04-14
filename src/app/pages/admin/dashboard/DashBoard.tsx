@@ -7,6 +7,7 @@ import {
   FaUser,
 } from "react-icons/fa6";
 import { HiCash } from "react-icons/hi";
+import config from "@/app/config";
 import { Bar } from "react-chartjs-2";
 import * as orderServices from "@/app/services/orderService";
 import * as userServices from "@/app/services/userService";
@@ -29,6 +30,8 @@ import {
 } from "chart.js";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 function DashBoard() {
@@ -53,7 +56,7 @@ function DashBoard() {
   const [state, dispatch] = useStore();
   const [userDetail, setUserDetail] = useState<IUser>();
   const [showUser, setShowUser] = useState(false);
-
+  const router = useRouter()
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
@@ -219,6 +222,14 @@ function DashBoard() {
           text: "Số Đơn Hàng",
         },
       },
+    },
+    onClick: (event, elements, chart) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        const column = data.labels[index];
+        const [month,year] = column.split("/")
+        router.push(`${config.routes.admin.order.list}?year=${year}&month=${month}`)
+      }
     },
   };
 
@@ -395,9 +406,9 @@ function DashBoard() {
                   <FaBasketShopping className="w-[50px] h-[50px] text-amber-600" />
                 </div>
                 <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-                  <p className="text-base font-bold text-red-500">
+                  <Link href={`${config.routes.admin.order.list}?year=${year}`} className="text-base font-bold text-red-500">
                     Tổng đơn hàng
-                  </p>
+                  </Link>
                   <p className="text-base font-bold">
                     {totalOrder.reduce((acc, val) => acc + val, 0)}
                   </p>
