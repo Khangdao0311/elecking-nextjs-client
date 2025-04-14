@@ -43,7 +43,7 @@ const BoxSearchLimit = ({
 
   return (
     <div className="flex items-center bg-white shadow-xl rounded-lg px-7 py-3 justify-between">
-      <div className={`flex ${["/admin/order", "/admin/voucher"].some((p) => pathname.startsWith(p)) ? "w-4/5" : "w-1/5"} gap-4 items-center`}>
+      <div className={`flex ${["/admin/order", "/admin/voucher"].some((p) => pathname.startsWith(p)) ? "w-4/5" : "w-1/2"} gap-4 items-center`}>
         {pathname.startsWith("/admin/order") ? (
           <div className="flex  w-[100%] gap-2 bg-white rounded-tl-lg rounded-tr-lg">
             {/* <div className="flex w-[100%] gap-2 bg-white rounded-tl-lg rounded-tr-lg">
