@@ -324,7 +324,7 @@ function CategoryEdit() {
                 </div>
               </div>
               {contextHolder}
-              <Button onClick={handleEdit} back="category/list" />
+              <Button onClick={handleEdit} back={config.routes.admin.category} />
             </div>
           </div>
         </>

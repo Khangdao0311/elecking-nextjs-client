@@ -9,14 +9,16 @@ import { Autoplay, FreeMode, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
 
-import * as voucherService from "@/app/services/voucherService";
+import * as voucherServices from "@/app/services/voucherService";
 
 function ModalVoucher({ orderPrice, voucher, setVoucher, onClose }: any) {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | null>(voucher);
 
   useEffect(() => {
-    voucherService.getQuery({ limit: 0 }).then((res: any) => setVouchers(res.data));
+    voucherServices.getQuery({ limit: 0 }).then((res: any) => {
+      if (res.status === 200) setVouchers(res.data);
+    });
   }, []);
 
   return (

@@ -84,7 +84,6 @@ function ProductAdd() {
             ...res.data,
           ];
         });
-
         await Promise.all(promises);
 
         const propertyIds: string[] = selectedcategory.proptypes.map(() => "");
@@ -786,7 +785,7 @@ function ProductAdd() {
           </div>
           {contextHolder}
           <Button
-            back="product/list"
+            back={config.routes.admin.product}
             onClick={async () => {
               if (
                 !name.trim() ||

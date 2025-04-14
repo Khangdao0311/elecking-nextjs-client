@@ -33,8 +33,9 @@ function SidebarAccount({ onClick }: any) {
         maskClosable={false}
         closable={false}
         width="auto"
+        zIndex={101}
       >
-        <div className=" flex flex-col gap-6 w-[365px]">
+        <div className=" flex flex-col gap-6 w-[90vw] max-w-[365px]">
           <p className="w-full text-center text-lg  font-bold text-primary">
             Bạn có muốn thoát tài khoản ?
           </p>

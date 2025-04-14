@@ -15,7 +15,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { FreeMode } from "swiper/modules";
 
-import { useStore } from "@/app/store";
+import { useStore, actions } from "@/app/store";
 import * as productServices from "@/app/services/productService";
 import * as categoryServices from "@/app/services/categoryService";
 import * as brandServices from "@/app/services/brandService";
@@ -72,17 +72,21 @@ function Products() {
 
     router.push(`?${new URLSearchParams(query).toString()}`);
     productServices.getQuery(query).then((res) => {
-      setProducts(res.data);
-      setTotalPages(res.total);
+      if (res.status === 200) {
+        setProducts(res.data);
+        setTotalPages(res.total);
+      }
     });
   }, [searchParams]);
 
   // Lấy danh sách danh mục và thương hiệu
   useEffect(() => {
-    categoryServices
-      .getQuery({ limit: 0, orderby: "id-asc" })
-      .then((res) => setCategories(res.data));
-    brandServices.getQuery({ limit: 0, orderby: "id-asc" }).then((res) => setBrands(res.data));
+    categoryServices.getQuery({ limit: 0, orderby: "id-asc", status: 1 }).then((res) => {
+      if (res.status === 200) setCategories(res.data);
+    });
+    brandServices.getQuery({ limit: 0, orderby: "id-asc", status: 1 }).then((res) => {
+      if (res.status === 200) setBrands(res.data);
+    });
   }, []);
 
   function handleSelectChange(key: string, value: string) {
@@ -148,11 +152,11 @@ function Products() {
                       title={null}
                       trigger="click"
                       open={popup.price}
-                      onOpenChange={(e) => setPopup({ ...popup, price: e })}
+                      onOpenChange={(e) => setPopup({ price: e, category: false, brand: false })}
                       zIndex={20}
                       content={
-                        <div className="w-auto bg-white rounded-2xl flex flex-col items-center gap-4">
-                          <div className="w-[416px] flex items-center justify-between">
+                        <div className="w-[90vw] max-w-[400px] bg-white rounded-2xl flex flex-col items-center gap-4">
+                          <div className="w-full flex items-center justify-between">
                             <span className="text-lg font-medium text-primary">
                               {filter.priceMin.toLocaleString("vi-VN")} đ
                             </span>
@@ -247,11 +251,11 @@ function Products() {
                       title={null}
                       trigger="click"
                       open={popup.category}
-                      onOpenChange={(e) => setPopup({ ...popup, category: e })}
+                      onOpenChange={(e) => setPopup({ price: false, category: e, brand: false })}
                       zIndex={20}
                       content={
-                        <div className="w-auto bg-white rounded-2xl flex flex-col items-center gap-4">
-                          <div className="w-[416px] flex flex-wrap gap-2">
+                        <div className="w-[90vw] max-w-[400px] bg-white rounded-2xl flex flex-col items-center gap-4">
+                          <div className="w-full flex flex-wrap gap-2">
                             {categories.map((category: ICategory, iCategory: number) => (
                               <div
                                 key={iCategory}
@@ -327,11 +331,11 @@ function Products() {
                       title={null}
                       trigger="click"
                       open={popup.brand}
-                      onOpenChange={(e) => setPopup({ ...popup, brand: e })}
+                      onOpenChange={(e) => setPopup({ price: false, category: false, brand: e })}
                       zIndex={20}
                       content={
-                        <div className="w-auto bg-white rounded-2xl flex flex-col items-center gap-4">
-                          <div className="w-[416px] flex flex-wrap gap-2">
+                        <div className="w-[90vw] max-w-[400px] bg-white rounded-2xl flex flex-col items-center gap-4">
+                          <div className="w-full flex flex-wrap gap-2">
                             {brands.map((brand: IBrand, iBrand: number) => (
                               <div
                                 key={iBrand}
@@ -401,7 +405,7 @@ function Products() {
                   </SwiperSlide>
                 </Swiper>
               </div>
-              {(!!query.price || !!query.categoryid || !!query.brandid) && (
+              {(!!query.search || !!query.price || !!query.categoryid || !!query.brandid) && (
                 <div className="flex flex-col gap-3.5">
                   <h3 className="text-lg font-bold">Đang lọc theo</h3>
                   <Swiper
@@ -415,6 +419,21 @@ function Products() {
                     modules={[FreeMode]}
                     className="w-full flex gap-2.5 flex-wrap"
                   >
+                    {!!query.search && (
+                      <SwiperSlide
+                        className="!w-auto !flex flex-nowrap items-center select-none cursor-pointer gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
+                        onClick={() => {
+                          const searchParamsNew = new URLSearchParams(searchParams.toString());
+                          searchParamsNew.delete("search");
+                          searchParamsNew.set("page", `1`);
+                          router.push(`?${searchParamsNew.toString()}`, { scroll: false });
+                          dispatch(actions.set_search(""));
+                        }}
+                      >
+                        <IoCloseCircle className="w-6 h-6 text-red-500 cursor-pointer" />
+                        <p className="text-base text-red-500">Tìm kiếm: {query.search}</p>
+                      </SwiperSlide>
+                    )}
                     {!!query.price && (
                       <SwiperSlide
                         className="!w-auto !flex flex-nowrap items-center select-none cursor-pointer gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
@@ -439,7 +458,6 @@ function Products() {
                         </p>
                       </SwiperSlide>
                     )}
-
                     {!!query.categoryid && (
                       <SwiperSlide
                         className="!w-auto !flex flex-nowrap items-center select-none cursor-pointer  gap-1.5 px-2.5 py-2 shadow-lg border border-red-500 bg-red-50 rounded-lg  hover:shadow-xl transition-all"
@@ -488,11 +506,12 @@ function Products() {
                         </p>
                       </SwiperSlide>
                     )}
-                    {(!!query.price || !!query.categoryid || !!query.brandid) && (
+                    {(!!query.search || !!query.price || !!query.categoryid || !!query.brandid) && (
                       <SwiperSlide
                         className="!w-auto !flex flex-nowrap items-center select-none gap-1.5 px-2.5 py-2 shadow-lg cursor-pointer border border-red-500 bg-red-50 rounded-lg"
                         onClick={() => {
                           const searchParamsNew = new URLSearchParams(searchParams.toString());
+                          searchParamsNew.delete("search");
                           searchParamsNew.delete("price");
                           searchParamsNew.delete("categoryid");
                           searchParamsNew.delete("brandid");
@@ -506,6 +525,7 @@ function Products() {
                             categoryid: [],
                             brandid: [],
                           });
+                          dispatch(actions.set_search(""));
                         }}
                       >
                         <IoCloseOutline className="w-6 h-6 text-red-500" />

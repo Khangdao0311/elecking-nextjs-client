@@ -78,30 +78,32 @@ function Checkout() {
       state.user
     ) {
       orderServices.getById(query.get("vnp_TxnRef")!).then((res) => {
-        if (query.get("vnp_TransactionStatus") === "00") {
-          orderServices
-            .updateTransactionCode(res.data.id, query.get("vnp_TransactionNo")!)
-            .then((res) => {
-              setShowModal({ ...showModal, orderSuccess: true });
+        if (res.status === 200) {
+          if (query.get("vnp_TransactionStatus") === "00") {
+            orderServices
+              .updateTransactionCode(res.data.id, query.get("vnp_TransactionNo")!)
+              .then((res) => {
+                setShowModal({ ...showModal, orderSuccess: true });
 
-              const checkout = JSON.parse(localStorage.getItem("checkout")!);
-              if (checkout?.index) {
-                const cartNew = state.cart.filter(
-                  (item: any, index: number) => !checkout.index.includes(index)
-                );
-                authServices
-                  .cart(state.user.id, cartNew)
-                  .then((res) => dispatch(actions.re_render()));
-              }
-              localStorage.removeItem("checkout");
-              setTimeout(() => router.push(config.routes.client.home), 1000);
+                const checkout = JSON.parse(localStorage.getItem("checkout")!);
+                if (checkout?.index) {
+                  const cartNew = state.cart.filter(
+                    (item: any, index: number) => !checkout.index.includes(index)
+                  );
+                  authServices
+                    .cart(state.user.id, cartNew)
+                    .then((res) => dispatch(actions.re_render()));
+                }
+                localStorage.removeItem("checkout");
+                setTimeout(() => router.push(config.routes.client.home), 1000);
+              });
+          } else {
+            orderServices.updateStatus(res.data.id, 0).then((res) => {
+              setShowModal({ ...showModal, orderErorr: true });
+              setTimeout(() => setShowModal({ ...showModal, orderErorr: false }), 1000);
+              router.push(`?`, { scroll: false });
             });
-        } else {
-          orderServices.updateStatus(res.data.id, 0).then((res) => {
-            setShowModal({ ...showModal, orderErorr: true });
-            setTimeout(() => setShowModal({ ...showModal, orderErorr: false }), 1000);
-            router.push(`?`, { scroll: false });
-          });
+          }
         }
       });
     }
@@ -120,18 +122,20 @@ function Checkout() {
         const _: IProduct[] = [];
         for (const item of checkout?.order) {
           await productServices.getProById(item.product.id).then((res: any) => {
-            _.push(res.data);
-            _total +=
-              (res.data?.variants[item.product?.variant]?.price +
-                res.data?.variants[item.product?.variant]?.colors[item.product?.color]
-                  ?.price_extra) *
-              item.quantity;
-            _totalSale +=
-              (res.data?.variants[item.product?.variant]?.price -
-                res.data?.variants[item.product?.variant]?.price_sale +
-                res.data?.variants[item.product?.variant]?.colors[item.product?.color]
-                  ?.price_extra) *
-              item.quantity;
+            if (res.status === 200) {
+              _.push(res.data);
+              _total +=
+                (res.data?.variants[item.product?.variant]?.price +
+                  res.data?.variants[item.product?.variant]?.colors[item.product?.color]
+                    ?.price_extra) *
+                item.quantity;
+              _totalSale +=
+                (res.data?.variants[item.product?.variant]?.price -
+                  res.data?.variants[item.product?.variant]?.price_sale +
+                  res.data?.variants[item.product?.variant]?.colors[item.product?.color]
+                    ?.price_extra) *
+                item.quantity;
+            }
           });
         }
         setProductsOrder(_);
@@ -148,10 +152,12 @@ function Checkout() {
       addressServices
         .getQuery({ user_id: state.user?.id, limit: 0, orderby: "id-asc" })
         .then((res) => {
-          if (res.data.length === 0)
-            setShowModal({ ...showModal, address: { list: false, new: true, edit: false } });
-          setAddresses(res.data);
-          setAddress(res.data.find((e: IAddress) => e.setDefault === true));
+          if (res.status === 200) {
+            if (res.data.length === 0)
+              setShowModal({ ...showModal, address: { list: false, new: true, edit: false } });
+            setAddresses(res.data);
+            setAddress(res.data.find((e: IAddress) => e.setDefault === true));
+          }
         });
     }
   }, [state.user, state.re_render, checkout]);
@@ -189,28 +195,30 @@ function Checkout() {
       };
       setLoading(true);
       orderServices.inset(orderNew).then((res) => {
-        if (paymentMethod?.id === "67be8349447c10378c42365f") {
-          vnpayServices.createPaymentUrl(res.data._id, res.data.total).then((res) => {
-            window.location.href = res.paymentUrl;
-          });
-        } else {
-          if (res.status === 200) {
-            setLoading(false);
-            setShowModal({ ...showModal, orderSuccess: true });
-            if (checkout?.index) {
-              const cartNew = state.cart.filter(
-                (item: any, index: number) => !checkout.index.includes(index)
-              );
-              authServices
-                .cart(state.user.id, cartNew)
-                .then((res) => dispatch(actions.re_render()));
-            }
-            localStorage.removeItem("checkout");
-            setTimeout(() => router.push(config.routes.client.home), 1000);
+        if (res.status === 200) {
+          if (paymentMethod?.id === "67be8349447c10378c42365f") {
+            vnpayServices.createPaymentUrl(res.data._id, res.data.total).then((res) => {
+              window.location.href = res.paymentUrl;
+            });
           } else {
-            setLoading(false);
-            setShowModal({ ...showModal, orderErorr: true });
-            setTimeout(() => setShowModal({ ...showModal, orderErorr: false }), 1000);
+            if (res.status === 200) {
+              setLoading(false);
+              setShowModal({ ...showModal, orderSuccess: true });
+              if (checkout?.index) {
+                const cartNew = state.cart.filter(
+                  (item: any, index: number) => !checkout.index.includes(index)
+                );
+                authServices
+                  .cart(state.user.id, cartNew)
+                  .then((res) => dispatch(actions.re_render()));
+              }
+              localStorage.removeItem("checkout");
+              setTimeout(() => router.push(config.routes.client.home), 1000);
+            } else {
+              setLoading(false);
+              setShowModal({ ...showModal, orderErorr: true });
+              setTimeout(() => setShowModal({ ...showModal, orderErorr: false }), 1000);
+            }
           }
         }
       });
@@ -485,7 +493,7 @@ function Checkout() {
                     </Fragment>
                   )}
                 </div>
-                <p className="text-base hidden sm:flex font-semibold text-blue-500 p-2.5 gap-2.5 shrink-0">
+                <p className="text-base hidden sm:flex font-semibold text-blue-500 p-2.5 gap-2.5 shrink-0 cursor-pointer">
                   Thay đổi
                 </p>
                 <BsChevronRight className="felx w-6 h-10 shrink-0 sm:hidden text-base font-semibold text-blue-500" />

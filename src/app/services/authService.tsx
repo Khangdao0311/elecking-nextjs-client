@@ -62,6 +62,14 @@ export function getRefreshToken() {
   return Cookies.get("refresh_token") || false;
 }
 
+export function getAccessTokenAdmin() {
+  return Cookies.get("access_token_admin") || false;
+}
+
+export function getRefreshTokenAdmin() {
+  return Cookies.get("refresh_token_admin") || false;
+}
+
 export async function getToken(refresh_token: string) {
   return axios
     .post(`${config.api.auth}/get_token`, { refresh_token: refresh_token })

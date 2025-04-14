@@ -10,6 +10,7 @@ import {
   FaAngleLeft,
   FaAngleRight,
   FaCircleCheck,
+  FaCircleExclamation,
   FaCircleUser,
   FaHeart,
   FaMinus,
@@ -38,7 +39,7 @@ function ProductDetail() {
   const [mainSwiper, setMainSwiper] = useState<any>();
   const [thumbsSwiper, setThumbsSwiper] = useState<any>();
   const [indexSwiper, setIndexSwiper] = useState<any>(0);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(0);
   const [product, setProduct] = useState<IProduct>();
   const [reviews, setReviews] = useState<IReview[]>([]);
   const [totalReviews, setTotalReviews] = useState<number>(0);
@@ -59,29 +60,33 @@ function ProductDetail() {
   useEffect(() => {
     productServices.viewUp(id);
     productServices.getProById(`${id}`).then((res) => {
-      setProduct(res.data);
-      // Đặt tên cho vòng lặp ngoài
-      outerLoop: for (let i = 0; i < res.data.variants.length; i++) {
-        for (let j = 0; j < res.data.variants[i].colors.length; j++) {
-          if (res.data.variants[i].colors[j].quantity > 0) {
-            setIVariant(i);
-            setIColor(j);
-            break outerLoop; // Thoát hoàn toàn cả 2 vòng lặp
+      if (res.status === 200) {
+        setProduct(res.data);
+        outerLoop: for (let i = 0; i < res.data.variants.length; i++) {
+          for (let j = 0; j < res.data.variants[i].colors.length; j++) {
+            if (res.data.variants[i].colors[j].quantity > 0) {
+              setIVariant(i);
+              setIColor(j);
+              break outerLoop; // Thoát hoàn toàn cả 2 vòng lặp
+            }
           }
         }
       }
     });
-    productServices.getSame({ id: id, limit: 5 }).then((res) => setProductsSame(res.data));
+    productServices.getSame({ id: id, limit: 5 }).then((res) => {
+      if (res.status === 200) setProductsSame(res.data);
+    });
   }, [id]);
 
   useEffect(() => {
     reviewServices
       .getQuery({ product_id: id, rating: rating, orderby: "id-desc", limit: 5, page: page })
       .then((res) => {
-        // setReviews([]);
-        setReviews(res.data);
-        setTotalReviews(res.total);
-        setTotalsReviews(res.totalReview);
+        if (res.status === 200) {
+          setReviews(res.data);
+          setTotalReviews(res.total);
+          setTotalsReviews(res.totalReview);
+        }
       });
   }, [id, rating, state.re_render, page]);
 
@@ -123,15 +128,17 @@ function ProductDetail() {
 
     authServices.cart(state.user.id, cartNew).then((res) => {
       setLoading(false);
-      dispatch(actions.re_render());
-      setShowModal(true);
-      setTimeout(() => setShowModal(false), 1000);
+      if (res.status === 200) {
+        dispatch(actions.re_render());
+        setShowModal(1);
+      }
+      setTimeout(() => setShowModal(0), 1000);
     });
   }
 
   function handleAddToWish(id: string) {
     authServices.wish(state.user.id, id).then((res) => {
-      dispatch(actions.re_render());
+      if (res.status === 200) dispatch(actions.re_render());
     });
   }
 
@@ -156,19 +163,19 @@ function ProductDetail() {
 
   function handleRemoveFromWish(id: string) {
     authServices.wish(state.user.id, id).then((res) => {
-      dispatch(actions.re_render());
+      if (res.status === 200) dispatch(actions.re_render());
     });
   }
 
   function handleAddToWishReview(id: string) {
     reviewServices.wish(id, state.user.id).then((res) => {
-      dispatch(actions.re_render());
+      if (res.status === 200) dispatch(actions.re_render());
     });
   }
 
   function handleRemoveFromWishReview(id: string) {
     reviewServices.wish(id, state.user.id).then((res) => {
-      dispatch(actions.re_render());
+      if (res.status === 200) dispatch(actions.re_render());
     });
   }
 
@@ -176,7 +183,7 @@ function ProductDetail() {
     <>
       {loading && <Loading />}
       <Modal
-        open={showModal}
+        open={!!showModal}
         footer={null}
         title={null}
         centered
@@ -184,12 +191,22 @@ function ProductDetail() {
         closable={false}
         width="auto"
       >
-        <div className="center-flex flex-col gap-4">
-          <div>
-            <FaCircleCheck className="w-20 h-20 text-green-500 " />
+        {showModal === 1 && (
+          <div className="center-flex flex-col gap-4">
+            <div>
+              <FaCircleCheck className="w-20 h-20 text-green-500 " />
+            </div>
+            <div className="text-lg font-medium text-green-700">Thêm giỏ hàng thành công !</div>
           </div>
-          <div className="text-lg font-medium text-green-700">Thêm giỏ hàng thành công !</div>
-        </div>
+        )}
+        {showModal === 2 && (
+          <div className="center-flex flex-col gap-4">
+            <div>
+              <FaCircleExclamation className="w-20 h-20 text-red-500 " />
+            </div>
+            <div className="text-lg font-medium text-red-700">Thêm giỏ hàng thất bại !</div>
+          </div>
+        )}
       </Modal>
       {!state.load && product ? (
         <>

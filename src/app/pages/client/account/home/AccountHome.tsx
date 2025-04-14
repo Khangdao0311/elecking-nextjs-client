@@ -1,15 +1,14 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaAngleLeft, FaAngleRight, FaCircleUser, FaUser } from "react-icons/fa6";
 import { ImFire } from "react-icons/im";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Grid } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules";
 
 import config from "@/app/config";
 import { actions, useStore } from "@/app/store";
-import SidebarAccount from "@/app/components/client/SidebarAccount";
 import ProductLoad from "@/app/components/client/ProductLoad";
 import Product from "@/app/components/client/Product";
 import * as productServices from "@/app/services/productService";
@@ -28,14 +27,15 @@ function AccountHome() {
 
   useEffect(() => {
     const query = { orderby: "sale-desc", limit: 10 };
-    productServices.getQuery(query).then((res) => setProductsSale(res.data));
-  }, []);
-
-  useEffect(() => {
-    categoryServices
-      .getQuery({ limit: 0, orderby: "id-asc" })
-      .then((res) => setCategories(res.data));
-    brandServices.getQuery({ limit: 0, orderby: "id-asc" }).then((res) => setBrands(res.data));
+    productServices.getQuery(query).then((res) => {
+      if (res.status === 200) setProductsSale(res.data);
+    });
+    categoryServices.getQuery({ limit: 0, orderby: "id-asc" }).then((res) => {
+      if (res.status === 200) setCategories(res.data);
+    });
+    brandServices.getQuery({ limit: 0, orderby: "id-asc" }).then((res) => {
+      if (res.status === 200) setBrands(res.data);
+    });
   }, []);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ function AccountHome() {
       if (state.wish.length || !productsWish.length) {
         for (const id of state.wish) {
           await productServices.getProById(id).then((res: any) => {
-            _.push(res.data);
+            if (res.status === 200) _.push(res.data);
           });
         }
       }

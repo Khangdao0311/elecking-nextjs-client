@@ -4,7 +4,6 @@ import { Fragment, useEffect, useState } from "react";
 import { TbMoodEmpty } from "react-icons/tb";
 
 import { useStore, actions } from "@/app/store";
-import SidebarAccount from "@/app/components/client/SidebarAccount";
 import ModalAddressNew from "@/app/components/client/ModalAddress/New";
 import ModalAddressEdit from "@/app/components/client/ModalAddress/Edit";
 import * as addressServices from "@/app/services/addressService";
@@ -21,7 +20,7 @@ function AccountAddress() {
       addressServices
         .getQuery({ user_id: state.user?.id, limit: 0, orderby: "id-asc", status: 1 })
         .then((res) => {
-          setAddresses(res.data);
+          if (res.status === 200) setAddresses(res.data);
         });
     }
   }, [state.user, state.re_render]);
@@ -32,7 +31,7 @@ function AccountAddress() {
       status: 0,
     };
     addressServices.edit(address.id, addressCancel).then((res) => {
-      dispatch(actions.re_render());
+      if (res.status === 200) dispatch(actions.re_render());
     });
   }
 

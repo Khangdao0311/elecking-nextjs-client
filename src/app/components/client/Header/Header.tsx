@@ -10,7 +10,7 @@ import { FaCaretDown } from "react-icons/fa";
 import { IoSearchSharp } from "react-icons/io5";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { FaAnglesUp, FaCircleUser } from "react-icons/fa6";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FloatButton, Modal, Popover } from "antd";
@@ -47,10 +47,15 @@ function Header() {
   const [scroll] = useWindowScroll();
   const { x, y } = scroll as { x: number; y: number };
 
+  const refSearch = useRef<any>(null);
+
   if (width < 640 && showModal.menu) setShowModal({ ...showModal, menu: false });
 
   useEffect(() => {
     dispatch(actions.set_routing(false));
+    if (pathname !== config.routes.client.products) {
+      dispatch(actions.set_search(""));
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -107,24 +112,26 @@ function Header() {
         break;
       case `${config.routes.client.productDetail}${id}`:
         productServices.getProById(id).then((res) => {
-          setBreadCrumb([
-            {
-              name: "Trang Chủ",
-              link: config.routes.client.home,
-            },
-            {
-              name: "Sản phẩm",
-              link: config.routes.client.products,
-            },
-            {
-              name: `${res.data.category.name}`,
-              link: `${config.routes.client.products}?categoryid=${res.data.category.id}`,
-            },
-            {
-              name: `${res.data.name}`,
-              link: `${config.routes.client.productDetail}${id}`,
-            },
-          ]);
+          if (res.status === 200) {
+            setBreadCrumb([
+              {
+                name: "Trang Chủ",
+                link: config.routes.client.home,
+              },
+              {
+                name: "Sản phẩm",
+                link: config.routes.client.products,
+              },
+              {
+                name: `${res.data.category.name}`,
+                link: `${config.routes.client.products}?categoryid=${res.data.category.id}`,
+              },
+              {
+                name: `${res.data.name}`,
+                link: `${config.routes.client.productDetail}${id}`,
+              },
+            ]);
+          }
         });
         break;
       case config.routes.client.cart:
@@ -278,9 +285,9 @@ function Header() {
   }, [pathname]);
 
   function handleSearch() {
-    // setShowModal({ menu: false, search: false });
+    refSearch.current.blur();
     const searchParamsNew = new URLSearchParams(searchParams.toString());
-    searchParamsNew.set("search", `${state.search}`);
+    searchParamsNew.set("search", `${state.search.toString()}`);
     if (pathname !== config.routes.client.products) dispatch(actions.set_routing(true));
     router.push(`${config.routes.client.products}?${searchParamsNew.toString()}`, {
       scroll: false,
@@ -424,25 +431,18 @@ function Header() {
             <Popover
               placement={width < 640 ? "bottom" : "bottomLeft"}
               title={null}
-              trigger="click"
               open={showModal.search}
-              onOpenChange={(e) => setShowModal({ menu: false, search: e })}
-              zIndex={101}
-              styles={{
-                body: { padding: 0, overflow: "hidden", minWidth: "100%", width: "100%" },
-              }}
               content={
                 <ResultSearch onClose={() => setShowModal({ menu: false, search: false })} />
               }
             >
-              <form
-                onClick={() => setShowModal({ menu: false, search: true })}
-                className="w-full h-full relative flex flex-1 items-center justify-center hover:bg-white/20 cursor-pointer rounded-lg transition-all duration-300"
-              >
+              <form className="w-full h-full relative flex flex-1 items-center justify-center hover:bg-white/20 cursor-pointer rounded-lg transition-all duration-300">
                 <input
+                  ref={refSearch}
                   type="text"
                   value={state.search}
                   onFocus={() => setShowModal({ menu: false, search: true })}
+                  onBlur={() => setShowModal({ menu: false, search: false })}
                   onChange={(e) => dispatch(actions.set_search(e.target.value))}
                   className="w-full h-full rounded-lg border border-stone-300 pl-4 pr-20 outline-primaryDark"
                   placeholder="Bạn cần tìm gì ?"
