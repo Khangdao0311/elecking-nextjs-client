@@ -16,13 +16,14 @@ const TitleAdmin = (props: {
       </div>
       {pathname === config.routes.admin.dashboard && props.yearChange && (
         <Select
-          value ="Tổng doanh thu"
+          className="min-w-[124px]"
+          placeholder= "Tổng danh thu"
           onChange={(value) => props.yearChange?.(value)}
           options={[
             { value: '', label: "Tổng danh thu" },
-            ...Array.from({ length: 5 }, (_, i) => {
+            ...Array.from({ length: 2 }, (_, i) => {
               const year = new Date().getFullYear() - i;
-              return { value: year, label: year.toString() };
+              return { value: year.toString(), label: year.toString() };
             }),
           ]}
         />
