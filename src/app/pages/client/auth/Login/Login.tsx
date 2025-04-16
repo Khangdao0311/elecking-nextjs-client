@@ -3,9 +3,8 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
-import { FaCircleCheck, FaCircleExclamation, FaEye, FaFacebook } from "react-icons/fa6";
 import Link from "next/link";
-import { Input, Modal } from "antd";
+import { Input } from "antd";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
@@ -14,11 +13,11 @@ import { actions, useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
 import Shimmer from "@/app/components/client/Shimmer";
 import * as authServices from "@/app/services/authService";
+import ModalNotification from "@/app/components/client/ModalNotification";
 
 function Login() {
   const [state, dispatch] = useStore();
-  const [loginStatus, setLoginStatus] = useState(false);
-  const [notification, setNotification] = useState("");
+  const [notification, setNotification] = useState<any>({ status: null, mesage: "" });
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -33,8 +32,7 @@ function Login() {
     localStorage.removeItem("user");
     Cookies.remove("access_token");
     Cookies.remove("refresh_token");
-    dispatch(actions.set({ user: null, wish: [], cart: [] }));
-
+    dispatch(actions.set({ re_render: !state.re_render, user: null, wish: [], cart: [] }));
     // }
   }, []);
 
@@ -46,17 +44,15 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         Cookies.set("access_token", res.data.access_token, { expires: 1 });
         Cookies.set("refresh_token", res.data.refresh_token, { expires: 1 });
-        setLoginStatus(true);
-        setNotification("Đăng nhập thành công !");
+        setNotification({ status: true, message: "Đăng nhập thành công !" });
         setTimeout(() => {
           dispatch(actions.set_routing(true));
           router.push(config.routes.client.home);
         }, 1000);
       } else {
-        setLoginStatus(false);
-        setNotification(res.message);
+        setNotification({ status: false, message: res.message });
         setTimeout(() => {
-          setNotification("");
+          setNotification({ status: null, message: "" });
         }, 1000);
       }
     });
@@ -65,31 +61,7 @@ function Login() {
   return (
     <>
       {loading && <Loading />}
-      <Modal
-        open={!!notification}
-        footer={null}
-        title={null}
-        centered
-        maskClosable={false}
-        closable={false}
-        width="auto"
-      >
-        {loginStatus ? (
-          <div className="center-flex flex-col gap-4">
-            <div>
-              <FaCircleCheck className="w-20 h-20 text-green-500 " />
-            </div>
-            <div className="text-lg font-medium text-green-700">{notification}</div>
-          </div>
-        ) : (
-          <div className="center-flex flex-col gap-4">
-            <div>
-              <FaCircleExclamation className="w-20 h-20 text-red-500 " />
-            </div>
-            <div className="text-lg font-medium text-red-700">{notification}</div>
-          </div>
-        )}
-      </Modal>
+      <ModalNotification noti={notification} />
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 center-flex mt-4">
         {state.load ? (
           <div className="bg-white p-8 rounded-lg border-gray-200 border shadow-xl w-[90vw] max-w-[500px] flex items-center gap-5 flex-col">

@@ -21,6 +21,7 @@ import {
 import { FaRegEdit, FaUserEdit } from "react-icons/fa";
 import moment from "moment";
 import { TbMoodEmpty } from "react-icons/tb";
+import Cookies from "js-cookie";
 
 import Product from "@/app/components/client/Product";
 import * as productServices from "@/app/services/productService";
@@ -126,20 +127,54 @@ function ProductDetail() {
       });
     }
 
-    authServices.cart(state.user.id, cartNew).then((res) => {
-      setLoading(false);
-      if (res.status === 200) {
-        dispatch(actions.re_render());
-        setShowModal(1);
-      }
-      setTimeout(() => setShowModal(0), 1000);
-    });
+    (function callback() {
+      authServices.cart(state.user.id, cartNew).then((res) => {
+        setLoading(false);
+        if (res.status === 200) {
+          dispatch(actions.re_render());
+          setShowModal(1);
+          setTimeout(() => setShowModal(0), 1000);
+        }
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleAddToWish(id: string) {
-    authServices.wish(state.user.id, id).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+    (function callback() {
+      authServices.wish(state.user.id, id).then((res) => {
+        if (res.status === 200) dispatch(actions.re_render());
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleBuyNow() {
@@ -162,9 +197,26 @@ function ProductDetail() {
   }
 
   function handleRemoveFromWish(id: string) {
-    authServices.wish(state.user.id, id).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+    (function callback() {
+      authServices.wish(state.user.id, id).then((res) => {
+        if (res.status === 200) dispatch(actions.re_render());
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleAddToWishReview(id: string) {

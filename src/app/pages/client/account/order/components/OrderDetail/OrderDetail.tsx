@@ -4,13 +4,21 @@ import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import "swiper/css";
+import { useState } from "react";
 
 import config from "@/app/config";
-import * as orderServices from "@/app/services/orderService";
+import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
+import ModalNotification from "@/app/components/client/ModalNotification";
+import Cookies from "js-cookie";
+import Link from "next/link";
 
 function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any; onClose: any }) {
   const [state, dispatch] = useStore();
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<any>({ status: null, message: "" });
+
   const router = useRouter();
 
   let status: any = {};
@@ -66,14 +74,40 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
   }
 
   function handleCancelOrder() {
-    dispatch(actions.set_routing(true));
-    orderServices.updateStatus(props.order!.id, 0).then((res) => {
-      if (res.status === 200) {
-        dispatch(actions.re_render());
-        dispatch(actions.set_routing(false));
-        props.onClose();
-      }
-    });
+    setLoading(true);
+    (function callback() {
+      authServices.cancelOrder(props.order!.id).then((res) => {
+        if (res.status === 200) {
+          setLoading(false);
+          setNotification({ status: true, message: "Đơn hàng đã được hủy !" });
+          setTimeout(() => {
+            setNotification({ status: null, message: "" });
+            dispatch(actions.re_render());
+            props.onClose();
+          }, 1000);
+        } else if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        } else {
+          setLoading(false);
+          setNotification({ status: false, message: res.message });
+          setTimeout(() => {
+            setNotification({ status: null, message: "" });
+          }, 1000);
+        }
+      });
+    })();
   }
 
   function handleBuyAgain() {
@@ -95,97 +129,109 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full sm:w-[600px] ">
-      <h2 className="text-xl font-bold uppercase">CHI TIẾT ĐƠN HÀNG</h2>
-      <div className="sm:grid sm:grid-cols-2 gap-2">
-        <div className="flex gap-2">
-          <p className="text-base font-normal">Tên người nhận:</p>
-          <span className="text-base font-base font-bold uppercase">
-            {props.order?.address.fullname}
-          </span>
-        </div>
-        <div className="flex gap-2">
-          <p className="text-base font-normal">Số điện thoại:</p>
-          <span className="text-base font-base font-bold uppercase">
-            {props.order?.address.phone}
-          </span>
-        </div>
-        <div className="flex text-base font-medium col-span-2 gap-2">
-          <p className="text-base font-normal shrink-0">Địa chỉ:</p>
-          <span className="text-base font-base font-bold">
-            {props.order?.address.province.name}, {props.order?.address.district.name},{" "}
-            {props.order?.address.ward.name} <br /> {props.order?.address.description}
-          </span>
-        </div>
-
-        <div className="flex flex-wrap gap-2 col-span-2 items-center">
-          <p className="text-base font-normal shrink-0">Trạng thái thái đơn hàng:</p>
-          <div
-            className={`px-6 py-2 center-flex shrink-0 rounded-lg bg-${status.color}-100 select-none`}
-          >
-            <p className={`text-sm font-medium text-${status.color}-800`}>{status.text}</p>
+    <>
+      {loading && <Loading />}
+      <ModalNotification noti={notification} />
+      <div className="flex flex-col gap-4 w-full sm:w-[600px] ">
+        <h2 className="text-xl font-bold uppercase">CHI TIẾT ĐƠN HÀNG</h2>
+        <div className="sm:grid sm:grid-cols-2 gap-2">
+          <div className="flex gap-2">
+            <p className="text-base font-normal">Tên người nhận:</p>
+            <span className="text-base font-base font-bold uppercase">
+              {props.order?.address.fullname}
+            </span>
           </div>
-        </div>
-        <div className="flex gap-2 col-span-2 items-center">
-          <p className="text-base font-normal shrink-0">Tổng tiền: </p>
-          <span className="text-base font-base font-bold text-primary">
-            {props.order?.total.toLocaleString("vi-VN")} đ
-          </span>
-        </div>
-        {props.order.payment_status && props.order.transaction_code && (
+          <div className="flex gap-2">
+            <p className="text-base font-normal">Số điện thoại:</p>
+            <span className="text-base font-base font-bold uppercase">
+              {props.order?.address.phone}
+            </span>
+          </div>
           <div className="flex text-base font-medium col-span-2 gap-2">
-            <p className="text-sm font-medium shrink-0 px-6 py-1 bg-green-100 text-green-800 rounded">
-              {" "}
-              Đã thanh toán
-            </p>
+            <p className="text-base font-normal shrink-0">Địa chỉ:</p>
+            <span className="text-base font-base font-bold">
+              {props.order?.address.province.name}, {props.order?.address.district.name},{" "}
+              {props.order?.address.ward.name} <br /> {props.order?.address.description}
+            </span>
           </div>
-        )}
-      </div>
-      <Swiper
-        direction={"vertical"}
-        slidesPerView={"auto"}
-        spaceBetween={10}
-        freeMode={true}
-        mousewheel={true}
-        modules={[Mousewheel, FreeMode]}
-        className="!w-full flex flex-col max-h-[300px] gap-2"
-      >
-        {props.order?.products.map((item, index) => (
-          <SwiperSlide
-            key={index}
-            className="!flex w-full gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300 relative"
-          >
-            <div className="w-24 h-24 rounded-lg">
-              <img
-                src={item.product.image}
-                alt={item.product.name}
-                className="w-full h-full object-contain"
-              />
+
+          <div className="flex flex-wrap gap-2 col-span-2 items-center">
+            <p className="text-base font-normal shrink-0">Trạng thái thái đơn hàng:</p>
+            <div
+              className={`px-6 py-2 center-flex shrink-0 rounded-lg bg-${status.color}-100 select-none`}
+            >
+              <p className={`text-sm font-medium text-${status.color}-800`}>{status.text}</p>
             </div>
-            <div className="flex flex-col gap-1.5 w-full">
-              <p className="text-base font-medium text-black">{item.product.name}</p>
-              <p className="text-base font-medium text-black">Số Lượng: {item.quantity}</p>
-              <p className="text-base font-bold text-red-500">
-                {item.product.price.toLocaleString("vi-VN")} đ
+          </div>
+          <div className="flex gap-2 col-span-2 items-center">
+            <p className="text-base font-normal shrink-0">Tổng tiền: </p>
+            <span className="text-base font-base font-bold text-primary">
+              {props.order?.total.toLocaleString("vi-VN")} đ
+            </span>
+          </div>
+          {props.order.payment_status && props.order.transaction_code && (
+            <div className="flex text-base font-medium col-span-2 gap-2">
+              <p className="text-sm font-medium shrink-0 px-6 py-1 bg-green-100 text-green-800 rounded">
+                {" "}
+                Đã thanh toán
               </p>
             </div>
-            {props.order?.status === 1 && !item.reviewed && (
-              <div
-                onClick={() => {
-                  props.setProductOrder(item);
-                  props.onReview();
-                }}
-                className="absolute bottom-4 right-4 px-5 py-2 border border-thirdary text-thirdary rounded text-sm font-medium select-none cursor-pointer "
+          )}
+        </div>
+        <Swiper
+          direction={"vertical"}
+          slidesPerView={"auto"}
+          spaceBetween={10}
+          freeMode={true}
+          mousewheel={true}
+          modules={[Mousewheel, FreeMode]}
+          className="!w-full flex flex-col max-h-[300px] gap-2"
+        >
+          {props.order?.products.map((item, index) => (
+            <SwiperSlide
+              key={index}
+              className="!flex w-full gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300 relative"
+            >
+              <Link
+                href={`${config.routes.client.productDetail}${item.product.id}`}
+                className="w-24 h-24 rounded-lg"
               >
-                Đánh giá
+                <img
+                  src={item.product.image}
+                  alt={item.product.name}
+                  className="w-full h-full object-contain"
+                />
+              </Link>
+              <div className="flex flex-col gap-1.5 w-full">
+                <Link
+                  href={`${config.routes.client.productDetail}${item.product.id}`}
+                  className="text-base font-medium text-black"
+                >
+                  {item.product.name}
+                </Link>
+                <p className="text-base font-medium text-black">Số Lượng: {item.quantity}</p>
+                <p className="text-base font-bold text-red-500">
+                  {item.product.price.toLocaleString("vi-VN")} đ
+                </p>
               </div>
-            )}
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      {/* <div className="flex flex-col w-full max-h-[500px] gap-2"></div> */}
-      <div className="flex items-center justify-end gap-4 w-full">{status.button}</div>
-    </div>
+              {props.order?.status === 1 && !item.reviewed && (
+                <div
+                  onClick={() => {
+                    props.setProductOrder(item);
+                    props.onReview();
+                  }}
+                  className="absolute bottom-4 right-4 px-5 py-2 border border-thirdary text-thirdary rounded text-sm font-medium select-none cursor-pointer "
+                >
+                  Đánh giá
+                </div>
+              )}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        {/* <div className="flex flex-col w-full max-h-[500px] gap-2"></div> */}
+        <div className="flex items-center justify-end gap-4 w-full">{status.button}</div>
+      </div>
+    </>
   );
 }
 

@@ -22,9 +22,3 @@ export async function updateStatus(user_id: string, body: any) {
     .catch((error: any) => error.response.data);
 }
 
-export async function updateProfile(user_id: string, profile: any) {
-  return axios
-    .put(`${config.api.user}/profile/${user_id}`, profile)
-    .then((response: any) => response.data)
-    .catch((error: any) => error.response.data);
-}

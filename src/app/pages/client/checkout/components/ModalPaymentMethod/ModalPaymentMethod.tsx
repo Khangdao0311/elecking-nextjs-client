@@ -19,7 +19,7 @@ function ModalPaymentMethod({ paymentMethod, setPaymentMethod, onClose }: any) {
   }, []);
 
   return (
-    <div className="w-[500px] flex flex-col gap-4">
+    <div className="w-full h-[70vh] flex flex-col gap-4">
       <p className="text-xl py-2 font-bold flex items-center text-thirdary">
         Chọn Phương Thức Thanh Toán
       </p>
@@ -34,7 +34,7 @@ function ModalPaymentMethod({ paymentMethod, setPaymentMethod, onClose }: any) {
         freeMode={true}
         mousewheel={true}
         modules={[FreeMode, Mousewheel, Autoplay]}
-        className="flex flex-col gap-4 h-[500px] w-full"
+        className="flex flex-col gap-4 h-full w-full"
       >
         {paymentMethods.map((payment: IPaymment, iPayment: number) => (
           <SwiperSlide

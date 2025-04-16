@@ -1,15 +1,20 @@
 "use client";
 
-import { Input, notification } from "antd";
+import { Input } from "antd";
 import { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa6";
 import { FiUpload } from "react-icons/fi";
 import moment from "moment";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 import { useStore, actions } from "@/app/store";
 import * as userServices from "@/app/services/userService";
-import * as uploadServices from "@/app/services/uploadService";
+import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
+import ModalNotification from "@/app/components/client/ModalNotification";
+import Loading from "@/app/components/client/Loading";
+import config from "@/app/config";
 
 function AccountProfile() {
   const [state, dispatch] = useStore();
@@ -17,23 +22,13 @@ function AccountProfile() {
   const [user, setUser] = useState<IUser>();
   const [profile, setProfile] = useState<any>({
     fullname: "",
-    avatar: "",
     email: "",
     phone: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<any>({ status: null, message: "" });
 
-  const [api, contextHolder] = notification.useNotification();
-  const openNotification = (message: string) => {
-    api.success({
-      message: message,
-      placement: "topRight",
-      style: {
-        width: "fit-content",
-        display: "inline-block",
-        whiteSpace: "nowrap",
-      },
-    });
-  };
+  const router = useRouter();
 
   useEffect(() => {
     if (state.user) {
@@ -57,38 +52,67 @@ function AccountProfile() {
       profile.email !== user?.email ||
       profile.phone !== user?.phone
     ) {
-      const profileNew = { ...profile };
-      if (file) {
-        profileNew.avatar = file.name;
-        const formDataUpload = new FormData();
-        formDataUpload.append("image", file);
-        uploadServices.uploadSingle(formDataUpload);
-      }
+      const formDataUpload = new FormData();
+      formDataUpload.append("fullname", profile.fullname);
+      formDataUpload.append("email", profile.email);
+      formDataUpload.append("phone", profile.phone);
 
-      userServices.updateProfile(user!.id, profileNew).then((res) => {
-        if (res.status === 200) {
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              id: user!.id,
-              avatar: res.data.avatar,
-              username: res.data.username,
-              fullname: res.data.fullname,
-              email: res.data.email,
-              phone: res.data.phone,
-            })
-          );
-          dispatch(actions.re_render());
-          setFile(undefined);
-          openNotification("Cập nhật thành công !");
-        }
-      });
+      if (file) {
+        formDataUpload.append("avatar", file);
+      }
+      setLoading(true);
+      (function callback() {
+        authServices.updateProfile(user!.id, formDataUpload).then((res) => {
+          if (res.status === 200) {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                id: user!.id,
+                avatar: res.data.avatar,
+                username: res.data.username,
+                fullname: res.data.fullname,
+                email: res.data.email,
+                phone: res.data.phone,
+              })
+            );
+            dispatch(actions.re_render());
+            setFile(undefined);
+            setLoading(false);
+            setNotification({ status: true, message: "Thay đổi thông tin thành công !" });
+            setTimeout(() => {
+              setNotification({ status: null, message: "" });
+            }, 1000);
+          } else if (res.status === 401) {
+            const refreshToken = authServices.getRefreshToken();
+            if (refreshToken) {
+              authServices.getToken(refreshToken).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token", res.data);
+                  callback();
+                } else {
+                  authServices.clearUser();
+                  router.push(config.routes.client.login);
+                  dispatch(actions.re_render());
+                }
+              });
+            }
+          } else {
+            setLoading(false);
+            setNotification({ status: false, message: res.message });
+            setTimeout(() => {
+              setNotification({ status: null, message: "" });
+            }, 1000);
+          }
+        });
+      })();
     }
   }
 
   return (
     <>
-      {contextHolder}
+      {/* {contextHolder} */}
+      {loading && <Loading />}
+      <ModalNotification noti={notification} />
       <div className="flex flex-col gap-6 ">
         <h2 className="text-2xl font-bold uppercase">Tài Khoản Của Bạn</h2>
         <div className=" flex flex-col-reverse md:flex-row gap-6 h-full md:divide-x-2 md:divide-gray-100">

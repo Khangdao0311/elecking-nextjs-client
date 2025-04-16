@@ -1,33 +1,69 @@
 "use client";
 import Link from "next/link";
-import { FaRegHeart, FaStar, FaRegStar, FaHeart } from "react-icons/fa6";
-import { Fragment, useEffect, useState } from "react";
+import { FaRegHeart, FaHeart } from "react-icons/fa6";
+import { Fragment } from "react";
 import { Rate } from "antd";
+import Cookies from "js-cookie";
+import { usePathname, useRouter } from "next/navigation";
 
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
-import { usePathname } from "next/navigation";
 
 function Product(props: { product: IProduct }) {
   const [state, dispatch] = useStore();
 
   const pathname = usePathname();
+  const router = useRouter();
 
   function handleAddToWish(id: string) {
-    authServices.wish(state.user.id, id).then((res) => {
-      if (res.status === 200) {
-        dispatch(actions.re_render());
-      }
-    });
+    (function callback() {
+      authServices.wish(state.user.id, id).then((res) => {
+        if (res.status === 200) {
+          dispatch(actions.re_render());
+        }
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleRemoveFromWish(id: string) {
-    authServices.wish(state.user.id, id).then((res) => {
-      if (res.status === 200) {
-        dispatch(actions.re_render());
-      }
-    });
+    (function callback() {
+      authServices.wish(state.user.id, id).then((res) => {
+        if (res.status === 200) {
+          dispatch(actions.re_render());
+        }
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   return (

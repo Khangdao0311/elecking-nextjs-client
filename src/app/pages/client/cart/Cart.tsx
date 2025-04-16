@@ -8,6 +8,7 @@ import { HiOutlineTicket } from "react-icons/hi";
 import { FaCaretDown, FaCircleExclamation, FaMinus, FaPlus } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
 import { Modal, Popover } from "antd";
+import Cookies from "js-cookie";
 
 import config from "@/app/config";
 import * as productServices from "@/app/services/productService";
@@ -136,9 +137,26 @@ function Cart() {
       return acc;
     }, []);
 
-    authServices.cart(state.user.id, cartFinal).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+    (function callback() {
+      authServices.cart(state.user.id, cartFinal).then((res) => {
+        if (res.status === 200) dispatch(actions.re_render());
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleChangeColor(iProduct: number, iColor: number) {
@@ -180,9 +198,26 @@ function Cart() {
       return acc;
     }, []);
 
-    authServices.cart(state.user.id, cartFinal).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+    (function callback() {
+      authServices.cart(state.user.id, cartFinal).then((res) => {
+        if (res.status === 200) dispatch(actions.re_render());
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleChangeQuantity(iProduct: number, quantity: number) {
@@ -196,25 +231,78 @@ function Cart() {
       return item;
     });
 
-    authServices.cart(state.user.id, cartNew).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+    (function callback() {
+      authServices.cart(state.user.id, cartNew).then((res) => {
+        if (res.status === 200) dispatch(actions.re_render());
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleRemoveItem(iProduct: number) {
     const cartNew = state.cart.filter((item: any, index: number) => index !== iProduct);
     setProductsCart([]);
-    authServices.cart(state.user.id, cartNew).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+
+    (function callback() {
+      authServices.cart(state.user.id, cartNew).then((res) => {
+        if (res.status === 200) dispatch(actions.re_render());
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleRemoveItems() {
     const cartNew = state.cart.filter((item: any, index: number) => !checkedItems[index]);
     setProductsCart([]);
-    authServices.cart(state.user.id, cartNew).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+
+    (function callback() {
+      authServices.cart(state.user.id, cartNew).then((res) => {
+        if (res.status === 200) dispatch(actions.re_render());
+        if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   function handleCheckItem(iProduct: number) {
@@ -289,8 +377,8 @@ function Cart() {
           centered
           maskClosable={false}
           closable={false}
-          width="auto"
-          zIndex={1002}
+          className="!w-[90vw] !max-w-[600px]"
+          zIndex={102}
         >
           <ModalVoucher
             orderPrice={total.sale}
@@ -308,10 +396,10 @@ function Cart() {
           centered
           maskClosable={false}
           closable={false}
-          width="auto"
-          zIndex={1002}
+          className="!w-[90vw] !max-w-[600px]"
+          zIndex={102}
         >
-          <div className="p-2 flex flex-col gap-4 w-[80vw] max-w-[400px]">
+          <div className="p-2 flex flex-col gap-4 w-full">
             <p className="w-full text-center text-lg font-bold text-primary">
               Bạn có muốn xóa sản phẩm này không ?
             </p>
@@ -344,7 +432,7 @@ function Cart() {
           maskClosable={false}
           closable={false}
           width="auto"
-          zIndex={1002}
+          zIndex={102}
         >
           <div className="w-[50vw] max-w-60 center-flex flex-col gap-4">
             <FaCircleExclamation className="w-1/3 h-auto text-primary" />

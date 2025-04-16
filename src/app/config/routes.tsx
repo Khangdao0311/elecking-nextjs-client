@@ -7,7 +7,7 @@ const routes = {
     checkout: "/checkout",
     login: "/auth/login",
     register: "/auth/register",
-    forgotPassword: "/auth/forgot-password",
+    forgotPassword: "/forgot-password",
     account: {
       home: "/account",
       order: "/account/order",

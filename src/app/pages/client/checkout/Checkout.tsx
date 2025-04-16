@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import { FaChevronRight, FaMapLocationDot } from "react-icons/fa6";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Modal, notification } from "antd";
+import { message, Modal, notification } from "antd";
 
 import config from "@/app/config";
 import { useStore, actions } from "@/app/store";
@@ -23,6 +23,7 @@ import Shimmer from "@/app/components/client/Shimmer";
 import { BsChevronRight } from "react-icons/bs";
 import TextArea from "antd/es/input/TextArea";
 import { LuTicket } from "react-icons/lu";
+import ModalNotification from "@/app/components/client/ModalNotification";
 
 function Checkout() {
   const [state, dispatch] = useStore();
@@ -36,22 +37,23 @@ function Checkout() {
   const [note, setNote] = useState<string>("");
 
   const [loading, setLoading] = useState<Boolean>(false);
+  const [notification, setNotification] = useState<any>({ status: null, message: "" });
 
   const query = useSearchParams();
   const router = useRouter();
 
-  const [api, contextHolder] = notification.useNotification();
-  const openNotification = (message: string) => {
-    api.info({
-      message: message,
-      placement: "topRight",
-      style: {
-        width: "fit-content",
-        display: "inline-block",
-        whiteSpace: "nowrap",
-      },
-    });
-  };
+  // const [api, contextHolder] = notification.useNotification();
+  // const openNotification = (message: string) => {
+  //   api.info({
+  //     message: message,
+  //     placement: "topRight",
+  //     style: {
+  //       width: "fit-content",
+  //       display: "inline-block",
+  //       whiteSpace: "nowrap",
+  //     },
+  //   });
+  // };
 
   const [total, setTotal] = useState<any>({
     original: 0,
@@ -66,8 +68,8 @@ function Checkout() {
       edit: false,
     },
     payment_method: false,
-    orderSuccess: false,
-    orderErorr: false,
+    // orderSuccess: false,
+    // orderErorr: false,
   });
 
   useLayoutEffect(() => {
@@ -83,7 +85,7 @@ function Checkout() {
             orderServices
               .updateTransactionCode(res.data.id, query.get("vnp_TransactionNo")!)
               .then((res) => {
-                setShowModal({ ...showModal, orderSuccess: true });
+                setNotification({ status: true, message: "Đạt hàng thành công !" });
 
                 const checkout = JSON.parse(localStorage.getItem("checkout")!);
                 if (checkout?.index) {
@@ -99,8 +101,8 @@ function Checkout() {
               });
           } else {
             orderServices.updateStatus(res.data.id, 0).then((res) => {
-              setShowModal({ ...showModal, orderErorr: true });
-              setTimeout(() => setShowModal({ ...showModal, orderErorr: false }), 1000);
+              setNotification({ status: false, message: "Đạt hàng thất bại !" });
+              setTimeout(() => setNotification({ status: null, message: "" }), 1000);
               router.push(`?`, { scroll: false });
             });
           }
@@ -115,7 +117,7 @@ function Checkout() {
   }, []);
 
   useEffect(() => {
-    async function _() {
+    (async function () {
       if (checkout?.order?.length) {
         let _total: number = 0;
         let _totalSale: number = 0;
@@ -145,8 +147,7 @@ function Checkout() {
           sale: _totalSale,
         });
       }
-    }
-    _();
+    })();
 
     if (state.user) {
       addressServices
@@ -203,7 +204,7 @@ function Checkout() {
           } else {
             if (res.status === 200) {
               setLoading(false);
-              setShowModal({ ...showModal, orderSuccess: true });
+              setNotification({ status: true, message: "Đạt hàng thành công !" });
               if (checkout?.index) {
                 const cartNew = state.cart.filter(
                   (item: any, index: number) => !checkout.index.includes(index)
@@ -216,21 +217,22 @@ function Checkout() {
               setTimeout(() => router.push(config.routes.client.home), 1000);
             } else {
               setLoading(false);
-              setShowModal({ ...showModal, orderErorr: true });
-              setTimeout(() => setShowModal({ ...showModal, orderErorr: false }), 1000);
+              setNotification({ status: false, message: "Đạt hàng thất bại !" });
+              setTimeout(() => setNotification({ status: null, message: "" }), 1000);
             }
           }
         }
       });
     } else {
-      openNotification("Vui lòng chọn phương thức thanh toán !");
+      setNotification({ status: false, message: "Vui lòng chọn phương thức thanh toán !" });
+      setTimeout(() => setNotification({ status: null, message: "" }), 1000);
     }
   }
 
   return (
     <>
       {loading && <Loading />}
-      {contextHolder}
+      <ModalNotification noti={notification} />
       <Fragment>
         {/* model address  */}
         <Modal
@@ -243,7 +245,7 @@ function Checkout() {
           centered
           maskClosable={false}
           closable={false}
-          width="auto"
+          className="!w-[90vw] !max-w-[600px]"
         >
           <ModalAddress
             addresses={addresses}
@@ -272,7 +274,7 @@ function Checkout() {
           centered
           maskClosable={false}
           closable={false}
-          width="auto"
+          className="!w-[90vw] !max-w-[600px]"
         >
           <ModalAddressNew
             status={addresses.length > 0}
@@ -292,7 +294,7 @@ function Checkout() {
           centered
           maskClosable={false}
           closable={false}
-          width="auto"
+          className="!w-[90vw] !max-w-[600px]"
         >
           <ModalAddressEdit
             addressEdit={addressEdit}
@@ -311,7 +313,7 @@ function Checkout() {
         centered
         maskClosable={false}
         closable={false}
-        width="auto"
+        className="!w-[90vw] !max-w-[600px]"
       >
         <ModalVoucher
           orderPrice={total.sale}
@@ -328,7 +330,7 @@ function Checkout() {
         centered
         maskClosable={false}
         closable={false}
-        width="auto"
+        className="!w-[90vw] !max-w-[600px]"
       >
         <ModalPaymentMethod
           paymentMethod={paymentMethod}
@@ -336,31 +338,6 @@ function Checkout() {
           onClose={() => setShowModal({ ...showModal, payment_method: false })}
         />
       </Modal>
-      <Fragment>
-        <Modal
-          open={showModal.orderSuccess}
-          footer={null}
-          title={null}
-          centered
-          maskClosable={false}
-          closable={false}
-          width="auto"
-        >
-          <ModalOrderStatus status="success" content="Đặt hàng thành công" />
-        </Modal>
-        <Modal
-          open={showModal.orderErorr}
-          footer={null}
-          title={null}
-          centered
-          maskClosable={false}
-          closable={false}
-          width="auto"
-        >
-          <ModalOrderStatus status="erorr" content="Đặt hàng Thất Bại" />
-        </Modal>
-      </Fragment>
-
       <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 p-4 flex flex-col gap-6">
         {state.load ? (
           <Fragment>

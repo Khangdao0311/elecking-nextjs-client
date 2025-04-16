@@ -2,18 +2,28 @@
 import { Modal } from "antd";
 import { Fragment, useEffect, useState } from "react";
 import { TbMoodEmpty } from "react-icons/tb";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 import { useStore, actions } from "@/app/store";
 import ModalAddressNew from "@/app/components/client/ModalAddress/New";
 import ModalAddressEdit from "@/app/components/client/ModalAddress/Edit";
 import * as addressServices from "@/app/services/addressService";
+import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
+import Loading from "@/app/components/client/Loading";
+import ModalNotification from "@/app/components/client/ModalNotification";
+import config from "@/app/config";
 
 function AccountAddress() {
   const [state, dispatch] = useStore();
   const [showModal, setShowModal] = useState({ new: false, edit: false });
   const [addresses, setAddresses] = useState<IAddress[]>([]);
   const [addressEdit, setAddressEdit] = useState<IAddress>();
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState<any>({ status: null, message: "" });
+
+  const router = useRouter();
 
   useEffect(() => {
     if (state.user) {
@@ -26,17 +36,46 @@ function AccountAddress() {
   }, [state.user, state.re_render]);
 
   function handleCancelAddress(address: IAddress) {
-    const addressCancel = {
-      ...address,
-      status: 0,
-    };
-    addressServices.edit(address.id, addressCancel).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+    setLoading(true);
+    (function callback() {
+        authServices.removeAddress(address.id).then((res) => {
+          if (res.status === 200) {
+            setLoading(false);
+            setNotification({ status: true, message: "Xóa địa chỉ thành công !" });
+            setTimeout(() => {
+              setNotification({ status: null, message: "" });
+              dispatch(actions.re_render());
+            }, 1000);
+          } else if (res.status === 401) {
+            const refreshToken = authServices.getRefreshToken();
+            if (refreshToken) {
+              authServices.getToken(refreshToken).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token", res.data);
+                  callback();
+                } else {
+                  authServices.clearUser();
+                  router.push(config.routes.client.login);
+                  dispatch(actions.re_render());
+                }
+              });
+            }
+          } else {
+            setLoading(false);
+            setNotification({ status: false, message: res.message });
+            setTimeout(() => {
+              setNotification({ status: null, message: "" });
+              dispatch(actions.re_render());
+            }, 1000);
+          }
+        });
+    })();
   }
 
   return (
     <>
+      {loading && <Loading />}
+      <ModalNotification noti={notification} />
       <Fragment>
         {/* modal address new */}
         <Modal
@@ -47,7 +86,7 @@ function AccountAddress() {
           centered
           maskClosable={false}
           closable={false}
-          width="auto"
+          className="!w-[90vw] !max-w-[600px]"
         >
           <ModalAddressNew
             status={true}
@@ -63,7 +102,7 @@ function AccountAddress() {
           centered
           maskClosable={false}
           closable={false}
-          width="auto"
+          className="!w-[90vw] !max-w-[600px]"
         >
           <ModalAddressEdit
             addressEdit={addressEdit}

@@ -124,7 +124,7 @@ export const config = {
     "/admin/:path*",
     "/account/:path*",
     "/auth/:path*",
-    config_.routes.client.cart,
-    config_.routes.client.checkout,
+    "/cart",
+    "/checkout"
   ],
 };

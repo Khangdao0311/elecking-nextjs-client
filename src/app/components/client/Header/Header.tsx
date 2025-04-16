@@ -16,7 +16,6 @@ import { useParams, usePathname, useRouter, useSearchParams } from "next/navigat
 import { FloatButton, Modal, Popover } from "antd";
 import { useWindowScroll } from "@uidotdev/usehooks";
 import { useLifecycles, useWindowSize } from "react-use";
-import Cookies from "js-cookie";
 
 import { useStore, actions, initState } from "@/app/store";
 import config from "@/app/config";
@@ -35,6 +34,7 @@ function Header() {
   const [state, dispatch] = useStore();
   const [showModal, setShowModal] = useState({ menu: false, search: false });
   const [breadCrumb, setBreadCrumb] = useState<any>([]);
+  const [reload, setReload] = useState(false);
 
   useLifecycles(() => dispatch(actions.load()));
 
@@ -52,7 +52,9 @@ function Header() {
   if (width < 640 && showModal.menu) setShowModal({ ...showModal, menu: false });
 
   useEffect(() => {
-    dispatch(actions.set_routing(false));
+    if (state.routing) {
+      dispatch(actions.set_routing(false));
+    }
     if (pathname !== config.routes.client.products) {
       dispatch(actions.set_search(""));
     }
@@ -62,7 +64,7 @@ function Header() {
     const userJSON = localStorage.getItem("user") || "null";
     const user = JSON.parse(userJSON);
 
-    if (user) {
+    if (user && authServices.getAccessToken() && authServices.getRefreshToken()) {
       userServices
         .getById(user.id)
         .then((res) => {
@@ -295,9 +297,7 @@ function Header() {
   }
 
   function clear() {
-    localStorage.removeItem("user");
-    Cookies.remove("access_token");
-    Cookies.remove("refresh_token");
+    authServices.clearUser();
     dispatch(actions.set({ ...initState, load: false }));
     if (pathname !== config.routes.client.login) dispatch(actions.set_routing(true));
     router.push(config.routes.client.login);
@@ -497,7 +497,7 @@ function Header() {
                 }
               }}
             >
-              {state.user ? (
+              {!!state.user ? (
                 state.user.avatar ? (
                   <div className="w-4 h-4 lg:w-6 lg:h-6 rounded-full overflow-hidden">
                     <img
