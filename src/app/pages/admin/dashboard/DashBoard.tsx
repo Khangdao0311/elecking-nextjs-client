@@ -59,6 +59,9 @@ function DashBoard() {
   const router = useRouter()
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
+  const currentYear = new Date().getFullYear();
+  const yearnew = year || currentYear;
+
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -227,7 +230,7 @@ function DashBoard() {
       if (elements.length > 0) {
         const index = elements[0].index;
         const column = data.labels[index];
-        const [month,year] = column.split("/")
+        const [month, year] = column.split("/")
         router.push(`${config.routes.admin.order.list}?year=${year}&month=${month}`)
       }
     },
@@ -290,7 +293,7 @@ function DashBoard() {
         <div className="flex justify-center items-center">
           {avatar ? (
             <img
-              className="w-[50px] h-[50px]  items-center"
+              className="w-[50px] h-[50px]  items-center object-cover"
               src={avatar}
               alt="name"
             />
@@ -380,9 +383,9 @@ function DashBoard() {
                   <FaUser className="w-[50px] h-[50px] text-amber-600" />
                 </div>
                 <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-                  <p className="text-base font-bold text-red-500">
+                  <Link href={config.routes.admin.user.list} className="text-base font-bold text-red-500 cursor-pointer">
                     Tổng khách hàng
-                  </p>
+                  </Link>
                   <p className="text-base font-bold">
                     {Object.keys(users).length}
                   </p>
@@ -394,9 +397,9 @@ function DashBoard() {
                   <FaTicketSimple className="w-[50px] h-[50px] text-amber-600" />
                 </div>
                 <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-                  <p className="text-base font-bold text-red-500">
+                  <Link href={config.routes.admin.voucher.list} className="text-base font-bold text-red-500 cursor-pointer">
                     Tổng voucher
-                  </p>
+                  </Link>
                   <p className="text-base font-bold">{vouchers}</p>
                   <div className="border border-dotted text-neutral-300"></div>
                 </div>
@@ -406,7 +409,7 @@ function DashBoard() {
                   <FaBasketShopping className="w-[50px] h-[50px] text-amber-600" />
                 </div>
                 <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-                  <Link href={`${config.routes.admin.order.list}?year=${year}`} className="text-base font-bold text-red-500">
+                  <Link href={`${config.routes.admin.order.list}?year=${yearnew}`} className="text-base font-bold text-red-500">
                     Tổng đơn hàng
                   </Link>
                   <p className="text-base font-bold">

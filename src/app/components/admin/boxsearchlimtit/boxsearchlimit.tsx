@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Select, Input, Space, DatePicker } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { usePathname } from "next/navigation";
@@ -41,6 +41,15 @@ const BoxSearchLimit = ({
     if (monthsWith30Days.includes(month)) return 30;
     return isLeapYear(year) ? 29 : 28;
   };
+
+  const preValue = useRef(searchValue);
+  
+  useEffect(() => {
+    if(searchValue === "" && preValue.current !== ""){
+      handleSearch();
+    }
+    preValue.current = searchValue;
+  }, [searchValue]);
 
   return (
     <div className="flex items-center bg-white shadow-xl rounded-lg px-7 py-3 justify-between">
