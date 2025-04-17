@@ -1,8 +1,10 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
+import * as authServices from "@/app/services/authService";
+import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
+import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import * as orderServices from "@/app/services/orderService";
 import Statusorder from "@/app/pages/admin/Components/Status";
 import { useStore } from "@/app/store";
@@ -15,6 +17,8 @@ import moment from "moment";
 import type { TableProps } from "antd";
 import { notification } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
+import config from "@/app/config";
+
 
 
 function OrderList() {
@@ -132,19 +136,34 @@ function OrderList() {
       console.log(query);
 
       setLoading(true);
-      orderServices.getQuery(query).then((res) => {
-        if (res.status === 200) {
-          const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
-            if (a.status === 2 && b.status !== 2) return -1;
-            if (a.status !== 2 && b.status === 2) return 1;
-            return 0;
-          });
-          setOrders(sortedOrders);
-          setTotalPages(res.total);
-          setQuantityOder(res.totalOrder);
-        }
-        setLoading(false);
-      });
+      (async function callback() {
+        orderServices.getQuery(query).then((res) => {
+          if (res.status === 200) {
+            const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
+              if (a.status === 2 && b.status !== 2) return -1;
+              if (a.status !== 2 && b.status === 2) return 1;
+              return 0;
+            });
+            setOrders(sortedOrders);
+            setTotalPages(res.total);
+            setQuantityOder(res.totalOrder);
+          } else if (res.status === 401) {
+            const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+            if (refreshTokenAdmin) {
+              authServices.getToken(refreshTokenAdmin).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token_admin", res.data);
+                  callback();
+                } else {
+                  authServices.clearAdmin();
+                  router.push(config.routes.admin.login);
+                }
+              });
+            }
+          }
+          setLoading(false);
+        });
+      })();
     }
   }, [limit, page, search, status, paymentStatus, selectedYear, selectedMonth, selectedDay]);
 
@@ -470,48 +489,62 @@ function OrderList() {
                 <button
                   className="px-6 w-[114px] h-[40px] bg-green-100 text-green-800 text-sm font-bold flex items-center justify-center rounded"
                   onClick={() => {
+
                     openNotificationWithIcon(
                       "success",
                       "Thành công",
                       "Sửa trạng thái thành công"
                     );
 
-                    orderServices
-                      .updateStatus(selectedOrder.id, Number(selectedStatus))
-                      .then(() => {
-                        setOrders((prevOrders) =>
-                          prevOrders.map((order) =>
-                            order.id === selectedOrder.id
-                              ? { ...order, status: Number(selectedStatus) }
-                              : order
-                          )
-                        );
-                        const query: any = {
-                          limit,
-                          page,
-                          year: selectedYear,
-                          month: selectedMonth,
-                        };
-                        if (selectedDay) query.day = selectedDay;
-                        if (paymentStatus) query.payment_status = paymentStatus;
-                        if (status !== "") query.status = status;
-                        if (search !== "") query.search = search;
-
-                        orderServices.getQuery(query).then((res) => {
-                          if (res.status === 200) {
-                            const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
-                              if (a.status === 2 && b.status !== 2) return -1;
-                              if (a.status !== 2 && b.status === 2) return 1;
-                              return 0;
-                            });
-                            setOrders(sortedOrders);
-                            setTotalPages(res.total);
-                            setQuantityOder(res.totalOrder);
-                          }
+                    (function callback() {
+                      orderServices.updateStatus(selectedOrder.id, Number(selectedStatus))
+                        .then(() => {
+                          setOrders((prevOrders) =>
+                            prevOrders.map((order) =>
+                              order.id === selectedOrder.id
+                                ? { ...order, status: Number(selectedStatus) }
+                                : order
+                            )
+                          );
+                          const query: any = {
+                            limit,
+                            page,
+                            year: selectedYear,
+                            month: selectedMonth,
+                          };
+                          if (selectedDay) query.day = selectedDay;
+                          if (paymentStatus) query.payment_status = paymentStatus;
+                          if (status !== "") query.status = status;
+                          if (search !== "") query.search = search;
+                          orderServices.getQuery(query).then((res) => {
+                            if (res.status === 200) {
+                              const sortedOrders = res.data.sort((a: IOrder, b: IOrder) => {
+                                if (a.status === 2 && b.status !== 2) return -1;
+                                if (a.status !== 2 && b.status === 2) return 1;
+                                return 0;
+                              });
+                              setOrders(sortedOrders);
+                              setTotalPages(res.total);
+                              setQuantityOder(res.totalOrder);
+                            } else if (res.status === 401) {
+                              const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                              if (refreshTokenAdmin) {
+                                authServices.getToken(refreshTokenAdmin).then((res) => {
+                                  if (res.status === 200) {
+                                    Cookies.set("access_token_admin", res.data);
+                                    callback();
+                                  } else {
+                                    authServices.clearAdmin();
+                                    router.push(config.routes.admin.login);
+                                  }
+                                });
+                              }
+                            }
+                          });
+                          closeeditorder();
                         });
+                    })();
 
-                        closeeditorder();
-                      });
                   }}
                 >
                   Lưu

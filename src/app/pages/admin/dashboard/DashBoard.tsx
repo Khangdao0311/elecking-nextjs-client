@@ -1,5 +1,7 @@
 "use client";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
+import Cookies from "js-cookie";
+
 import {
   FaBasketShopping,
   FaCircleUser,
@@ -13,6 +15,7 @@ import * as orderServices from "@/app/services/orderService";
 import * as userServices from "@/app/services/userService";
 import * as voucherServices from "@/app/services/voucherService";
 import * as statsServices from "@/app/services/statService";
+import * as authServices from "@/app/services/authService";
 import { Modal } from "antd";
 import moment from "moment";
 import { FiEdit } from "react-icons/fi";
@@ -61,7 +64,6 @@ function DashBoard() {
   const [api, contextHolder] = notification.useNotification();
   const currentYear = new Date().getFullYear();
   const yearnew = year || currentYear;
-
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -119,9 +121,7 @@ function DashBoard() {
 
   useEffect(() => {
     const query: any = {};
-
     query.limit = limit;
-
     userServices.getQuery(query).then((res) => {
       if (res.status === 200) {
         setUsers(res.data);
@@ -131,11 +131,26 @@ function DashBoard() {
 
   useEffect(() => {
     const query: any = { year: year };
-    orderServices.getQuery(query).then((res) => {
-      if (res.status === 200) {
-        setGetorders(res.data);
-      }
-    });
+    (function callback() {
+      orderServices.getQuery(query).then((res) => {
+        if (res.status === 200) {
+          setGetorders(res.data);
+        } else if (res.status === 401) {
+          const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+          if (refreshTokenAdmin) {
+            authServices.getToken(refreshTokenAdmin).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token_admin", res.data);
+                callback();
+              } else {
+                authServices.clearAdmin();
+                router.push(config.routes.admin.login);
+              }
+            });
+          }
+        }
+      });
+    })();
   }, [year]);
 
   const generateLabels = () => {
@@ -151,30 +166,46 @@ function DashBoard() {
     );
   };
 
-  useEffect(() => {
+  useEffect(() => { 
     const query: any = {};
     if (year !== null) {
       query.year = year;
     }
+    (async function callback() {
 
-    statsServices.getQuery(query).then((res) => {
-      if (res.status === 200) {
-        setStats(res.data);
-        setTotalprice(res.data.totalPrice);
-        const months = generateLabels();
-        const updatedChartData = months.map((month) => {
-          const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
-          return Math.round(res.data[formattedMonth]?.price || 0);
-        });
-        const updatedOrderData = months.map((month) => {
-          const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
-          return Math.round(res.data[formattedMonth]?.order || 0);
-        });
-        setChartData(updatedChartData);
-        setTotalorder(updatedOrderData);
-      }
-    });
-  }, [year]);
+      statsServices.getQuery(query).then((res) => {
+        if (res.status === 200) {
+          setStats(res.data);
+          setTotalprice(res.data.totalPrice);
+          const months = generateLabels();
+          const updatedChartData = months.map((month) => {
+            const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+            return Math.round(res.data[formattedMonth]?.price || 0);
+          });
+          const updatedOrderData = months.map((month) => {
+            const formattedMonth = moment(month, "MM/YYYY").format("MM/YYYY");
+            return Math.round(res.data[formattedMonth]?.order || 0);
+          });
+          setChartData(updatedChartData);
+          setTotalorder(updatedOrderData);
+        } else if (res.status === 401) {
+          const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+          if (refreshTokenAdmin) {
+            authServices.getToken(refreshTokenAdmin).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token_admin", res.data);
+                callback();
+              } else {
+                authServices.clearAdmin();
+                router.push(config.routes.admin.login);
+              }
+            });
+          }
+        }
+      });
+    })();
+    }, [year]);
+
 
   const data = {
     labels: generateLabels(),
@@ -335,6 +366,7 @@ function DashBoard() {
       ),
     },
   ];
+
   const getTableScroll = (dataLength: any) => {
     if (dataLength <= 5) return undefined;
     return { x: 500, y: 230 };
