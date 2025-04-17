@@ -4,10 +4,7 @@ import { Input, Modal, notification, Upload } from "antd";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Button from "@/app/components/admin/Button";
-import * as categoryServices from "@/app/services/categoryService";
 import { useParams } from "next/navigation";
-import * as proptypeServices from "@/app/services/proptypeService";
-import * as uploadService from "@/app/services/uploadService";
 import "quill/dist/quill.snow.css";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
@@ -16,6 +13,10 @@ import Loading from "@/app/components/client/Loading";
 import { Select } from "antd";
 import Quill from "quill";
 import { IoCloseSharp } from "react-icons/io5";
+import * as categoryServices from "@/app/services/categoryService";
+import * as proptypeServices from "@/app/services/proptypeService";
+import * as authServices from "@/app/services/authService";
+import Cookies from "js-cookie";
 
 function CategoryEdit() {
   const { id }: any = useParams();
@@ -105,10 +106,8 @@ function CategoryEdit() {
     if (image[0]?.originFileObj) {
       const formData = new FormData();
       formData.append("image", image[0].originFileObj as File);
-      uploadService.uploadSingle(formData);
       finalImage = image[0].name;
     }
-
     if (
       editProptype &&
       typeof status === "number" &&
@@ -116,16 +115,16 @@ function CategoryEdit() {
       editorContent &&
       icon
     ) {
-      categoryServices
-        .editCategory(id, {
-          name: categoryName,
-          image: finalImage,
-          status: status,
-          proptypes: JSON.stringify(editProptype.map((e) => e.id)),
-          description: editorContent,
-          icon: icon,
-        })
-        .then((res) => {
+      const formData = new FormData();
+      formData.append("name", categoryName);
+      formData.append("image", image[0].originFileObj as File);
+      formData.append("description", editorContent);
+      formData.append("proptypes", JSON.stringify(editProptype.map(e => e.id)));
+      formData.append("icon", icon);
+      formData.append("status", '1');
+
+      (function callback() {
+        categoryServices.editCategory(id, formData).then((res) => {
           if (res.status === 200) {
             openNotificationWithIcon(
               "success",
@@ -135,6 +134,19 @@ function CategoryEdit() {
             setTimeout(() => {
               router.push(`${config.routes.admin.category.list}`);
             }, 1000);
+          } else if (res.status === 401) {
+            const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+            if (resfreshTokenAdmin) {
+              authServices.getToken(resfreshTokenAdmin).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token_admin", res.data);
+                  callback();
+                } else {
+                  authServices.clearAdmin();
+                  router.push(config.routes.admin.login);
+                }
+              });
+            }
           } else {
             openNotificationWithIcon(
               "error",
@@ -143,6 +155,7 @@ function CategoryEdit() {
             );
           }
         });
+      })();
     }
   }
 
@@ -324,7 +337,10 @@ function CategoryEdit() {
                 </div>
               </div>
               {contextHolder}
-              <Button onClick={handleEdit} back={config.routes.admin.category} />
+              <Button
+                onClick={handleEdit}
+                back={config.routes.admin.category}
+              />
             </div>
           </div>
         </>

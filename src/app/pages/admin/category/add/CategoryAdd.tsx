@@ -3,9 +3,6 @@ import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import React, { useEffect, useRef, useState } from "react";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
-import * as proptypeServices from "@/app/services/proptypeService";
-import * as uploadService from "@/app/services/uploadService";
-import * as categoryServices from "@/app/services/categoryService";
 import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
 import { Input, Modal, Select, Upload } from "antd";
@@ -15,6 +12,10 @@ import Quill from "quill";
 import { Button as ButtonAnt, notification, Space } from "antd";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
+import * as proptypeServices from "@/app/services/proptypeService";
+import * as categoryServices from "@/app/services/categoryService";
+import * as authServices from "@/app/services/authService";
+import Cookies from "js-cookie";
 
 function CategoryAdd() {
   const [proptype, setproptype] = useState<IProptype[]>([]);
@@ -71,6 +72,7 @@ function CategoryAdd() {
   };
 
   const [image, setImage] = useState<UploadFile[]>([]);
+
   const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
       uid: crypto.randomUUID(),
@@ -97,13 +99,6 @@ function CategoryAdd() {
   };
 
   function handleAdd() {
-    if (image[0]?.originFileObj) {
-      const formData = new FormData();
-      formData.append("image", image[0].originFileObj as File);
-      uploadService.uploadSingle(formData);
-    } else {
-      console.warn("Không có ảnh được chọn!");
-    }
     if (
       image[0]?.originFileObj &&
       selectedProptype &&
@@ -111,15 +106,14 @@ function CategoryAdd() {
       editorContent &&
       icon
     ) {
-      categoryServices
-        .addCategory({
-          name: name,
-          image: image[0].name,
-          description: editorContent.trim(),
-          proptypes: JSON.stringify(selectedProptype),
-          icon: icon,
-        })
-        .then((res) => {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("image", image[0].originFileObj as File);
+      formData.append("description", editorContent);
+      formData.append("proptypes", JSON.stringify(selectedProptype));
+      formData.append("icon", icon);
+      (function callback() {
+        categoryServices.addCategory(formData).then((res) => {
           if (res.status === 200) {
             openNotificationWithIcon(
               "success",
@@ -129,14 +123,29 @@ function CategoryAdd() {
             setTimeout(() => {
               router.push(`${config.routes.admin.category.list}`);
             }, 1500);
+          } else if (res.status === 401) {
+            const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+            if (resfreshTokenAdmin) {
+              authServices.getToken(resfreshTokenAdmin).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token_admin", res.data);
+                  callback();
+                }
+                 else {
+                  authServices.clearAdmin();
+                  router.push(config.routes.admin.login);
+                }
+              });
+            }
+          } else {
+            openNotificationWithIcon(
+              "error",
+              "Lỗi dữ liệu",
+              "Vui lòng nhập đầy đủ thông tin"
+            );
           }
         });
-    } else {
-      openNotificationWithIcon(
-        "error",
-        "Lỗi dữ liệu",
-        "Vui lòng nhập đầy đủ thông tin"
-      );
+      })();
     }
   }
 
