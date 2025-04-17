@@ -16,7 +16,7 @@ import Loading from "@/app/components/client/Loading";
 import * as authServices from "@/app/services/authService";
 import config from "@/app/config";
 import Link from "next/link";
-import ModalNotification from "@/app/components/client/ModalNotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 
 function AdminLogin() {
   const [state, dispatch] = useStore();

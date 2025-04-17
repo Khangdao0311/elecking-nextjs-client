@@ -10,7 +10,7 @@ import * as locationServices from "@/app/services/locationService";
 import * as addressServices from "@/app/services/addressService";
 import * as authServices from "@/app/services/authService";
 import Loading from "@/app/components/client/Loading";
-import ModalNotification from "@/app/components/client/ModalNotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 import config from "@/app/config";
 
 function ModelAddressNew({ onClose, status }: any) {

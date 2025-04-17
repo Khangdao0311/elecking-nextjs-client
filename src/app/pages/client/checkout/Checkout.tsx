@@ -3,7 +3,8 @@
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import { FaChevronRight, FaMapLocationDot } from "react-icons/fa6";
 import { useRouter, useSearchParams } from "next/navigation";
-import { message, Modal, notification } from "antd";
+import { Modal } from "antd";
+import Cookies from "js-cookie";
 
 import config from "@/app/config";
 import { useStore, actions } from "@/app/store";
@@ -12,18 +13,17 @@ import * as productServices from "@/app/services/productService";
 import * as orderServices from "@/app/services/orderService";
 import * as vnpayServices from "@/app/services/vnpayService";
 import * as authServices from "@/app/services/authService";
-import ModalVoucher from "@/app/components/client/ModalVoucher";
-import ModalAddressNew from "@/app/components/client/ModalAddress/New";
-import ModalAddressEdit from "@/app/components/client/ModalAddress/Edit";
+import ModalVoucher from "@/app/components/client/Modal/ModalVoucher";
+import ModalAddressNew from "@/app/components/client/Modal/ModalAddress/New";
+import ModalAddressEdit from "@/app/components/client/Modal/ModalAddress/Edit";
 import ModalAddress from "./components/ModalAddress";
 import ModalPaymentMethod from "./components/ModalPaymentMethod";
-import ModalOrderStatus from "./components/ModalOrderStatus";
 import Loading from "@/app/components/client/Loading";
 import Shimmer from "@/app/components/client/Shimmer";
 import { BsChevronRight } from "react-icons/bs";
 import TextArea from "antd/es/input/TextArea";
 import { LuTicket } from "react-icons/lu";
-import ModalNotification from "@/app/components/client/ModalNotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 
 function Checkout() {
   const [state, dispatch] = useStore();
@@ -42,19 +42,6 @@ function Checkout() {
   const query = useSearchParams();
   const router = useRouter();
 
-  // const [api, contextHolder] = notification.useNotification();
-  // const openNotification = (message: string) => {
-  //   api.info({
-  //     message: message,
-  //     placement: "topRight",
-  //     style: {
-  //       width: "fit-content",
-  //       display: "inline-block",
-  //       whiteSpace: "nowrap",
-  //     },
-  //   });
-  // };
-
   const [total, setTotal] = useState<any>({
     original: 0,
     sale: 0,
@@ -68,8 +55,6 @@ function Checkout() {
       edit: false,
     },
     payment_method: false,
-    // orderSuccess: false,
-    // orderErorr: false,
   });
 
   useLayoutEffect(() => {
@@ -79,35 +64,92 @@ function Checkout() {
       query.get("vnp_TxnRef") &&
       state.user
     ) {
-      orderServices.getById(query.get("vnp_TxnRef")!).then((res) => {
-        if (res.status === 200) {
-          if (query.get("vnp_TransactionStatus") === "00") {
-            orderServices
-              .updateTransactionCode(res.data.id, query.get("vnp_TransactionNo")!)
-              .then((res) => {
-                setNotification({ status: true, message: "Đạt hàng thành công !" });
-
-                const checkout = JSON.parse(localStorage.getItem("checkout")!);
-                if (checkout?.index) {
-                  const cartNew = state.cart.filter(
-                    (item: any, index: number) => !checkout.index.includes(index)
-                  );
-                  authServices
-                    .cart(state.user.id, cartNew)
-                    .then((res) => dispatch(actions.re_render()));
+      (function callback() {
+        orderServices.getById(query.get("vnp_TxnRef")!).then((res) => {
+          if (res.status === 200) {
+            if (query.get("vnp_TransactionStatus") === "00") {
+              (function callback2() {
+                orderServices
+                  .updateTransactionCode(res.data.id, query.get("vnp_TransactionNo")!)
+                  .then((res) => {
+                    if (res.status === 200) {
+                      setNotification({ status: true, message: "Đạt hàng thành công !" });
+                      const checkout = JSON.parse(localStorage.getItem("checkout")!);
+                      if (checkout?.index) {
+                        const cartNew = state.cart.filter(
+                          (item: any, index: number) => !checkout.index.includes(index)
+                        );
+                        authServices
+                          .cart(state.user.id, cartNew)
+                          .then((res) => dispatch(actions.re_render()));
+                      }
+                      localStorage.removeItem("checkout");
+                      setTimeout(() => router.push(config.routes.client.home), 1000);
+                    } else if (res.status === 401) {
+                      const refreshToken = authServices.getRefreshToken();
+                      if (refreshToken) {
+                        authServices.getToken(refreshToken).then((res) => {
+                          if (res.status === 200) {
+                            Cookies.set("access_token", res.data);
+                            callback2();
+                          } else {
+                            authServices.clearUser();
+                            router.push(config.routes.client.login);
+                            dispatch(actions.re_render());
+                          }
+                        });
+                      }
+                    } else {
+                      setNotification({ status: false, message: res.message });
+                      setTimeout(() => setNotification({ status: null, message: "" }), 1000);
+                    }
+                  });
+              })();
+            } else {
+              (function callback3() {
+                authServices.cancelOrder(res.data.id).then((res) => {
+                  if (res.status === 200) {
+                    setNotification({ status: false, message: "Đạt hàng thất bại !" });
+                    setTimeout(() => setNotification({ status: null, message: "" }), 1000);
+                    router.push(`?`, { scroll: false });
+                  } else if (res.status === 401) {
+                    const refreshToken = authServices.getRefreshToken();
+                    if (refreshToken) {
+                      authServices.getToken(refreshToken).then((res) => {
+                        if (res.status === 200) {
+                          Cookies.set("access_token", res.data);
+                          callback3();
+                        } else {
+                          authServices.clearUser();
+                          router.push(config.routes.client.login);
+                          dispatch(actions.re_render());
+                        }
+                      });
+                    }
+                  } else {
+                    setNotification({ status: false, message: res.message });
+                    setTimeout(() => setNotification({ status: null, message: "" }), 1000);
+                  }
+                });
+              })();
+            }
+          } else if (res.status === 401) {
+            const refreshToken = authServices.getRefreshToken();
+            if (refreshToken) {
+              authServices.getToken(refreshToken).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token", res.data);
+                  callback();
+                } else {
+                  authServices.clearUser();
+                  router.push(config.routes.client.login);
+                  dispatch(actions.re_render());
                 }
-                localStorage.removeItem("checkout");
-                setTimeout(() => router.push(config.routes.client.home), 1000);
               });
-          } else {
-            orderServices.updateStatus(res.data.id, 0).then((res) => {
-              setNotification({ status: false, message: "Đạt hàng thất bại !" });
-              setTimeout(() => setNotification({ status: null, message: "" }), 1000);
-              router.push(`?`, { scroll: false });
-            });
+            }
           }
-        }
-      });
+        });
+      })();
     }
   }, [query.toString(), state.user]);
 
@@ -150,16 +192,32 @@ function Checkout() {
     })();
 
     if (state.user) {
-      addressServices
-        .getQuery({ user_id: state.user?.id, limit: 0, orderby: "id-asc" })
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.length === 0)
-              setShowModal({ ...showModal, address: { list: false, new: true, edit: false } });
-            setAddresses(res.data);
-            setAddress(res.data.find((e: IAddress) => e.setDefault === true));
-          }
-        });
+      (function callback() {
+        addressServices
+          .getQuery({ user_id: state.user?.id, limit: 0, orderby: "id-asc" })
+          .then((res) => {
+            if (res.status === 200) {
+              if (res.data.length === 0)
+                setShowModal({ ...showModal, address: { list: false, new: true, edit: false } });
+              setAddresses(res.data);
+              setAddress(res.data.find((e: IAddress) => e.setDefault === true));
+            } else if (res.status === 401) {
+              const refreshToken = authServices.getRefreshToken();
+              if (refreshToken) {
+                authServices.getToken(refreshToken).then((res) => {
+                  if (res.status === 200) {
+                    Cookies.set("access_token", res.data);
+                    callback();
+                  } else {
+                    authServices.clearUser();
+                    router.push(config.routes.client.login);
+                    dispatch(actions.re_render());
+                  }
+                });
+              }
+            }
+          });
+      })();
     }
   }, [state.user, state.re_render, checkout]);
 
@@ -195,14 +253,32 @@ function Checkout() {
         address_id: address?.id,
       };
       setLoading(true);
-      orderServices.inset(orderNew).then((res) => {
-        if (res.status === 200) {
-          if (paymentMethod?.id === "67be8349447c10378c42365f") {
-            vnpayServices.createPaymentUrl(res.data._id, res.data.total).then((res) => {
-              window.location.href = res.paymentUrl;
-            });
-          } else {
-            if (res.status === 200) {
+      (function callback() {
+        orderServices.inset(orderNew).then((res) => {
+          if (res.status === 200) {
+            if (paymentMethod?.id === "67be8349447c10378c42365f") {
+              (function callback2() {
+                vnpayServices.createPaymentUrl(res.data._id, res.data.total).then((res) => {
+                  if (res.status === 200) {
+                    window.location.href = res.paymentUrl;
+                  } else if (res.status === 401) {
+                    const refreshToken = authServices.getRefreshToken();
+                    if (refreshToken) {
+                      authServices.getToken(refreshToken).then((res) => {
+                        if (res.status === 200) {
+                          Cookies.set("access_token", res.data);
+                          callback2();
+                        } else {
+                          authServices.clearUser();
+                          router.push(config.routes.client.login);
+                          dispatch(actions.re_render());
+                        }
+                      });
+                    }
+                  }
+                });
+              })();
+            } else {
               setLoading(false);
               setNotification({ status: true, message: "Đạt hàng thành công !" });
               if (checkout?.index) {
@@ -215,14 +291,24 @@ function Checkout() {
               }
               localStorage.removeItem("checkout");
               setTimeout(() => router.push(config.routes.client.home), 1000);
-            } else {
-              setLoading(false);
-              setNotification({ status: false, message: "Đạt hàng thất bại !" });
-              setTimeout(() => setNotification({ status: null, message: "" }), 1000);
+            }
+          } else if (res.status === 401) {
+            const refreshToken = authServices.getRefreshToken();
+            if (refreshToken) {
+              authServices.getToken(refreshToken).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token", res.data);
+                  callback();
+                } else {
+                  authServices.clearUser();
+                  router.push(config.routes.client.login);
+                  dispatch(actions.re_render());
+                }
+              });
             }
           }
-        }
-      });
+        });
+      })();
     } else {
       setNotification({ status: false, message: "Vui lòng chọn phương thức thanh toán !" });
       setTimeout(() => setNotification({ status: null, message: "" }), 1000);
@@ -246,6 +332,7 @@ function Checkout() {
           maskClosable={false}
           closable={false}
           className="!w-[90vw] !max-w-[600px]"
+          zIndex={100}
         >
           <ModalAddress
             addresses={addresses}
@@ -275,6 +362,7 @@ function Checkout() {
           maskClosable={false}
           closable={false}
           className="!w-[90vw] !max-w-[600px]"
+          zIndex={101}
         >
           <ModalAddressNew
             status={addresses.length > 0}
@@ -295,6 +383,7 @@ function Checkout() {
           maskClosable={false}
           closable={false}
           className="!w-[90vw] !max-w-[600px]"
+          zIndex={101}
         >
           <ModalAddressEdit
             addressEdit={addressEdit}
@@ -314,6 +403,7 @@ function Checkout() {
         maskClosable={false}
         closable={false}
         className="!w-[90vw] !max-w-[600px]"
+        zIndex={102}
       >
         <ModalVoucher
           orderPrice={total.sale}
@@ -331,6 +421,7 @@ function Checkout() {
         maskClosable={false}
         closable={false}
         className="!w-[90vw] !max-w-[600px]"
+        zIndex={102}
       >
         <ModalPaymentMethod
           paymentMethod={paymentMethod}

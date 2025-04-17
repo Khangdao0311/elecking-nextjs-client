@@ -7,13 +7,17 @@ import { Modal } from "antd";
 import moment from "moment";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 import { FreeMode } from "swiper/modules";
 
-import { useStore } from "@/app/store";
+import { actions, useStore } from "@/app/store";
 import * as orderServices from "@/app/services/orderService";
+import * as authServices from "@/app/services/authService";
 import OrderDetail from "./components/OrderDetail";
 import Review from "./components/Review";
 import Shimmer from "@/app/components/client/Shimmer";
+import config from "@/app/config";
 
 function AccountOrder() {
   const [state, dispatch] = useStore();
@@ -27,22 +31,39 @@ function AccountOrder() {
     review: false,
   });
 
+  const router = useRouter();
+
   useEffect(() => {
     if (state.user) {
-      orderServices
-        .getQuery({ user_id: state.user.id, limit: null, status: status })
-        .then((res) => {
-          if (res.status === 200) {
-            setOrders(res.data);
-            setTotalOrder(res.totalOrder);
-          }
-        });
+      (function callback() {
+        orderServices
+          .getQuery({ user_id: state.user.id, limit: null, status: status })
+          .then((res) => {
+            if (res.status === 200) {
+              setOrders(res.data);
+              setTotalOrder(res.totalOrder);
+            } else if (res.status === 401) {
+              const refreshToken = authServices.getRefreshToken();
+              if (refreshToken) {
+                authServices.getToken(refreshToken).then((res) => {
+                  if (res.status === 200) {
+                    Cookies.set("access_token", res.data);
+                    callback();
+                  } else {
+                    authServices.clearUser();
+                    router.push(config.routes.client.login);
+                    dispatch(actions.re_render());
+                  }
+                });
+              }
+            }
+          });
+      })();
     }
   }, [state.user, status, state.re_render]);
 
   return (
     <>
-      {}
       <Modal
         open={show.review}
         onCancel={() => setShow({ detail: true, review: false })}
@@ -54,7 +75,7 @@ function AccountOrder() {
         width="auto"
       >
         <Review
-          onClose={() => setShow({ detail: false, review: false })}
+          onClose={() => setShow({ detail: true, review: false })}
           order_id={order?.id}
           productOrder={productOrder}
         />

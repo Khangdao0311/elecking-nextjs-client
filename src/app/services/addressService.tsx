@@ -3,8 +3,9 @@ import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 
 export async function getQuery(params: any) {
+  const headers = { Authorization: `Bearer ${authServices.getAccessToken()}` };
   return axios
-    .get(`${config.api.address}`, { params })
+    .get(`${config.api.address}`, { params, headers })
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
@@ -25,9 +26,3 @@ export async function update(address_id: string, addressEdit: any) {
     .catch((error: any) => error.response.data);
 }
 
-export async function edit(address_id: string, addressEdit: any) {
-  return axios
-    .put(`${config.api.address}/edit/${address_id}`, addressEdit)
-    .then((response: any) => response.data)
-    .catch((error: any) => error.response.data);
-}

@@ -12,7 +12,7 @@ import { useStore, actions } from "@/app/store";
 import * as userServices from "@/app/services/userService";
 import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
-import ModalNotification from "@/app/components/client/ModalNotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 import Loading from "@/app/components/client/Loading";
 import config from "@/app/config";
 
@@ -32,16 +32,32 @@ function AccountProfile() {
 
   useEffect(() => {
     if (state.user) {
-      userServices.getById(state.user.id).then((res) => {
-        if (res.status === 200) {
-          setProfile({
-            fullname: res.data.fullname,
-            email: res.data.email,
-            phone: res.data.phone,
-          });
-          setUser(res.data);
-        }
-      });
+      (function callback() {
+        userServices.getById(state.user.id).then((res) => {
+          if (res.status === 200) {
+            setProfile({
+              fullname: res.data.fullname,
+              email: res.data.email,
+              phone: res.data.phone,
+            });
+            setUser(res.data);
+          } else if (res.status === 401) {
+            const refreshToken = authServices.getRefreshToken();
+            if (refreshToken) {
+              authServices.getToken(refreshToken).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token", res.data);
+                  callback();
+                } else {
+                  authServices.clearUser();
+                  router.push(config.routes.client.login);
+                  dispatch(actions.re_render());
+                }
+              });
+            }
+          }
+        });
+      })();
     }
   }, [state.user]);
 

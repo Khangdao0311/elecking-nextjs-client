@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { TbMoodEmpty } from "react-icons/tb";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import config from "@/app/config";
 import { useDebounce } from "@/app/hooks";
@@ -14,7 +14,7 @@ function ResultSearch({ onClose }: any) {
   const [state, dispatch] = useStore();
   const [searchResult, setSearchResult] = useState<IProduct[]>([]);
   const pathname = usePathname();
-
+  const router = useRouter();
   const debouncedValue = useDebounce(state.search, 500);
 
   useEffect(() => {
@@ -45,13 +45,13 @@ function ResultSearch({ onClose }: any) {
           </div>
         )}
         {searchResult.map((product: IProduct, iProduct: number) => (
-          <Link
+          <div
             onClick={() => {
+              router.push(`${config.routes.client.productDetail}${product.id}`);
               onClose();
               if (!pathname.startsWith(config.routes.client.productDetail))
                 dispatch(actions.set_routing(true));
             }}
-            href={`${config.routes.client.productDetail}/${product.id}`}
             className="px-6 py-2 flex gap-4 hover:bg-gray-100 cursor-pointer"
             key={iProduct}
           >
@@ -72,7 +72,7 @@ function ResultSearch({ onClose }: any) {
                 )}
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

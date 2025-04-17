@@ -13,7 +13,7 @@ import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
 import config from "@/app/config";
 import Loading from "@/app/components/client/Loading";
-import ModalNotification from "@/app/components/client/ModalNotification/ModalMotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification/ModalMotification";
 
 function AccountPassword() {
   const [state, dispatch] = useStore();

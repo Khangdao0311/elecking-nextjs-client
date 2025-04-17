@@ -219,16 +219,28 @@ function ProductDetail() {
     })();
   }
 
-  function handleAddToWishReview(id: string) {
-    reviewServices.wish(id, state.user.id).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
-  }
-
-  function handleRemoveFromWishReview(id: string) {
-    reviewServices.wish(id, state.user.id).then((res) => {
-      if (res.status === 200) dispatch(actions.re_render());
-    });
+  function handleWishReview(id: string) {
+    (function callback() {
+      reviewServices.wish(id, state.user.id).then((res) => {
+        if (res.status === 200) {
+          dispatch(actions.re_render());
+        } else if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   return (
@@ -805,7 +817,7 @@ function ProductDetail() {
                               className="group relative"
                               onClick={() => {
                                 if (state.user) {
-                                  handleRemoveFromWishReview(review.id);
+                                  handleWishReview(review.id);
                                 } else {
                                   dispatch(actions.set({ show: { ...state.show, login: true } }));
                                 }
@@ -819,7 +831,7 @@ function ProductDetail() {
                               className="group relative"
                               onClick={() => {
                                 if (state.user) {
-                                  handleAddToWishReview(review.id);
+                                  handleWishReview(review.id);
                                 } else {
                                   dispatch(actions.set({ show: { ...state.show, login: true } }));
                                 }

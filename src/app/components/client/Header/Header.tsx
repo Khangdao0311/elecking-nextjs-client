@@ -16,6 +16,7 @@ import { useParams, usePathname, useRouter, useSearchParams } from "next/navigat
 import { FloatButton, Modal, Popover } from "antd";
 import { useWindowScroll } from "@uidotdev/usehooks";
 import { useLifecycles, useWindowSize } from "react-use";
+import Cookies from "js-cookie";
 
 import { useStore, actions, initState } from "@/app/store";
 import config from "@/app/config";
@@ -65,9 +66,8 @@ function Header() {
     const user = JSON.parse(userJSON);
 
     if (user && authServices.getAccessToken() && authServices.getRefreshToken()) {
-      userServices
-        .getById(user.id)
-        .then((res) => {
+      (function callback() {
+        userServices.getById(user.id).then((res) => {
           if (res.status === 200) {
             const token = authServices.getAccessToken();
             const refreshToken = authServices.getRefreshToken();
@@ -83,11 +83,25 @@ function Header() {
                 cart: res.data.cart,
               })
             );
+          } else if (res.status === 401) {
+            const refreshToken = authServices.getRefreshToken();
+            if (refreshToken) {
+              authServices.getToken(refreshToken).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token", res.data);
+                  callback();
+                } else {
+                  authServices.clearUser();
+                  router.push(config.routes.client.login);
+                  dispatch(actions.re_render());
+                }
+              });
+            }
           } else {
             clear();
           }
-        })
-        .catch((err) => clear());
+        });
+      })();
     } else {
       localStorage.removeItem("user");
       dispatch(actions.set({ ...initState, load: false }));
@@ -432,6 +446,8 @@ function Header() {
               placement={width < 640 ? "bottom" : "bottomLeft"}
               title={null}
               open={showModal.search}
+              trigger="click"
+              onOpenChange={(e) => setShowModal({ menu: false, search: e })}
               content={
                 <ResultSearch onClose={() => setShowModal({ menu: false, search: false })} />
               }
@@ -442,7 +458,7 @@ function Header() {
                   type="text"
                   value={state.search}
                   onFocus={() => setShowModal({ menu: false, search: true })}
-                  onBlur={() => setShowModal({ menu: false, search: false })}
+                  // onBlur={() => setShowModal({ menu: false, search: false })}
                   onChange={(e) => dispatch(actions.set_search(e.target.value))}
                   className="w-full h-full rounded-lg border border-stone-300 pl-4 pr-20 outline-primaryDark"
                   placeholder="Bạn cần tìm gì ?"

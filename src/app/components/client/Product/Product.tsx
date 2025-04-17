@@ -69,9 +69,9 @@ function Product(props: { product: IProduct }) {
   return (
     <div className="border rounded-2xl p-4 w-full !h-full bg-white flex flex-wrap gap-2 cursor-pointer transition-all duration-150  ">
       <Link
-        href={`${config.routes.client.productDetail}/${props.product.id}`}
+        href={`${config.routes.client.productDetail}${props.product.id}`}
         onClick={() => {
-          if (pathname !== `${config.routes.client.productDetail}/${props.product.id}`)
+          if (pathname !== `${config.routes.client.productDetail}${props.product.id}`)
             dispatch(actions.set_routing(true));
         }}
         className="w-full !aspect-square"
@@ -83,9 +83,9 @@ function Product(props: { product: IProduct }) {
         />
       </Link>
       <Link
-        href={`${config.routes.client.productDetail}/${props.product.id}`}
+        href={`${config.routes.client.productDetail}${props.product.id}`}
         onClick={() => {
-          if (pathname !== `${config.routes.client.productDetail}/${props.product.id}`)
+          if (pathname !== `${config.routes.client.productDetail}${props.product.id}`)
             dispatch(actions.set_routing(true));
         }}
         className="text-base w-full h-12 line-clamp-2 font-medium"

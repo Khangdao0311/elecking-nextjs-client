@@ -6,13 +6,13 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 import { useStore, actions } from "@/app/store";
-import ModalAddressNew from "@/app/components/client/ModalAddress/New";
-import ModalAddressEdit from "@/app/components/client/ModalAddress/Edit";
+import ModalAddressNew from "@/app/components/client/Modal/ModalAddress/New";
+import ModalAddressEdit from "@/app/components/client/Modal/ModalAddress/Edit";
 import * as addressServices from "@/app/services/addressService";
 import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
 import Loading from "@/app/components/client/Loading";
-import ModalNotification from "@/app/components/client/ModalNotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 import config from "@/app/config";
 
 function AccountAddress() {
@@ -22,59 +22,77 @@ function AccountAddress() {
   const [addressEdit, setAddressEdit] = useState<IAddress>();
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState<any>({ status: null, message: "" });
+  const [itemAddressRemove, setItemAddressRemove] = useState<string>("");
 
   const router = useRouter();
 
   useEffect(() => {
     if (state.user) {
-      addressServices
-        .getQuery({ user_id: state.user?.id, limit: 0, orderby: "id-asc", status: 1 })
-        .then((res) => {
-          if (res.status === 200) setAddresses(res.data);
-        });
+      (function callback() {
+        addressServices
+          .getQuery({ user_id: state.user?.id, limit: 0, orderby: "id-asc", status: 1 })
+          .then((res) => {
+            if (res.status === 200) {
+              setAddresses(res.data);
+            } else if (res.status === 401) {
+              const refreshToken = authServices.getRefreshToken();
+              if (refreshToken) {
+                authServices.getToken(refreshToken).then((res) => {
+                  if (res.status === 200) {
+                    Cookies.set("access_token", res.data);
+                    callback();
+                  } else {
+                    authServices.clearUser();
+                    router.push(config.routes.client.login);
+                    dispatch(actions.re_render());
+                  }
+                });
+              }
+            }
+          });
+      })();
     }
   }, [state.user, state.re_render]);
 
-  function handleCancelAddress(address: IAddress) {
-    setLoading(true);
+  function handleCancelAddress(address_id: string) {
     (function callback() {
-        authServices.removeAddress(address.id).then((res) => {
-          if (res.status === 200) {
-            setLoading(false);
-            setNotification({ status: true, message: "Xóa địa chỉ thành công !" });
-            setTimeout(() => {
-              setNotification({ status: null, message: "" });
-              dispatch(actions.re_render());
-            }, 1000);
-          } else if (res.status === 401) {
-            const refreshToken = authServices.getRefreshToken();
-            if (refreshToken) {
-              authServices.getToken(refreshToken).then((res) => {
-                if (res.status === 200) {
-                  Cookies.set("access_token", res.data);
-                  callback();
-                } else {
-                  authServices.clearUser();
-                  router.push(config.routes.client.login);
-                  dispatch(actions.re_render());
-                }
-              });
-            }
-          } else {
-            setLoading(false);
-            setNotification({ status: false, message: res.message });
-            setTimeout(() => {
-              setNotification({ status: null, message: "" });
-              dispatch(actions.re_render());
-            }, 1000);
+      authServices.removeAddress(address_id).then((res) => {
+        if (res.status === 200) {
+          setLoading(false);
+          setNotification({ status: true, message: "Xóa địa chỉ thành công !" });
+          setTimeout(() => {
+            setNotification({ status: null, message: "" });
+            dispatch(actions.re_render());
+            setItemAddressRemove("");
+          }, 1000);
+        } else if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
           }
-        });
+        } else {
+          setLoading(false);
+          setNotification({ status: false, message: res.message });
+          setTimeout(() => {
+            setNotification({ status: null, message: "" });
+            dispatch(actions.re_render());
+          }, 1000);
+        }
+      });
     })();
   }
 
   return (
     <>
-      {loading && <Loading />}
       <ModalNotification noti={notification} />
       <Fragment>
         {/* modal address new */}
@@ -109,7 +127,43 @@ function AccountAddress() {
             onClose={() => setShowModal({ new: false, edit: false })}
           />
         </Modal>
+        {/* Bạn có chắc muốn xóa địa chỉ này không ? */}
+        <Modal
+          open={!!itemAddressRemove}
+          onCancel={() => setItemAddressRemove("")}
+          footer={null}
+          title={null}
+          centered
+          maskClosable={false}
+          closable={false}
+          className="!w-[90vw] !max-w-[400px]"
+          zIndex={102}
+        >
+          <div className="p-2 flex flex-col gap-4 w-full">
+            <p className="w-full text-center text-lg font-bold text-primary">
+              Bạn có chắc muốn xóa địa chỉ này không ?
+            </p>
+            <div className="w-full flex gap-2 items-center justify-between">
+              <button
+                className="w-1/2 center-flex py-2 rounded-sm border border-primary text-primary text-base font-bold"
+                onClick={() => {
+                  handleCancelAddress(itemAddressRemove);
+                }}
+              >
+                Có
+              </button>
+              <button
+                className="w-1/2 center-flex py-2 rounded-sm border border-primary text-white bg-primary text-base font-bold"
+                onClick={() => setItemAddressRemove("")}
+              >
+                Không
+              </button>
+            </div>
+          </div>
+        </Modal>
       </Fragment>
+      {loading && <Loading />}
+
       <div className="flex flex-col gap-6">
         <h2 className="text-2xl font-bold uppercase">Địa Chỉ Của Tôi</h2>
         <div className="flex gap-4">
@@ -174,7 +228,7 @@ function AccountAddress() {
                   Cập nhật
                 </p>
                 <p
-                  onClick={() => handleCancelAddress(address)}
+                  onClick={() => setItemAddressRemove(address.id)}
                   className="text-sm font-semibold text-primary select-none cursor-pointer"
                 >
                   Xóa

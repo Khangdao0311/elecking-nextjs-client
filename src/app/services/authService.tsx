@@ -16,14 +16,6 @@ export async function loginAmin(account: string, password: string) {
     .catch((error: any) => error.response.data);
 }
 
-export async function changePassword(user_id: string, passwordOld: string, passwordNew: string) {
-  const headers = { Authorization: `Bearer ${getAccessToken()}` };
-  return axios
-    .put(`${config.api.auth}/change-password/${user_id}`, { passwordOld, passwordNew }, { headers })
-    .then((response: any) => response.data)
-    .catch((error: any) => error.response.data);
-}
-
 export async function register(
   fullname: string,
   email: string,
@@ -37,6 +29,14 @@ export async function register(
       username,
       password,
     })
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
+}
+
+export async function changePassword(user_id: string, passwordOld: string, passwordNew: string) {
+  const headers = { Authorization: `Bearer ${getAccessToken()}` };
+  return axios
+    .put(`${config.api.auth}/change-password/${user_id}`, { passwordOld, passwordNew }, { headers })
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }

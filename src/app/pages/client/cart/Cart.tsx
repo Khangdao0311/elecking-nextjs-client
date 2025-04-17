@@ -7,15 +7,17 @@ import { BsCartX } from "react-icons/bs";
 import { HiOutlineTicket } from "react-icons/hi";
 import { FaCaretDown, FaCircleExclamation, FaMinus, FaPlus } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
-import { Modal, Popover } from "antd";
+import { message, Modal, Popover } from "antd";
 import Cookies from "js-cookie";
 
 import config from "@/app/config";
 import * as productServices from "@/app/services/productService";
 import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
-import ModalVoucher from "@/app/components/client/ModalVoucher";
+import ModalVoucher from "@/app/components/client/Modal/ModalVoucher";
 import Shimmer from "@/app/components/client/Shimmer";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
+import Loading from "@/app/components/client/Loading";
 
 function Cart() {
   const [state, dispatch] = useStore();
@@ -24,7 +26,9 @@ function Cart() {
   const [voucher, setVoucher] = useState<IVoucher | null>(null);
   const [showModalVoucher, setShowModalVoucher] = useState(false);
   const [itemCartRemove, setItemCartRemove] = useState<any>(null);
-  const [notification, setNotification] = useState("");
+  const [showModalRemoveItems, setShowModalRemoveItems] = useState<any>(false);
+  const [notification, setNotification] = useState<any>({ status: null, message: "" });
+  const [loading, setLoading] = useState(false);
 
   const [total, setTotal] = useState<any>({
     original: 0,
@@ -34,7 +38,7 @@ function Cart() {
   const router = useRouter();
 
   useEffect(() => {
-    async function _() {
+    (async function () {
       if (state.cart.length) {
         const _: IProduct[] = [];
         for (const item of state.cart) {
@@ -45,8 +49,7 @@ function Cart() {
         setProductsCart(_);
         setCheckItems(state.cart.map(() => false));
       }
-    }
-    _();
+    })();
   }, [state.cart]);
 
   useEffect(() => {
@@ -76,6 +79,8 @@ function Cart() {
       original: _total,
       sale: _totalSale,
     });
+
+    setVoucher(null);
   }, [productsCart, checkedItems, state.cart]);
 
   function handleChangeVariant(iProduct: number, iVariant: number) {
@@ -137,10 +142,13 @@ function Cart() {
       return acc;
     }, []);
 
+    // setLoading(true);
     (function callback() {
       authServices.cart(state.user.id, cartFinal).then((res) => {
-        if (res.status === 200) dispatch(actions.re_render());
-        if (res.status === 401) {
+        if (res.status === 200) {
+          // setLoading(false);
+          dispatch(actions.re_render());
+        } else if (res.status === 401) {
           const refreshToken = authServices.getRefreshToken();
           if (refreshToken) {
             authServices.getToken(refreshToken).then((res) => {
@@ -154,6 +162,9 @@ function Cart() {
               }
             });
           }
+        } else {
+          // setLoading(false);
+          handleNotification(false, res.message);
         }
       });
     })();
@@ -198,10 +209,13 @@ function Cart() {
       return acc;
     }, []);
 
+    // setLoading(true);
     (function callback() {
       authServices.cart(state.user.id, cartFinal).then((res) => {
-        if (res.status === 200) dispatch(actions.re_render());
-        if (res.status === 401) {
+        if (res.status === 200) {
+          // setLoading(false);
+          dispatch(actions.re_render());
+        } else if (res.status === 401) {
           const refreshToken = authServices.getRefreshToken();
           if (refreshToken) {
             authServices.getToken(refreshToken).then((res) => {
@@ -215,6 +229,9 @@ function Cart() {
               }
             });
           }
+        } else {
+          // setLoading(false);
+          handleNotification(false, res.message);
         }
       });
     })();
@@ -231,10 +248,13 @@ function Cart() {
       return item;
     });
 
+    // setLoading(true);
     (function callback() {
       authServices.cart(state.user.id, cartNew).then((res) => {
-        if (res.status === 200) dispatch(actions.re_render());
-        if (res.status === 401) {
+        if (res.status === 200) {
+          // setLoading(false);
+          dispatch(actions.re_render());
+        } else if (res.status === 401) {
           const refreshToken = authServices.getRefreshToken();
           if (refreshToken) {
             authServices.getToken(refreshToken).then((res) => {
@@ -248,6 +268,9 @@ function Cart() {
               }
             });
           }
+        } else {
+          // setLoading(false);
+          handleNotification(false, res.message);
         }
       });
     })();
@@ -255,12 +278,19 @@ function Cart() {
 
   function handleRemoveItem(iProduct: number) {
     const cartNew = state.cart.filter((item: any, index: number) => index !== iProduct);
-    setProductsCart([]);
 
+    setLoading(true);
     (function callback() {
       authServices.cart(state.user.id, cartNew).then((res) => {
-        if (res.status === 200) dispatch(actions.re_render());
-        if (res.status === 401) {
+        if (res.status === 200) {
+          setLoading(false);
+          setNotification({ status: true, message: "Xóa sản phẩm thành công !" });
+          setTimeout(() => {
+            setNotification({ status: null, message: "" });
+            setProductsCart([]);
+            dispatch(actions.re_render());
+          }, 1200);
+        } else if (res.status === 401) {
           const refreshToken = authServices.getRefreshToken();
           if (refreshToken) {
             authServices.getToken(refreshToken).then((res) => {
@@ -274,6 +304,9 @@ function Cart() {
               }
             });
           }
+        } else {
+          setLoading(false);
+          handleNotification(false, res.message);
         }
       });
     })();
@@ -281,12 +314,20 @@ function Cart() {
 
   function handleRemoveItems() {
     const cartNew = state.cart.filter((item: any, index: number) => !checkedItems[index]);
-    setProductsCart([]);
 
+    setLoading(true);
     (function callback() {
       authServices.cart(state.user.id, cartNew).then((res) => {
-        if (res.status === 200) dispatch(actions.re_render());
-        if (res.status === 401) {
+        if (res.status === 200) {
+          setLoading(false);
+          setNotification({ status: true, message: "Xóa sản phẩm thành công !" });
+          setTimeout(() => {
+            setProductsCart([]);
+            setNotification({ status: null, message: "" });
+            setShowModalRemoveItems(false);
+            dispatch(actions.re_render());
+          }, 1200);
+        } else if (res.status === 401) {
           const refreshToken = authServices.getRefreshToken();
           if (refreshToken) {
             authServices.getToken(refreshToken).then((res) => {
@@ -300,6 +341,9 @@ function Cart() {
               }
             });
           }
+        } else {
+          setLoading(false);
+          handleNotification(false, res.message);
         }
       });
     })();
@@ -356,17 +400,18 @@ function Cart() {
       dispatch(actions.set_routing(true));
       router.push(config.routes.client.checkout);
     } else {
-      handleNotification("Vui lòng chọn sản phẩm !");
+      handleNotification(false, "Vui lòng chọn sản phẩm !");
     }
   }
 
-  function handleNotification(value: string) {
-    setNotification(value);
-    setTimeout(() => setNotification(""), 1500);
+  function handleNotification(status: boolean, message: string) {
+    setNotification({ status: status, message: message });
+    setTimeout(() => setNotification({ status: null, message: "" }), 1200);
   }
 
   return (
     <>
+      {loading && <Loading />}
       <Fragment>
         {/* Modal voucher */}
         <Modal
@@ -423,22 +468,42 @@ function Cart() {
             </div>
           </div>
         </Modal>
-        {/* notification */}
+        {/* Modal bạn có muốn xóa các sản phẩm này không ? */}
         <Modal
-          open={!!notification}
+          open={!!showModalRemoveItems}
+          onCancel={() => setShowModalRemoveItems(false)}
           footer={null}
           title={null}
           centered
           maskClosable={false}
           closable={false}
-          width="auto"
+          className="!w-[90vw] !max-w-[600px]"
           zIndex={102}
         >
-          <div className="w-[50vw] max-w-60 center-flex flex-col gap-4">
-            <FaCircleExclamation className="w-1/3 h-auto text-primary" />
-            <p className="text-primary font-medium text-center">{notification}</p>
+          <div className="p-2 flex flex-col gap-4 w-full">
+            <p className="w-full text-center text-lg font-bold text-primary">
+              Bạn có chắc muốn xóa các sản phẩm này không ?
+            </p>
+            <div className="w-full flex gap-2 items-center justify-between">
+              <button
+                className="w-1/2 center-flex py-2 rounded-sm border border-primary text-primary text-base font-bold"
+                onClick={() => {
+                  handleRemoveItems();
+                }}
+              >
+                Có
+              </button>
+              <button
+                className="w-1/2 center-flex py-2 rounded-sm border border-primary text-white bg-primary text-base font-bold"
+                onClick={() => setShowModalRemoveItems(false)}
+              >
+                Không
+              </button>
+            </div>
           </div>
         </Modal>
+        {/* notification */}
+        <ModalNotification noti={notification} />
       </Fragment>
       <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <section>
@@ -603,7 +668,7 @@ function Cart() {
                           <div className="flex flex-1 flex-col gap-3">
                             <Link
                               onClick={() => dispatch(actions.set_routing(true))}
-                              href={`${config.routes.client.productDetail}/${product.id}`}
+                              href={`${config.routes.client.productDetail}${product.id}`}
                               className="font-bold text-base line-clamp-2"
                             >
                               {product.name}
@@ -771,12 +836,12 @@ function Cart() {
                                             .join(" - ")}`
                                         : ""
                                     }
-                     - ${
-                       product.variants[state.cart[iProduct].product.variant].colors[
-                         state.cart[iProduct].product.color
-                       ].name
-                     }
-                      `,
+                                    - ${
+                                      product.variants[state.cart[iProduct].product.variant].colors[
+                                        state.cart[iProduct].product.color
+                                      ].name
+                                    }
+                                    `,
                                   });
                                 } else {
                                   handleChangeQuantity(
@@ -799,7 +864,10 @@ function Cart() {
                                   product.variants[state.cart?.[iProduct]?.product?.variant]
                                     ?.colors[state.cart?.[iProduct]?.product?.color]?.quantity
                                 ) {
-                                  handleNotification("Bạn đã vược số lượng có không kho hàng !");
+                                  handleNotification(
+                                    false,
+                                    "Bạn đã vược số lượng có không kho hàng !"
+                                  );
                                 } else {
                                   handleChangeQuantity(
                                     iProduct,
@@ -833,8 +901,26 @@ function Cart() {
                           <div
                             className="text-black text-base font-bold hover:text-red-600"
                             onClick={() => {
-                              handleRemoveItem(iProduct);
-                              setCheckItems((prev) => prev.filter((e, i) => i !== iProduct));
+                              setItemCartRemove({
+                                index: iProduct,
+                                name: `${product.name} ${
+                                  product.variants[state.cart[iProduct].product.variant].properties
+                                    .map((e: any) => e.name)
+                                    .join(" - ") !== ""
+                                    ? `- ${product.variants[
+                                        state.cart[iProduct].product.variant
+                                      ].properties
+                                        .map((e: any) => e.name)
+                                        .join(" - ")}`
+                                    : ""
+                                }
+                                  - ${
+                                    product.variants[state.cart[iProduct].product.variant].colors[
+                                      state.cart[iProduct].product.color
+                                    ].name
+                                  }
+                                    `,
+                              });
                             }}
                           >
                             Xóa
@@ -897,7 +983,10 @@ function Cart() {
                     </span>
                   </div>
                   {checkedItems.some((e) => e === true) && (
-                    <div className="relative group cursor-pointer" onClick={handleRemoveItems}>
+                    <div
+                      className="relative group cursor-pointer"
+                      onClick={() => setShowModalRemoveItems(true)}
+                    >
                       <em className="cursor-pointer text-gray-500 group-hover:text-primary transition-all duration-100 line-clamp-1">
                         Xóa các sản phẩm đã chọn
                       </em>
@@ -915,7 +1004,7 @@ function Cart() {
                       if (checkedItems.some((e) => e === true)) {
                         setShowModalVoucher(true);
                       } else {
-                        handleNotification("Vui lòng chọn sản phẩm để áp dụng voucher !");
+                        handleNotification(false, "Vui lòng chọn sản phẩm để áp dụng voucher !");
                       }
                     }}
                     className="ml-2 text-blue-600 cursor-pointer"

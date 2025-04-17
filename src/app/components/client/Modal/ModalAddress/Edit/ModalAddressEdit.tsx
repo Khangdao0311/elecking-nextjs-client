@@ -10,7 +10,7 @@ import * as locationServices from "@/app/services/locationService";
 import * as authServices from "@/app/services/authService";
 import * as addressServices from "@/app/services/addressService";
 import Loading from "@/app/components/client/Loading";
-import ModalNotification from "@/app/components/client/ModalNotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 import config from "@/app/config";
 
 function ModelAddressEdit({ addressEdit, onClose }: any) {
@@ -267,7 +267,9 @@ function ModelAddressEdit({ addressEdit, onClose }: any) {
               type="checkbox"
               checked={!!setDefault}
               readOnly
-              className="w-4 h-4 shrink-0 accent-primary "
+              className={`w-4 h-4 shrink-0 accent-primary ${
+                addressEdit.setDefault ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
             />
             <p className="text-sm font-normal text-gray-500 select-none">
               Đặt làm địa chỉ mặc định

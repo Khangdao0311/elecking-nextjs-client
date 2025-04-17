@@ -10,7 +10,7 @@ import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
-import ModalNotification from "@/app/components/client/ModalNotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 import Cookies from "js-cookie";
 import Link from "next/link";
 

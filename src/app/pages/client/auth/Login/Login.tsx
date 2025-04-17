@@ -13,7 +13,7 @@ import { actions, useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
 import Shimmer from "@/app/components/client/Shimmer";
 import * as authServices from "@/app/services/authService";
-import ModalNotification from "@/app/components/client/ModalNotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 
 function Login() {
   const [state, dispatch] = useStore();

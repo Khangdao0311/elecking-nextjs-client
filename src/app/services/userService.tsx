@@ -1,5 +1,6 @@
 import axios from "axios";
 import config from "@/app/config";
+import * as authServices from "./authService";
 
 export async function getQuery(params: any) {
   return axios
@@ -9,8 +10,9 @@ export async function getQuery(params: any) {
 }
 
 export async function getById(id: string) {
+  const headers = { Authorization: `Bearer ${authServices.getAccessToken()}` };
   return axios
-    .get(`${config.api.user}/${id}`)
+    .get(`${config.api.user}/${id}`, { headers })
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
@@ -21,4 +23,3 @@ export async function updateStatus(user_id: string, body: any) {
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
-

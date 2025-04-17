@@ -1,16 +1,19 @@
 import axios from "axios";
 import config from "@/app/config";
+import * as authServices from "./authService";
 
 export async function getQuery(params: any) {
+  const headers = { Authorization: `Bearer ${authServices.getAccessToken()}` };
   return axios
-    .get(`${config.api.order}`, { params })
+    .get(`${config.api.order}`, { params, headers })
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
 
 export async function getById(id: string) {
+  const headers = { Authorization: `Bearer ${authServices.getAccessToken()}` };
   return axios
-    .get(`${config.api.order}/${id}`)
+    .get(`${config.api.order}/${id}`, { headers })
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
@@ -25,26 +28,36 @@ export async function inset({
   payment_method_id,
   address_id,
 }: any) {
+  const headers = { Authorization: `Bearer ${authServices.getAccessToken()}` };
   return axios
-    .post(`${config.api.order}/create`, {
-      total,
-      price_ship,
-      note,
-      products,
-      user_id,
-      voucher_id,
-      payment_method_id,
-      address_id,
-    })
+    .post(
+      `${config.api.order}/create`,
+      {
+        total,
+        price_ship,
+        note,
+        products,
+        user_id,
+        voucher_id,
+        payment_method_id,
+        address_id,
+      },
+      { headers }
+    )
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
 
 export async function updateTransactionCode(id: string, transaction_code: string) {
+  const headers = { Authorization: `Bearer ${authServices.getAccessToken()}` };
   return axios
-    .put(`${config.api.order}/update_transaction_code/${id}`, {
-      transaction_code: transaction_code,
-    })
+    .put(
+      `${config.api.order}/update_transaction_code/${id}`,
+      {
+        transaction_code: transaction_code,
+      },
+      { headers }
+    )
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
