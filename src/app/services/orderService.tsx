@@ -1,15 +1,7 @@
 import axios from "axios";
 import config from "@/app/config";
-import Cookies from "js-cookie";
+import { getAccessTokenAdmin } from "./authService";
 
-
-export function getAccessTokenAdmin() {
-  return Cookies.get("access_token_admin") || false;
-}
-
-export function getRefreshTokenAdmin() {
-  return Cookies.get("refresh_token_admin") || false;
-}
 
 export async function getQuery(params: any) {
   const headers = { Authorization: `Bearer ${getAccessTokenAdmin()}` };

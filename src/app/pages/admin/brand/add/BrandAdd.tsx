@@ -4,8 +4,6 @@ import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import React, { useEffect, useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import type { RcFile } from "antd/es/upload/interface";
-import * as uploadServices from "@/app/services/uploadService";
-import * as brandServices from "@/app/services/brandService";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
 import { Input, Upload } from "antd";
@@ -14,6 +12,10 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { notification, Space } from 'antd';
 
+import * as brandServices from "@/app/services/brandService";
+import * as authServices from "@/app/services/authService";
+import * as uploadServices from "@/app/services/uploadService";
+import Cookies from "js-cookie";
 
 
 function BrandAdd() {
@@ -245,7 +247,6 @@ function BrandAdd() {
               <Button
                 back={config.routes.admin.brand}
                 onClick={async () => {
-                  console.log(name, imgBrand[0].name, imgBanner[0].name, description);
 
                   if (!name.trim() || !imgBrand?.length || !imgBanner?.length || !description.trim()) {
                     openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
@@ -263,16 +264,42 @@ function BrandAdd() {
                     banner: imgBanner[0].name,
                     description: description,
                   };
-                  const brandResponse = await brandServices.addBrand(brandData);
-                  if (brandResponse?.status === 200) {
-                    openNotificationWithIcon("success", "Thành công", "Thêm thương hiệu thành công");
-                    setTimeout(() => {
-                      router.push(config.routes.admin.brand.list);
-                    }, 1000);
-                  } else {
-                    openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
-                  }
                   
+                  (async function callback() {
+                    const brandResponse = await brandServices.addBrand(brandData);
+                    console.log(brandResponse);
+                    
+                    if (brandResponse.status === 200) {
+                      openNotificationWithIcon(
+                        "success",
+                        "Thành công",
+                        "Thêm thương hiệu thành công"
+                      );
+                      setTimeout(() => {
+                        router.push(config.routes.admin.brand.list);
+                      }, 1000);
+                    } else if (brandResponse.status === 401) {
+                      console.log(404);
+                      
+                      const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                      if (refreshTokenAdmin) {
+                        authServices.getToken(refreshTokenAdmin).then((res) => {
+                          if (res.status === 200) {
+                            Cookies.set("access_token_admin", res.data);
+                            callback();
+                          } else {
+                            authServices.clearAdmin();
+                            router.push(config.routes.admin.login);
+                          }
+                        });
+                      }
+                    } else {
+                      console.log("else");
+                      
+                      openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                    }
+                  })();
+
                 }}
               >
               </Button>

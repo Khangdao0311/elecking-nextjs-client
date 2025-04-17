@@ -1,19 +1,23 @@
 "use client";
+import { Input, Upload, Select } from "antd";
+import { notification } from "antd";
+import "quill/dist/quill.snow.css";
+import type { RcFile } from "antd/es/upload/interface";
+import { UploadFile } from "antd/es/upload/interface";
+import Quill from "quill";
+
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import React, { useEffect, useRef, useState } from "react";
-import { UploadFile } from "antd/es/upload/interface";
 import { IoCloseSharp } from "react-icons/io5";
-import Quill from "quill";
-import type { RcFile } from "antd/es/upload/interface";
-import "quill/dist/quill.snow.css";
 import { useParams } from "next/navigation";
-import * as uploadServices from "@/app/services/uploadService";
-import * as brandServices from "@/app/services/brandService";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
-import { Input, Upload, Select } from "antd";
-import { notification, Space } from "antd";
+import Cookies from "js-cookie";
+
+import * as authServices from "@/app/services/authService";
+import * as brandServices from "@/app/services/brandService";
+import * as uploadServices from "@/app/services/uploadService";
 
 function BrandEdit() {
   const quillRef = useRef<HTMLDivElement>(null);
@@ -339,29 +343,47 @@ function BrandEdit() {
               );
               return;
             }
-            const brandResponse = await brandServices.editBrand(id, {
-              name: name.trim(),
-              logo: imgLogoName,
-              banner: imgBannerName,
-              status: selectedStatus,
-              description: editorContent.trim(),
-            });
-            if (brandResponse?.status == 200) {
-              openNotificationWithIcon(
-                "success",
-                "Thành công",
-                "Sửa thương hiệu thành công"
-              );
-              setTimeout(() => {
-                router.push(config.routes.admin.brand.list);
-              }, 1000);
-            } else {
-              openNotificationWithIcon(
-                "error",
-                "Lỗi",
-                "Có lỗi xảy ra, vui lòng thử lại"
-              );
-            }
+            
+
+            (async function callback() {
+              const brandResponse = await brandServices.editBrand(id, {
+                name: name.trim(),
+                logo: imgLogoName,
+                banner: imgBannerName,
+                status: selectedStatus,
+                description: editorContent.trim(),
+              });
+              if (brandResponse?.status == 200) {
+                openNotificationWithIcon(
+                  "success",
+                  "Thành công",
+                  "Sửa thương hiệu thành công"
+                );
+                setTimeout(() => {
+                  router.push(config.routes.admin.brand.list);
+                }, 1000);
+              } else if (brandResponse.status === 401) {
+                const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                if (refreshTokenAdmin) {
+                  authServices.getToken(refreshTokenAdmin).then((res) => {
+                    if (res.status === 200) {
+                      Cookies.set("access_token_admin", res.data);
+                      callback();
+                    } else {
+                      authServices.clearAdmin();
+                      router.push(config.routes.admin.login);
+                    }
+                  });
+                }
+              } else {
+                console.log("else");
+                openNotificationWithIcon(
+                  "error",
+                  "Lỗi",
+                  "Có lỗi xảy ra, vui lòng thử lại"
+                );
+              }
+            })();
           }}
         />
       </div>

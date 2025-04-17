@@ -1,22 +1,23 @@
 "use client";
-import Button from "@/app/components/admin/Button";
-import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import { Input, Select, Upload } from "antd";
 import React, { useEffect, useState, useRef } from "react";
 import { GrFormNext } from "react-icons/gr";
 import { IoIosClose } from "react-icons/io";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
 import { IoCloseSharp } from "react-icons/io5";
+import { notification, Input, Select, Upload  } from "antd";
+import { useRouter } from "next/navigation";
+import "quill/dist/quill.snow.css";
+
 import * as categoryServices from "@/app/services/categoryService";
 import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
 import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
-import { notification, Space } from "antd";
+import * as authServices from "@/app/services/authService";
+import Button from "@/app/components/admin/Button";
+import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import config from "@/app/config";
-import { useRouter } from "next/navigation";
-import "quill/dist/quill.snow.css";
-import Quill from "quill";
+import Cookies from "js-cookie";
 
 function ProductAdd() {
   const [imagescolor, setImagescolor] = useState<UploadFile[]>([]);
@@ -834,33 +835,49 @@ function ProductAdd() {
                 property_ids: variant.property_ids.filter(Boolean),
               }));
 
-              const productData = {
-                name: name,
-                images: JSON.stringify(images.map((file) => file.name)),
-                category_id: selectedcategory?.id,
-                brand_id: selectedbrand,
-                variants: JSON.stringify(formattedVariants),
-                description: editorContent.trim(),
-              };
-              const productResponse = await productServices.addProduct(
-                productData
-              );
-              if (productResponse?.status === 200) {
-                openNotificationWithIcon(
-                  "success",
-                  "Thành công",
-                  "Thêm thành công"
+              
+
+              (async function callback() {
+                const productData = {
+                  name: name,
+                  images: JSON.stringify(images.map((file) => file.name)),
+                  category_id: selectedcategory?.id,
+                  brand_id: selectedbrand,
+                  variants: JSON.stringify(formattedVariants),
+                  description: editorContent.trim(),
+                };
+                const productResponse = await productServices.addProduct(
+                  productData
                 );
-                setTimeout(() => {
-                  router.push(config.routes.admin.product.list);
-                }, 1000);
-              } else {
-                openNotificationWithIcon(
-                  "error",
-                  "Lỗi",
-                  "Có lỗi xảy ra, vui lòng thử lại"
-                );
-              }
+                if (productResponse?.status === 200) {
+                  openNotificationWithIcon(
+                    "success",
+                    "Thành công",
+                    "Thêm thành công"
+                  );
+                  setTimeout(() => {
+                    router.push(config.routes.admin.product.list);
+                  }, 1000);
+                } else if (productResponse.status === 401) {
+                  const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                  if (refreshTokenAdmin) {
+                    authServices.getToken(refreshTokenAdmin).then((res) => {
+                      if (res.status === 200) {
+                        Cookies.set("access_token_admin", res.data);
+                        callback();
+                      } else {
+                        authServices.clearAdmin();
+                        router.push(config.routes.admin.login);
+                      }
+                    });
+                  }
+                } else {
+                  console.log("else");
+                  
+                  openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                }
+              })();
+
             }}
           />
         </div>

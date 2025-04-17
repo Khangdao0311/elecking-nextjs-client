@@ -2,6 +2,7 @@
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/app/components/admin/boxsearchlimtit";
 import * as userServices from "@/app/services/userService";
+import * as authServices from "@/app/services/authService";
 import { useEffect, useState } from "react";
 import Statususer from "@/app/pages/admin/Components/Status";
 import { FaEye } from "react-icons/fa6";
@@ -22,6 +23,9 @@ import {
   BsFillClipboard2XFill,
 } from "react-icons/bs";
 import moment from "moment";
+import Cookies from "js-cookie";
+import config from "@/app/config";
+import { useRouter } from "next/navigation";
 
 function UserList() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -37,6 +41,7 @@ function UserList() {
   const [infouser, setInfouser] = useState<IUser>();
   const [showorderuserdetail, setShoworderuserdetail] = useState(false);
   const [userorderdetail, setUserorderdetail] = useState<IOrder>();
+  const router = useRouter();
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
@@ -44,17 +49,32 @@ function UserList() {
     if (search != "") {
       query.search = search;
     }
-    userServices.getQuery(query).then((res) => {
-      if (res.status === 200) {
-        setUsers(res.data);
-        setTotalPages(res.total);
-      }
-      const initialEyeState = res.data.reduce((acc: any, user: any) => {
-        acc[user.id] = true;
-        return acc;
-      }, {});
-      setEyeState(initialEyeState);
-    });
+    (function callback(){
+      userServices.getQuery(query).then((res) => {
+        if (res.status === 200) {
+          setUsers(res.data);
+          setTotalPages(res.total);
+          const initialEyeState = res.data.reduce((acc: any, user: any) => {
+            acc[user.id] = true;
+            return acc;
+          }, {});
+          setEyeState(initialEyeState);
+        } else if (res.status === 401) {
+          const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+          if (refreshTokenAdmin) {
+            authServices.getToken(refreshTokenAdmin).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token_admin", res.data);
+                callback();
+              } else {
+                authServices.clearAdmin();
+                router.push(config.routes.admin.login);
+              }
+            });
+          }
+        }
+      });  
+    })();
   }, [limit, page, search]);
 
   const originalError = console.error;
@@ -212,10 +232,29 @@ function UserList() {
           <button
             onClick={() => {
               setShoworderuser(true);
+              (function callback() {
               orderServices
                 .getQuery({ user_id: record.id })
-                .then((res) => setOrderdetail(res.data));
-              setInfouser(record);
+                .then((res) => {
+                  if(res.status === 200){
+                    setOrderdetail(res.data);
+                  setInfouser(record);
+                  } else if (res.status === 401) {
+                    const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                    if (refreshTokenAdmin) {
+                      authServices.getToken(refreshTokenAdmin).then((res) => {
+                        if (res.status === 200) {
+                          Cookies.set("access_token_admin", res.data);
+                          callback();
+                        } else {
+                          authServices.clearAdmin();
+                          router.push(config.routes.admin.login);
+                        }
+                      });
+                    }
+                  }
+                })
+              })()
             }}
             className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
           >

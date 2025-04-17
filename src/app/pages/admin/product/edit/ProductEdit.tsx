@@ -1,23 +1,25 @@
 "use client";
-import Button from "@/app/components/admin/Button";
-import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { RcFile, UploadFile } from "antd/es/upload/interface";
-import * as categoryServices from "@/app/services/categoryService";
-import * as propertyServices from "@/app/services/propertyService";
-import * as productServices from "@/app/services/productService";
-import * as uploadServices from "@/app/services/uploadService";
-import * as brandServices from "@/app/services/brandService";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
-import { notification, Space } from "antd";
-import { Input, Select, Upload } from "antd";
+import { Input, Select, Upload, notification } from "antd";
 import { GrFormNext } from "react-icons/gr";
 import { IoIosClose } from "react-icons/io";
 import { IoCloseSharp } from "react-icons/io5";
 import "quill/dist/quill.snow.css";
 import Quill from "quill";
+
+import Button from "@/app/components/admin/Button";
+import TitleAdmin from "@/app/components/admin/TitleAdmin";
+import * as categoryServices from "@/app/services/categoryService";
+import * as propertyServices from "@/app/services/propertyService";
+import * as productServices from "@/app/services/productService";
+import * as uploadServices from "@/app/services/uploadService";
+import * as brandServices from "@/app/services/brandService";
+import * as authServices from "@/app/services/authService";
+import Cookies from "js-cookie";
 
 function ProductEdit() {
   const [imagescolor, setImagescolor] = useState<UploadFile[]>([]);
@@ -568,7 +570,6 @@ function ProductEdit() {
                           );
                         })}
                       </div>
-                      {/* color */}
                       <div className="w-full px-3 flex flex-col gap-4">
                         <div className="flex gap-2 items-center ">
                           <p className="text-sm font-bold">Màu Sắc</p>
@@ -804,7 +805,6 @@ function ProductEdit() {
               );
             })}
           </div>
-
           <div className="flex flex-col gap-1">
             <div className="text-sm font-medium">
               Hình Ảnh <span className="text-primary">*</span>
@@ -892,7 +892,6 @@ function ProductEdit() {
                 );
                 return;
               }
-
               if (filteredStorageImgColor.length > 0) {
                 const formDataimgcolor = new FormData();
                 filteredStorageImgColor.forEach((file) => {
@@ -900,7 +899,6 @@ function ProductEdit() {
                 });
                 await uploadServices.uploadMultiple(formDataimgcolor);
               }
-
               if (filteredImages.length > 0) {
                 const formDataimgs = new FormData();
                 filteredImages.forEach((file) => {
@@ -908,7 +906,6 @@ function ProductEdit() {
                 });
                 await uploadServices.uploadMultiple(formDataimgs);
               }
-
               const formattedVariants = variants.map((variant: any) => ({
                 ...variant,
                 price: +variant.price,
@@ -922,32 +919,46 @@ function ProductEdit() {
                 })),
                 property_ids: variant.property_ids.filter(Boolean),
               }));
+              (async function callback() {
+                const response = await productServices.editProduct(id, {
+                  name: name.trim(),
+                  images: JSON.stringify(images.map((file) => file.name)),
+                  category_id: selectedcategory?.id,
+                  brand_id: selectedbrand?.id,
+                  variants: JSON.stringify(formattedVariants),
+                  description: editorContent.trim(),
+                });
+                if (response?.status === 200) {
+                  openNotificationWithIcon(
+                    "success",
+                    "Thành công",
+                    "Sửa sản phẩm thành công"
+                  );
+                  setTimeout(() => {
+                    router.push(config.routes.admin.product.list);
+                  }, 1000);
+                } else if (response.status === 401) {
+                  console.log(404);
+                  
+                  const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                  if (refreshTokenAdmin) {
+                    authServices.getToken(refreshTokenAdmin).then((res) => {
+                      if (res.status === 200) {
+                        Cookies.set("access_token_admin", res.data);
+                        callback();
+                      } else {
+                        authServices.clearAdmin();
+                        router.push(config.routes.admin.login);
+                      }
+                    });
+                  }
+                } else {
+                  console.log("else");
+                  
+                  openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                }
+              })();
 
-              const response = await productServices.editProduct(id, {
-                name: name.trim(),
-                images: JSON.stringify(images.map((file) => file.name)),
-                category_id: selectedcategory?.id,
-                brand_id: selectedbrand?.id,
-                variants: JSON.stringify(formattedVariants),
-                description: editorContent.trim(),
-              });
-
-              if (response?.status === 200) {
-                openNotificationWithIcon(
-                  "success",
-                  "Thành công",
-                  "Sửa sản phẩm thành công"
-                );
-                setTimeout(() => {
-                  router.push(config.routes.admin.product.list);
-                }, 1000);
-              } else {
-                openNotificationWithIcon(
-                  "error",
-                  "Lỗi",
-                  "Có lỗi xảy ra, vui lòng thử lại"
-                );
-              }
             }}
           />
         </div>
