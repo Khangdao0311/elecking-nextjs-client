@@ -3,7 +3,7 @@ import config from "@/app/config";
 import * as authServices from "./authService";
 
 export async function getQuery(params: any) {
-  const headers = { Authorization: `Bearer ${authServices.getAccessToken() || authServices.getAccessTokenAdmin()}` };
+  const headers = { Authorization: `Bearer ${authServices.getAccessTokenAdmin()}` };
   return axios
     .get(`${config.api.order}`, { params, headers })
     .then((response: any) => response.data)
@@ -11,7 +11,7 @@ export async function getQuery(params: any) {
 }
 
 export async function getById(id: string) {
-  const headers = { Authorization: `Bearer ${authServices.getAccessToken() || authServices.getAccessTokenAdmin()}` };
+  const headers = { Authorization: `Bearer ${authServices.getAccessTokenAdmin()}` };
   return axios
     .get(`${config.api.order}/${id}`, { headers })
     .then((response: any) => response.data)

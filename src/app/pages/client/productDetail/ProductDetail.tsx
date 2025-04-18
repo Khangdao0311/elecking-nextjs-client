@@ -49,7 +49,7 @@ function ProductDetail() {
   const [iVariant, setIVariant] = useState(-1);
   const [iColor, setIColor] = useState(-1);
   const [quantity, setQuantity] = useState(1);
-  const [heightDescription, setHeightDescription] = useState("500px");
+  const [heightDescription, setHeightDescription] = useState("max-h-[500px]");
   const [rating, setRating] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -627,9 +627,9 @@ function ProductDetail() {
           </section>
 
           {/* Mô Tả */}
-          <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex gap-4 items-start">
+          <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
             <div
-              className={`relative w-full lg:w-4/5 h-[${heightDescription}] overflow-hidden  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2`}
+              className={`relative w-full ${heightDescription} overflow-hidden  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2`}
             >
               <p className="flex gap-2">
                 <FaRegEdit className="w-6 h-6" />
@@ -643,27 +643,18 @@ function ProductDetail() {
               />
               <div
                 className={`p-4 center-flex bg-white ${
-                  heightDescription !== "auto"
+                  heightDescription
                     ? "absolute bottom-0 right-0 left-0  shadow-[0_-50px_50px_#fff]"
                     : ""
                 }`}
               >
                 <button
-                  onClick={() =>
-                    setHeightDescription(heightDescription === "auto" ? "500px" : "auto")
-                  }
+                  onClick={() => setHeightDescription(heightDescription ? "" : "max-h-[500px]")}
                   className=" border border-gray-300 font-bold w-full sm:w-1/2 lg:w-1/3 bg-white rounded-md py-2.5"
                 >
-                  {heightDescription !== "auto" ? "Xem thêm" : "Thu gọn"}
+                  {heightDescription ? "Thu gọn" : "Xem thêm"}
                 </button>
               </div>
-            </div>
-            <div className="hidden lg:flex w-1/5 h-auto rounded-lg overflow-hidden shadow-lg">
-              <img
-                className="w-full h-auto  object-contain"
-                src="https://vnpik.com/wp-content/uploads/2024/12/Pikvip.com_20241204_20.jpg"
-                alt=""
-              />
             </div>
           </section>
 
@@ -973,28 +964,25 @@ function ProductDetail() {
           </section>
 
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex ">
-            <div className="flex gap-4 w-full">
-              <div className="w-full lg:w-4/5  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
-                <Shimmer className="w-2/5 h-7" />
-                <hr />
-                <Shimmer className="w-1/2 h-6" />
-                <Shimmer className="w-9/12 h-6" />
-                <Shimmer className="w-2/5 h-6" />
-                <Shimmer className="w-4/5 h-6" />
-                <Shimmer className="w-2/3 h-6" />
-                <Shimmer className="w-4/5 h-6" />
-                <Shimmer className="w-3/5 h-6" />
-                <Shimmer className="w-3/4 h-6" />
-                <Shimmer className="w-5/5 h-6" />
-                <Shimmer className="w-4/5 h-6" />
-                <Shimmer className="w-2/5 h-6" />
-                <Shimmer className="w-3/5 h-6" />
-                <Shimmer className="w-8/12 h-6" />
-                <Shimmer className="w-4/5 h-6" />
-                <Shimmer className="w-3/5 h-6" />
-                <Shimmer className="w-5/5 h-6" />
-              </div>
-              <Shimmer image={true} className="w-1/5  !hidden lg:flex" />
+            <div className="w-full  shadow-xl border border-gray-300 rounded-lg p-4 flex flex-col gap-2">
+              <Shimmer className="w-2/5 h-7" />
+              <hr />
+              <Shimmer className="w-1/2 h-6" />
+              <Shimmer className="w-9/12 h-6" />
+              <Shimmer className="w-2/5 h-6" />
+              <Shimmer className="w-4/5 h-6" />
+              <Shimmer className="w-2/3 h-6" />
+              <Shimmer className="w-4/5 h-6" />
+              <Shimmer className="w-3/5 h-6" />
+              <Shimmer className="w-3/4 h-6" />
+              <Shimmer className="w-5/5 h-6" />
+              <Shimmer className="w-4/5 h-6" />
+              <Shimmer className="w-2/5 h-6" />
+              <Shimmer className="w-3/5 h-6" />
+              <Shimmer className="w-8/12 h-6" />
+              <Shimmer className="w-4/5 h-6" />
+              <Shimmer className="w-3/5 h-6" />
+              <Shimmer className="w-5/5 h-6" />
             </div>
           </section>
 

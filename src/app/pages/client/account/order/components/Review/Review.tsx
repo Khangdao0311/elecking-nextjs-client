@@ -14,7 +14,7 @@ import config from "@/app/config";
 import Loading from "@/app/components/client/Loading";
 import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 
-function Review(props: { order_id: any; productOrder: any; onClose: any }) {
+function Review(props: { order_id: any; indexReview: number; productOrder: any; onClose: any }) {
   const [state, dispatch] = useStore();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [rating, setRating] = useState(5);
@@ -26,25 +26,30 @@ function Review(props: { order_id: any; productOrder: any; onClose: any }) {
   const router = useRouter();
 
   function handleReview() {
-    const reviewNew = {
-      rating: rating,
-      content: content,
-      images: JSON.stringify(fileList.map((e: any) => e.originFileObj.name)),
-      order_id: props.order_id,
-      product_id: props.productOrder.product.id,
-    };
+    const formDataUpload = new FormData();
+    fileList.forEach((image: any) => {
+      formDataUpload.append("images", image.originFileObj);
+    });
+    formDataUpload.append("rating", rating.toString());
+    formDataUpload.append("content", content);
+    formDataUpload.append("order_id", props.order_id);
+    formDataUpload.append("product_id", props.productOrder.product.id);
+    formDataUpload.append("indexReview", props.indexReview.toString());
 
     setLoading(true);
     (function callback() {
-      reviewServices.create(reviewNew).then((res) => {
+      reviewServices.create(formDataUpload).then((res) => {
         if (res.status === 200) {
           setLoading(false);
-          setNotification({ status: true, message: "" });
-          setRating(5);
-          setContent("");
-          setFileList([]);
-          props.onClose();
-          dispatch(actions.re_render());
+          setNotification({ status: true, message: "Đánh giá thành công !" });
+          setTimeout(() => {
+            setRating(5);
+            setContent("");
+            setFileList([]);
+            setNotification({ status: null, message: "" });
+            props.onClose();
+            dispatch(actions.re_render());
+          }, 1000);
         } else if (res.status === 401) {
           const refreshToken = authServices.getRefreshToken();
           if (refreshToken) {
@@ -59,17 +64,15 @@ function Review(props: { order_id: any; productOrder: any; onClose: any }) {
               }
             });
           }
+        } else {
+          setLoading(false);
+          setNotification({ status: false, message: res.message });
+          setTimeout(() => {
+            setNotification({ status: null, message: "" });
+          }, 1000);
         }
       });
     })();
-
-    if (fileList.length > 0) {
-      const formDataUpload = new FormData();
-      fileList.forEach((image: any) => {
-        formDataUpload.append("images", image.originFileObj);
-      });
-      uploadServices.uploadMultiple(formDataUpload);
-    }
   }
 
   return (

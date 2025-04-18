@@ -9,7 +9,6 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 import { useStore, actions } from "@/app/store";
-import * as userServices from "@/app/services/userService";
 import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
 import ModalNotification from "@/app/components/client/Modal/ModalNotification";
@@ -33,7 +32,7 @@ function AccountProfile() {
   useEffect(() => {
     if (state.user) {
       (function callback() {
-        userServices.getById(state.user.id).then((res) => {
+        authServices.getProfile(state.user.id).then((res) => {
           if (res.status === 200) {
             setProfile({
               fullname: res.data.fullname,

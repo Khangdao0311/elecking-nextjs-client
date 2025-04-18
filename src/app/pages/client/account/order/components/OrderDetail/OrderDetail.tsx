@@ -4,25 +4,56 @@ import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import "swiper/css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import Link from "next/link";
 
 import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
 import ModalNotification from "@/app/components/client/Modal/ModalNotification";
-import Cookies from "js-cookie";
-import Link from "next/link";
 
-function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any; onClose: any }) {
+function OrderDetail(props: {
+  order_id: string;
+  setProductOrder: any;
+  setIndexReview: any;
+  onReview: any;
+  onClose: any;
+}) {
   const [state, dispatch] = useStore();
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState<any>({ status: null, message: "" });
+  const [order, setOrder] = useState<any>(null);
 
   const router = useRouter();
 
+  useEffect(() => {
+    (function callback() {
+      authServices.getOrder(props.order_id).then((res) => {
+        if (res.status === 200) {
+          setOrder(res.data);
+        } else if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        }
+      });
+    })();
+  }, [props.order_id, state.re_render]);
+
   let status: any = {};
-  switch (props.order?.status) {
+  switch (order?.status) {
     case 0:
       status.color = "red";
       status.text = "Đã hủy";
@@ -50,7 +81,7 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
     case 2:
       status.color = "yellow";
       status.text = "Chờ xác nhận";
-      status.button = !props.order.payment_status && !props.order.transaction_code && (
+      status.button = !order?.payment_status && !order?.transaction_code && (
         <button
           onClick={handleCancelOrder}
           className="px-6 py-2 text-base font-bold text-primary border border-primary rounded"
@@ -76,7 +107,7 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
   function handleCancelOrder() {
     setLoading(true);
     (function callback() {
-      authServices.cancelOrder(props.order!.id).then((res) => {
+      authServices.cancelOrder(order!.id).then((res) => {
         if (res.status === 200) {
           setLoading(false);
           setNotification({ status: true, message: "Đơn hàng đã được hủy !" });
@@ -112,7 +143,7 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
 
   function handleBuyAgain() {
     const checkout: any = {
-      order: props.order?.products.map((e) => ({
+      order: order?.products.map((e: any) => ({
         product: {
           id: e.product?.id,
           variant: e.product.variant,
@@ -138,20 +169,18 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
           <div className="flex gap-2">
             <p className="text-base font-normal">Tên người nhận:</p>
             <span className="text-base font-base font-bold uppercase">
-              {props.order?.address.fullname}
+              {order?.address.fullname}
             </span>
           </div>
           <div className="flex gap-2">
             <p className="text-base font-normal">Số điện thoại:</p>
-            <span className="text-base font-base font-bold uppercase">
-              {props.order?.address.phone}
-            </span>
+            <span className="text-base font-base font-bold uppercase">{order?.address.phone}</span>
           </div>
           <div className="flex text-base font-medium col-span-2 gap-2">
             <p className="text-base font-normal shrink-0">Địa chỉ:</p>
             <span className="text-base font-base font-bold">
-              {props.order?.address.province.name}, {props.order?.address.district.name},{" "}
-              {props.order?.address.ward.name} <br /> {props.order?.address.description}
+              {order?.address.province.name}, {order?.address.district.name},{" "}
+              {order?.address.ward.name} <br /> {order?.address.description}
             </span>
           </div>
 
@@ -166,10 +195,10 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
           <div className="flex gap-2 col-span-2 items-center">
             <p className="text-base font-normal shrink-0">Tổng tiền: </p>
             <span className="text-base font-base font-bold text-primary">
-              {props.order?.total.toLocaleString("vi-VN")} đ
+              {order?.total.toLocaleString("vi-VN")} đ
             </span>
           </div>
-          {props.order.payment_status && props.order.transaction_code && (
+          {order?.payment_status && order?.transaction_code && (
             <div className="flex text-base font-medium col-span-2 gap-2">
               <p className="text-sm font-medium shrink-0 px-6 py-1 bg-green-100 text-green-800 rounded">
                 {" "}
@@ -187,7 +216,7 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
           modules={[Mousewheel, FreeMode]}
           className="!w-full flex flex-col max-h-[300px] gap-2"
         >
-          {props.order?.products.map((item, index) => (
+          {order?.products.map((item: any, index: number) => (
             <SwiperSlide
               key={index}
               className="!flex w-full gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300 relative"
@@ -214,10 +243,12 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
                   {item.product.price.toLocaleString("vi-VN")} đ
                 </p>
               </div>
-              {props.order?.status === 1 && !item.reviewed && (
+              {order?.status === 1 && !item.reviewed && (
                 <div
                   onClick={() => {
                     props.setProductOrder(item);
+                    props.setIndexReview(index);
+                    props.onReview(index);
                     props.onReview();
                   }}
                   className="absolute bottom-4 right-4 px-5 py-2 border border-thirdary text-thirdary rounded text-sm font-medium select-none cursor-pointer "
@@ -228,7 +259,6 @@ function OrderDetail(props: { order: IOrder; setProductOrder: any; onReview: any
             </SwiperSlide>
           ))}
         </Swiper>
-        {/* <div className="flex flex-col w-full max-h-[500px] gap-2"></div> */}
         <div className="flex items-center justify-end gap-4 w-full">{status.button}</div>
       </div>
     </>

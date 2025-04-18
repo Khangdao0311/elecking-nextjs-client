@@ -129,3 +129,27 @@ export async function removeAddress(address_id: string) {
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
+
+export async function getOrder(order_id: string) {
+  const headers = { Authorization: `Bearer ${getAccessToken()}` };
+  return axios
+    .get(`${config.api.auth}/get_order/${order_id}`, { headers })
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
+}
+
+export async function getOrders(params: any) {
+  const headers = { Authorization: `Bearer ${getAccessToken()}` };
+  return axios
+    .get(`${config.api.auth}/get_orders`, { params, headers })
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
+}
+
+export async function getProfile(user_id: any) {
+  const headers = { Authorization: `Bearer ${getAccessToken()}` };
+  return axios
+    .get(`${config.api.auth}/get_profile/${user_id}`, { headers })
+    .then((response: any) => response.data)
+    .catch((error: any) => error.response.data);
+}

@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import { FreeMode } from "swiper/modules";
 
 import { actions, useStore } from "@/app/store";
-import * as orderServices from "@/app/services/orderService";
 import * as authServices from "@/app/services/authService";
 import OrderDetail from "./components/OrderDetail";
 import Review from "./components/Review";
@@ -22,9 +21,10 @@ import config from "@/app/config";
 function AccountOrder() {
   const [state, dispatch] = useStore();
   const [orders, setOrders] = useState<IOrder[]>([]);
-  const [order, setOrder] = useState<IOrder | null>(null);
+  const [order_id, setOrder_id] = useState<string>("");
   const [totalOrder, setTotalOrder] = useState<any>();
   const [productOrder, setProductOrder] = useState<any>(null);
+  const [indexReview, setIndexReview] = useState<any>(null);
   const [status, setStatus] = useState<string>("");
   const [show, setShow] = useState({
     detail: false,
@@ -36,8 +36,8 @@ function AccountOrder() {
   useEffect(() => {
     if (state.user) {
       (function callback() {
-        orderServices
-          .getQuery({ user_id: state.user.id, limit: null, status: status })
+        authServices
+          .getOrders({ user_id: state.user.id, limit: null, status: status })
           .then((res) => {
             if (res.status === 200) {
               setOrders(res.data);
@@ -76,8 +76,9 @@ function AccountOrder() {
       >
         <Review
           onClose={() => setShow({ detail: true, review: false })}
-          order_id={order?.id}
+          order_id={order_id}
           productOrder={productOrder}
+          indexReview={indexReview}
         />
       </Modal>
       <Modal
@@ -90,8 +91,9 @@ function AccountOrder() {
         width="auto"
       >
         <OrderDetail
-          order={order!}
+          order_id={order_id}
           setProductOrder={setProductOrder}
+          setIndexReview={setIndexReview}
           onReview={() => setShow({ detail: false, review: true })}
           onClose={() => setShow({ detail: false, review: false })}
         />
@@ -422,7 +424,7 @@ function AccountOrder() {
                 <div className="flex items-center justify-end sm:items-end sm:justify-center shrink-0">
                   <div
                     onClick={() => {
-                      setOrder(order);
+                      setOrder_id(order.id);
                       setShow({ detail: true, review: false });
                     }}
                     className="px-6 py-1.5 sm:py-2 border border-primary rounded cursor-pointer select-none"

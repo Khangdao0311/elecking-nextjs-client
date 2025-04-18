@@ -25,7 +25,6 @@ import LogoMobile from "@/app/assets/LogoMobile";
 import MenuCategory from "../MenuCategory";
 import ModalLogin from "./components/ModalLogin";
 import ResultSearch from "./components/ResultSearch";
-import * as userServices from "@/app/services/userService";
 import * as authServices from "@/app/services/authService";
 import * as productServices from "@/app/services/productService";
 import Loading from "@/app/components/client/Loading";
@@ -67,7 +66,7 @@ function Header() {
 
     if (user && authServices.getAccessToken() && authServices.getRefreshToken()) {
       (function callback() {
-        userServices.getById(user.id).then((res) => {
+        authServices.getProfile(user.id).then((res) => {
           if (res.status === 200) {
             const token = authServices.getAccessToken();
             const refreshToken = authServices.getRefreshToken();

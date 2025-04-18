@@ -65,7 +65,7 @@ function Checkout() {
       state.user
     ) {
       (function callback() {
-        orderServices.getById(query.get("vnp_TxnRef")!).then((res) => {
+        authServices.getOrder(query.get("vnp_TxnRef")!).then((res) => {
           if (res.status === 200) {
             if (query.get("vnp_TransactionStatus") === "00") {
               (function callback2() {
