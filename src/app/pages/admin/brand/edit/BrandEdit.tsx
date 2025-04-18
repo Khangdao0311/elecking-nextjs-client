@@ -314,9 +314,6 @@ function BrandEdit() {
               logo[0].originFileObj.name !== storageimglogo
             ) {
               const imgLogo = logo[0].originFileObj as File;
-              const formDataLogo = new FormData();
-              formDataLogo.append("image", imgLogo);
-              uploadServices.uploadSingle(formDataLogo);
               imgLogoName = imgLogo.name;
             }
             if (
@@ -325,16 +322,13 @@ function BrandEdit() {
               banner[0].originFileObj.name !== storageimgbanner
             ) {
               const imgBanner = banner[0].originFileObj as File;
-              const formDataBanner = new FormData();
-              formDataBanner.append("image", imgBanner);
-              uploadServices.uploadSingle(formDataBanner);
               imgBannerName = imgBanner.name;
             }
             if (
               !name.trim() ||
               !imgLogoName?.length ||
               !imgBannerName?.length ||
-              !editorContent.trim()
+              !editorContent
             ) {
               openNotificationWithIcon(
                 "error",
@@ -343,16 +337,19 @@ function BrandEdit() {
               );
               return;
             }
+            const formData = new FormData();
+            formData.append("name", name.trim());
+            formData.append("logo", imgLogoName);
+            formData.append("banner", imgBannerName);
+            formData.append("status", selectedStatus!.toString());
+            formData.append("description", editorContent.toString());
+            formData.append("images", logo[0].originFileObj as File);
+            formData.append("images", banner[0].originFileObj as File);
             
+             
 
             (async function callback() {
-              const brandResponse = await brandServices.editBrand(id, {
-                name: name.trim(),
-                logo: imgLogoName,
-                banner: imgBannerName,
-                status: selectedStatus,
-                description: editorContent.trim(),
-              });
+              const brandResponse = await brandServices.editBrand(id, formData);
               if (brandResponse?.status == 200) {
                 openNotificationWithIcon(
                   "success",

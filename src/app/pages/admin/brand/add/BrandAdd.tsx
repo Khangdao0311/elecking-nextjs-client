@@ -8,7 +8,6 @@ import config from "@/app/config";
 import { useRouter } from "next/navigation";
 import { Input, Upload } from "antd";
 import { UploadFile } from "antd/es/upload/interface";
-import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { notification, Space } from 'antd';
 
@@ -246,29 +245,22 @@ function BrandAdd() {
             <Space>
               <Button
                 back={config.routes.admin.brand}
-                onClick={async () => {
+                onClick={() => {
 
                   if (!name.trim() || !imgBrand?.length || !imgBanner?.length || !description.trim()) {
                     openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
                     return;
                   }
-                  const logoFormData = new FormData();
-                  logoFormData.append("image", imgBrand[0]);
-                  await uploadServices.uploadSingle(logoFormData);
-                  const bannerFormData = new FormData();
-                  bannerFormData.append("image", imgBanner[0]);
-                  await uploadServices.uploadSingle(bannerFormData);
-                  const brandData = {
-                    name: name,
-                    logo: imgBrand[0].name,
-                    banner: imgBanner[0].name,
-                    description: description,
-                  };
-                  
+                  const formData = new FormData();
+                    formData.append("name", name);
+                    formData.append("logo", imgBrand[0].name);
+                    formData.append("banner", imgBanner[0].name);
+                    formData.append("description", description);
+                    formData.append("images", imgBrand[0].originFileObj as File);
+                    formData.append("images", imgBanner[0].originFileObj as File);
+
                   (async function callback() {
-                    const brandResponse = await brandServices.addBrand(brandData);
-                    console.log(brandResponse);
-                    
+                    const brandResponse = await brandServices.addBrand(formData)
                     if (brandResponse.status === 200) {
                       openNotificationWithIcon(
                         "success",
@@ -279,8 +271,6 @@ function BrandAdd() {
                         router.push(config.routes.admin.brand.list);
                       }, 1000);
                     } else if (brandResponse.status === 401) {
-                      console.log(404);
-                      
                       const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
                       if (refreshTokenAdmin) {
                         authServices.getToken(refreshTokenAdmin).then((res) => {
@@ -294,8 +284,6 @@ function BrandAdd() {
                         });
                       }
                     } else {
-                      console.log("else");
-                      
                       openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
                     }
                   })();

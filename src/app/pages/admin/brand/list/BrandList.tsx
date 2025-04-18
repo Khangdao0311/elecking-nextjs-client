@@ -27,6 +27,7 @@ function BrandList() {
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
+    query.status = '';
     query.page = page;
     if (search != "") {
       query.search = search;
@@ -108,7 +109,7 @@ function BrandList() {
       dataIndex: "status",
       align: "center",
       width: 120,
-      render: (status) => {
+      render: (status) => {     
         let text = "";
         switch (status) {
           case 0:
@@ -116,12 +117,6 @@ function BrandList() {
             break;
           case 1:
             text = "Đang hoạt động";
-            break;
-          case 2:
-            text = "Chờ xác nhận";
-            break;
-          case 3:
-            text = "Đang vận chuyển";
             break;
         }
         return <Statusbrand status={status} text={text} />;
