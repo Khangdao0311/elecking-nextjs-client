@@ -19,8 +19,6 @@ import { notification } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import config from "@/app/config";
 
-
-
 function OrderList() {
   const [editorder, setEditorder] = useState(false);
   const closeeditorder = () => setEditorder(false);
@@ -55,7 +53,6 @@ function OrderList() {
     }
     router.push(`?${current}`);
   };
-
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -93,8 +90,6 @@ function OrderList() {
       setSelectedDay(undefined);
     }
   }, [searchParams]);
-
-
 
   useEffect(() => {
     if (selectedOrder) {

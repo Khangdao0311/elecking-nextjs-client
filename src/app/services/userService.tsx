@@ -10,7 +10,7 @@ export async function getQuery(params: any) {
     .catch((error: any) => error.response.data);
 }
 export async function getById(id: string) {
-  const headers = { Authorization: `Bearer ${authServices.getAccessToken()}` };
+  const headers = { Authorization: `Bearer ${authServices.getAccessToken() || authServices.getAccessTokenAdmin()}` };
   return axios
     .get(`${config.api.user}/${id}`, { headers })
     .then((response: any) => response.data)
@@ -18,7 +18,7 @@ export async function getById(id: string) {
 }
 export async function updateStatus(user_id: string, body: any) {
   return axios
-    .put(`${config.api.user}/status/${user_id}`, body)
+    .put(`${config.api.user}/status/${user_id}`, {body})
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }

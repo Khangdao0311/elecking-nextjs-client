@@ -1,6 +1,4 @@
 "use client";
-import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import Cookies from "js-cookie";
 
 import {
   FaBasketShopping,
@@ -9,19 +7,19 @@ import {
   FaUser,
 } from "react-icons/fa6";
 import { HiCash } from "react-icons/hi";
-import config from "@/app/config";
 import { Bar } from "react-chartjs-2";
+import { Modal, Select, Space, Table, TableProps, notification } from "antd";
+import moment from "moment";
+import { FiEdit } from "react-icons/fi";
+import { useEffect, useState } from "react";
+
 import * as orderServices from "@/app/services/orderService";
 import * as userServices from "@/app/services/userService";
 import * as voucherServices from "@/app/services/voucherService";
 import * as statsServices from "@/app/services/statService";
 import * as authServices from "@/app/services/authService";
-import { Modal } from "antd";
-import moment from "moment";
-import { FiEdit } from "react-icons/fi";
-import { useEffect, useState } from "react";
-import { Select, Space, Table, TableProps } from "antd";
-import { notification } from "antd";
+import config from "@/app/config";
+import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import {
   Chart as ChartJS,
   BarElement,
@@ -35,6 +33,7 @@ import { useStore } from "@/app/store";
 import Loading from "@/app/components/client/Loading";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Cookies from "js-cookie";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 function DashBoard() {
@@ -84,11 +83,26 @@ function DashBoard() {
 
   useEffect(() => {
     const query = { limit: 7 };
-    userServices.getQuery(query).then((res) => {
-      if (res.status === 200) {
-        setGetUser(res.data);
-      }
-    });
+    (function callback() {
+      userServices.getQuery(query).then((res) => {
+        if (res.status === 200) {
+          setGetUser(res.data);
+        } else if (res.status === 401) {
+          const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+          if (refreshTokenAdmin) {
+            authServices.getToken(refreshTokenAdmin).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token_admin", res.data);
+                callback();
+              } else {
+                authServices.clearAdmin();
+                router.push(config.routes.admin.login);
+              }
+            });
+          }
+        }
+      });
+    })()
   }, []);
 
   useEffect(() => {
@@ -112,21 +126,37 @@ function DashBoard() {
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
-    voucherServices.getQuery(query).then((res) => {
-      if (res.status === 200) {
-        setVoucher(res.total);
-      }
-    });
+      voucherServices.getQuery(query).then((res) => {
+        if (res.status === 200) {
+          setVoucher(res.total);
+        } 
+      });
   }, []);
 
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
-    userServices.getQuery(query).then((res) => {
-      if (res.status === 200) {
-        setUsers(res.data);
-      }
-    });
+    (async function callback() {
+      userServices.getQuery(query).then((res) => {
+        if (res.status === 200) {
+          setUsers(res.data);
+        }
+        else if (res.status === 401) {
+          const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+          if (refreshTokenAdmin) {
+            authServices.getToken(refreshTokenAdmin).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token_admin", res.data);
+                callback();
+              } else {
+                authServices.clearAdmin();
+                router.push(config.routes.admin.login);
+              }
+            });
+          }
+        }
+      });
+    })();
   }, []);
 
   useEffect(() => {
@@ -135,7 +165,8 @@ function DashBoard() {
       orderServices.getQuery(query).then((res) => {
         if (res.status === 200) {
           setGetorders(res.data);
-        } else if (res.status === 401) {
+        }
+        else if (res.status === 401) {
           const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
           if (refreshTokenAdmin) {
             authServices.getToken(refreshTokenAdmin).then((res) => {
@@ -166,13 +197,12 @@ function DashBoard() {
     );
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     const query: any = {};
     if (year !== null) {
       query.year = year;
     }
     (async function callback() {
-
       statsServices.getQuery(query).then((res) => {
         if (res.status === 200) {
           setStats(res.data);
@@ -204,7 +234,7 @@ function DashBoard() {
         }
       });
     })();
-    }, [year]);
+  }, [year]);
 
 
   const data = {
@@ -374,11 +404,26 @@ function DashBoard() {
 
   function showUserDetail(id: string) {
     setShowUser(true);
-    userServices.getById(id).then((res) => {
-      if (res.status === 200) {
-        setUserDetail(res.data);
-      }
-    });
+    (function callback() {
+      userServices.getById(id).then((res) => {
+        if (res.status === 200) {
+          setUserDetail(res.data);
+        } else if (res.status === 401) {
+          const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+          if (refreshTokenAdmin) {
+            authServices.getToken(refreshTokenAdmin).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token_admin", res.data);
+                callback();
+              } else {
+                authServices.clearAdmin();
+                router.push(config.routes.admin.login);
+              }
+            });
+          }
+        }
+      });
+    })();
   }
 
   return (

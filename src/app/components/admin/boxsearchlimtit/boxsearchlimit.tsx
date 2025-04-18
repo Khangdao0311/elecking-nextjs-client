@@ -177,7 +177,6 @@ const BoxSearchLimit = ({
               <SwiperSlide className="!w-[16px] pointer-events-none select-none" />
               <SwiperSlide className="!w-[16px] pointer-events-none select-none" />
               <SwiperSlide className="!w-[16px] pointer-events-none select-none" />
-              <SwiperSlide className="!w-[16px] pointer-events-none select-none" />
             </Swiper>
 
             <div>
