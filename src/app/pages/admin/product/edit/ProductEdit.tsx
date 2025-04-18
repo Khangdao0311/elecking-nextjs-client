@@ -892,20 +892,6 @@ function ProductEdit() {
                 );
                 return;
               }
-              if (filteredStorageImgColor.length > 0) {
-                const formDataimgcolor = new FormData();
-                filteredStorageImgColor.forEach((file) => {
-                  formDataimgcolor.append("images", file);
-                });
-                await uploadServices.uploadMultiple(formDataimgcolor);
-              }
-              if (filteredImages.length > 0) {
-                const formDataimgs = new FormData();
-                filteredImages.forEach((file) => {
-                  formDataimgs.append("images", file);
-                });
-                await uploadServices.uploadMultiple(formDataimgs);
-              }
               const formattedVariants = variants.map((variant: any) => ({
                 ...variant,
                 price: +variant.price,
@@ -919,15 +905,28 @@ function ProductEdit() {
                 })),
                 property_ids: variant.property_ids.filter(Boolean),
               }));
-              (async function callback() {
-                const response = await productServices.editProduct(id, {
-                  name: name.trim(),
-                  images: JSON.stringify(images.map((file) => file.name)),
-                  category_id: selectedcategory?.id,
-                  brand_id: selectedbrand?.id,
-                  variants: JSON.stringify(formattedVariants),
-                  description: editorContent.trim(),
+
+              const formData = new FormData;
+              formData.append("name", name);
+              formData.append("images", JSON.stringify(images.map((file) => file.name)));
+              formData.append("category_id", selectedcategory?.id);
+              formData.append("brand_id", selectedbrand?.id);
+              formData.append("variants", JSON.stringify(formattedVariants));
+              formData.append("description", editorContent);
+              if (filteredStorageImgColor.length > 0) {
+                filteredStorageImgColor.forEach((file) => {
+                  formData.append("galleries", file);
                 });
+              }
+              if (filteredImages.length > 0) {
+                filteredImages.forEach((file) => {
+                  formData.append("galleries", file);
+                });
+              }
+
+
+              (async function callback() {
+                const response = await productServices.editProduct(id, formData);
                 if (response?.status === 200) {
                   openNotificationWithIcon(
                     "success",

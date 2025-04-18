@@ -803,23 +803,7 @@ function ProductAdd() {
                 return;
               }
 
-              if (storageimgcolor) {
-                const formDataimgcolor = new FormData();
-                storageimgcolor.forEach((file) => {
-                  formDataimgcolor.append("images", file);
-                });
-                await uploadServices.uploadMultiple(formDataimgcolor);
-              }
-
-              if (images) {
-                const formDaraimages = new FormData();
-                images.forEach((file) => {
-                  if (file.originFileObj) {
-                    formDaraimages.append("images", file.originFileObj);
-                  }
-                });
-                await uploadServices.uploadMultiple(formDaraimages);
-              }
+             
 
               const formattedVariants = variants.map((variant: any) => ({
                 ...variant,
@@ -835,19 +819,31 @@ function ProductAdd() {
                 property_ids: variant.property_ids.filter(Boolean),
               }));
 
-              
+              const formData = new FormData;
+              formData.append("name", name);
+              formData.append("images", JSON.stringify(images.map((file) => file.name)));
+              formData.append("category_id", selectedcategory?.id);
+              formData.append("brand_id", selectedbrand!.toString());
+              formData.append("variants", JSON.stringify(formattedVariants));
+              formData.append("description", editorContent);
+
+              if (storageimgcolor) {
+                storageimgcolor.forEach((file) => {
+                  formData.append("galleries", file);
+                });
+              }
+
+              if (images) {
+                images.forEach((file) => {
+                  if (file.originFileObj) {
+                    formData.append("galleries", file.originFileObj);
+                  }
+                });
+              }
 
               (async function callback() {
-                const productData = {
-                  name: name,
-                  images: JSON.stringify(images.map((file) => file.name)),
-                  category_id: selectedcategory?.id,
-                  brand_id: selectedbrand,
-                  variants: JSON.stringify(formattedVariants),
-                  description: editorContent.trim(),
-                };
                 const productResponse = await productServices.addProduct(
-                  productData
+                  formData
                 );
                 if (productResponse?.status === 200) {
                   openNotificationWithIcon(
