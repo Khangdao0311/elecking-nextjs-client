@@ -1,11 +1,5 @@
 "use client";
-import TitleAdmin from "@/app/components/admin/TitleAdmin";
-import * as proptypeServices from "@/app/services/proptypeService";
-import * as propertyServices from "@/app/services/propertyService";
 import { useEffect, useState } from "react";
-import BoxSearchLimit from "@/app/components/admin/boxsearchlimtit";
-import { useStore } from "@/app/store";
-import Loading from "@/app/components/client/Loading";
 import { GoPlus } from "react-icons/go";
 import { FiEdit } from "react-icons/fi";
 import {
@@ -18,8 +12,21 @@ import {
   Table,
   type TableProps,
 } from "antd";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+
+import TitleAdmin from "@/app/components/admin/TitleAdmin";
+import BoxSearchLimit from "@/app/components/admin/boxsearchlimtit";
+import { useStore, actions } from "@/app/store";
+import Loading from "@/app/components/client/Loading";
+import * as proptypeServices from "@/app/services/proptypeService";
+import * as propertyServices from "@/app/services/propertyService";
+import * as authServices from "@/app/services/authService";
+import config from "@/app/config";
 
 function ConfigurationList() {
+  const [state, dispatch] = useStore();
+
   const [proptype, setProptype] = useState<IProptype[]>([]);
   const [property, setProperTy] = useState<IProperty[]>([]);
   const [limitProptype, setLimitProptype] = useState(5);
@@ -41,7 +48,8 @@ function ConfigurationList() {
   const [nameConfiguration, setNameConfiguration] = useState("");
   const [showAddConfiguration, setShowAddConfiguration] = useState(false);
   const [showEditConfiguration, setShowEditConfiguration] = useState(false);
-  const [state, dispatch] = useStore();
+
+  const router = useRouter();
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
@@ -75,7 +83,7 @@ function ConfigurationList() {
         setProptype(res.data);
       }
     });
-  }, [limitProptype, pageProptype, searchProptype]);
+  }, [limitProptype, pageProptype, searchProptype, state.re_render]);
 
   useEffect(() => {
     const query: any = {};
@@ -91,7 +99,7 @@ function ConfigurationList() {
         setTotalPagesProperty(res.total);
       }
     });
-  }, [limitProperty, pageProperty, searchProperty]);
+  }, [limitProperty, pageProperty, searchProperty, state.re_render]);
 
   const columnsProptype: TableProps<IProptype>["columns"] = [
     {
@@ -170,7 +178,7 @@ function ConfigurationList() {
     setShowAddCatConfiguration(true);
   }
 
-  async function handleAddCatConfiguration() {
+  function handleAddCatConfiguration() {
     if (!nameCatConfiguration) {
       openNotificationWithIcon(
         "error",
@@ -178,28 +186,43 @@ function ConfigurationList() {
         "Vui lòng nhập đầy đủ thông tin"
       );
     }
-    if (nameCatConfiguration) {
-      await proptypeServices
-        .addProptype({ name: nameCatConfiguration })
-        .then((res) => {
-          if (res.status === 200) {
-            openNotificationWithIcon(
-              "success",
-              "Thành công",
-              "Thêm danh mục cấu hình thành công"
-            );
-            setNameCatConfiguration("");
-          }
-        });
-    }
-    await proptypeServices
-      .getQuery({ limit: limitProptype, page: pageProptype })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotalPagesProptype(res.total);
-          setProptype(res.data);
-        }
-      });
+
+    (function callback() {
+      if (nameCatConfiguration) {
+        proptypeServices
+          .addProptype({ name: nameCatConfiguration })
+          .then((res) => {
+            if (res.status === 200) {
+              openNotificationWithIcon(
+                "success",
+                "Thành công",
+                "Thêm danh mục cấu hình thành công"
+              );
+              setNameCatConfiguration("");
+              dispatch(actions.re_render());
+            } else if (res.status === 401) {
+              const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+              if (resfreshTokenAdmin) {
+                authServices.getToken(resfreshTokenAdmin).then((res) => {
+                  if (res.status === 200) {
+                    Cookies.set("access_token_admin", res.data);
+                    callback();
+                  } else {
+                    authServices.clearAdmin();
+                    router.push(config.routes.admin.login);
+                  }
+                });
+              }
+            }
+          });
+      } else {
+        openNotificationWithIcon(
+          "error",
+          "Lỗi dữ liệu",
+          "Vui lòng nhập đầy đủ thông tin"
+        );
+      }
+    })();
   }
 
   function handleGetCatConfiguration(id: string) {
@@ -212,41 +235,46 @@ function ConfigurationList() {
     });
   }
 
-  async function handleEditCatConfiguration() {
-    await proptypeServices
-      .editProptype(idCatConfiguration, { name: nameCatConfiguration })
-      .then((res) => {
-        if (res.status === 200) {
-          openNotificationWithIcon(
-            "success",
-            "Thành công",
-            "Sửa danh mục cấu hình thành công"
-          );
-          setShowEditCatConfiguration(false);
-          return proptypeServices.getQuery({
-            limit: limitProptype,
-            page: pageProptype,
-          });
-        }
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotalPagesProptype(res.total);
-          setProptype(res.data);
-        }
-      });
-    await propertyServices
-      .getQuery({ limit: limitProperty, page: pageProperty })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotalPagesProperty(res.total);
-          setProperTy(res.data);
-        }
-      });
+  function handleEditCatConfiguration() {
+    (function callback() {
+      proptypeServices
+        .editProptype(idCatConfiguration, { name: nameCatConfiguration })
+        .then((res) => {
+          if (res.status === 200) {
+            openNotificationWithIcon(
+              "success",
+              "Thành công",
+              "Sửa danh mục cấu hình thành công"
+            );
+            setShowEditCatConfiguration(false);
+            dispatch(actions.re_render());
+          } else if (res.status === 401) {
+            const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+            if (resfreshTokenAdmin) {
+              authServices.getToken(resfreshTokenAdmin).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token_admin", res.data);
+                  callback();
+                } else {
+                  authServices.clearAdmin();
+                  router.push(config.routes.admin.login);
+                }
+              });
+            } else {
+              openNotificationWithIcon(
+                "error",
+                "Lỗi dữ liệu",
+                "Vui lòng nhập đầy đủ thông tin"
+              );
+            }
+          }
+        });
+    })();
   }
 
   async function handleShowAddConfiguration() {
     setShowAddConfiguration(true);
+    setNameConfiguration("");
     await proptypeServices.getQuery({ limit: 0 }).then((res) => {
       if (res.status === 200) {
         setProptype(res.data);
@@ -254,35 +282,46 @@ function ConfigurationList() {
     });
   }
 
-  async function handleAddConfiguration() {
+  function handleAddConfiguration() {
     if (nameConfiguration && selectedProptype) {
-      await propertyServices
-        .addProperty({ name: nameConfiguration, proptype_id: selectedProptype })
-        .then((res) => {
-          if (res.status == 200) {
-            openNotificationWithIcon(
-              "success",
-              "Thành công",
-              "Thêm cấu hình thành công"
-            );
-            setNameConfiguration("");
-            setSelectedProptype([]);
-          }
-          propertyServices
-            .getQuery({ limit: limitProperty, page: pageProperty })
-            .then((res) => {
-              if (res.status === 200) {
-                setProperTy(res.data);
-                setTotalPagesProperty(res.total);
+      (function callback() {
+        propertyServices
+          .addProperty({
+            name: nameConfiguration,
+            proptype_id: selectedProptype,
+          })
+          .then((res) => {
+            if (res.status == 200) {
+              openNotificationWithIcon(
+                "success",
+                "Thành công",
+                "Thêm cấu hình thành công"
+              );
+              setNameConfiguration("");
+              setSelectedProptype([]);
+              dispatch(actions.re_render());
+            } else if (res.status === 401) {
+              const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+              if (resfreshTokenAdmin) {
+                authServices.getToken(resfreshTokenAdmin).then((res) => {
+                  if (res.status === 200) {
+                    Cookies.set("access_token_admin", res.data);
+                    callback();
+                  } else {
+                    authServices.clearAdmin();
+                    router.push(config.routes.admin.login);
+                  }
+                });
               }
-            });
-        });
-    } else {
-      openNotificationWithIcon(
-        "error",
-        "Lỗi dữ liệu",
-        "Vui lòng nhập đầy đủ thông tin"
-      );
+            } else {
+              openNotificationWithIcon(
+                "error",
+                "Lỗi dữ liệu",
+                "Vui lòng nhập đầy đủ thông tin"
+              );
+            }
+          });
+      })();
     }
   }
 
@@ -302,32 +341,44 @@ function ConfigurationList() {
     });
   }
 
-  async function handleEditConfiguration() {
-    await propertyServices
-      .editProperty(idConfiguration, {
-        name: nameConfiguration,
-        proptype_id: selectedProperty,
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          setShowEditConfiguration(false);
-          openNotificationWithIcon(
-            "success",
-            "Sửa thành công",
-            "Sửa tên cấu hình thành công"
-          );
-        }
-        return propertyServices.getQuery({
-          limit: limitProperty,
-          page: pageProperty,
+  function handleEditConfiguration() {
+    (function callback() {
+      propertyServices
+        .editProperty(idConfiguration, {
+          name: nameConfiguration,
+          proptype_id: selectedProperty,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            openNotificationWithIcon(
+              "success",
+              "Sửa thành công",
+              "Sửa tên cấu hình thành công"
+            );
+            setShowEditConfiguration(false);
+            dispatch(actions.re_render());
+          } else if (res.status === 401) {
+            const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+            if (resfreshTokenAdmin) {
+              authServices.getToken(resfreshTokenAdmin).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token_admin", res.data);
+                  callback();
+                } else {
+                  authServices.clearAdmin();
+                  router.push(config.routes.admin.login);
+                }
+              });
+            }
+          } else {
+            openNotificationWithIcon(
+              "error",
+              "Lỗi dữ liệu",
+              "Vui lòng nhập đầy đủ thông tin"
+            );
+          }
         });
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          setTotalPagesProperty(res.total);
-          setProperTy(res.data);
-        }
-      });
+    })();
   }
 
   const handleChangeProptype = (value: string[]) => {

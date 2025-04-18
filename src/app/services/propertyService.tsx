@@ -17,7 +17,9 @@ export async function getOne(id: string) {
 }
 
 export async function addProperty(body: any) {
-  const headers = { Authorization: `Bearer ${authServices.getAccessTokenAdmin()}` };
+  const headers = {
+    Authorization: `Bearer ${authServices.getAccessTokenAdmin()}`,
+  };
   return axios
     .post(`${config.api.property}`, body, { headers })
     .then((response: any) => response.data)
@@ -25,9 +27,11 @@ export async function addProperty(body: any) {
 }
 
 export async function editProperty(id: string, body: any) {
-  const headers = { Authorization: `Bearer ${authServices.getAccessTokenAdmin()}` };
+  const headers = {
+    Authorization: `Bearer ${authServices.getAccessTokenAdmin()}`,
+  };
   return axios
-    .put(`${config.api.property}/${id}`, { headers })
+    .put(`${config.api.property}/${id}`, body, { headers })
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
