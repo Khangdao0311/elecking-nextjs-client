@@ -1,6 +1,6 @@
 import axios from "axios";
 import config from "@/app/config";
-import { getAccessTokenAdmin } from "./authService";
+import * as authServices from "./authService";
 
 export async function getQuery(params: any) {
   return axios
@@ -31,17 +31,17 @@ export async function viewUp(id: string) {
 }
 
 export async function addProduct(body: any) {
-  const headers = { Authorization: `Bearer ${getAccessTokenAdmin()}` };
+  const headers = { Authorization: `Bearer ${authServices.getAccessTokenAdmin()}` };
   return axios
-    .post(`${config.api.product}`, body, {headers})
+    .post(`${config.api.product}`, body, { headers })
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
 
 export async function editProduct(id: any, body: any) {
-  const headers = { Authorization: `Bearer ${getAccessTokenAdmin()}` };
+  const headers = { Authorization: `Bearer ${authServices.getAccessTokenAdmin()}` };
   return axios
-    .put(`${config.api.product}/${id}`, body, {headers})
+    .put(`${config.api.product}/${id}`, body, { headers })
     .then((response: any) => response.data)
     .catch((error: any) => error.response.data);
 }
