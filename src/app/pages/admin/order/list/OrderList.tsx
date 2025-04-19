@@ -418,7 +418,11 @@ function OrderList() {
                         disabled: ![2, 3, 4].includes(selectedOrder?.status),
                       },
                       { value: 1, label: "Đã giao hàng" },
-                      { value: 0, label: "Hủy đơn" },
+                      {
+                        value: 0,
+                        label: "Hủy đơn",
+                        disabled: selectedOrder?.payment_status
+                      }
                     ]}
                   />
                 </div>
