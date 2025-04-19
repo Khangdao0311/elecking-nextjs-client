@@ -63,6 +63,7 @@ function DashBoard() {
   const [api, contextHolder] = notification.useNotification();
   const currentYear = new Date().getFullYear();
   const yearnew = year || currentYear;
+  const [lengthuser, setLengthuser] = useState<IUser[]>([]);
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -100,7 +101,7 @@ function DashBoard() {
               }
             });
           }
-        } 
+        }
       });
     })()
   }, []);
@@ -135,11 +136,38 @@ function DashBoard() {
 
   useEffect(() => {
     const query: any = {};
-    query.limit = limit;
+    query.limit = 10;
+    query.role = 0;
     (async function callback() {
       userServices.getQuery(query).then((res) => {
         if (res.status === 200) {
           setUsers(res.data);
+        }
+        else if (res.status === 401) {
+          const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+          if (refreshTokenAdmin) {
+            authServices.getToken(refreshTokenAdmin).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token_admin", res.data);
+                callback();
+              } else {
+                authServices.clearAdmin();
+                router.push(config.routes.admin.login);
+              }
+            });
+          }
+        }
+      });
+    })();
+  }, []);
+
+  useEffect(() => {
+    const query: any = {};
+    query.limit = limit;
+    (async function callback() {
+      userServices.getQuery(query).then((res) => {
+        if (res.status === 200) {
+          setLengthuser(res.data);
         }
         else if (res.status === 401) {
           const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
@@ -464,7 +492,7 @@ function DashBoard() {
                     Tổng khách hàng
                   </Link>
                   <p className="text-base font-bold">
-                    {Object.keys(users).length}
+                    {Object.keys(lengthuser).length}
                   </p>
                   <div className="border border-dotted text-neutral-300"></div>
                 </div>
@@ -620,11 +648,6 @@ function DashBoard() {
                         disabled: ![2, 3, 4].includes(selectedOrder?.status),
                       },
                       { value: 1, label: "Đã giao hàng" },
-                      {
-                        value: 0,
-                        label: "Hủy đơn",
-                        disabled: selectedOrder?.payment_status
-                      }
                     ]}
                   />
                 </div>
