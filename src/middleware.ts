@@ -62,6 +62,7 @@ export async function middleware(request: NextRequest) {
         access_token,
         new TextEncoder().encode(config_.constants.JWTSECRET)
       );
+      if (!payload.user) return loginClient();
       return response;
     } catch (err: any) {
       if (err.code === "ERR_JWT_EXPIRED") {
@@ -96,7 +97,7 @@ export async function middleware(request: NextRequest) {
         access_token_admin,
         new TextEncoder().encode(config_.constants.JWTSECRET)
       );
-      if (payload?.user?.role != 1) return loginAdmin();
+      if (!payload.user || payload?.user?.role != 1) return loginAdmin();
       return response;
     } catch (err: any) {
       if (err.code === "ERR_JWT_EXPIRED") {
