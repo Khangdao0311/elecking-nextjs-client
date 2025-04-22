@@ -506,6 +506,8 @@ function ProductEdit() {
                   {expandedVariants[iVariant] && (
                     <div className="flex flex-col gap-6 ">
                       <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-col gap-0.5">
+                          <p className="text-sm font-medium">Nhập giá <span className="text-primary">*</span></p>
                         <Input
                           className="w-[268px] h-11 shadow-md"
                           placeholder="Nhập giá"
@@ -526,6 +528,9 @@ function ProductEdit() {
                             )
                           }
                         />
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          <p className="text-sm font-medium">Nhập giá giảm <span className="text-primary">*</span></p>
                         <Input
                           className="w-[268px] h-11 shadow-md"
                           placeholder="Nhập giá giảm"
@@ -546,9 +551,12 @@ function ProductEdit() {
                             )
                           }
                         />
+                        </div>
                         {selectedcategory?.proptypes.map((item, iItem) => {
                           return (
                             <div key={iItem} className="flex flex-wrap gap-2">
+                              <div className="flex flex-col gap-0.5">
+                                <p className="text-sm font-medium">{item.name} <span className="text-primary">*</span></p>
                               <Select
                                 showSearch
                                 filterOption={(input: string, option: any) =>
@@ -566,6 +574,7 @@ function ProductEdit() {
                                 fieldNames={{ value: "id", label: "name" }}
                                 options={properties?.[item.name]}
                               />
+                              </div>
                             </div>
                           );
                         })}
@@ -613,6 +622,8 @@ function ProductEdit() {
                               {handleToggleColor[iVariant]?.[iColor] && (
                                 <div className="flex flex-col gap-2.5">
                                   <div className="flex flex-wrap gap-4">
+                                    <div className="flex flex-col gap-0.5">
+                                      <p className="text-sm font-medium">Nhập tên màu <span className="text-primary">*</span></p>
                                     <Input
                                       className="w-[268px] h-11 shadow-md"
                                       placeholder="Nhập tên màu"
@@ -651,6 +662,9 @@ function ProductEdit() {
                                         )
                                       }
                                     />
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                      <p className="text-sm font-medium">Nhập giá thêm <span className="text-primary">*</span></p>
                                     <Input
                                       className="w-[268px] h-11 shadow-md"
                                       placeholder="Nhập giá thêm"
@@ -691,7 +705,10 @@ function ProductEdit() {
                                         )
                                       }
                                     />
-                                    <Input
+                                    </div>
+                                   <div className="flex flex-col gap-0.5">
+                                    <p className="text-sm font-medium">Nhập số lượng <span className="text-primary">*</span></p>
+                                   <Input
                                       className="w-[268px] h-11 shadow-md"
                                       placeholder="Nhập số lượng"
                                       value={
@@ -731,6 +748,7 @@ function ProductEdit() {
                                         )
                                       }
                                     />
+                                   </div>
                                   </div>
                                   <div className="flex flex-col gap-2.5">
                                     <Upload

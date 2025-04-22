@@ -407,7 +407,9 @@ function ProductAdd() {
                 {expandedVariants[iVariant] && (
                   <div className="flex flex-col gap-6 ">
                     <div className="flex flex-wrap gap-4">
-                      <Input
+                     <div className="flex flex-col gap-0.5">
+                      <p className="text-sm font-medium">Nhập giá <span className="text-primary">*</span></p>
+                     <Input
                         className="w-[268px] h-11 shadow-md"
                         placeholder="Nhập giá"
                         value={variants[iVariant].price}
@@ -425,6 +427,9 @@ function ProductAdd() {
                           )
                         }
                       />
+                     </div>
+                      <div className="flex flex-col gap-0.5">
+                     <p className="text-sm font-medium">Nhập giá giảm <span className="text-primary">*</span></p>
                       <Input
                         className="w-[268px] h-11 shadow-md"
                         placeholder="Nhập giá giảm"
@@ -443,9 +448,12 @@ function ProductAdd() {
                           )
                         }
                       />
+                      </div>
                       {selectedcategory?.proptypes.map((item, iItem) => (
                         <div key={iItem} className="flex flex-wrap gap-2">
-                          <Select
+                         <div>
+                          <p className="text-sm font-medium">{item.name} <span className="text-primary">*</span></p>
+                         <Select
                             showSearch
                             filterOption={(input: string, option: any) =>
                               option.name
@@ -481,6 +489,7 @@ function ProductAdd() {
                             fieldNames={{ value: "id", label: "name" }}
                             options={properties[item.name]}
                           />
+                         </div>
                         </div>
                       ))}
                     </div>
@@ -502,7 +511,7 @@ function ProductAdd() {
                           key={iColor}
                           className="flex flex-col p-3 gap-2 border-t-2 border-primary"
                         >
-                          <div className="flex flex-col gap-2  px-3">
+                          <div className="flex flex-col gap-3  px-3">
                             <div className="flex gap-2">
                               <div
                                 className="w-[18px] h-[18px] bg-orange-400 flex justify-center items-center"
@@ -528,6 +537,8 @@ function ProductAdd() {
                             {handleToggleColor[iVariant]?.[iColor] && (
                               <div className="flex flex-col gap-2.5">
                                 <div className="flex flex-wrap gap-4">
+                                  <div className="flex flex-col gap-0.5">
+                                    <p className="text-sm font-medium">Nhập tên màu <span className="text-primary">*</span></p>
                                   <Input
                                     className="w-[268px] h-11 shadow-md"
                                     placeholder="Nhập tên màu"
@@ -566,6 +577,9 @@ function ProductAdd() {
                                       )
                                     }
                                   />
+                                  </div>
+                                  <div className="flex flex-col gap-0.5">
+                                  <p className="text-sm font-medium">Nhập giá thêm <span className="text-primary">*</span></p>
                                   <Input
                                     className="w-[268px] h-11 shadow-md"
                                     placeholder="Nhập giá thêm"
@@ -605,7 +619,9 @@ function ProductAdd() {
                                         )
                                       )
                                     }
-                                  />
+                                  /></div>
+                                  <div className="flex flex-col gap-0.5">
+                                    <p className="text-sm font-medium">Nhập số lượng <span className="text-primary">*</span></p>
                                   <Input
                                     className="w-[268px] h-11 shadow-md"
                                     placeholder="Nhập số lượng"
@@ -646,6 +662,7 @@ function ProductAdd() {
                                       )
                                     }
                                   />
+                                  </div>
                                 </div>
                                 <div className="flex flex-col gap-2.5">
                                   <Upload
