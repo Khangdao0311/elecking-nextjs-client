@@ -179,50 +179,50 @@ function ConfigurationList() {
   }
 
   function handleAddCatConfiguration() {
-    if (!nameCatConfiguration) {
+    if (nameCatConfiguration) {
+      (function callback() {
+        if (nameCatConfiguration) {
+          proptypeServices
+            .addProptype({ name: nameCatConfiguration })
+            .then((res) => {
+              if (res.status === 200) {
+                openNotificationWithIcon(
+                  "success",
+                  "Thành công",
+                  "Thêm danh mục cấu hình thành công"
+                );
+                setNameCatConfiguration("");
+                dispatch(actions.re_render());
+              } else if (res.status === 401) {
+                const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                if (resfreshTokenAdmin) {
+                  authServices.getToken(resfreshTokenAdmin).then((res) => {
+                    if (res.status === 200) {
+                      Cookies.set("access_token_admin", res.data);
+                      callback();
+                    } else {
+                      authServices.clearAdmin();
+                      router.push(config.routes.admin.login);
+                    }
+                  });
+                }
+              }
+            });
+        } else {
+          openNotificationWithIcon(
+            "error",
+            "Lỗi dữ liệu",
+            "Vui lòng nhập đầy đủ thông tin"
+          );
+        }
+      })();
+    } else {
       openNotificationWithIcon(
         "error",
         "Lỗi dữ liệu",
         "Vui lòng nhập đầy đủ thông tin"
       );
     }
-
-    (function callback() {
-      if (nameCatConfiguration) {
-        proptypeServices
-          .addProptype({ name: nameCatConfiguration })
-          .then((res) => {
-            if (res.status === 200) {
-              openNotificationWithIcon(
-                "success",
-                "Thành công",
-                "Thêm danh mục cấu hình thành công"
-              );
-              setNameCatConfiguration("");
-              dispatch(actions.re_render());
-            } else if (res.status === 401) {
-              const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
-              if (resfreshTokenAdmin) {
-                authServices.getToken(resfreshTokenAdmin).then((res) => {
-                  if (res.status === 200) {
-                    Cookies.set("access_token_admin", res.data);
-                    callback();
-                  } else {
-                    authServices.clearAdmin();
-                    router.push(config.routes.admin.login);
-                  }
-                });
-              }
-            }
-          });
-      } else {
-        openNotificationWithIcon(
-          "error",
-          "Lỗi dữ liệu",
-          "Vui lòng nhập đầy đủ thông tin"
-        );
-      }
-    })();
   }
 
   function handleGetCatConfiguration(id: string) {
@@ -322,6 +322,12 @@ function ConfigurationList() {
             }
           });
       })();
+    } else {
+      openNotificationWithIcon(
+        "error",
+        "Lỗi dữ liệu",
+        "Vui lòng nhập đầy đủ thông tin"
+      );
     }
   }
 

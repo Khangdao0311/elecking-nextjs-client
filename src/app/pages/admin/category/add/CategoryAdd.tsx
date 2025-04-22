@@ -130,8 +130,7 @@ function CategoryAdd() {
                 if (res.status === 200) {
                   Cookies.set("access_token_admin", res.data);
                   callback();
-                }
-                 else {
+                } else {
                   authServices.clearAdmin();
                   router.push(config.routes.admin.login);
                 }
@@ -146,6 +145,12 @@ function CategoryAdd() {
           }
         });
       })();
+    } else {
+      openNotificationWithIcon(
+        "error",
+        "Lỗi dữ liệu",
+        "Vui lòng nhập đầy đủ thông tin"
+      );
     }
   }
 
