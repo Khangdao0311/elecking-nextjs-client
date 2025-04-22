@@ -1016,7 +1016,7 @@ function Cart() {
 
               {/*  */}
               <div className="flex flex-col md:flex-row gap-2.5 justify-between items-center relative">
-                <div className="flex w-full  items-end flex-col sm:flex-row gap-2.5 select-none cursor-pointer group">
+                <div className="flex w-full  items-end flex-col sm:flex-row gap-2.5 select-none cursor-pointer ">
                   <span className="text- line-clamp-1">
                     Tổng thanh toán ( <span>{checkedItems.filter((e) => e === true).length}</span>{" "}
                     sản phẩm )
@@ -1083,7 +1083,7 @@ function Cart() {
                       </div>
                     }
                   >
-                    <div className="center-flex">
+                    <div className="center-flex group">
                       <span className="text-primary text-lg font-bold cursor-pointer relative">
                         {(
                           total.sale -
