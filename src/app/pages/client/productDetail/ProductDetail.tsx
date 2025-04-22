@@ -74,7 +74,7 @@ function ProductDetail() {
         }
       }
     });
-    productServices.getSame({ id: id, limit: 5 }).then((res) => {
+    productServices.getSame({ id: id, limit: 10  }).then((res) => {
       if (res.status === 200) setProductsSame(res.data);
     });
   }, [id]);
@@ -652,7 +652,7 @@ function ProductDetail() {
                   onClick={() => setHeightDescription(heightDescription ? "" : "max-h-[500px]")}
                   className=" border border-gray-300 font-bold w-full sm:w-1/2 lg:w-1/3 bg-white rounded-md py-2.5"
                 >
-                  {heightDescription ? "Thu gọn" : "Xem thêm"}
+                  {heightDescription ? "Xem thêm" : "Thu gọn"}
                 </button>
               </div>
             </div>

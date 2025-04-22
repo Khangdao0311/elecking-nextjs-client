@@ -35,6 +35,7 @@ function Home() {
   const [productsLaptop, setProductsLaptop] = useState([]);
   const [productsTablet, setProductsTablet] = useState([]);
   const [productsheadPhone, setProductsHeadPhone] = useState([]);
+  const [productsWatch, setProductsWatch] = useState([]);
 
   useEffect(() => {
     categoryServices.getQuery({ limit: 0, orderby: "id-asc", status: 1 }).then((res) => {
@@ -78,6 +79,14 @@ function Home() {
       })
       .then((res) => {
         if (res.status === 200) setProductsHeadPhone(res.data);
+      });
+    productServices
+      .getQuery({
+        categoryid: "67b6cf1a3a893726b539857b",
+        limit: 16,
+      })
+      .then((res) => {
+        if (res.status === 200) setProductsWatch(res.data);
       });
   }, []);
 
@@ -250,7 +259,7 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
+            <p className="uppercase text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
               SẢN PHẨM NỔI BẬT NHẤT
             </p>
           </div>
@@ -342,7 +351,7 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
+            <p className="uppercase text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
               ĐIỆN THOẠI, MÁY TÍNH BẢNG
             </p>
           </div>
@@ -434,7 +443,7 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
+            <p className="uppercase text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
               LAPTOP, MÀN HÌNH, TIVI
             </p>
           </div>
@@ -522,11 +531,11 @@ function Home() {
         )}
       </section>
 
-      {/* /*TAI NGHE, LOA */}
+      {/* TAI NGHE, LOA */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
+            <p className="uppercase text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
               TAI NGHE, LOA
             </p>
           </div>
@@ -614,11 +623,103 @@ function Home() {
         )}
       </section>
 
+      {/* ĐỒNG HỒ THÔNG MINH */}
+      <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+        <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
+          <div className="flex gap-1.5 ">
+            <p className="uppercase text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
+              ĐỒNG HỒ THÔNG MINH
+            </p>
+          </div>
+          <Link
+            onClick={() => dispatch(actions.set_routing(true))}
+            href={`${config.routes.client.products}?categoryid=67b6cf1a3a893726b5398579-67b6cf1a3a893726b539857a`}
+            className="flex gap-1 items-center cursor-pointer relative group "
+          >
+            <em className="text-gray-700 text-sm font-base px-1 text-nowrap shrink-0">
+              Xem tất cả{" "}
+            </em>
+            <hr className="w-[0%] group-hover:w-[100%] transition-all duration-300 border-gray-700 absolute bottom-0" />
+          </Link>
+        </div>
+        {state.load || productsWatch.length === 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 container-custom gap-2.5">
+            <ProductLoad />
+            <ProductLoad />
+            <div className="hidden md:flex">
+              <ProductLoad />
+            </div>
+            <div className="hidden lg:flex">
+              <ProductLoad />
+            </div>
+            <div className="hidden xl:flex">
+              <ProductLoad />
+            </div>
+          </div>
+        ) : (
+          <Swiper
+            slidesPerView={5}
+            spaceBetween={10}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            navigation={{
+              nextEl: ".custom-next",
+              prevEl: ".custom-prev",
+            }}
+            // loop={true}
+            modules={[Autoplay, Navigation, Grid]}
+            breakpoints={{
+              0: {
+                slidesPerView: 2,
+                spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
+              },
+              640: {
+                slidesPerView: 2,
+
+                spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
+              },
+              768: {
+                slidesPerView: 3,
+                spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
+              },
+              1024: {
+                slidesPerView: 4,
+                spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
+              },
+              1280: {
+                slidesPerView: 5,
+                spaceBetween: 10,
+                grid: { rows: 2, fill: "row" },
+              },
+            }}
+            className=" w-full relative group/container container-custom"
+          >
+            {productsWatch.map((product: IProduct) => (
+              <SwiperSlide key={product.id}>
+                <Product product={product} />
+              </SwiperSlide>
+            ))}
+            <button className="custom-prev absolute w-10 h-20 py-5 pr-2.5 pl-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -left-10 group-hover/container:left-0 -translate-y-1/2 transition-all duration-300 rounded-r-full flex items-center justify-center ">
+              <FaAngleLeft className="w-8 h-8 text-white" />
+            </button>
+            <button className="custom-next absolute w-10 h-20 py-5 pl-2.5 pr-1 bg-black/30 hover:bg-black/50 z-10 hover:scale-110 top-1/2 -right-10 group-hover/container:right-0 -translate-y-1/2 transition-all duration-300 rounded-l-full flex items-center justify-center ">
+              <FaAngleRight className="w-8 h-8 text-white" />
+            </button>
+          </Swiper>
+        )}
+      </section>
+
       {/* DANH MỤC */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
+            <p className="uppercase text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
               DANH MỤC
             </p>
           </div>
@@ -679,7 +780,7 @@ function Home() {
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
           <div className="flex gap-1.5 ">
-            <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
+            <p className="uppercase text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primaryDark to-primary line-clamp-1">
               THƯƠNG HIỆU
             </p>
           </div>
