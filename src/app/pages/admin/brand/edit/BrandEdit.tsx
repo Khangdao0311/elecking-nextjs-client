@@ -4,7 +4,7 @@ import { notification } from "antd";
 import "quill/dist/quill.snow.css";
 import type { RcFile } from "antd/es/upload/interface";
 import { UploadFile } from "antd/es/upload/interface";
-import Quill from "quill";
+// import Quill from "quill";
 
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
@@ -82,21 +82,34 @@ function BrandEdit() {
     });
   }, [id]);
 
+
+
+
   useEffect(() => {
     if (!quillRef.current || !editorContent) return;
-
-    if (quillRef.current.querySelector(".ql-editor")) return;
-
-    const quillInstance = new Quill(quillRef.current, {
-      theme: "snow",
-    });
-
-    quillInstance.root.innerHTML = editorContent;
-
-    quillInstance.on("text-change", () => {
-      setEditorContent(quillInstance.root.innerHTML);
+  
+    if (quillRef.current.querySelector('.ql-editor')) return;
+  
+    import("quill").then((QuillModule) => {
+      const Quill = QuillModule.default;
+  
+      const quillInstance = new Quill(quillRef.current as HTMLElement, {
+        theme: "snow",
+      });
+  
+      quillInstance.root.innerHTML = editorContent;
+  
+      quillInstance.on("text-change", () => {
+        setEditorContent(quillInstance.root.innerHTML);
+      });
     });
   }, [editorContent]);
+  
+  
+
+
+
+
 
   const handleRemove = (file: UploadFile, type: "logo" | "banner") => {
     if (type === "logo") {

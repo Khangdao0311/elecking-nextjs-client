@@ -128,8 +128,6 @@ function OrderList() {
         query.search = search;
       }
 
-      console.log(query);
-
       setLoading(true);
       (async function callback() {
         orderServices.getQuery(query).then((res) => {

@@ -9,7 +9,7 @@ import { GrFormNext } from "react-icons/gr";
 import { IoIosClose } from "react-icons/io";
 import { IoCloseSharp } from "react-icons/io5";
 import "quill/dist/quill.snow.css";
-import Quill from "quill";
+// import Quill from "quill";
 
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
@@ -148,20 +148,24 @@ function ProductEdit() {
   }, [variants]);
 
   useEffect(() => {
-    if (!quillRef.current || !editorContent) return;
-
-    if (quillRef.current.querySelector(".ql-editor")) return;
-
-    const quillInstance = new Quill(quillRef.current, {
-      theme: "snow",
-    });
-
-    quillInstance.root.innerHTML = editorContent;
-
-    quillInstance.on("text-change", () => {
-      setEditorContent(quillInstance.root.innerHTML);
-    });
-  }, [editorContent]);
+      if (!quillRef.current || !editorContent) return;
+    
+      if (quillRef.current.querySelector('.ql-editor')) return;
+    
+      import("quill").then((QuillModule) => {
+        const Quill = QuillModule.default;
+    
+        const quillInstance = new Quill(quillRef.current as HTMLElement, {
+          theme: "snow",
+        });
+    
+        quillInstance.root.innerHTML = editorContent;
+    
+        quillInstance.on("text-change", () => {
+          setEditorContent(quillInstance.root.innerHTML);
+        });
+      });
+    }, [editorContent]);
 
   useEffect(() => {
     async function fetchProperties() {

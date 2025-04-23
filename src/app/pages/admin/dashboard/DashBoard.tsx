@@ -483,46 +483,46 @@ function DashBoard() {
                   <div className="border border-dotted text-neutral-300"></div>
                 </div>
               </div>
-              <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
+              <Link href={config.routes.admin.user.list} className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
                 <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
                   <FaUser className="w-[50px] h-[50px] text-amber-600" />
                 </div>
                 <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-                  <Link href={config.routes.admin.user.list} className="text-base font-bold text-red-500 cursor-pointer">
+                  <div className="text-base font-bold text-red-500 cursor-pointer">
                     Tổng khách hàng
-                  </Link>
+                  </div>
                   <p className="text-base font-bold">
                     {Object.keys(lengthuser).length}
                   </p>
                   <div className="border border-dotted text-neutral-300"></div>
                 </div>
-              </div>
-              <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
+              </Link>
+              <Link href={config.routes.admin.voucher.list} className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
                 <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
                   <FaTicketSimple className="w-[50px] h-[50px] text-amber-600" />
                 </div>
                 <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-                  <Link href={config.routes.admin.voucher.list} className="text-base font-bold text-red-500 cursor-pointer">
+                  <div className="text-base font-bold text-red-500 cursor-pointer">
                     Tổng voucher
-                  </Link>
+                  </div>
                   <p className="text-base font-bold">{vouchers}</p>
                   <div className="border border-dotted text-neutral-300"></div>
                 </div>
-              </div>
-              <div className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
+              </Link>
+              <Link href={`${config.routes.admin.order.list}?year=${yearnew}`}  className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
                 <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
                   <FaBasketShopping className="w-[50px] h-[50px] text-amber-600" />
                 </div>
                 <div className="pl-3 pr-2 flex flex-col gap-1.5 justify-center">
-                  <Link href={`${config.routes.admin.order.list}?year=${yearnew}`} className="text-base font-bold text-red-500">
+                  <div className="text-base font-bold text-red-500">
                     Tổng đơn hàng
-                  </Link>
+                  </div>
                   <p className="text-base font-bold">
                     {totalOrder.reduce((acc, val) => acc + val, 0)}
                   </p>
                   <div className="border border-dotted text-neutral-300"></div>
                 </div>
-              </div>
+              </Link>
             </div>
 
             <div className="min-w-full p-64  bg-white flex flex-col gap-2.5 py-5 shadow-lg border rounded-xl">
