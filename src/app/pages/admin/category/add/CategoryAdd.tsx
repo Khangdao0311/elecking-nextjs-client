@@ -26,6 +26,7 @@ function CategoryAdd() {
   const [editorContent, setEditorContent] = useState("");
   const [state, dispatch] = useStore();
   const router = useRouter();
+  const [loading, setLoading] = useState(false)
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
@@ -123,6 +124,7 @@ function CategoryAdd() {
             setTimeout(() => {
               router.push(`${config.routes.admin.category.list}`);
             }, 1500);
+            setLoading(true)
           } else if (res.status === 401) {
             const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
             if (resfreshTokenAdmin) {
@@ -291,7 +293,7 @@ function CategoryAdd() {
               </div>
             </div>
             {contextHolder}
-            <Button back={config.routes.admin.category.list} onClick={handleAdd} />
+            <Button back={config.routes.admin.category.list} onClick={handleAdd} loading={loading}/>
           </div>
         </>
       )}

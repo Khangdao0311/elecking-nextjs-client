@@ -1,24 +1,27 @@
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-function Button({ back = "", onClick }: any) {
-  const [isClicked, setIsClicked] = useState(false);
+function Button({ back = "", onClick, loading = false }: any) {
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isClicked) return;
-    setIsClicked(true);
-    onClick(e);
+    if (!loading && onClick) {
+      onClick(e);
+    }
   };
 
   return (
     <div className="flex gap-2">
       <button
         onClick={handleClick}
-        className="text-sm font-bold text-green-800 bg-green-100 rounded px-5 py-2"
-        disabled={isClicked}
+        disabled={loading}
+        className={`text-sm font-bold rounded px-5 py-2 
+          ${
+            loading
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "text-green-800 bg-green-100"
+          }`}
       >
-        Lưu lại
+        {loading ? "Đang lưu..." : "Lưu lại"}
       </button>
       <button
         onClick={() => router.push(back)}

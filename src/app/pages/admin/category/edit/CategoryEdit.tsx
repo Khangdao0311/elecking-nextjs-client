@@ -32,6 +32,7 @@ function CategoryEdit() {
   const quillRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [state, dispatch] = useStore();
+  const [loading, setLoading] = useState(false);
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
@@ -142,6 +143,7 @@ function CategoryEdit() {
             setTimeout(() => {
               router.push(`${config.routes.admin.category.list}`);
             }, 1000);
+            setLoading(true)
           } else if (res.status === 401) {
             const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
             if (resfreshTokenAdmin) {
@@ -348,6 +350,7 @@ function CategoryEdit() {
               <Button
                 onClick={handleEdit}
                 back={config.routes.admin.category.list}
+                loading={loading}
               />
             </div>
           </div>
