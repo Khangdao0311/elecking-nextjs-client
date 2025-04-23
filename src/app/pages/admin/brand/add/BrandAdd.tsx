@@ -25,6 +25,7 @@ function BrandAdd() {
   const quillRef = useRef<HTMLDivElement>(null);
   const [logo, setLogo] = useState<UploadFile[]>([]);
   const [banner, setBanner] = useState<UploadFile[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter()
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
@@ -75,17 +76,17 @@ function BrandAdd() {
     if (typeof window === "undefined") return;
     if (!quillRef.current) return;
     if (quillRef.current.querySelector(".ql-editor")) return;
-  
-    const Quill = require("quill").default; 
+
+    const Quill = require("quill").default;
     const quill = new Quill(quillRef.current, {
       theme: "snow",
     });
-  
+
     quill.root.innerHTML = description;
-  
+
     quill.on("text-change", () => {
       setdescription(quill.root.innerHTML);
-      
+
     });
   }, []);
 
@@ -246,18 +247,17 @@ function BrandAdd() {
               <Button
                 back={config.routes.admin.brand}
                 onClick={() => {
-
                   if (!name.trim() || !imgBrand?.length || !imgBanner?.length || !description.trim()) {
                     openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
                     return;
                   }
                   const formData = new FormData();
-                    formData.append("name", name);
-                    formData.append("logo", imgBrand[0].name);
-                    formData.append("banner", imgBanner[0].name);
-                    formData.append("description", description);
-                    formData.append("images", imgBrand[0].originFileObj as File);
-                    formData.append("images", imgBanner[0].originFileObj as File);
+                  formData.append("name", name);
+                  formData.append("logo", imgBrand[0].name);
+                  formData.append("banner", imgBanner[0].name);
+                  formData.append("description", description);
+                  formData.append("images", imgBrand[0].originFileObj as File);
+                  formData.append("images", imgBanner[0].originFileObj as File);
 
                   (async function callback() {
                     const brandResponse = await brandServices.addBrand(formData)
@@ -287,7 +287,6 @@ function BrandAdd() {
                       openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
                     }
                   })();
-
                 }}
               >
               </Button>
