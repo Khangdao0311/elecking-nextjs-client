@@ -20,6 +20,10 @@ import { Select } from "antd";
 import dayjs from "dayjs";
 import { notification } from "antd";
 import * as voucherService from "@/app/services/voucherService";
+import * as authServices from "@/app/services/authService";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+
 
 function Voucher() {
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -48,6 +52,8 @@ function Voucher() {
   const [totalExpiredVoucher, setTotalExpiredVoucher] = useState(0);
   const voucherCreateDate = dayjs(selectedVoucher?.start_date, "YYYYMMDD");
   const voucherEndDate = dayjs(selectedVoucher?.end_date, "YYYYMMDD");
+  const router = useRouter();
+
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
@@ -499,37 +505,49 @@ function Voucher() {
                         user !== null && user !== undefined ? null : undefined,
                     };
 
-                    const voucherResponse = await voucherService.editVoucher(
-                      selectedVoucher.id,
-                      voucherData
-                    );
-                    if (voucherResponse?.status == 200) {
-                      openNotificationWithIcon(
-                        "success",
-                        "Thành công",
-                        "Sửa voucher thành công"
-                      );
+                    (function callback() {
+                      voucherService.editVoucher(selectedVoucher.id, voucherData)
+                        .then(res => {
+                          if (res.status === 200) {
+                            openNotificationWithIcon(
+                              "success",
+                              "Thành công",
+                              "Sửa voucher thành công"
+                            );
 
-                      setVouchers((prev) =>
-                        prev.map((v) =>
-                          v.id === selectedVoucher.id
-                            ? {
-                              ...v,
-                              ...voucherData,
-                              id: selectedVoucher.id,
+                            setVouchers((prev) =>
+                              prev.map((v) =>
+                                v.id === selectedVoucher.id
+                                  ? {
+                                    ...v,
+                                    ...voucherData,
+                                    id: selectedVoucher.id,
+                                  }
+                                  : v
+                              )
+                            );
+
+                            closeeditorder();
+
+                          } else if (res.status === 401) {
+                            const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                            if (refreshTokenAdmin) {
+                              authServices.getToken(refreshTokenAdmin).then((res) => {
+
+                                if (res.status === 200) {
+                                  Cookies.set("access_token_admin", res.data);
+                                  callback();
+                                } else {
+                                  authServices.clearAdmin();
+                                  router.push(config.routes.admin.login);
+                                }
+                              });
                             }
-                            : v
-                        )
-                      );
-
-                      closeeditorder();
-                    } else {
-                      openNotificationWithIcon(
-                        "error",
-                        "Lỗi",
-                        "Có lỗi xảy ra, vui lòng thử lại"
-                      );
-                    }
+                          } else {
+                            openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                          }
+                        })
+                    })();
                   }}
                 >
                   Lưu

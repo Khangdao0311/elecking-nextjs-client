@@ -12,6 +12,9 @@ import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import dayjs from "dayjs";
 import { notification } from "antd";
+import * as authServices from "@/app/services/authService";
+import Cookies from "js-cookie";
+
 
 function VoucherAdd() {
   const [code, setCode] = useState("");
@@ -99,7 +102,6 @@ function VoucherAdd() {
                 value={discountType}
                 style={{ width: 268, height: 44 }}
                 onChange={(value) => {
-                  console.log(value);
                   setDiscountType(Number(value));
                 }}
                 options={[
@@ -193,7 +195,7 @@ function VoucherAdd() {
           {contextHolder}
           <Space>
             <Button
-              back={config.routes.admin.voucher}
+              back={config.routes.admin.voucher.list}
               onClick={async () => {
                 const start = dayjs(startDate, "YYYYMMDD");
                 const end = dayjs(endDate, "YYYYMMDD");
@@ -245,25 +247,38 @@ function VoucherAdd() {
                   user_id: user,
                   status: 1,
                 };
-                const voucherResponse = await voucherServices.addVoucher(
-                  voucherData
-                );
-                if (voucherResponse?.status == 200) {
-                  openNotificationWithIcon(
-                    "success",
-                    "Thành công",
-                    "Thêm voucher thành công"
-                  );
-                  setTimeout(() => {
-                    router.push(config.routes.admin.voucher.list);
-                  }, 1000);
-                } else {
-                  openNotificationWithIcon(
-                    "error",
-                    "Lỗi",
-                    "Có lỗi xảy ra, vui lòng thử lại"
-                  );
-                }
+
+                (async function callback() {
+                  const voucherResponse = await voucherServices.addVoucher(voucherData);
+                  if (voucherResponse.status === 200) {
+                    openNotificationWithIcon(
+                      "success",
+                      "Thành công",
+                      "Thêm voucher thành công"
+                    );
+                    setTimeout(() => {
+                      router.push(config.routes.admin.voucher.list);
+                    }, 1000);
+                  } else if (voucherResponse.status === 401) {
+                    const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                    if (refreshTokenAdmin) {
+                      authServices.getToken(refreshTokenAdmin).then((res) => {
+                        if (res.status === 200) {
+                          Cookies.set("access_token_admin", res.data);
+                          callback();
+                        } else {
+                          authServices.clearAdmin();
+                          router.push(config.routes.admin.login);
+                        }
+                      });
+                    }
+                  } else {
+                    openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                  }
+                })();
+
+
+
               }}
             ></Button>
           </Space>
