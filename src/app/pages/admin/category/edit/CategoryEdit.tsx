@@ -103,9 +103,10 @@ function CategoryEdit() {
 
   function handleEdit() {
     let finalImage = editImage;
-    if (image[0]?.originFileObj) {
-      const formData = new FormData();
-      formData.append("image", image[0].originFileObj as File);
+
+    const isNewImageSelected = image[0]?.originFileObj instanceof File;
+
+    if (isNewImageSelected) {
       finalImage = image[0].name;
     }
     if (
@@ -117,11 +118,18 @@ function CategoryEdit() {
     ) {
       const formData = new FormData();
       formData.append("name", categoryName);
-      formData.append("image", image[0].originFileObj as File);
+      if (isNewImageSelected) {
+        formData.append("image", image[0].originFileObj as File);
+      } else {
+        formData.append("image", finalImage); // hoặc truyền lại tên file cũ nếu backend chấp nhận
+      }
       formData.append("description", editorContent);
-      formData.append("proptypes", JSON.stringify(editProptype.map(e => e.id)));
+      formData.append(
+        "proptypes",
+        JSON.stringify(editProptype.map((e) => e.id))
+      );
       formData.append("icon", icon);
-      formData.append("status", '1');
+      formData.append("status", "1");
 
       (function callback() {
         categoryServices.editCategory(id, formData).then((res) => {
@@ -339,7 +347,7 @@ function CategoryEdit() {
               {contextHolder}
               <Button
                 onClick={handleEdit}
-                back={config.routes.admin.category}
+                back={config.routes.admin.category.list}
               />
             </div>
           </div>

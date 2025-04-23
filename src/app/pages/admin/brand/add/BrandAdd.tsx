@@ -245,7 +245,7 @@ function BrandAdd() {
           <div className="mt-[60px]">
             <Space>
               <Button
-                back={config.routes.admin.brand}
+                back={config.routes.admin.brand.list}
                 onClick={() => {
                   if (!name.trim() || !imgBrand?.length || !imgBanner?.length || !description.trim()) {
                     openNotificationWithIcon('error', "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");

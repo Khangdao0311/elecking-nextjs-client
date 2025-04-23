@@ -291,7 +291,7 @@ function CategoryAdd() {
               </div>
             </div>
             {contextHolder}
-            <Button back={config.routes.admin.category} onClick={handleAdd} />
+            <Button back={config.routes.admin.category.list} onClick={handleAdd} />
           </div>
         </>
       )}

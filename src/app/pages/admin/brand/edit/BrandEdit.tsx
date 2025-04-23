@@ -313,7 +313,7 @@ function BrandEdit() {
         </div>
         {contextHolder}
         <Button
-          back={config.routes.admin.brand}
+          back={config.routes.admin.brand.list}
           onClick={async () => {
             let imgLogoName = storageimglogo
               ? storageimglogo.split("/").pop()
