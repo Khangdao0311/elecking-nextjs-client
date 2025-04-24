@@ -9,20 +9,17 @@ import { GrFormNext } from "react-icons/gr";
 import { IoIosClose } from "react-icons/io";
 import { IoCloseSharp } from "react-icons/io5";
 import "quill/dist/quill.snow.css";
-// import Quill from "quill";
 
 import Button from "@/app/components/admin/Button";
 import TitleAdmin from "@/app/components/admin/TitleAdmin";
 import * as categoryServices from "@/app/services/categoryService";
 import * as propertyServices from "@/app/services/propertyService";
 import * as productServices from "@/app/services/productService";
-import * as uploadServices from "@/app/services/uploadService";
 import * as brandServices from "@/app/services/brandService";
 import * as authServices from "@/app/services/authService";
 import Cookies from "js-cookie";
 
 function ProductEdit() {
-  const [imagescolor, setImagescolor] = useState<UploadFile[]>([]);
   const quillRef = useRef<HTMLDivElement>(null);
   const [images, setImages] = useState<UploadFile[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -148,24 +145,24 @@ function ProductEdit() {
   }, [variants]);
 
   useEffect(() => {
-      if (!quillRef.current || !editorContent) return;
-    
-      if (quillRef.current.querySelector('.ql-editor')) return;
-    
-      import("quill").then((QuillModule) => {
-        const Quill = QuillModule.default;
-    
-        const quillInstance = new Quill(quillRef.current as HTMLElement, {
-          theme: "snow",
-        });
-    
-        quillInstance.root.innerHTML = editorContent;
-    
-        quillInstance.on("text-change", () => {
-          setEditorContent(quillInstance.root.innerHTML);
-        });
+    if (!quillRef.current || !editorContent) return;
+
+    if (quillRef.current.querySelector(".ql-editor")) return;
+
+    import("quill").then((QuillModule) => {
+      const Quill = QuillModule.default;
+
+      const quillInstance = new Quill(quillRef.current as HTMLElement, {
+        theme: "snow",
       });
-    }, [editorContent]);
+
+      quillInstance.root.innerHTML = editorContent;
+
+      quillInstance.on("text-change", () => {
+        setEditorContent(quillInstance.root.innerHTML);
+      });
+    });
+  }, [editorContent]);
 
   useEffect(() => {
     async function fetchProperties() {
@@ -447,6 +444,7 @@ function ProductEdit() {
                 options={categories}
                 fieldNames={{ value: "id", label: "name" }}
                 disabled={!!selectedcategory}
+                placeholder="Chọn loại sản phẩm"
               />
             </div>
             <div className="flex gap-0.5 flex-col">
@@ -467,6 +465,7 @@ function ProductEdit() {
                   option.name.toLowerCase().includes(input.toLowerCase())
                 }
                 fieldNames={{ value: "id", label: "name" }}
+                placeholder='Chọn thương hiệu'
               />
             </div>
           </div>
@@ -511,73 +510,85 @@ function ProductEdit() {
                     <div className="flex flex-col gap-6 ">
                       <div className="flex flex-wrap gap-4">
                         <div className="flex flex-col gap-0.5">
-                          <p className="text-sm font-medium">Nhập giá <span className="text-primary">*</span></p>
-                        <Input
-                          className="w-[268px] h-11 shadow-md"
-                          placeholder="Nhập giá"
-                          value={variants[iVariant].price}
-                          onChange={(e) =>
-                            setVariants((prev: IProductVariant[]) =>
-                              prev.map(
-                                (variant: IProductVariant, i: number) => {
-                                  if (i === iVariant) {
-                                    return {
-                                      ...variant,
-                                      price: e.target.value,
-                                    };
+                          <p className="text-sm font-medium">
+                            Nhập giá <span className="text-primary">*</span>
+                          </p>
+                          <Input
+                            className="w-[268px] h-11 shadow-md"
+                            placeholder="Nhập giá"
+                            value={variants[iVariant].price}
+                            onChange={(e) =>
+                              setVariants((prev: IProductVariant[]) =>
+                                prev.map(
+                                  (variant: IProductVariant, i: number) => {
+                                    if (i === iVariant) {
+                                      return {
+                                        ...variant,
+                                        price: e.target.value,
+                                      };
+                                    }
+                                    return variant;
                                   }
-                                  return variant;
-                                }
+                                )
                               )
-                            )
-                          }
-                        />
+                            }
+                          />
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <p className="text-sm font-medium">Nhập giá giảm <span className="text-primary">*</span></p>
-                        <Input
-                          className="w-[268px] h-11 shadow-md"
-                          placeholder="Nhập giá giảm"
-                          value={variants[iVariant].price_sale}
-                          onChange={(e) =>
-                            setVariants((prev: IProductVariant[]) =>
-                              prev.map(
-                                (variant: IProductVariant, i: number) => {
-                                  if (i === iVariant) {
-                                    return {
-                                      ...variant,
-                                      price_sale: e.target.value,
-                                    };
+                          <p className="text-sm font-medium">
+                            Nhập giá giảm{" "}
+                            <span className="text-primary">*</span>
+                          </p>
+                          <Input
+                            className="w-[268px] h-11 shadow-md"
+                            placeholder="Nhập giá giảm"
+                            value={variants[iVariant].price_sale}
+                            onChange={(e) =>
+                              setVariants((prev: IProductVariant[]) =>
+                                prev.map(
+                                  (variant: IProductVariant, i: number) => {
+                                    if (i === iVariant) {
+                                      return {
+                                        ...variant,
+                                        price_sale: e.target.value,
+                                      };
+                                    }
+                                    return variant;
                                   }
-                                  return variant;
-                                }
+                                )
                               )
-                            )
-                          }
-                        />
+                            }
+                          />
                         </div>
                         {selectedcategory?.proptypes.map((item, iItem) => {
                           return (
                             <div key={iItem} className="flex flex-wrap gap-2">
                               <div className="flex flex-col gap-0.5">
-                                <p className="text-sm font-medium">{item.name} <span className="text-primary">*</span></p>
-                              <Select
-                                showSearch
-                                filterOption={(input: string, option: any) =>
-                                  option.name
-                                    .toLowerCase()
-                                    .includes(input.toLowerCase())
-                                }
-                                className="shadow-md flex flex-wrap"
-                                value={variants[iVariant].property_ids[iItem]}
-                                style={{ width: 268, height: 44 }}
-                                onChange={(value) => {
-                                  handleChangeProperty(value, iVariant, iItem);
-                                }}
-                                optionFilterProp="name"
-                                fieldNames={{ value: "id", label: "name" }}
-                                options={properties?.[item.name]}
-                              />
+                                <p className="text-sm font-medium">
+                                  {item.name}{" "}
+                                  <span className="text-primary">*</span>
+                                </p>
+                                <Select
+                                  showSearch
+                                  filterOption={(input: string, option: any) =>
+                                    option.name
+                                      .toLowerCase()
+                                      .includes(input.toLowerCase())
+                                  }
+                                  className="shadow-md flex flex-wrap"
+                                  value={variants[iVariant].property_ids[iItem]}
+                                  style={{ width: 268, height: 44 }}
+                                  onChange={(value) => {
+                                    handleChangeProperty(
+                                      value,
+                                      iVariant,
+                                      iItem
+                                    );
+                                  }}
+                                  optionFilterProp="name"
+                                  fieldNames={{ value: "id", label: "name" }}
+                                  options={properties?.[item.name]}
+                                />
                               </div>
                             </div>
                           );
@@ -627,139 +638,164 @@ function ProductEdit() {
                                 <div className="flex flex-col gap-2.5">
                                   <div className="flex flex-wrap gap-4">
                                     <div className="flex flex-col gap-0.5">
-                                      <p className="text-sm font-medium">Nhập tên màu <span className="text-primary">*</span></p>
-                                    <Input
-                                      className="w-[268px] h-11 shadow-md"
-                                      placeholder="Nhập tên màu"
-                                      value={
-                                        variants[iVariant].colors[iColor]?.name
-                                      }
-                                      onChange={(e) =>
-                                        setVariants((prev: IProductVariant[]) =>
-                                          prev.map(
-                                            (
-                                              variant: IProductVariant,
-                                              i: number
-                                            ) => {
-                                              if (i === iVariant) {
-                                                return {
-                                                  ...variant,
-                                                  colors: variant.colors.map(
-                                                    (
-                                                      eColor: IProductColor,
-                                                      eIColor: number
-                                                    ) => {
-                                                      if (eIColor === iColor) {
-                                                        return {
-                                                          ...eColor,
-                                                          name: e.target.value,
-                                                        };
-                                                      }
-                                                      return eColor;
-                                                    }
-                                                  ),
-                                                };
-                                              }
-                                              return variant;
-                                            }
+                                      <p className="text-sm font-medium">
+                                        Nhập tên màu{" "}
+                                        <span className="text-primary">*</span>
+                                      </p>
+                                      <Input
+                                        className="w-[268px] h-11 shadow-md"
+                                        placeholder="Nhập tên màu"
+                                        value={
+                                          variants[iVariant].colors[iColor]
+                                            ?.name
+                                        }
+                                        onChange={(e) =>
+                                          setVariants(
+                                            (prev: IProductVariant[]) =>
+                                              prev.map(
+                                                (
+                                                  variant: IProductVariant,
+                                                  i: number
+                                                ) => {
+                                                  if (i === iVariant) {
+                                                    return {
+                                                      ...variant,
+                                                      colors:
+                                                        variant.colors.map(
+                                                          (
+                                                            eColor: IProductColor,
+                                                            eIColor: number
+                                                          ) => {
+                                                            if (
+                                                              eIColor === iColor
+                                                            ) {
+                                                              return {
+                                                                ...eColor,
+                                                                name: e.target
+                                                                  .value,
+                                                              };
+                                                            }
+                                                            return eColor;
+                                                          }
+                                                        ),
+                                                    };
+                                                  }
+                                                  return variant;
+                                                }
+                                              )
                                           )
-                                        )
-                                      }
-                                    />
+                                        }
+                                      />
                                     </div>
                                     <div className="flex flex-col gap-0.5">
-                                      <p className="text-sm font-medium">Nhập giá thêm <span className="text-primary">*</span></p>
-                                    <Input
-                                      className="w-[268px] h-11 shadow-md"
-                                      placeholder="Nhập giá thêm"
-                                      value={
-                                        variants[iVariant].colors[iColor]
-                                          ?.price_extra
-                                      }
-                                      onChange={(e) =>
-                                        setVariants((prev: IProductVariant[]) =>
-                                          prev.map(
-                                            (
-                                              variant: IProductVariant,
-                                              i: number
-                                            ) => {
-                                              if (i === iVariant) {
-                                                return {
-                                                  ...variant,
-                                                  colors: variant.colors.map(
-                                                    (
-                                                      eColor: IProductColor,
-                                                      eIColor: number
-                                                    ) => {
-                                                      if (eIColor === iColor) {
-                                                        return {
-                                                          ...eColor,
-                                                          price_extra:
-                                                            e.target.value,
-                                                        };
-                                                      }
-                                                      return eColor;
-                                                    }
-                                                  ),
-                                                };
-                                              }
-                                              return variant;
-                                            }
+                                      <p className="text-sm font-medium">
+                                        Nhập giá thêm{" "}
+                                        <span className="text-primary">*</span>
+                                      </p>
+                                      <Input
+                                        className="w-[268px] h-11 shadow-md"
+                                        placeholder="Nhập giá thêm"
+                                        value={
+                                          variants[iVariant].colors[iColor]
+                                            ?.price_extra
+                                        }
+                                        onChange={(e) =>
+                                          setVariants(
+                                            (prev: IProductVariant[]) =>
+                                              prev.map(
+                                                (
+                                                  variant: IProductVariant,
+                                                  i: number
+                                                ) => {
+                                                  if (i === iVariant) {
+                                                    return {
+                                                      ...variant,
+                                                      colors:
+                                                        variant.colors.map(
+                                                          (
+                                                            eColor: IProductColor,
+                                                            eIColor: number
+                                                          ) => {
+                                                            if (
+                                                              eIColor === iColor
+                                                            ) {
+                                                              return {
+                                                                ...eColor,
+                                                                price_extra:
+                                                                  e.target
+                                                                    .value,
+                                                              };
+                                                            }
+                                                            return eColor;
+                                                          }
+                                                        ),
+                                                    };
+                                                  }
+                                                  return variant;
+                                                }
+                                              )
                                           )
-                                        )
-                                      }
-                                    />
+                                        }
+                                      />
                                     </div>
-                                   <div className="flex flex-col gap-0.5">
-                                    <p className="text-sm font-medium">Nhập số lượng <span className="text-primary">*</span></p>
-                                   <Input
-                                      className="w-[268px] h-11 shadow-md"
-                                      placeholder="Nhập số lượng"
-                                      value={
-                                        variants[iVariant].colors[iColor]
-                                          ?.quantity
-                                      }
-                                      onChange={(e) =>
-                                        setVariants((prev: IProductVariant[]) =>
-                                          prev.map(
-                                            (
-                                              variant: IProductVariant,
-                                              i: number
-                                            ) => {
-                                              if (i === iVariant) {
-                                                return {
-                                                  ...variant,
-                                                  colors: variant.colors.map(
-                                                    (
-                                                      eColor: IProductColor,
-                                                      eIColor: number
-                                                    ) => {
-                                                      if (eIColor === iColor) {
-                                                        return {
-                                                          ...eColor,
-                                                          quantity:
-                                                            e.target.value,
-                                                        };
-                                                      }
-                                                      return eColor;
-                                                    }
-                                                  ),
-                                                };
-                                              }
-                                              return variant;
-                                            }
+                                    <div className="flex flex-col gap-0.5">
+                                      <p className="text-sm font-medium">
+                                        Nhập số lượng{" "}
+                                        <span className="text-primary">*</span>
+                                      </p>
+                                      <Input
+                                        className="w-[268px] h-11 shadow-md"
+                                        placeholder="Nhập số lượng"
+                                        value={
+                                          variants[iVariant].colors[iColor]
+                                            ?.quantity
+                                        }
+                                        onChange={(e) =>
+                                          setVariants(
+                                            (prev: IProductVariant[]) =>
+                                              prev.map(
+                                                (
+                                                  variant: IProductVariant,
+                                                  i: number
+                                                ) => {
+                                                  if (i === iVariant) {
+                                                    return {
+                                                      ...variant,
+                                                      colors:
+                                                        variant.colors.map(
+                                                          (
+                                                            eColor: IProductColor,
+                                                            eIColor: number
+                                                          ) => {
+                                                            if (
+                                                              eIColor === iColor
+                                                            ) {
+                                                              return {
+                                                                ...eColor,
+                                                                quantity:
+                                                                  e.target
+                                                                    .value,
+                                                              };
+                                                            }
+                                                            return eColor;
+                                                          }
+                                                        ),
+                                                    };
+                                                  }
+                                                  return variant;
+                                                }
+                                              )
                                           )
-                                        )
-                                      }
-                                    />
-                                   </div>
+                                        }
+                                      />
+                                    </div>
                                   </div>
                                   <div className="flex flex-col gap-2.5">
                                     <Upload
                                       multiple={false}
                                       maxCount={1}
                                       listType="picture"
-                                      fileList={imagescolor}
+                                      fileList={[]}
                                       beforeUpload={(file) =>
                                         beforeUploadcolor(
                                           file,
@@ -782,7 +818,6 @@ function ProductEdit() {
                                       )}
                                     </Upload>
 
-                                    {/* Hiển thị danh sách ảnh đã chọn */}
                                     <div className="flex items-center flex-wrap gap-3">
                                       {variants[iVariant]?.colors[iColor]
                                         ?.image && (
@@ -798,7 +833,7 @@ function ProductEdit() {
                                                   )
                                                 : variants[iVariant].colors[
                                                     iColor
-                                                  ].image.url // Sửa lại từ `name` thành `url`
+                                                  ].image.url
                                             }
                                             alt="Color Preview"
                                             className="w-full h-full object-cover rounded"
@@ -855,7 +890,6 @@ function ProductEdit() {
                 </div>
               </Upload>
 
-              {/* Hiển thị danh sách ảnh đã chọn */}
               <div className="flex items-center flex-wrap gap-3">
                 {images.map((file) => {
                   const imageSrc = file.originFileObj
@@ -928,9 +962,12 @@ function ProductEdit() {
                 property_ids: variant.property_ids.filter(Boolean),
               }));
 
-              const formData = new FormData;
+              const formData = new FormData();
               formData.append("name", name);
-              formData.append("images", JSON.stringify(images.map((file) => file.name)));
+              formData.append(
+                "images",
+                JSON.stringify(images.map((file) => file.name))
+              );
               formData.append("category_id", selectedcategory?.id);
               formData.append("brand_id", selectedbrand?.id);
               formData.append("variants", JSON.stringify(formattedVariants));
@@ -946,9 +983,11 @@ function ProductEdit() {
                 });
               }
 
-
               (async function callback() {
-                const response = await productServices.editProduct(id, formData);
+                const response = await productServices.editProduct(
+                  id,
+                  formData
+                );
                 if (response?.status === 200) {
                   openNotificationWithIcon(
                     "success",
@@ -960,7 +999,7 @@ function ProductEdit() {
                   }, 1000);
                 } else if (response.status === 401) {
                   console.log(404);
-                  
+
                   const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
                   if (refreshTokenAdmin) {
                     authServices.getToken(refreshTokenAdmin).then((res) => {
@@ -975,11 +1014,14 @@ function ProductEdit() {
                   }
                 } else {
                   console.log("else");
-                  
-                  openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+
+                  openNotificationWithIcon(
+                    "error",
+                    "Lỗi",
+                    "Có lỗi xảy ra, vui lòng thử lại"
+                  );
                 }
               })();
-
             }}
           />
         </div>

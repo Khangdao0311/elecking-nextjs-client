@@ -349,6 +349,7 @@ function ProductAdd() {
                 value={selectedcategory?.id}
                 options={categories}
                 fieldNames={{ value: "id", label: "name" }}
+                placeholder='Chọn loại sản phẩm'
               />
             </div>
             <div className="flex gap-0.5 flex-col">
@@ -365,6 +366,7 @@ function ProductAdd() {
                 onChange={(value) => setSelectedbrand(value)}
                 options={brands}
                 fieldNames={{ value: "id", label: "name" }}
+                placeholder="Chọn thương hiệu"
               />
             </div>
           </div>

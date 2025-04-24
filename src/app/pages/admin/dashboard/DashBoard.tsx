@@ -408,7 +408,7 @@ function DashBoard() {
       render: (email) => <span className="line-clamp-1">{email}</span>,
     },
     {
-      title: "Chức Năng",
+      title: "Chi tiết",
       key: "action",
       width: 100,
       align: "center",

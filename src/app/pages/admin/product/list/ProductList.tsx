@@ -237,7 +237,7 @@ function ProductList() {
             <div className="ant-modal-close hidden"></div>
             <div className="ant-modal-header hidden"></div>
             <div className=" bg-white  h-[600px] center-fixed flex flex-col gap-2.5 rounded-lg shadow-xl z-50">
-              <div className="h-[64px] flex items-center px-4 border-b border-gray-200">
+              <div className="min-h-[64px] flex items-center px-4 border-b border-gray-200">
                 <p className="text-xl font-semibold w-full">
                   Thông tin sản phẩm
                 </p>
@@ -252,7 +252,7 @@ function ProductList() {
                 </div>
               </div>
 
-              <div className="flex-col gap-3 px-4 py-1 overflow-y-auto max-h-[500px]">
+              <div className="flex-col gap-3 px-4 py-1 overflow-y-auto h-full">
                 <table className="w-full bg-white shadow-xl rounded-lg overflow-hidden text-sm font-normal border-collapse">
                   <thead className="bg-stone-100 sticky top-0 z-10">
                     <tr>
@@ -313,25 +313,23 @@ function ProductList() {
                             className="test-xs font-medium text-red-500 flex-col items-center justify-center
                           "
                           >
-                            <div className="w-full text-center">
-                              {(
-                                product.price -
-                                product.price_sale +
-                                color.price_extra
-                              ).toLocaleString("vi-VN")}{" "}
-                              đ
-                            </div>
-                            <div className="w-full text-center">
-                              <del className="px-3 py-3 text-center text-gray-700 flex-col">
-                                {product.price -
+                            <div className="center-flex flex-col">
+                              <div className="w-full text-center">
+                                {(
+                                  product.price -
                                   product.price_sale +
-                                  color.price_extra ===
-                                product.price
-                                  ? " "
-                                  : `${product.price.toLocaleString(
-                                      "vi-VN"
-                                    )} đ`}{" "}
-                              </del>
+                                  color.price_extra
+                                ).toLocaleString("vi-VN")}{" "}
+                                đ
+                              </div>
+                              {product.price -
+                                product.price_sale +
+                                color.price_extra !==
+                                product.price && (
+                                <del className="w-full text-center text-gray-500 font-normal text-xs flex-col">
+                                  {product.price.toLocaleString("vi-VN")} đ
+                                </del>
+                              )}
                             </div>
                           </td>
                           <td className="px-3 py-3 text-center">
