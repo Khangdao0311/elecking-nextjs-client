@@ -49,7 +49,7 @@ function UserList() {
     if (search != "") {
       query.search = search;
     }
-    (function callback(){
+    (function callback() {
       userServices.getQuery(query).then((res) => {
         if (res.status === 200) {
           setUsers(res.data);
@@ -73,7 +73,7 @@ function UserList() {
             });
           }
         }
-      });  
+      });
     })();
   }, [limit, page, search]);
 
@@ -233,27 +233,27 @@ function UserList() {
             onClick={() => {
               setShoworderuser(true);
               (function callback() {
-              orderServices
-                .getQuery({ user_id: record.id })
-                .then((res) => {
-                  if(res.status === 200){
-                    setOrderdetail(res.data);
-                  setInfouser(record);
-                  } else if (res.status === 401) {
-                    const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
-                    if (refreshTokenAdmin) {
-                      authServices.getToken(refreshTokenAdmin).then((res) => {
-                        if (res.status === 200) {
-                          Cookies.set("access_token_admin", res.data);
-                          callback();
-                        } else {
-                          authServices.clearAdmin();
-                          router.push(config.routes.admin.login);
-                        }
-                      });
+                orderServices
+                  .getQuery({ user_id: record.id })
+                  .then((res) => {
+                    if (res.status === 200) {
+                      setOrderdetail(res.data);
+                      setInfouser(record);
+                    } else if (res.status === 401) {
+                      const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
+                      if (refreshTokenAdmin) {
+                        authServices.getToken(refreshTokenAdmin).then((res) => {
+                          if (res.status === 200) {
+                            Cookies.set("access_token_admin", res.data);
+                            callback();
+                          } else {
+                            authServices.clearAdmin();
+                            router.push(config.routes.admin.login);
+                          }
+                        });
+                      }
                     }
-                  }
-                })
+                  })
               })()
             }}
             className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
@@ -565,17 +565,16 @@ function UserList() {
               </span>
             </div>
             <div className="flex gap-2">
-              <p className="text-base font-normal">Số điện thoại:
-              </p>
+              <p className="text-base font-normal">Số điện thoại:</p>
               <span className="text-base font-base font-bold uppercase">
-                {userorderdetail?.address.phone}
+                {infouser?.phone ? infouser.phone : 'Không có'}
               </span>
             </div>
             <div className="flex text-base font-medium col-span-2 gap-2">
               <p className="text-base font-normal shrink-0">Địa chỉ:</p>
               <span className="text-base font-base font-bold">
                 {userorderdetail?.address.province.name}, {userorderdetail?.address.district.name},{" "}
-            {userorderdetail?.address.ward.name} <br /> {userorderdetail?.address.description}
+                {userorderdetail?.address.ward.name} <br /> {userorderdetail?.address.description}
               </span>
             </div>
 
@@ -584,7 +583,7 @@ function UserList() {
                 Trạng thái thái đơn hàng:
               </p>
               <div
-              className={`px-6 py-2 center-flex shrink-0 rounded-lg bg-${status.color}-100 select-none`}
+                className={`px-6 py-2 center-flex shrink-0 rounded-lg bg-${status.color}-100 select-none`}
               >
                 {<p className={`text-sm font-medium text-${status.color}-800`}>{status.text}</p>}
               </div>
@@ -597,36 +596,36 @@ function UserList() {
             </div>
           </div>
           <Swiper
-        direction={"vertical"}
-        slidesPerView={"auto"}
-        spaceBetween={10}
-        freeMode={true}
-        mousewheel={true}
-        modules={[Mousewheel, FreeMode]}
-        className="!w-full flex flex-col max-h-[300px] gap-2"
-      >
-        {userorderdetail?.products.map((item, index) => (
-          <SwiperSlide
-            key={index}
-            className="!flex w-full gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300 relative"
+            direction={"vertical"}
+            slidesPerView={"auto"}
+            spaceBetween={10}
+            freeMode={true}
+            mousewheel={true}
+            modules={[Mousewheel, FreeMode]}
+            className="!w-full flex flex-col max-h-[300px] gap-2"
           >
-            <div className="w-24 h-24 rounded-lg">
-              <img
-                src={item.product.image}
-                alt={item.product.name}
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5 w-full">
-              <p className="text-base font-medium text-black">{item.product.name}</p>
-              <p className="text-base font-medium text-black">Số Lượng: {item.quantity}</p>
-              <p className="text-base font-bold text-red-500">
-                {item.product.price.toLocaleString("vi-VN")} đ
-              </p>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+            {userorderdetail?.products.map((item, index) => (
+              <SwiperSlide
+                key={index}
+                className="!flex w-full gap-4 p-4 rounded-lg bg-white drop-shadow-xl border border-gray-300 relative"
+              >
+                <div className="w-24 h-24 rounded-lg">
+                  <img
+                    src={item.product.image}
+                    alt={item.product.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5 w-full">
+                  <p className="text-base font-medium text-black">{item.product.name}</p>
+                  <p className="text-base font-medium text-black">Số Lượng: {item.quantity}</p>
+                  <p className="text-base font-bold text-red-500">
+                    {item.product.price.toLocaleString("vi-VN")} đ
+                  </p>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </Modal>
       {state.load && <Loading />}

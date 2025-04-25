@@ -42,6 +42,8 @@ function ProductEdit() {
     File[]
   >([]);
   const [filteredImages, setFilteredImages] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false)
+
 
   const { id }: any = useParams();
 
@@ -932,6 +934,7 @@ function ProductEdit() {
           </div>
           {contextHolder}
           <Button
+            loading={loading}
             back={config.routes.admin.product.list}
             onClick={async () => {
               if (
@@ -982,7 +985,7 @@ function ProductEdit() {
                   formData.append("galleries", file);
                 });
               }
-
+              setLoading(true);
               (async function callback() {
                 const response = await productServices.editProduct(
                   id,
@@ -1013,8 +1016,7 @@ function ProductEdit() {
                     });
                   }
                 } else {
-                  console.log("else");
-
+                  setLoading(false);
                   openNotificationWithIcon(
                     "error",
                     "Lỗi",

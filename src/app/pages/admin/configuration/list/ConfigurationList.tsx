@@ -26,7 +26,6 @@ import config from "@/app/config";
 
 function ConfigurationList() {
   const [state, dispatch] = useStore();
-
   const [proptype, setProptype] = useState<IProptype[]>([]);
   const [property, setProperTy] = useState<IProperty[]>([]);
   const [limitProptype, setLimitProptype] = useState(5);
@@ -43,12 +42,10 @@ function ConfigurationList() {
   const [idCatConfiguration, setIdCatConfiguration] = useState("");
   const [idConfiguration, setIdConfiguration] = useState("");
   const [showAddCatConfiguration, setShowAddCatConfiguration] = useState(false);
-  const [showEditCatConfiguration, setShowEditCatConfiguration] =
-    useState(false);
+  const [showEditCatConfiguration, setShowEditCatConfiguration] = useState(false);
   const [nameConfiguration, setNameConfiguration] = useState("");
   const [showAddConfiguration, setShowAddConfiguration] = useState(false);
   const [showEditConfiguration, setShowEditConfiguration] = useState(false);
-
   const router = useRouter();
 
   type NotificationType = "success" | "info" | "warning" | "error";
@@ -235,7 +232,24 @@ function ConfigurationList() {
     });
   }
 
+  async function handleGetConfiguration(id: string) {
+    setShowEditConfiguration(true);
+    await proptypeServices.getQuery({ limit: 0 }).then((res) => {
+      if (res.status === 200) {
+        setProptype(res.data);
+      }
+    });
+    await propertyServices.getOne(id).then((res) => {
+      if (res.status === 200) {
+        setNameConfiguration(res.data.name);
+        setSelectedProperty(res.data.proptype.id);
+        setIdConfiguration(res.data.id);
+      }
+    });
+  }
+
   function handleEditCatConfiguration() {
+    if (nameCatConfiguration) {
     (function callback() {
       proptypeServices
         .editProptype(idCatConfiguration, { name: nameCatConfiguration })
@@ -270,6 +284,13 @@ function ConfigurationList() {
           }
         });
     })();
+    } else {
+      openNotificationWithIcon(
+        "error",
+        "Lỗi dữ liệu",
+        "Vui lòng nhập đầy đủ thông tin"
+      );
+    }
   }
 
   async function handleShowAddConfiguration() {
@@ -331,23 +352,8 @@ function ConfigurationList() {
     }
   }
 
-  async function handleGetConfiguration(id: string) {
-    setShowEditConfiguration(true);
-    await proptypeServices.getQuery({ limit: 0 }).then((res) => {
-      if (res.status === 200) {
-        setProptype(res.data);
-      }
-    });
-    await propertyServices.getOne(id).then((res) => {
-      if (res.status === 200) {
-        setNameConfiguration(res.data.name);
-        setSelectedProperty(res.data.proptype.id);
-        setIdConfiguration(res.data.id);
-      }
-    });
-  }
-
   function handleEditConfiguration() {
+    if (nameConfiguration && selectedProptype) {
     (function callback() {
       propertyServices
         .editProperty(idConfiguration, {
@@ -385,6 +391,13 @@ function ConfigurationList() {
           }
         });
     })();
+    } else {
+      openNotificationWithIcon(
+        "error",
+        "Lỗi dữ liệu",
+        "Vui lòng nhập đầy đủ thông tin"
+      );
+    }
   }
 
   const handleChangeProptype = (value: string[]) => {

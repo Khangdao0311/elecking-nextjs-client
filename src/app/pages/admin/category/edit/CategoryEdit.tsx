@@ -122,7 +122,7 @@ function CategoryEdit() {
       if (isNewImageSelected) {
         formData.append("image", image[0].originFileObj as File);
       } else {
-        formData.append("image", finalImage); // hoặc truyền lại tên file cũ nếu backend chấp nhận
+        formData.append("image", finalImage);
       }
       formData.append("description", editorContent);
       formData.append(
@@ -131,6 +131,7 @@ function CategoryEdit() {
       );
       formData.append("icon", icon);
       formData.append("status", "1");
+      setLoading(true);
 
       (function callback() {
         categoryServices.editCategory(id, formData).then((res) => {
@@ -143,7 +144,6 @@ function CategoryEdit() {
             setTimeout(() => {
               router.push(`${config.routes.admin.category.list}`);
             }, 1000);
-            setLoading(true)
           } else if (res.status === 401) {
             const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
             if (resfreshTokenAdmin) {
@@ -158,14 +158,21 @@ function CategoryEdit() {
               });
             }
           } else {
+            setLoading(false);
             openNotificationWithIcon(
               "error",
               "Lỗi dữ liệu",
-              "Vui lòng nhập đầy đủ thông tin"
+              res.message
             );
           }
         });
       })();
+    } else {
+      openNotificationWithIcon(
+        "error",
+        "Lỗi dữ liệu",
+        "Vui lòng nhập đầy đủ thông tin"
+      );
     }
   }
 

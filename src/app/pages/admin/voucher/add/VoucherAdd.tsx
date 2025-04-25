@@ -28,6 +28,8 @@ function VoucherAdd() {
   const [getUser, setGetUser] = useState([]);
   const [user, setUser] = useState("");
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
@@ -151,6 +153,7 @@ function VoucherAdd() {
                   className="w-[268px] h-11 shadow-md"
                   placeholder="dd/mm/yyy"
                   onChange={handleDateStart}
+                  disabledDate={(current) => current && current < dayjs().startOf("day")}
                 />
               </Space>
             </div>
@@ -163,6 +166,7 @@ function VoucherAdd() {
                   className="w-[268px] h-11 shadow-md"
                   placeholder="dd/mm/yyy"
                   onChange={handleDateEnd}
+                  disabledDate={(current) => current && current < dayjs().startOf("day")}
                 />
               </Space>
             </div>
@@ -195,6 +199,7 @@ function VoucherAdd() {
           {contextHolder}
           <Space>
             <Button
+              loading={loading}
               back={config.routes.admin.voucher.list}
               onClick={async () => {
                 const start = dayjs(startDate, "YYYYMMDD");
@@ -205,7 +210,6 @@ function VoucherAdd() {
                   discountType === null ||
                   discountValue === null ||
                   minOrderValue === null ||
-                  maxDiscount === null ||
                   !startDate ||
                   !endDate ||
                   quantity === null ||
@@ -248,6 +252,7 @@ function VoucherAdd() {
                   status: 1,
                 };
 
+                setLoading(true);
                 (async function callback() {
                   const voucherResponse = await voucherServices.addVoucher(voucherData);
                   if (voucherResponse.status === 200) {
@@ -273,12 +278,10 @@ function VoucherAdd() {
                       });
                     }
                   } else {
-                    openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                    setLoading(false);
+                    openNotificationWithIcon("error", "Lỗi", voucherResponse.message);
                   }
                 })();
-
-
-
               }}
             ></Button>
           </Space>

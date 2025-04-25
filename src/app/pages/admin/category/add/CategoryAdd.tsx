@@ -8,7 +8,6 @@ import Loading from "@/app/components/client/Loading";
 import { Input, Modal, Select, Upload } from "antd";
 import { IoCloseSharp } from "react-icons/io5";
 import "quill/dist/quill.snow.css";
-import Quill from "quill";
 import { Button as ButtonAnt, notification, Space } from "antd";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
@@ -113,6 +112,7 @@ function CategoryAdd() {
       formData.append("description", editorContent);
       formData.append("proptypes", JSON.stringify(selectedProptype));
       formData.append("icon", icon);
+      setLoading(true);
       (function callback() {
         categoryServices.addCategory(formData).then((res) => {
           if (res.status === 200) {
@@ -124,7 +124,6 @@ function CategoryAdd() {
             setTimeout(() => {
               router.push(`${config.routes.admin.category.list}`);
             }, 1500);
-            setLoading(true)
           } else if (res.status === 401) {
             const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
             if (resfreshTokenAdmin) {
@@ -139,10 +138,11 @@ function CategoryAdd() {
               });
             }
           } else {
+            setLoading(false);
             openNotificationWithIcon(
               "error",
               "Lỗi dữ liệu",
-              "Vui lòng nhập đầy đủ thông tin"
+              res.message
             );
           }
         });

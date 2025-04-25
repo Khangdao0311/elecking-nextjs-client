@@ -9,5 +9,5 @@ interface IVoucher{
     end_date:  string
     status: number
     quantity: number
-    user_id: null
+    user_id: number | null;
 }

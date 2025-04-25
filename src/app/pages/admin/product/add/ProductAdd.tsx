@@ -36,8 +36,9 @@ function ProductAdd() {
   const [properties, setProperties] = useState<any>({});
   const [storageimgcolor, setStorageimgcolor] = useState<File[]>([]);
   const [handleToggleColor, setHandleToggleColor] = useState<boolean[][]>([]);
-
   const router = useRouter();
+  const [loading, setLoading] = useState(false)
+
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
@@ -805,6 +806,7 @@ function ProductAdd() {
           </div>
           {contextHolder}
           <Button
+            loading={loading}
             back={config.routes.admin.product.list}
             onClick={async () => {
               if (
@@ -859,7 +861,7 @@ function ProductAdd() {
                   }
                 });
               }
-
+              setLoading(true);
               (async function callback() {
                 const productResponse = await productServices.addProduct(
                   formData
@@ -887,12 +889,10 @@ function ProductAdd() {
                     });
                   }
                 } else {
-                  console.log("else");
-                  
+                  setLoading(false);
                   openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
                 }
               })();
-
             }}
           />
         </div>

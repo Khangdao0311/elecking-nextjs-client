@@ -14,14 +14,13 @@ function Button({ back = "", onClick, loading = false }: any) {
       <button
         onClick={handleClick}
         disabled={loading}
-        className={`text-sm font-bold rounded px-5 py-2 
-          ${
-            loading
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "text-green-800 bg-green-100"
+        className={`text-sm font-bold rounded px-5 py-2  text-green-800 bg-green-100
+          ${loading
+            ? "opacity-30 cursor-not-allowed"
+            : ""
           }`}
       >
-        {loading ? "Đang lưu..." : "Lưu lại"}
+        Lưu lại
       </button>
       <button
         onClick={() => router.push(back)}

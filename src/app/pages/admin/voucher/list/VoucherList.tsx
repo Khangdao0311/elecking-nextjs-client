@@ -52,11 +52,14 @@ function Voucher() {
   const [totalExpiredVoucher, setTotalExpiredVoucher] = useState(0);
   const voucherCreateDate = dayjs(selectedVoucher?.start_date, "YYYYMMDD");
   const voucherEndDate = dayjs(selectedVoucher?.end_date, "YYYYMMDD");
-  const router = useRouter();
-
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();  
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
+
+  console.log(user);
+  
 
   const openNotificationWithIcon = (
     type: NotificationType,
@@ -432,10 +435,8 @@ function Voucher() {
                   onChange={(value) => {
                     setUser(value);
                   }}
-                  options={getUser.map((e) => ({
-                    value: e.id,
-                    label: e.fullname,
-                  }))}
+                  options={getUser}
+                  fieldNames={{ value: "id", label: "fullname" }}
                 />
               </div>
             </div>
@@ -501,10 +502,9 @@ function Voucher() {
                       end_date: endDate,
                       quantity: quantity ?? 0,
                       status: 1,
-                      user_id:
-                        user !== null && user !== undefined ? null : undefined,
+                      user_id: user,
                     };
-
+                    setLoading(true);
                     (function callback() {
                       voucherService.editVoucher(selectedVoucher.id, voucherData)
                         .then(res => {
@@ -526,14 +526,11 @@ function Voucher() {
                                   : v
                               )
                             );
-
                             closeeditorder();
-
                           } else if (res.status === 401) {
                             const refreshTokenAdmin = authServices.getRefreshTokenAdmin();
                             if (refreshTokenAdmin) {
                               authServices.getToken(refreshTokenAdmin).then((res) => {
-
                                 if (res.status === 200) {
                                   Cookies.set("access_token_admin", res.data);
                                   callback();
@@ -544,7 +541,8 @@ function Voucher() {
                               });
                             }
                           } else {
-                            openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
+                            setLoading(false);
+                            openNotificationWithIcon("error", "Lỗi", res.message);
                           }
                         })
                     })();

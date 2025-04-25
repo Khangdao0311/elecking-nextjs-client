@@ -32,6 +32,7 @@ function BrandEdit() {
   );
   const [name, setName] = useState("");
   const { id }: any = useParams();
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter();
 
@@ -313,6 +314,7 @@ function BrandEdit() {
         </div>
         {contextHolder}
         <Button
+          loading={loading}
           back={config.routes.admin.brand.list}
           onClick={async () => {
             let imgLogoName = storageimglogo
@@ -360,7 +362,7 @@ function BrandEdit() {
             formData.append("images", banner[0].originFileObj as File);
             
              
-
+            setLoading(true);
             (async function callback() {
               const brandResponse = await brandServices.editBrand(id, formData);
               if (brandResponse?.status == 200) {
@@ -386,7 +388,7 @@ function BrandEdit() {
                   });
                 }
               } else {
-                console.log("else");
+                setLoading(false);
                 openNotificationWithIcon(
                   "error",
                   "Lỗi",
