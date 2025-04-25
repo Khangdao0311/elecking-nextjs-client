@@ -57,60 +57,6 @@ function Header() {
     if (pathname !== config.routes.client.products) {
       dispatch(actions.set_search(""));
     }
-  }, [pathname]);
-
-  useEffect(() => {
-    const userJSON = localStorage.getItem("user") || "null";
-    const user = JSON.parse(userJSON);
-
-    if (user && authServices.getAccessToken() && authServices.getRefreshToken()) {
-      (function callback() {
-        authServices.getProfile(user.id).then((res) => {
-          if (res.status === 200) {
-            const token = authServices.getAccessToken();
-            const refreshToken = authServices.getRefreshToken();
-
-            if (!token || !refreshToken) {
-              clear();
-            }
-
-            dispatch(
-              actions.set({
-                user: user,
-                wish: res.data.wish,
-                cart: res.data.cart,
-              })
-            );
-          } else if (res.status === 401) {
-            const refreshToken = authServices.getRefreshToken();
-            if (refreshToken) {
-              authServices.getToken(refreshToken).then((res) => {
-                if (res.status === 200) {
-                  Cookies.set("access_token", res.data);
-                  callback();
-                } else {
-                  authServices.clearUser();
-                  router.push(config.routes.client.login);
-                  dispatch(actions.re_render());
-                }
-              });
-            }
-          } else {
-            clear();
-          }
-        });
-      })();
-    } else {
-      localStorage.removeItem("user");
-      dispatch(actions.set({ ...initState, load: false }));
-    }
-  }, [state.re_render]);
-
-  useEffect(() => {
-    if (searchParams.get("search")) dispatch(actions.set_search(searchParams.get("search") || ""));
-  }, [searchParams]);
-
-  useEffect(() => {
     switch (pathname) {
       case config.routes.client.products:
         setBreadCrumb([
@@ -298,6 +244,57 @@ function Header() {
     }
   }, [pathname]);
 
+  useEffect(() => {
+    const userJSON = localStorage.getItem("user") || "null";
+    const user = JSON.parse(userJSON);
+
+    if (user && authServices.getAccessToken() && authServices.getRefreshToken()) {
+      (function callback() {
+        authServices.getProfile(user.id).then((res) => {
+          if (res.status === 200) {
+            const token = authServices.getAccessToken();
+            const refreshToken = authServices.getRefreshToken();
+
+            if (!token || !refreshToken) {
+              clear();
+            }
+
+            dispatch(
+              actions.set({
+                user: user,
+                wish: res.data.wish,
+                cart: res.data.cart,
+              })
+            );
+          } else if (res.status === 401) {
+            const refreshToken = authServices.getRefreshToken();
+            if (refreshToken) {
+              authServices.getToken(refreshToken).then((res) => {
+                if (res.status === 200) {
+                  Cookies.set("access_token", res.data);
+                  callback();
+                } else {
+                  authServices.clearUser();
+                  router.push(config.routes.client.login);
+                  dispatch(actions.re_render());
+                }
+              });
+            }
+          } else {
+            clear();
+          }
+        });
+      })();
+    } else {
+      localStorage.removeItem("user");
+      dispatch(actions.set({ ...initState, load: false }));
+    }
+  }, [state.re_render]);
+
+  useEffect(() => {
+    if (searchParams.get("search")) dispatch(actions.set_search(searchParams.get("search") || ""));
+  }, [searchParams]);
+
   function handleSearch() {
     refSearch.current.blur();
     const searchParamsNew = new URLSearchParams(searchParams.toString());
@@ -440,41 +437,40 @@ function Header() {
             </Popover>
 
             {/* Search */}
-            <Popover
-              placement={width < 640 ? "bottom" : "bottomLeft"}
-              title={null}
-              open={showModal.search}
-              trigger="click"
-              onOpenChange={(e) => setShowModal({ menu: false, search: e })}
-              content={
-                <ResultSearch onClose={() => setShowModal({ menu: false, search: false })} />
-              }
-            >
-              <form className="w-full h-full relative flex flex-1 items-center justify-center hover:bg-white/20 cursor-pointer rounded-lg transition-all duration-300">
+            <form className="w-full h-full relative flex flex-1 items-center justify-center hover:bg-white/20 cursor-pointer rounded-lg transition-all duration-300">
+              <Popover
+                placement={width < 640 ? "bottom" : "bottomLeft"}
+                title={null}
+                open={showModal.search}
+                trigger="click"
+                onOpenChange={(e) => setShowModal({ menu: false, search: e })}
+                content={
+                  <ResultSearch onClose={() => setShowModal({ menu: false, search: false })} />
+                }
+              >
                 <input
                   ref={refSearch}
                   type="text"
                   value={state.search}
                   onFocus={() => setShowModal({ menu: false, search: true })}
-                  // onBlur={() => setShowModal({ menu: false, search: false })}
                   onChange={(e) => dispatch(actions.set_search(e.target.value))}
                   className="w-full h-full rounded-lg border border-stone-300 pl-4 pr-20 outline-primaryDark"
                   placeholder="Bạn cần tìm gì ?"
                 />
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleSearch();
-                    setShowModal({ menu: false, search: false });
-                  }}
-                  className="aspect-[2/1] h-5/6 center-flex bg-primary rounded-md absolute top-1/2 -translate-y-1/2 right-1"
-                >
-                  <div className="h-3/4 !aspect-square">
-                    <IoSearchSharp className="w-full h-full text-white" />
-                  </div>
-                </button>
-              </form>
-            </Popover>
+              </Popover>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSearch();
+                  setShowModal({ menu: false, search: false });
+                }}
+                className="aspect-[2/1] h-5/6 center-flex bg-primary rounded-md absolute top-1/2 -translate-y-1/2 right-1"
+              >
+                <div className="h-3/4 !aspect-square">
+                  <IoSearchSharp className="w-full h-full text-white" />
+                </div>
+              </button>
+            </form>
 
             {/* Icon Cart */}
             <div
