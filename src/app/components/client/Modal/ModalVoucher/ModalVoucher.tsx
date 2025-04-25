@@ -10,8 +10,11 @@ import "swiper/css";
 import "swiper/css/free-mode";
 
 import * as voucherServices from "@/app/services/voucherService";
+import { useStore } from "@/app/store";
 
 function ModalVoucher({ orderPrice, voucher, setVoucher, onClose }: any) {
+  const [state, dispatch] = useStore();
+
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | null>(voucher);
 
@@ -20,6 +23,10 @@ function ModalVoucher({ orderPrice, voucher, setVoucher, onClose }: any) {
       if (res.status === 200) setVouchers(res.data);
     });
   }, []);
+
+  useEffect(() => {
+    if (!voucher) setSelectedVoucher(null);
+  }, [orderPrice, voucher, state.cart]);
 
   return (
     <div className="w-full h-[70vh] flex flex-col gap-5 ">

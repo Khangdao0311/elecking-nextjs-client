@@ -34,7 +34,6 @@ function Header() {
   const [state, dispatch] = useStore();
   const [showModal, setShowModal] = useState({ menu: false, search: false });
   const [breadCrumb, setBreadCrumb] = useState<any>([]);
-  const [reload, setReload] = useState(false);
 
   useLifecycles(() => dispatch(actions.load()));
 

@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
 import { HiOutlineTicket } from "react-icons/hi";
-import { FaCaretDown, FaCircleExclamation, FaMinus, FaPlus } from "react-icons/fa6";
+import { FaCaretDown, FaMinus, FaPlus } from "react-icons/fa6";
 import { IoMdArrowDropdown, IoMdCheckmark } from "react-icons/io";
-import { message, Modal, Popover } from "antd";
+import { Modal, Popover } from "antd";
 import Cookies from "js-cookie";
+import { SlTag } from "react-icons/sl";
+import moment from "moment";
 
 import config from "@/app/config";
 import * as productServices from "@/app/services/productService";
@@ -21,9 +23,8 @@ import Loading from "@/app/components/client/Loading";
 
 function Cart() {
   const [state, dispatch] = useStore();
-  const [checkedItems, setCheckItems] = useState<boolean[]>([]);
   const [productsCart, setProductsCart] = useState<IProduct[]>([]);
-  const [voucher, setVoucher] = useState<IVoucher | null>(null);
+  const [voucher, setVoucher] = useState<any>(null);
   const [showModalVoucher, setShowModalVoucher] = useState(false);
   const [itemCartRemove, setItemCartRemove] = useState<any>(null);
   const [showModalRemoveItems, setShowModalRemoveItems] = useState<any>(false);
@@ -47,14 +48,13 @@ function Cart() {
           });
         }
         setProductsCart(_);
-        setCheckItems(state.cart.map(() => false));
       }
     })();
   }, [state.cart]);
 
   useEffect(() => {
     const _total = state.cart.reduce((acc: number, item: any, index: number) => {
-      if (checkedItems[index]) {
+      if (item.checked) {
         acc +=
           (productsCart[index]?.variants[item.product?.variant]?.price +
             productsCart[index]?.variants[item.product?.variant]?.colors[item.product?.color]
@@ -63,8 +63,9 @@ function Cart() {
       }
       return acc;
     }, 0);
+
     const _totalSale = state.cart.reduce((acc: number, item: any, index: number) => {
-      if (checkedItems[index]) {
+      if (item.checked) {
         acc +=
           (productsCart[index]?.variants[item.product?.variant]?.price -
             productsCart[index]?.variants[item.product?.variant]?.price_sale +
@@ -80,8 +81,13 @@ function Cart() {
       sale: _totalSale,
     });
 
-    setVoucher(null);
-  }, [productsCart, checkedItems, state.cart]);
+    if (
+      voucher &&
+      (!state.cart.some((item: any) => item.checked) || _totalSale < voucher!.min_order_value)
+    ) {
+      setVoucher(null);
+    }
+  }, [productsCart, state.cart]);
 
   function handleChangeVariant(iProduct: number, iVariant: number) {
     const cartNew = state.cart.map((item: any, index: number) => {
@@ -141,6 +147,8 @@ function Cart() {
 
       return acc;
     }, []);
+
+    if (cartNew.length !== cartFinal.length) setProductsCart([]);
 
     // setLoading(true);
     (function callback() {
@@ -208,6 +216,8 @@ function Cart() {
       }
       return acc;
     }, []);
+
+    if (cartNew.length !== cartFinal.length) setProductsCart([]);
 
     // setLoading(true);
     (function callback() {
@@ -313,7 +323,7 @@ function Cart() {
   }
 
   function handleRemoveItems() {
-    const cartNew = state.cart.filter((item: any, index: number) => !checkedItems[index]);
+    const cartNew = state.cart.filter((item: any, index: number) => !item.checked);
 
     setLoading(true);
     (function callback() {
@@ -349,19 +359,92 @@ function Cart() {
     })();
   }
 
-  function handleCheckItem(iProduct: number) {
-    setCheckItems((prev) =>
-      prev.map((e, i) => {
-        if (i === iProduct) return !e;
-        return e;
-      })
-    );
+  function handleCheckItem(value: number) {
+    const cartNew = state.cart.map((item: any, index: number) => {
+      if (index === value) {
+        return {
+          ...item,
+          checked: !item.checked,
+        };
+      }
+      return item;
+    });
+
+    // setLoading(true);
+    (function callback() {
+      authServices.cart(state.user.id, cartNew).then((res) => {
+        if (res.status === 200) {
+          // setLoading(false);
+          dispatch(actions.re_render());
+        } else if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        } else {
+          // setLoading(false);
+          handleNotification(false, res.message);
+        }
+      });
+    })();
+  }
+
+  function handleCheckItems(value: boolean) {
+    const cartNew = state.cart.map((item: any, index: number) => {
+      return {
+        ...item,
+        checked: value,
+      };
+    });
+
+    // setLoading(true);
+    (function callback() {
+      authServices.cart(state.user.id, cartNew).then((res) => {
+        if (res.status === 200) {
+          // setLoading(false);
+          dispatch(actions.re_render());
+        } else if (res.status === 401) {
+          const refreshToken = authServices.getRefreshToken();
+          if (refreshToken) {
+            authServices.getToken(refreshToken).then((res) => {
+              if (res.status === 200) {
+                Cookies.set("access_token", res.data);
+                callback();
+              } else {
+                authServices.clearUser();
+                router.push(config.routes.client.login);
+                dispatch(actions.re_render());
+              }
+            });
+          }
+        } else {
+          // setLoading(false);
+          handleNotification(false, res.message);
+        }
+      });
+    })();
+
+    // setCheckItems((prev) =>
+    //   prev.map((e, i) => {
+    //     if (i === iProduct) return !e;
+    //     return e;
+    //   })
+    // );
   }
 
   function totalSale() {
     return `${(
       state.cart.reduce((acc: number, item: any, index: number) => {
-        if (checkedItems[index]) {
+        if (item.checked) {
           acc +=
             (productsCart[index]?.variants[item.product?.variant]?.price +
               productsCart[index]?.variants[item.product?.variant]?.colors[item.product?.color]
@@ -371,7 +454,7 @@ function Cart() {
         return acc;
       }, 0) -
       state.cart.reduce((acc: number, item: any, index: number) => {
-        if (checkedItems[index]) {
+        if (item.checked) {
           acc +=
             (productsCart[index]?.variants[item.product?.variant]?.price -
               productsCart[index]?.variants[item.product?.variant]?.price_sale +
@@ -385,13 +468,13 @@ function Cart() {
   }
 
   function handleCheckout() {
-    if (checkedItems.some((e) => e === true)) {
+    if (state.cart.some((item: any) => item.checked)) {
       const checkout = {
-        order: state.cart.filter((item: any, index: number) => checkedItems[index]),
+        order: state.cart.filter((item: any, index: number) => item.checked),
         voucher: voucher,
         index: state.cart
           .map((item: any, index: number) => {
-            if (checkedItems[index]) return index;
+            if (item.checked) return index;
             return null;
           })
           .filter((item: any) => item !== null),
@@ -406,7 +489,7 @@ function Cart() {
 
   function handleNotification(status: boolean, message: string) {
     setNotification({ status: status, message: message });
-    setTimeout(() => setNotification({ status: null, message: "" }), 1200);
+    setTimeout(() => setNotification({ status: null, message: "" }), 1000);
   }
 
   return (
@@ -596,12 +679,14 @@ function Cart() {
                     <input
                       type="checkbox"
                       className="w-6 h-6 accent-primary cursor-pointer"
-                      checked={checkedItems.length !== 0 && checkedItems.every((e) => e === true)}
+                      checked={
+                        state.cart.length !== 0 && state.cart.every((item: any) => item.checked)
+                      }
                       onChange={() => {
                         if (state.cart.length !== 0) {
-                          checkedItems.every((e) => e === true)
-                            ? setCheckItems(state.cart.map(() => false))
-                            : setCheckItems(state.cart.map(() => true));
+                          state.cart.every((item: any) => item.checked)
+                            ? handleCheckItems(false)
+                            : handleCheckItems(true);
                         }
                       }}
                     />
@@ -640,7 +725,7 @@ function Cart() {
                         id={`${iProduct}`}
                         type="checkbox"
                         className="w-5 h-5 accent-primary cursor-pointer"
-                        checked={checkedItems[iProduct]}
+                        checked={state.cart[iProduct]?.checked}
                         onChange={() => handleCheckItem(iProduct)}
                       />
                     </div>
@@ -965,29 +1050,32 @@ function Cart() {
             <div className="container-custom  p-4 bg-white border border-gray-300 rounded-2xl shadow-xl">
               <div className="flex  flex-col lg:flex-row justify-betweens border-t border-b p-2 border-dotted mb-2 gap-2.5 ">
                 <div className="flex flex-1 items-start gap-5">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 center-flex h-full">
                     <input
                       type="checkbox"
                       className="mr-2 w-6 h-6 accent-primary cursor-pointer"
-                      checked={checkedItems.length !== 0 && checkedItems.every((e) => e === true)}
+                      checked={
+                        state.cart.length !== 0 && state.cart.every((item: any) => item.checked)
+                      }
                       onChange={() => {
                         if (state.cart.length !== 0) {
-                          checkedItems.every((e) => e === true)
-                            ? setCheckItems(state.cart.map(() => false))
-                            : setCheckItems(state.cart.map(() => true));
+                          state.cart.every((item: any) => item.checked)
+                            ? handleCheckItems(false)
+                            : handleCheckItems(true);
                         }
                       }}
                     />
-                    <span className="text-base font-medium text-nowrap">
-                      Chọn tất cả <span>( {checkedItems.filter((e) => e === true).length} )</span>
+                    <span className="text-base font-medium text-nowrap center-flex h-full gap-2">
+                      Chọn tất cả{" "}
+                      <span>( {state.cart.filter((item: any) => item.checked).length} )</span>
                     </span>
                   </div>
-                  {checkedItems.some((e) => e === true) && (
+                  {state.cart.some((item: any) => item.checked) && (
                     <div
-                      className="relative group cursor-pointer"
+                      className="relative group cursor-pointer center-flex h-full"
                       onClick={() => setShowModalRemoveItems(true)}
                     >
-                      <em className="cursor-pointer text-gray-500 group-hover:text-primary transition-all duration-100 line-clamp-1">
+                      <em className="cursor-pointer  text-gray-500 group-hover:text-primary transition-all duration-100 line-clamp-1">
                         Xóa các sản phẩm đã chọn
                       </em>
                       <hr className="w-[0%] group-hover:w-[100%] absolute bottom-0 left-0 border-primary transition-all duration-150" />
@@ -995,21 +1083,69 @@ function Cart() {
                   )}
                 </div>
                 <div className="flex flex-1 justify-between">
-                  <div className="flex items-center gap-2">
-                    <HiOutlineTicket className=" w-8 h-8" />
-                    <span className="text-base font-normal">ElecKing Voucher</span>
-                  </div>
+                  <Popover
+                    placement="top"
+                    title={null}
+                    trigger="hover"
+                    zIndex={102}
+                    content={
+                      voucher && (
+                        <div className="flex w-[90vw] max-w-[420px] items-start gap-4">
+                          <div className="bg-primary text-white w-1/4 !aspect-square rounded-lg flex items-center justify-center">
+                            <SlTag className="text-2xl w-1/2 h-1/2" />
+                          </div>
+                          <div className="flex flex-col items-start">
+                            <p className="text-primary text-base font-semibold uppercase">
+                              {voucher!.code}
+                            </p>
+                            <p className="text-primary gap-1 flex-wrap text-xl font-semibold">
+                              {`Giảm ${voucher!.discount_value.toLocaleString("vn-VN")}${
+                                voucher!.discount_type == 1 ? "đ" : "%"
+                              }`}
+                              {voucher!.discount_type === 2 && (
+                                <span className="text-base text-gray-500">
+                                  Tối Đa {voucher!.max_discount.toLocaleString("vn-VN")} đ
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-base text-gray-500">
+                              Đơn Tối Thiểu {voucher!.min_order_value.toLocaleString("vn-VN")} đ
+                            </p>
+
+                            <p className="text-base text-gray-500">
+                              HSD:{" "}
+                              <span>
+                                {moment(voucher!.end_date, "YYYYMMDD").format("DD/MM/YYYY")}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    }
+                  >
+                    <div
+                      className={`flex items-center gap-2 text-primary ${
+                        voucher && "cursor-pointer"
+                      }`}
+                    >
+                      <HiOutlineTicket className=" w-8 h-8" />
+                      <span className="text-lg uppercase font-bold">
+                        {voucher?.code || "ElecKing Voucher"}
+                      </span>
+                    </div>
+                  </Popover>
+
                   <p
                     onClick={() => {
-                      if (checkedItems.some((e) => e === true)) {
+                      if (state.cart.some((item: any) => item.checked)) {
                         setShowModalVoucher(true);
                       } else {
                         handleNotification(false, "Vui lòng chọn sản phẩm để áp dụng voucher !");
                       }
                     }}
-                    className="ml-2 text-blue-600 cursor-pointer"
+                    className="ml-2 text-blue-600 cursor-pointer center-flex"
                   >
-                    Chọn mã
+                    {voucher ? "Đổi mã" : "Chọn mã"}
                   </p>
                 </div>
               </div>
@@ -1018,8 +1154,8 @@ function Cart() {
               <div className="flex flex-col md:flex-row gap-2.5 justify-between items-center relative">
                 <div className="flex w-full  items-end flex-col sm:flex-row gap-2.5 select-none cursor-pointer ">
                   <span className="text- line-clamp-1">
-                    Tổng thanh toán ( <span>{checkedItems.filter((e) => e === true).length}</span>{" "}
-                    sản phẩm )
+                    Tổng thanh toán ({" "}
+                    <span>{state.cart.filter((item: any) => item.checked).length}</span> sản phẩm )
                   </span>
                   <Popover
                     placement="top"

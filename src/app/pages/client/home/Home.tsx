@@ -115,7 +115,7 @@ function Home() {
                 nextEl: ".custom-next",
                 prevEl: ".custom-prev",
               }}
-              // loop={true}
+              loop={true}
               modules={[Autoplay, Navigation]}
               className="!aspect-[3/1] w-full relative group/container rounded-lg shadow-xl border border-gray-300"
             >

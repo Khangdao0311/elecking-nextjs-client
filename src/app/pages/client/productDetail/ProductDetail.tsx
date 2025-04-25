@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { useParams, useRouter } from "next/navigation";
@@ -34,13 +34,13 @@ import { useStore, actions } from "@/app/store";
 import ProductLoad from "@/app/components/client/ProductLoad";
 import Shimmer from "@/app/components/client/Shimmer";
 import Loading from "@/app/components/client/Loading";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 
 function ProductDetail() {
   const [state, dispatch] = useStore();
   const [mainSwiper, setMainSwiper] = useState<any>();
   const [thumbsSwiper, setThumbsSwiper] = useState<any>();
   const [indexSwiper, setIndexSwiper] = useState<any>(0);
-  const [showModal, setShowModal] = useState(0);
   const [product, setProduct] = useState<IProduct>();
   const [reviews, setReviews] = useState<IReview[]>([]);
   const [totalReviews, setTotalReviews] = useState<number>(0);
@@ -52,6 +52,7 @@ function ProductDetail() {
   const [heightDescription, setHeightDescription] = useState("max-h-[500px]");
   const [rating, setRating] = useState("");
   const [page, setPage] = useState(1);
+  const [notification, setNotification] = useState<any>({ status: null, message: "" });
   const [loading, setLoading] = useState(false);
 
   const { id }: any = useParams();
@@ -74,7 +75,7 @@ function ProductDetail() {
         }
       }
     });
-    productServices.getSame({ id: id, limit: 10  }).then((res) => {
+    productServices.getSame({ id: id, limit: 10 }).then((res) => {
       if (res.status === 200) setProductsSame(res.data);
     });
   }, [id]);
@@ -115,6 +116,7 @@ function ProductDetail() {
 
     if (!isSame) {
       cartNew.push({
+        checked: false,
         product: {
           id: product?.id,
           variant: iVariant,
@@ -132,8 +134,8 @@ function ProductDetail() {
         setLoading(false);
         if (res.status === 200) {
           dispatch(actions.re_render());
-          setShowModal(1);
-          setTimeout(() => setShowModal(0), 1000);
+          setNotification({ status: true, message: "Thêm giỏ hàng thành công" });
+          setTimeout(() => setNotification({ status: null, message: "" }), 1000);
         }
         if (res.status === 401) {
           const refreshToken = authServices.getRefreshToken();
@@ -154,11 +156,12 @@ function ProductDetail() {
     })();
   }
 
-  function handleAddToWish(id: string) {
+  function handleWish(id: string) {
     (function callback() {
       authServices.wish(state.user.id, id).then((res) => {
-        if (res.status === 200) dispatch(actions.re_render());
-        if (res.status === 401) {
+        if (res.status === 200) {
+          dispatch(actions.re_render());
+        } else if (res.status === 401) {
           const refreshToken = authServices.getRefreshToken();
           if (refreshToken) {
             authServices.getToken(refreshToken).then((res) => {
@@ -196,29 +199,6 @@ function ProductDetail() {
     router.push(config.routes.client.checkout);
   }
 
-  function handleRemoveFromWish(id: string) {
-    (function callback() {
-      authServices.wish(state.user.id, id).then((res) => {
-        if (res.status === 200) dispatch(actions.re_render());
-        if (res.status === 401) {
-          const refreshToken = authServices.getRefreshToken();
-          if (refreshToken) {
-            authServices.getToken(refreshToken).then((res) => {
-              if (res.status === 200) {
-                Cookies.set("access_token", res.data);
-                callback();
-              } else {
-                authServices.clearUser();
-                router.push(config.routes.client.login);
-                dispatch(actions.re_render());
-              }
-            });
-          }
-        }
-      });
-    })();
-  }
-
   function handleWishReview(id: string) {
     (function callback() {
       reviewServices.wish(id, state.user.id).then((res) => {
@@ -246,32 +226,7 @@ function ProductDetail() {
   return (
     <>
       {loading && <Loading />}
-      <Modal
-        open={!!showModal}
-        footer={null}
-        title={null}
-        centered
-        maskClosable={false}
-        closable={false}
-        width="auto"
-      >
-        {showModal === 1 && (
-          <div className="center-flex flex-col gap-4">
-            <div>
-              <FaCircleCheck className="w-20 h-20 text-green-500 " />
-            </div>
-            <div className="text-lg font-medium text-green-700">Thêm giỏ hàng thành công !</div>
-          </div>
-        )}
-        {showModal === 2 && (
-          <div className="center-flex flex-col gap-4">
-            <div>
-              <FaCircleExclamation className="w-20 h-20 text-red-500 " />
-            </div>
-            <div className="text-lg font-medium text-red-700">Thêm giỏ hàng thất bại !</div>
-          </div>
-        )}
-      </Modal>
+      <ModalNotification noti={notification} />
       {!state.load && product ? (
         <>
           {/* Chi tiết sản phẩm, giá và type */}
@@ -353,7 +308,7 @@ function ProductDetail() {
                         className="relative "
                         onClick={() => {
                           if (state.user) {
-                            handleRemoveFromWish(product.id);
+                            handleWish(product.id);
                           } else {
                             dispatch(actions.set({ show: { ...state.show, login: true } }));
                           }
@@ -367,7 +322,7 @@ function ProductDetail() {
                         className="relative"
                         onClick={() => {
                           if (state.user) {
-                            handleAddToWish(product.id);
+                            handleWish(product.id);
                           } else {
                             dispatch(actions.set({ show: { ...state.show, login: true } }));
                           }

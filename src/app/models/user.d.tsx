@@ -13,6 +13,7 @@ interface IUser {
   wish: string[];
 }
 interface ICart {
+  checked: boolean;
   product: {
     id: string;
     variant: number;
