@@ -3,10 +3,11 @@ import { CiLocationOn } from "react-icons/ci";
 import { IoMailOutline } from "react-icons/io5";
 import { SlLocationPin } from "react-icons/sl";
 
-import images from "@/app/assets/image";
+import images from "@/app/assets";
 import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
 
 function Footer() {
+  const currentYear = new Date().getFullYear();
   return (
     <footer>
       <div className="container-custom grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
@@ -40,7 +41,7 @@ function Footer() {
             </p>
             <p className="w-full text-base text-black flex items-center gap-2">
               <SlLocationPin className="w-5 h-5" />
-              <span>elecking.store@gmail.com</span>
+              <span> Tòa T Công Viên Phần Mềm Quang Trung, Quang Trung, Q12, Việt Nam</span>
             </p>
           </div>
         </div>
@@ -140,7 +141,9 @@ function Footer() {
             Mã số doanh nghiệp: 0106773786 do Sở Kế hoạch & Đầu tư TP Hà Nội cấp lần đầu ngày
             10/02/2015
           </p>
-          <p className="text-white text-sm text-center">© 2025 - Bản quyền thuộc về ElecKing</p>
+          <p className="text-white text-sm text-center">
+            © {currentYear} - Bản quyền thuộc về ElecKing
+          </p>
         </div>
       </div>
     </footer>

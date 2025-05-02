@@ -44,7 +44,7 @@ function BottomNavigation() {
       </Drawer>
       <Drawer
         closable={false}
-        height="80vh"
+        height="70vh"
         placement={"bottom"}
         open={showDrawer.more}
         onClose={() => setShoDrawer({ more: false, menu: false })}

@@ -452,8 +452,10 @@ function Header() {
                   ref={refSearch}
                   type="text"
                   value={state.search}
-                  onFocus={() => setShowModal({ menu: false, search: true })}
-                  onChange={(e) => dispatch(actions.set_search(e.target.value))}
+                  onChange={(e) => {
+                    setShowModal({ menu: false, search: true });
+                    dispatch(actions.set_search(e.target.value));
+                  }}
                   className="w-full h-full rounded-lg border border-stone-300 pl-4 pr-20 outline-primaryDark"
                   placeholder="Bạn cần tìm gì ?"
                 />

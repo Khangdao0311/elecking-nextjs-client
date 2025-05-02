@@ -23,8 +23,12 @@ function Login() {
   const router = useRouter();
 
   const validationSchema = Yup.object().shape({
-    account: Yup.string().required("Vui lòng nhập tên tài khoản"),
-    password: Yup.string().required("Vui lòng nhập mật khẩu"),
+    account: Yup.string()
+      .matches(/^\S+$/, "Tên tài khoản không được chứa khoảng trắng")
+      .required("Vui lòng nhập tên tài khoản"),
+    password: Yup.string()
+      .matches(/^\S+$/, "Mật khẩu không được chứa khoảng trắng")
+      .required("Vui lòng nhập mật khẩu"),
   });
 
   useEffect(() => {

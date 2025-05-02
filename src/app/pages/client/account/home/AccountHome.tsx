@@ -39,7 +39,7 @@ function AccountHome() {
   }, []);
 
   useEffect(() => {
-    async function _() {
+    (async function () {
       const _: IProduct[] = [];
       if (state.wish.length || !productsWish.length) {
         for (const id of state.wish) {
@@ -49,19 +49,18 @@ function AccountHome() {
         }
       }
       setProductsWish(_);
-    }
-    _();
+    })();
   }, [state.wish]);
 
   return (
     <>
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-1/5 max-w-40 aspect-square border-2 border-primary rounded-full overflow-hidden shadow-xl">
+          <div className="w-1/5 max-w-40 aspect-square border-2 border-primary rounded-full overflow-hidden shadow-xl center-flex">
             {state?.user?.avatar ? (
               <img src={state?.user?.avatar} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
-              <FaCircleUser className=" text-gray-400 w-full h-full" />
+              <FaUser className=" text-gray-400 w-1/2 h-1/2" />
             )}
           </div>
           <div className="flex items-start flex-col gap-2.5 w-fulls">

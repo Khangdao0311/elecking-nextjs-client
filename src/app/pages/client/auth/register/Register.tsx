@@ -24,9 +24,16 @@ function Register() {
   const router = useRouter();
 
   const validationSchema = Yup.object().shape({
-    fullname: Yup.string().required("Vui lòng nhập Họ và Tên"),
-    email: Yup.string().email("Email không hợp lệ").required("vui lòng nhập Email"),
-    username: Yup.string().required("Vui lòng nhập tên tài khoản"),
+    fullname: Yup.string()
+      .trim("Họ và Tên không được chứa khoảng trắng ở đầu hoặc cuối")
+      .required("Vui lòng nhập Họ và Tên"),
+    email: Yup.string()
+      .trim("Họ và Tên không được chứa khoảng trắng ở đầu hoặc cuối")
+      .email("Email không hợp lệ")
+      .required("vui lòng nhập Email"),
+    username: Yup.string()
+      .matches(/^\S+$/, "Tên tài khoản không được chứa khoảng trắng")
+      .required("Vui lòng nhập tên tài khoản"),
     password: Yup.string().required("Vui lòng nhập mật khẩu"),
     repeatPassword: Yup.string()
       .oneOf([Yup.ref("password")], "Mật khẩu không khớp")

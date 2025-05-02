@@ -116,7 +116,7 @@ function ProductDetail() {
 
     if (!isSame) {
       cartNew.push({
-        checked: false,
+        checked: true ,
         product: {
           id: product?.id,
           variant: iVariant,

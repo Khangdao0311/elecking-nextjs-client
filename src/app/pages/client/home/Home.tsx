@@ -17,14 +17,18 @@ import * as productServices from "@/app/services/productService";
 import ProductLoad from "@/app/components/client/ProductLoad";
 import Product from "@/app/components/client/Product";
 import Shimmer from "@/app/components/client/Shimmer";
+import images from "@/app/assets";
 
 const imageSlide = [
-  "https://mainguyen.sgp1.digitaloceanspaces.com/231474/banner-samsung.jpg",
-  "https://www.homecredit.vn/static/cdf3446968e365f4f8fbc9266010e77a/ab7c8/mua_tra_gop_iphone_16_banner_74273b74f0.webp",
-  "https://mainguyen.sgp1.digitaloceanspaces.com/231652/MASS-Pre-Order---Galaxy-Watch6-Combo-KV--.jpg",
-  "https://phonghoa.vn/wp-content/uploads/2023/09/Banner-CTKM-TV.png",
-  "https://www.homepaylater.vn/static/b551d25f15763d30e744f2e3cf7eb8e4/dong_ho_thong_minh_banner_518c452056.jpg",
+  images.slide1,
+  images.slide2,
+  images.slide3,
+  images.slide4,
+  images.slide5,
+  images.slide6,
 ];
+
+const imageBanner = [images.banner1, images.banner2, images.banner3];
 
 function Home() {
   const [state, dispatch] = useStore();
@@ -98,9 +102,9 @@ function Home() {
           <Fragment>
             <Shimmer image className={`w-full  aspect-[3/1]`} />
             <div className="hidden md:grid grid-cols-3 gap-4">
-              <Shimmer image className={`w-full  h-36`} />
-              <Shimmer image className={`w-full  h-36`} />
-              <Shimmer image className={`w-full  h-36`} />
+              <Shimmer image className={`w-full h-36`} />
+              <Shimmer image className={`w-full h-36`} />
+              <Shimmer image className={`w-full h-36`} />
             </div>
           </Fragment>
         ) : (
@@ -132,27 +136,14 @@ function Home() {
               </button>
             </Swiper>
             <div className="hidden md:grid grid-cols-3 gap-4">
-              <div className="!aspect-[3/1] rounded-lg shadow-lg overflow-hidden border border-gray-300">
-                <img
-                  className="w-full h-full"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/m55-9190-9-3-25-right-banner.png"
-                  alt="Banner"
-                />
-              </div>
-              <div className="!aspect-[3/1] rounded-lg shadow-lg overflow-hidden border border-gray-300">
-                <img
-                  className="w-full h-full"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/right-imac-m4-30-12.jpg"
-                  alt="Banner"
-                />
-              </div>
-              <div className="!aspect-[3/1] rounded-lg shadow-lg overflow-hidden border border-gray-300">
-                <img
-                  className="w-full h-full"
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:10/plain/https://dashboard.cellphones.com.vn/storage/s-edu-2-0-right-laptop.jpg"
-                  alt="Banner"
-                />
-              </div>
+              {imageBanner.map((image, index) => (
+                <div
+                  key={index}
+                  className="!aspect-[3/1] rounded-lg shadow-lg overflow-hidden border border-gray-300"
+                >
+                  <img className="w-full h-full" src={image} alt="Banner" />
+                </div>
+              ))}
             </div>
           </Fragment>
         )}
