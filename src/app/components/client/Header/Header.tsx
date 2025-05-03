@@ -420,7 +420,7 @@ function Header() {
               trigger="click"
               open={showModal.menu}
               onOpenChange={(e) => setShowModal({ menu: e, search: false })}
-              zIndex={101}
+              zIndex={102}
               styles={{ body: { padding: 0, overflow: "hidden", minWidth: "240px" } }}
               content={
                 <MenuCategory onClose={() => setShowModal({ menu: false, search: false })} />
@@ -444,6 +444,7 @@ function Header() {
                 open={showModal.search}
                 trigger="click"
                 onOpenChange={(e) => setShowModal({ menu: false, search: e })}
+                zIndex={102}
                 content={
                   <ResultSearch onClose={() => setShowModal({ menu: false, search: false })} />
                 }

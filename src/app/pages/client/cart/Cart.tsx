@@ -1022,7 +1022,7 @@ function Cart() {
         </section>
 
         <div className="h-48"></div>
-        <section className="fixed left-0 right-0 bottom-0 z-[101] sm:bottom-0 w-full">
+        <section className="fixed left-0 right-0 bottom-0 z-[98] sm:bottom-0 w-full">
           {state.load && (
             <div className="container-custom  p-4 bg-white border border-gray-300 rounded-2xl shadow-xl">
               <div className="flex  flex-col lg:flex-row justify-betweens border-t border-b p-2 border-dotted mb-2 gap-2.5 ">

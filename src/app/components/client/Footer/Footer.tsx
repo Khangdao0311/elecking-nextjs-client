@@ -32,15 +32,15 @@ function Footer() {
             <p className="w-full text-base text-black ">Liên hệ với ElecKing</p>
             <p className="w-full text-base text-black ">Flash Sale</p>
             <p className="w-full text-base text-black flex items-center gap-2">
-              <IoMailOutline className="w-5 h-5" />
+              <IoMailOutline className="w-5 h-5 shrink-0" />
               <span>elecking.store@gmail.com</span>
             </p>
             <p className="w-full text-base text-black flex items-center gap-2">
-              <BsTelephone className="w-5 h-5" />
+              <BsTelephone className="w-5 h-5 shrink-0" />
               <span>0976123456</span>
             </p>
             <p className="w-full text-base text-black flex items-center gap-2">
-              <SlLocationPin className="w-5 h-5" />
+              <SlLocationPin className="w-5 h-5 shrink-0" />
               <span> Tòa T Công Viên Phần Mềm Quang Trung, Quang Trung, Q12, Việt Nam</span>
             </p>
           </div>
@@ -56,12 +56,12 @@ function Footer() {
             <div className="w-16 h-8 p-1 bg-white border border-thirdaryDark rounded-md">
               <img src={images.vnpay} alt="payment" />
             </div>
-            <div className="w-16 h-8 p-1 bg-white border border-thirdaryDark rounded-md">
+            {/* <div className="w-16 h-8 p-1 bg-white border border-thirdaryDark rounded-md">
               <img src={images.momo} alt="payment" />
             </div>
             <div className="w-16 h-8 p-1 bg-white border border-thirdaryDark rounded-md">
               <img src={images.zalopay} alt="payment" />
-            </div>
+            </div> */}
           </div>
           <div className="text-base font-bold bg-gradient-to-r from-thirdaryDark to-thirdary text-transparent bg-clip-text py-3">
             PHƯƠNG THỨC VẬN CHUYỂN
@@ -94,15 +94,15 @@ function Footer() {
           </div>
           <div className="flex flex-col gap-3 px-2">
             <p className="w-full text-base text-black flex items-center gap-2">
-              <FaFacebook className="w-5 h-5" />
+              <FaFacebook className="w-5 h-5 shrink-0" />
               <span>Facebook</span>
             </p>
             <p className="w-full text-base text-black flex items-center gap-2">
-              <FaInstagram className="w-5 h-5" />
+              <FaInstagram className="w-5 h-5 shrink-0" />
               <span>Instagram</span>
             </p>
             <p className="w-full text-base text-black flex items-center gap-2">
-              <FaTiktok className="w-5 h-5" />
+              <FaTiktok className="w-5 h-5 shrink-0" />
               <span>TikTok</span>
             </p>
           </div>

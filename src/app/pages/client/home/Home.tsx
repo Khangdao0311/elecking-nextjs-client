@@ -234,7 +234,7 @@ function Home() {
       </section>
 
       {/* Promot*/}
-      <section className="hidden md:flex container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
+      {/* <section className="hidden md:flex container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         {state.load ? (
           <Shimmer image className={`w-full h-20`} />
         ) : (
@@ -244,7 +244,7 @@ function Home() {
             alt=""
           />
         )}
-      </section>
+      </section> */}
 
       {/* Sản Phẩm Nổi Bật */}
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
