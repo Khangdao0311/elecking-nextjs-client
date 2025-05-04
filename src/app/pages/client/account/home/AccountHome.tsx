@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaAngleLeft, FaAngleRight, FaCircleUser, FaUser } from "react-icons/fa6";
+import { FaAngleLeft, FaAngleRight, FaUser } from "react-icons/fa6";
 import { ImFire } from "react-icons/im";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";

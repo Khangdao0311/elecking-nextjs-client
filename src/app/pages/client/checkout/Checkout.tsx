@@ -5,6 +5,9 @@ import { FaChevronRight, FaMapLocationDot } from "react-icons/fa6";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Modal } from "antd";
 import Cookies from "js-cookie";
+import { BsChevronRight } from "react-icons/bs";
+import TextArea from "antd/es/input/TextArea";
+import { LuTicket } from "react-icons/lu";
 
 import config from "@/app/config";
 import { useStore, actions } from "@/app/store";
@@ -16,14 +19,11 @@ import * as authServices from "@/app/services/authService";
 import ModalVoucher from "@/app/components/client/Modal/ModalVoucher";
 import ModalAddressNew from "@/app/components/client/Modal/ModalAddress/New";
 import ModalAddressEdit from "@/app/components/client/Modal/ModalAddress/Edit";
-import ModalAddress from "./components/ModalAddress";
-import ModalPaymentMethod from "./components/ModalPaymentMethod";
 import Loading from "@/app/components/client/Loading";
 import Shimmer from "@/app/components/client/Shimmer";
-import { BsChevronRight } from "react-icons/bs";
-import TextArea from "antd/es/input/TextArea";
-import { LuTicket } from "react-icons/lu";
 import ModalNotification from "@/app/components/client/Modal/ModalNotification";
+import ModalAddress from "./components/ModalAddress";
+import ModalPaymentMethod from "./components/ModalPaymentMethod";
 
 function Checkout() {
   const [state, dispatch] = useStore();

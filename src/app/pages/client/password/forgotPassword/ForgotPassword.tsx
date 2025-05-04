@@ -1,7 +1,6 @@
 "use client";
 
 import { GoArrowLeft } from "react-icons/go";
-import { notification } from "antd";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -12,11 +11,13 @@ import config from "@/app/config";
 import * as authServices from "@/app/services/authService";
 import Loading from "@/app/components/client/Loading";
 import { useStore, actions } from "@/app/store";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 
 function ForgotPassword() {
   const [state, dispatch] = useStore();
   const [sent, setSent] = useState(false);
   const [email, setEmail] = useState("");
+  const [notification, setNotification] = useState<any>({ status: null, message: "" });
   const [loading, setLoading] = useState(false);
 
   const validationSchema = Yup.object().shape({
@@ -24,19 +25,6 @@ function ForgotPassword() {
   });
 
   const router = useRouter();
-
-  const [api, contextHolder] = notification.useNotification();
-  const openNotification = (message: string) => {
-    api.error({
-      message: message,
-      placement: "topRight",
-      style: {
-        width: "fit-content",
-        display: "inline-block",
-        whiteSpace: "nowrap",
-      },
-    });
-  };
 
   function handleSendFogotPassword(values: any) {
     setLoading(true);
@@ -46,7 +34,7 @@ function ForgotPassword() {
         setSent(true);
         setEmail(values.email);
       } else {
-        openNotification(res.message);
+        setNotification({ status: false, message: res.message });
       }
     });
   }
@@ -54,7 +42,7 @@ function ForgotPassword() {
   return (
     <>
       {loading && <Loading />}
-      {contextHolder}
+      <ModalNotification noti={notification} />
       <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 center-flex mt-4">
         {!sent && (
           <Formik

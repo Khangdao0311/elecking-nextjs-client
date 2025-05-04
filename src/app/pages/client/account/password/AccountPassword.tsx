@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Input, message, Modal } from "antd";
-import { FaCircleCheck, FaCircleExclamation, FaUser } from "react-icons/fa6";
+import { Input } from "antd";
+import { FaUser } from "react-icons/fa6";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Cookies from "js-cookie";
@@ -13,7 +13,7 @@ import * as authServices from "@/app/services/authService";
 import Shimmer from "@/app/components/client/Shimmer";
 import config from "@/app/config";
 import Loading from "@/app/components/client/Loading";
-import ModalNotification from "@/app/components/client/Modal/ModalNotification/ModalMotification";
+import ModalNotification from "@/app/components/client/Modal/ModalNotification";
 
 function AccountPassword() {
   const [state, dispatch] = useStore();

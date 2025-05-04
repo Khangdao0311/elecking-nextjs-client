@@ -7,7 +7,6 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 import * as reviewServices from "@/app/services/reviewService";
-import * as uploadServices from "@/app/services/uploadService";
 import * as authServices from "@/app/services/authService";
 import { useStore, actions } from "@/app/store";
 import config from "@/app/config";

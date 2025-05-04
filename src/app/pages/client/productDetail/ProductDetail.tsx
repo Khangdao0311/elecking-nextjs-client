@@ -4,13 +4,11 @@ import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { useParams, useRouter } from "next/navigation";
-import { Image, Modal, Pagination, Rate, Select } from "antd";
+import { Image, Pagination, Rate, Select } from "antd";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
   FaAngleLeft,
   FaAngleRight,
-  FaCircleCheck,
-  FaCircleExclamation,
   FaCircleUser,
   FaHeart,
   FaMinus,
@@ -27,14 +25,14 @@ import Product from "@/app/components/client/Product";
 import * as productServices from "@/app/services/productService";
 import * as authServices from "@/app/services/authService";
 import * as reviewServices from "@/app/services/reviewService";
-import ProductColor from "./components/ProductColor";
-import ProductVariant from "./components/ProductVariant";
 import config from "@/app/config";
 import { useStore, actions } from "@/app/store";
 import ProductLoad from "@/app/components/client/ProductLoad";
 import Shimmer from "@/app/components/client/Shimmer";
 import Loading from "@/app/components/client/Loading";
 import ModalNotification from "@/app/components/client/Modal/ModalNotification";
+import ProductColor from "./components/ProductColor";
+import ProductVariant from "./components/ProductVariant";
 
 function ProductDetail() {
   const [state, dispatch] = useStore();
@@ -116,7 +114,7 @@ function ProductDetail() {
 
     if (!isSame) {
       cartNew.push({
-        checked: true ,
+        checked: true,
         product: {
           id: product?.id,
           variant: iVariant,

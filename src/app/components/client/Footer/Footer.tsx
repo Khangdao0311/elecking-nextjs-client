@@ -1,5 +1,4 @@
 import { BsTelephone } from "react-icons/bs";
-import { CiLocationOn } from "react-icons/ci";
 import { IoMailOutline } from "react-icons/io5";
 import { SlLocationPin } from "react-icons/sl";
 
