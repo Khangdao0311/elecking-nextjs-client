@@ -58,7 +58,7 @@ function BottomNavigation() {
       {/* ô trống fixed  */}
       <div className="block sm:hidden h-20 mt-4"></div>
       {/*  */}
-      <nav className="z-[100] sm:hidden fixed bottom-0 w-full h-20 bg-white border-t border-gray-200 flex justify-between px-3">
+      <nav className="z-[90] sm:hidden fixed bottom-0 w-full h-20 bg-white border-t border-gray-200 flex justify-between px-3">
         <Link
           onClick={() => {
             if (pathname !== config.routes.client.home) dispatch(actions.set_routing(true));
