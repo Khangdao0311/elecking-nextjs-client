@@ -393,9 +393,7 @@ function OrderList() {
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
                     value={selectedStatus}
-                    disabled={
-                      selectedOrder?.status === 0 || selectedOrder?.status === 1
-                    }
+                    disabled={selectedOrder?.status === 0 || selectedOrder?.status === 1}
                     onChange={(value) => {
                       setSelectedStatus(Number(value));
                     }}
@@ -415,14 +413,19 @@ function OrderList() {
                         label: "Đang vận chuyển",
                         disabled: ![2, 3, 4].includes(selectedOrder?.status),
                       },
-                      { value: 1, label: "Đã giao hàng" },
+                      {
+                        value: 1,
+                        label: "Đã giao hàng",
+                        disabled: [2, 3].includes(selectedOrder?.status),
+                      },
                       {
                         value: 0,
                         label: "Hủy đơn",
-                        disabled: selectedOrder?.payment_status
-                      }
+                        disabled: selectedOrder?.payment_status,
+                      },
                     ]}
                   />
+
                 </div>
                 <div className="flex w-full gap-1.5">
                   <p className="text-sm font-medium">Loại địa chỉ:</p>

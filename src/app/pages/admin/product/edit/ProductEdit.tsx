@@ -43,7 +43,15 @@ function ProductEdit() {
   >([]);
   const [filteredImages, setFilteredImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false)
-
+  
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
 
   const { id }: any = useParams();
 
@@ -94,7 +102,7 @@ function ProductEdit() {
             ...color,
             image: color.image
               ? {
-                  uid: crypto.randomUUID(),
+                  uid: generateUUID(),
                   name: color.image.split("/").pop(),
                   status: "done",
                   url: color.image,
@@ -124,7 +132,7 @@ function ProductEdit() {
         if (Array.isArray(res.data.images)) {
           setImages(
             res.data.images.map((imgUrl: any, index: any) => ({
-              uid: crypto.randomUUID(),
+              uid: generateUUID(),
               name: imgUrl.split("/").pop(),
               status: "done",
               url: imgUrl,
@@ -222,7 +230,7 @@ function ProductEdit() {
 
   const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
-      uid: crypto.randomUUID(),
+      uid: generateUUID(),
       name: file.name,
       status: "uploading",
       originFileObj: file as RcFile,

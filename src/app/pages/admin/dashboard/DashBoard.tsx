@@ -127,11 +127,11 @@ function DashBoard() {
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
-      voucherServices.getQuery(query).then((res) => {
-        if (res.status === 200) {
-          setVoucher(res.total);
-        } 
-      });
+    voucherServices.getQuery(query).then((res) => {
+      if (res.status === 200) {
+        setVoucher(res.total);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -509,7 +509,7 @@ function DashBoard() {
                   <div className="border border-dotted text-neutral-300"></div>
                 </div>
               </Link>
-              <Link href={`${config.routes.admin.order.list}?year=${yearnew}`}  className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
+              <Link href={`${config.routes.admin.order.list}?year=${yearnew}`} className="p-2.5 flex gap-2.5 w-1/4 h-[120px] rounded-lg border shadow-md">
                 <div className="w-[104px] bg-amber-100 flex items-center justify-center rounded-lg">
                   <FaBasketShopping className="w-[50px] h-[50px] text-amber-600" />
                 </div>
@@ -625,9 +625,7 @@ function DashBoard() {
                   <Select
                     className="h-[28px] w-full shadow-md rounded"
                     value={selectedStatus}
-                    disabled={
-                      selectedOrder?.status === 0 || selectedOrder?.status === 1
-                    }
+                    disabled={selectedOrder?.status === 0 || selectedOrder?.status === 1}
                     onChange={(value) => {
                       setSelectedStatus(Number(value));
                     }}
@@ -647,7 +645,16 @@ function DashBoard() {
                         label: "Đang vận chuyển",
                         disabled: ![2, 3, 4].includes(selectedOrder?.status),
                       },
-                      { value: 1, label: "Đã giao hàng" },
+                      {
+                        value: 1,
+                        label: "Đã giao hàng",
+                        disabled: [2, 3].includes(selectedOrder?.status),
+                      },
+                      {
+                        value: 0,
+                        label: "Hủy đơn",
+                        disabled: selectedOrder?.payment_status,
+                      },
                     ]}
                   />
                 </div>
@@ -754,7 +761,7 @@ function DashBoard() {
                 <img
                   className="w-full h-full rounded-lg"
                   src={userDetail?.avatar}
-                  alt={userDetail?.username}
+                  alt={userDetail?.username}  
                 />
               ) : (
                 <FaCircleUser className="w-[50px] h-[50px] text-gray-800" />
