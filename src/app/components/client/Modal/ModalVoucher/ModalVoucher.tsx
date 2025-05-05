@@ -20,7 +20,21 @@ function ModalVoucher({ orderPrice, voucher, setVoucher, onClose }: any) {
 
   useEffect(() => {
     voucherServices.getQuery({ limit: 0 }).then((res: any) => {
-      if (res.status === 200) setVouchers(res.data);
+      if (res.status === 200) {
+        setVouchers(
+          res.data.sort((a: any, b: any) => {
+            const aEligible = orderPrice > a.min_order_value ? 1 : 0;
+            const bEligible = orderPrice > b.min_order_value ? 1 : 0;
+
+            if (aEligible !== bEligible) {
+              return bEligible - aEligible; // Voucher đủ điều kiện được ưu tiên
+            }
+
+            // Nếu cùng điều kiện thì sắp xếp theo max_discount giảm dần
+            return b.max_discount - a.max_discount;
+          })
+        );
+      }
     });
   }, []);
 
