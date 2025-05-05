@@ -577,7 +577,7 @@ function UserList() {
             <div className="flex gap-2">
               <p className="text-base font-normal">Số điện thoại:</p>
               <span className="text-base font-base font-bold uppercase">
-                {infouser?.phone ? infouser.phone : 'Không có'}
+              {userorderdetail?.address.phone}
               </span>
             </div>
             <div className="flex text-base font-medium col-span-2 gap-2">
