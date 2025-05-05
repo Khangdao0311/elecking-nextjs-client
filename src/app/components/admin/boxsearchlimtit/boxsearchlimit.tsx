@@ -45,10 +45,10 @@ const BoxSearchLimit = ({
   const preValue = useRef(searchValue);
   
   useEffect(() => {
-    if(searchValue === "" && preValue.current !== ""){
+    if(searchValue.trim() === "" && preValue.current.trim() !== ""){
       handleSearch();
     }
-    preValue.current = searchValue;
+    preValue.current = searchValue.trim();
   }, [searchValue]);
 
   return (

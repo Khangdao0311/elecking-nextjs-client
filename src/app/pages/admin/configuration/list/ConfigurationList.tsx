@@ -51,11 +51,7 @@ function ConfigurationList() {
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotificationWithIcon = (
-    type: NotificationType,
-    message: any,
-    description: any
-  ) => {
+  const openNotificationWithIcon = (type: NotificationType, message: any, description: any) => {
     api[type]({
       message: message,
       description: description,
@@ -179,46 +175,36 @@ function ConfigurationList() {
     if (nameCatConfiguration) {
       (function callback() {
         if (nameCatConfiguration) {
-          proptypeServices
-            .addProptype({ name: nameCatConfiguration })
-            .then((res) => {
-              if (res.status === 200) {
-                openNotificationWithIcon(
-                  "success",
-                  "Thành công",
-                  "Thêm danh mục cấu hình thành công"
-                );
-                setNameCatConfiguration("");
-                dispatch(actions.re_render());
-              } else if (res.status === 401) {
-                const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
-                if (resfreshTokenAdmin) {
-                  authServices.getToken(resfreshTokenAdmin).then((res) => {
-                    if (res.status === 200) {
-                      Cookies.set("access_token_admin", res.data);
-                      callback();
-                    } else {
-                      authServices.clearAdmin();
-                      router.push(config.routes.admin.login);
-                    }
-                  });
-                }
+          proptypeServices.addProptype({ name: nameCatConfiguration }).then((res) => {
+            if (res.status === 200) {
+              openNotificationWithIcon(
+                "success",
+                "Thành công",
+                "Thêm danh mục cấu hình thành công"
+              );
+              setNameCatConfiguration("");
+              dispatch(actions.re_render());
+            } else if (res.status === 401) {
+              const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+              if (resfreshTokenAdmin) {
+                authServices.getToken(resfreshTokenAdmin).then((res) => {
+                  if (res.status === 200) {
+                    Cookies.set("access_token_admin", res.data);
+                    callback();
+                  } else {
+                    authServices.clearAdmin();
+                    router.push(config.routes.admin.login);
+                  }
+                });
               }
-            });
+            }
+          });
         } else {
-          openNotificationWithIcon(
-            "error",
-            "Lỗi dữ liệu",
-            "Vui lòng nhập đầy đủ thông tin"
-          );
+          openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
         }
       })();
     } else {
-      openNotificationWithIcon(
-        "error",
-        "Lỗi dữ liệu",
-        "Vui lòng nhập đầy đủ thông tin"
-      );
+      openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
     }
   }
 
@@ -250,46 +236,34 @@ function ConfigurationList() {
 
   function handleEditCatConfiguration() {
     if (nameCatConfiguration) {
-    (function callback() {
-      proptypeServices
-        .editProptype(idCatConfiguration, { name: nameCatConfiguration })
-        .then((res) => {
-          if (res.status === 200) {
-            openNotificationWithIcon(
-              "success",
-              "Thành công",
-              "Sửa danh mục cấu hình thành công"
-            );
-            setShowEditCatConfiguration(false);
-            dispatch(actions.re_render());
-          } else if (res.status === 401) {
-            const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
-            if (resfreshTokenAdmin) {
-              authServices.getToken(resfreshTokenAdmin).then((res) => {
-                if (res.status === 200) {
-                  Cookies.set("access_token_admin", res.data);
-                  callback();
-                } else {
-                  authServices.clearAdmin();
-                  router.push(config.routes.admin.login);
-                }
-              });
-            } else {
-              openNotificationWithIcon(
-                "error",
-                "Lỗi dữ liệu",
-                "Vui lòng nhập đầy đủ thông tin"
-              );
+      (function callback() {
+        proptypeServices
+          .editProptype(idCatConfiguration, { name: nameCatConfiguration })
+          .then((res) => {
+            if (res.status === 200) {
+              openNotificationWithIcon("success", "Thành công", "Sửa danh mục cấu hình thành công");
+              setShowEditCatConfiguration(false);
+              dispatch(actions.re_render());
+            } else if (res.status === 401) {
+              const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+              if (resfreshTokenAdmin) {
+                authServices.getToken(resfreshTokenAdmin).then((res) => {
+                  if (res.status === 200) {
+                    Cookies.set("access_token_admin", res.data);
+                    callback();
+                  } else {
+                    authServices.clearAdmin();
+                    router.push(config.routes.admin.login);
+                  }
+                });
+              } else {
+                openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
+              }
             }
-          }
-        });
-    })();
+          });
+      })();
     } else {
-      openNotificationWithIcon(
-        "error",
-        "Lỗi dữ liệu",
-        "Vui lòng nhập đầy đủ thông tin"
-      );
+      openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
     }
   }
 
@@ -313,11 +287,7 @@ function ConfigurationList() {
           })
           .then((res) => {
             if (res.status == 200) {
-              openNotificationWithIcon(
-                "success",
-                "Thành công",
-                "Thêm cấu hình thành công"
-              );
+              openNotificationWithIcon("success", "Thành công", "Thêm cấu hình thành công");
               setNameConfiguration("");
               setSelectedProptype([]);
               dispatch(actions.re_render());
@@ -335,68 +305,48 @@ function ConfigurationList() {
                 });
               }
             } else {
-              openNotificationWithIcon(
-                "error",
-                "Lỗi dữ liệu",
-                "Vui lòng nhập đầy đủ thông tin"
-              );
+              openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
             }
           });
       })();
     } else {
-      openNotificationWithIcon(
-        "error",
-        "Lỗi dữ liệu",
-        "Vui lòng nhập đầy đủ thông tin"
-      );
+      openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
     }
   }
 
   function handleEditConfiguration() {
     if (nameConfiguration && selectedProptype) {
-    (function callback() {
-      propertyServices
-        .editProperty(idConfiguration, {
-          name: nameConfiguration,
-          proptype_id: selectedProperty,
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            openNotificationWithIcon(
-              "success",
-              "Sửa thành công",
-              "Sửa tên cấu hình thành công"
-            );
-            setShowEditConfiguration(false);
-            dispatch(actions.re_render());
-          } else if (res.status === 401) {
-            const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
-            if (resfreshTokenAdmin) {
-              authServices.getToken(resfreshTokenAdmin).then((res) => {
-                if (res.status === 200) {
-                  Cookies.set("access_token_admin", res.data);
-                  callback();
-                } else {
-                  authServices.clearAdmin();
-                  router.push(config.routes.admin.login);
-                }
-              });
+      (function callback() {
+        propertyServices
+          .editProperty(idConfiguration, {
+            name: nameConfiguration,
+            proptype_id: selectedProperty,
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              openNotificationWithIcon("success", "Sửa thành công", "Sửa tên cấu hình thành công");
+              setShowEditConfiguration(false);
+              dispatch(actions.re_render());
+            } else if (res.status === 401) {
+              const resfreshTokenAdmin = authServices.getRefreshTokenAdmin();
+              if (resfreshTokenAdmin) {
+                authServices.getToken(resfreshTokenAdmin).then((res) => {
+                  if (res.status === 200) {
+                    Cookies.set("access_token_admin", res.data);
+                    callback();
+                  } else {
+                    authServices.clearAdmin();
+                    router.push(config.routes.admin.login);
+                  }
+                });
+              }
+            } else {
+              openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
             }
-          } else {
-            openNotificationWithIcon(
-              "error",
-              "Lỗi dữ liệu",
-              "Vui lòng nhập đầy đủ thông tin"
-            );
-          }
-        });
-    })();
+          });
+      })();
     } else {
-      openNotificationWithIcon(
-        "error",
-        "Lỗi dữ liệu",
-        "Vui lòng nhập đầy đủ thông tin"
-      );
+      openNotificationWithIcon("error", "Lỗi dữ liệu", "Vui lòng nhập đầy đủ thông tin");
     }
   }
 
@@ -542,16 +492,13 @@ function ConfigurationList() {
               <div className="flex items-center gap-4">
                 <div className="flex gap-0.5 flex-col">
                   <div className="text-sm font-medium">
-                    Tên Danh Mục Cấu Hình{" "}
-                    <span className="text-primary">*</span>
+                    Tên Danh Mục Cấu Hình <span className="text-primary">*</span>
                   </div>
                   <Input
                     value={nameCatConfiguration}
-                    onChange={(e: any) =>
-                      setNameCatConfiguration(e.target.value)
-                    }
+                    onChange={(e: any) => setNameCatConfiguration(e.target.value)}
                     className="w-[268px] h-11 "
-                    placeholder="Nhập Tên Danh Mục"
+                    placeholder="Nhập Tên Danh Mục Cấu Hình"
                   />
                 </div>
               </div>
@@ -586,22 +533,19 @@ function ConfigurationList() {
             <div className="w-full flex flex-col gap-6">
               <div className="w-full">
                 <div className="w-full p-2.5 text-2xl font-semibold border-b-2 border-primary">
-                  Sửa Mới Danh Mục Cấu Hình
+                  Sửa Danh Mục Cấu Hình
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex gap-0.5 flex-col">
                   <div className="text-sm font-medium">
-                    Tên Danh Mục Cấu Hình{" "}
-                    <span className="text-primary">*</span>
+                    Tên Danh Mục Cấu Hình <span className="text-primary">*</span>
                   </div>
                   <Input
                     value={nameCatConfiguration}
-                    onChange={(e: any) =>
-                      setNameCatConfiguration(e.target.value)
-                    }
+                    onChange={(e: any) => setNameCatConfiguration(e.target.value)}
                     className="w-[268px] h-11 "
-                    placeholder="Nhập Tên Danh Mục"
+                    placeholder="Nhập Tên Danh Mục Cấu Hình"
                   />
                 </div>
               </div>
@@ -649,7 +593,7 @@ function ConfigurationList() {
                     value={nameConfiguration}
                     onChange={(e: any) => setNameConfiguration(e.target.value)}
                     className="w-[268px] h-11 "
-                    placeholder="Nhập Tên Danh Mục"
+                    placeholder="Nhập Tên Cấu Hình"
                   />
                 </div>
               </div>
@@ -658,7 +602,7 @@ function ConfigurationList() {
                   Tên Danh Mục Cấu Hình <span className="text-primary">*</span>
                 </div>
                 <Select
-                  placeholder="Inserted are removed"
+                  placeholder="Nhập Tên Danh Mục Cấu Hình"
                   value={selectedProptype}
                   onChange={handleChangeProptype}
                   className=" min-w-[268px] h-[44px] flex items-center justify-center"
@@ -722,7 +666,7 @@ function ConfigurationList() {
                     value={nameConfiguration}
                     onChange={(e: any) => setNameConfiguration(e.target.value)}
                     className="w-[268px] h-11 "
-                    placeholder="Nhập Tên Danh Mục"
+                    placeholder="Nhập Tên Cấu Hình"
                   />
                 </div>
               </div>
@@ -731,7 +675,7 @@ function ConfigurationList() {
                   Cấu hình <span className="text-primary">*</span>
                 </div>
                 <Select
-                  placeholder="Inserted are removed"
+                  placeholder="Nhập Tên Danh Mục Cấu Hình"
                   value={selectedProperty}
                   onChange={handleChangeProperty}
                   className=" min-w-[268px] h-[44px] flex items-center justify-center"
