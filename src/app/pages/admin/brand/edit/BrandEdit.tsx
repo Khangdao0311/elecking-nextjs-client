@@ -35,6 +35,7 @@ function BrandEdit() {
   const [loading, setLoading] = useState(false)
 
   const router = useRouter();
+  
 
   type NotificationType = "success" | "info" | "warning" | "error";
   const [api, contextHolder] = notification.useNotification();
@@ -50,6 +51,14 @@ function BrandEdit() {
     });
   };
 
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
   useEffect(() => {
     brandServices.getById(`${id}`).then((res) => {
       if (res.status === 200) {
@@ -62,7 +71,7 @@ function BrandEdit() {
         if (res.data.logo) {
           setLogo([
             {
-              uid: crypto.randomUUID(),
+              uid: generateUUID(),
               name: "logo.png",
               status: "done",
               url: res.data.logo,
@@ -72,7 +81,7 @@ function BrandEdit() {
         if (res.data.banner) {
           setBanner([
             {
-              uid: crypto.randomUUID(),
+              uid: generateUUID(),
               name: "banner.png",
               status: "done",
               url: res.data.banner,
@@ -124,7 +133,7 @@ function BrandEdit() {
 
   const handleBeforeUpload = (file: File, type: "logo" | "banner") => {
     const newFile: UploadFile = {
-      uid: crypto.randomUUID(),
+      uid: generateUUID(),
       name: file.name,
       status: "uploading",
       originFileObj: file as RcFile,

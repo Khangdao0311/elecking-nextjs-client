@@ -48,6 +48,14 @@ function CategoryEdit() {
     });
   };
 
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
   useEffect(() => {
     const query = { limit: 0 };
     proptypeServices.getQuery(query).then((res) => {
@@ -71,7 +79,7 @@ function CategoryEdit() {
         if (res.data.image) {
           setImage([
             {
-              uid: crypto.randomUUID(),
+              uid: generateUUID(),
               name: oldImageName,
               status: "done",
               url: res.data.image,
@@ -81,7 +89,8 @@ function CategoryEdit() {
       }
     });
   }, [id]);
-
+  console.log(image);
+  
   useEffect(() => {
     if (!quillRef.current || !editorContent) return;
 
@@ -178,7 +187,7 @@ function CategoryEdit() {
 
   const beforeUpload = (file: File) => {
     const newfile: UploadFile = {
-      uid: crypto.randomUUID(),
+      uid: generateUUID(),
       name: file.name,
       status: "uploading",
       originFileObj: file as RcFile,

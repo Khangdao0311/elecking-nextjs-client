@@ -27,7 +27,14 @@ function BrandAdd() {
   const [banner, setBanner] = useState<UploadFile[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
   const [api, contextHolder] = notification.useNotification();
@@ -49,7 +56,7 @@ function BrandAdd() {
 
   const handleBeforeUpload = (file: File, type: "logo" | "banner") => {
     const newFile: UploadFile = {
-      uid: crypto.randomUUID(),
+      uid: generateUUID(),
       name: file.name,
       status: "uploading",
       originFileObj: file as RcFile,
@@ -246,7 +253,6 @@ function BrandAdd() {
           <div className="mt-[60px]">
             <Space>
               <Button
-                loading={loading}
                 back={config.routes.admin.brand.list}
                 onClick={() => {
                   if (!name.trim() || !imgBrand?.length || !imgBanner?.length || !description.trim()) {
@@ -261,7 +267,6 @@ function BrandAdd() {
                   formData.append("images", imgBrand[0].originFileObj as File);
                   formData.append("images", imgBanner[0].originFileObj as File);
 
-                  setLoading(true);
                   (async function callback() {
                     const brandResponse = await brandServices.addBrand(formData)
                     if (brandResponse.status === 200) {
@@ -287,7 +292,6 @@ function BrandAdd() {
                         });
                       }
                     } else {
-                      setLoading(false);
                       openNotificationWithIcon("error", "Lỗi", "Có lỗi xảy ra, vui lòng thử lại");
                     }
                   })();
