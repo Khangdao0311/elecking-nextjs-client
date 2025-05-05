@@ -229,7 +229,7 @@ function ProductDetail() {
         <>
           {/* Chi tiết sản phẩm, giá và type */}
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 ">
-            <div className="flex flex-wrap items-start gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <p className="text-lg font-bold">{product?.name}</p>
               {product?.rating !== null && (
                 <div className="center-flex gap-1">
@@ -245,6 +245,7 @@ function ProductDetail() {
                   <span className="text-base  select-none">( {product?.rating} )</span>
                 </div>
               )}
+              <p className="text-base select-none">{product?.view.toLocaleString("vi-VN")} Lượt xem</p>
             </div>
             <hr className="my-4" />
             <div className="flex flex-col lg:flex-row gap-4">
@@ -809,7 +810,7 @@ function ProductDetail() {
           {/* Sản Phẩm Tương Tự */}
           <section className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 gap-2.5">
             <div className="flex gap-2.5 p-2.5">
-              <p className="text-3xl font-medium">Sản Phẩm Tương Tự</p>
+              <p className="text-3xl font-medium uppercase">Sản Phẩm Tương Tự</p>
             </div>
 
             <Swiper

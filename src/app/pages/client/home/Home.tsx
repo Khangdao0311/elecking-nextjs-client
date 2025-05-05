@@ -152,7 +152,7 @@ function Home() {
       {/* Product Sale */}
       <section className="w-full bg-gradient-to-r from-primaryDark to-primary py-4 px-3 md:px-3.5 lg:px-4 xl:px-0">
         <div className="container-custom py-4 px-3 md:px-3.5 lg:px-4 xl:px-0 flex justify-between  items-center">
-          <div className="flex gap-1.5 ">
+          <div className="flex items-end gap-1.5 ">
             <ImFire className="w-12 h-12 text-white" />
             <p className="text-4xl font-bold text-white">HOT SALE</p>
           </div>
@@ -323,7 +323,7 @@ function Home() {
             }}
             className=" w-full relative group/container container-custom"
           >
-            {productsSale.map((product: IProduct) => (
+            {productsHot.map((product: IProduct) => (
               <SwiperSlide key={product.id}>
                 <Product product={product} />
               </SwiperSlide>
