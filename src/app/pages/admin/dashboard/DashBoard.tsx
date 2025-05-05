@@ -730,7 +730,6 @@ function DashBoard() {
                               : order
                           )
                         );
-                        closeeditorder();
                         openNotificationWithIcon(
                           "success",
                           "Thành công",
