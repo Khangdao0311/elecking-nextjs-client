@@ -64,7 +64,10 @@ function ProductDetail() {
         setProduct(res.data);
         outerLoop: for (let i = 0; i < res.data.variants.length; i++) {
           for (let j = 0; j < res.data.variants[i].colors.length; j++) {
-            if (res.data.variants[i].colors[j].quantity > 0) {
+            if (
+              res.data.variants[i].colors[j].quantity > 0 &&
+              res.data.variants[i].colors[j].status
+            ) {
               setIVariant(i);
               setIColor(j);
               break outerLoop; // Thoát hoàn toàn cả 2 vòng lặp
@@ -245,7 +248,9 @@ function ProductDetail() {
                   <span className="text-base  select-none">( {product?.rating} )</span>
                 </div>
               )}
-              <p className="text-base select-none">{product?.view.toLocaleString("vi-VN")} Lượt xem</p>
+              <p className="text-base select-none">
+                {product?.view.toLocaleString("vi-VN")} Lượt xem
+              </p>
             </div>
             <hr className="my-4" />
             <div className="flex flex-col lg:flex-row gap-4">
@@ -390,23 +395,29 @@ function ProductDetail() {
                     product?.variants?.map((variant, index) => (
                       <div key={index}>
                         <ProductVariant
-                          disabled={!variant.colors.some((e) => e.quantity > 0)}
+                          disabled={!variant.colors.some((e) => e.quantity > 0 && e.status)}
                           name={variant.properties.map((e) => e.name).join(" - ")}
                           price={variant.price - variant.price_sale}
                           checked={index == iVariant}
                           onClick={() => {
                             setIVariant(index);
                             setIColor(
-                              variant.colors.findIndex((e: IProductColor) => e.quantity > 0)
+                              variant.colors.findIndex(
+                                (e: IProductColor) => e.quantity > 0 && e.status
+                              )
                             );
                             mainSwiper?.slideTo(0);
                             setQuantity(
                               quantity >
                                 product.variants[index].colors[
-                                  variant.colors.findIndex((e: IProductColor) => e.quantity > 0)
+                                  variant.colors.findIndex(
+                                    (e: IProductColor) => e.quantity > 0 && e.status
+                                  )
                                 ].quantity
                                 ? product.variants[index].colors[
-                                    variant.colors.findIndex((e: IProductColor) => e.quantity > 0)
+                                    variant.colors.findIndex(
+                                      (e: IProductColor) => e.quantity > 0 && e.status
+                                    )
                                   ].quantity
                                 : quantity
                             );
@@ -423,7 +434,7 @@ function ProductDetail() {
                       (color, index) => (
                         <div key={index}>
                           <ProductColor
-                            disabled={color.quantity === 0}
+                            disabled={color.quantity === 0 || !color.status}
                             image={color.image}
                             color={color.name}
                             price={

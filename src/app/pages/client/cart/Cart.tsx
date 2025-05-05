@@ -98,19 +98,19 @@ function Cart() {
             ...item.product,
             variant: iVariant,
             color: productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
-              (e: IProductColor) => e.quantity > 0
+              (e: IProductColor) => e.quantity > 0 && e.status
             ),
           },
           quantity:
             item.quantity >
             productsCart[iProduct]?.variants[iVariant]?.colors[
               productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
-                (e: IProductColor) => e.quantity > 0
+                (e: IProductColor) => e.quantity > 0 && e.status
               )
             ]?.quantity
               ? productsCart[iProduct]?.variants[iVariant]?.colors[
                   productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
-                    (e: IProductColor) => e.quantity > 0
+                    (e: IProductColor) => e.quantity > 0 && e.status
                   )
                 ]?.quantity
               : item.quantity,
@@ -132,12 +132,12 @@ function Cart() {
           existing.quantity + item.quantity >
           productsCart[iProduct]?.variants[iVariant]?.colors[
             productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
-              (e: IProductColor) => e.quantity > 0
+              (e: IProductColor) => e.quantity > 0 && e.status
             )
           ]?.quantity
             ? productsCart[iProduct]?.variants[iVariant]?.colors[
                 productsCart[iProduct]?.variants[iVariant]?.colors.findIndex(
-                  (e: IProductColor) => e.quantity > 0
+                  (e: IProductColor) => e.quantity > 0 && e.status
                 )
               ]?.quantity
             : existing.quantity + item.quantity;
@@ -797,7 +797,9 @@ function Cart() {
                                         key={ivariant}
                                         onClick={() => {
                                           if (
-                                            variant.colors.some((e: any) => e.quantity > 0) &&
+                                            variant.colors.some(
+                                              (e: any) => e.quantity > 0 && e.status
+                                            ) &&
                                             ivariant != state.cart?.[iProduct]?.product?.variant
                                           ) {
                                             handleChangeVariant(iProduct, ivariant);
@@ -808,7 +810,9 @@ function Cart() {
                                             ? "border-primary"
                                             : "border-gray-300"
                                         } ${
-                                          !variant.colors.some((e: any) => e.quantity > 0)
+                                          !variant.colors.some(
+                                            (e: any) => e.quantity > 0 && e.status
+                                          )
                                             ? "opacity-35"
                                             : "cursor-pointer hover:shadow-xl hover:scale-105"
                                         }`}
@@ -858,6 +862,7 @@ function Cart() {
                                         onClick={() => {
                                           if (
                                             color.quantity > 0 &&
+                                            color.status &&
                                             iColor !== state.cart?.[iProduct]?.product?.color
                                           ) {
                                             handleChangeColor(iProduct, iColor);
@@ -868,7 +873,7 @@ function Cart() {
                                             ? "border-primary"
                                             : "border-gray-300"
                                         } ${
-                                          color.quantity > 0
+                                          color.quantity > 0 && color.status
                                             ? "hover:shadow-xl hover:scale-105 cursor-pointer"
                                             : "opacity-35"
                                         }`}
