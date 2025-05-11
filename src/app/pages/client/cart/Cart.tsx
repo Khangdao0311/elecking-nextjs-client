@@ -1195,10 +1195,12 @@ function Cart() {
                               -{" "}
                               {(voucher.discount_type === 1
                                 ? voucher.discount_value.toLocaleString("vi-VN")
-                                : total.sale - total.sale * (voucher.discount_value / 100) >
+
+
+                                : total.sale * (voucher.discount_value / 100) >
                                   voucher.max_discount
                                 ? voucher.max_discount
-                                : total.sale - total.sale * (voucher.discount_value / 100)
+                                : total.sale * (voucher.discount_value / 100)
                               ).toLocaleString("vi-VN")}
                               ₫
                             </span>
@@ -1212,10 +1214,10 @@ function Cart() {
                               (voucher
                                 ? voucher.discount_type === 1
                                   ? voucher.discount_value
-                                  : total.sale - total.sale * (voucher.discount_value / 100) >
+                                  : total.sale * (voucher.discount_value / 100) >
                                     voucher.max_discount
                                   ? voucher.max_discount
-                                  : total.sale - total.sale * (voucher.discount_value / 100)
+                                  : total.sale * (voucher.discount_value / 100)
                                 : 0)
                             ).toLocaleString("vi-VN")}{" "}
                             ₫
