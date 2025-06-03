@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import config from "@/app/config";
+import config from "@/config";
 
 function Page() {
   const router = useRouter();

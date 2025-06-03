@@ -1,1 +1,1 @@
-export { default } from "@/app/layouts/accountLayout";
+export { default } from "@/layouts/accountLayout";

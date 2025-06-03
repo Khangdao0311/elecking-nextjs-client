@@ -1,5 +1,5 @@
 import Link from "next/link";
-import config from "./config";
+import config from "../config";
 
 export default function NotFound() {
   return (

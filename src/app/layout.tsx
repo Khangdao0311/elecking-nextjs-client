@@ -3,8 +3,8 @@ import "./globals.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Suspense } from "react";
 
-import { StoreProvider } from "@/app/store";
-import Loading from "@/app/components/client/Loading";
+import { StoreProvider } from "@/store";
+import Loading from "@/components/client/Loading";
 
 export const metadata: Metadata = {
   title: "ElecKing",

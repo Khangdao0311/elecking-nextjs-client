@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-import config_ from "@/app/config";
-import * as authServices from "@/app/services/authService";
+import config_ from "@/config";
+import * as authServices from "@/services/authService";
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
