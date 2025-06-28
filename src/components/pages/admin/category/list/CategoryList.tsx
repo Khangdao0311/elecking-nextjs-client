@@ -1,115 +1,89 @@
 "use client";
-
 import { FiEdit } from "react-icons/fi";
-import TitleAdmin from "@/components/admin/TitleAdmin";
-import Boxsearchlimit from "@/components/admin/boxsearchlimtit";
-import Statusbrand from "@/pages/E-admin/Components/Status";
 import { GoPlus } from "react-icons/go";
 import { useEffect, useState } from "react";
-import * as brandServices from "@/services/brandService";
-import config from "@/config";
 import Link from "next/link";
+import TitleAdmin from "@/components/admin/TitleAdmin";
+import Boxsearchlimit from "@/components/admin/boxsearchlimtit";
+import * as categoryServices from "@/services/categoryService";
+import Statuscategory from "@/components/pages/E-admin/Components/Status";
+import config from "@/config";
 import { useStore } from "@/store";
 import Loading from "@/components/client/Loading";
-import { Pagination, Tooltip } from "antd";
+import { Pagination } from "antd";
 import { Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 
-function BrandList() {
+function CategoryList() {
+  const [state, dispatch] = useStore();
   const [limit, setLimit] = useState(5);
   const [search, setSearch] = useState("");
-  const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
-  const [load, setLoad] = useState(true);
-  const [state, dispatch] = useStore();
 
   useEffect(() => {
     const query: any = {};
     query.limit = limit;
-    query.status = '';
     query.page = page;
     if (search != "") {
       query.search = search;
     }
-    brandServices.getQuery(query).then((res) => {
+    categoryServices.getQuery(query).then((res) => {
       if (res.status === 200) {
-        setBrands(res.data);
         setTotalPages(res.total);
-        setLoad(false);
+        setCategories(res.data);
       }
     });
   }, [limit, page, search]);
 
   const getTableScroll = (dataLength: any) => {
-    if (dataLength <= 5) return undefined;
+    if (dataLength <= 30) return undefined;
     return { x: 50, y: "max-content" };
   };
 
-  const columns: TableProps<IBrand>["columns"] = [
+  const columns: TableProps<ICategory>["columns"] = [
     {
       title: "STT",
-      dataIndex: "index",
       align: "center",
-      width: 80,
+      dataIndex: "index",
+      width: 100,
+      key: "index",
       render: (_, __, index) => (page - 1) * limit + index + 1,
     },
     {
-      title: "Tên Thương Hiệu",
+      title: "Ảnh",
+      dataIndex: "image",
+      align: "center",
+      key: "image",
+      render: (image) => (
+        <div className="flex items-center justify-center">
+          <img src={image} alt="Danh mục" className="w-8 max-w-8 h-8 rounded" />
+        </div>
+      ),
+    },
+    {
+      title: "Tên Danh Mục",
       dataIndex: "name",
+      width: 450,
       key: "name",
-      width: 200,
     },
     {
-      title: "Logo",
-      dataIndex: "logo",
+      title: "Tên Danh Mục Cấu Hình",
+      dataIndex: "proptypes",
       align: "center",
-      width: 150,
-      render: (logo) => (
-        <div className="flex justify-center">
-          <img
-            src={logo || "https://vawr.vn/images/logo-google.png"}
-            alt="Logo"
-            className=" h-8 rounded text-center"
-          />
-        </div>
-      ),
+      width: 450,
+      key: "proptypes",
+      render: (proptypes) =>
+        proptypes.map((proptype: any) => proptype.name).join(" - ") || "-",
     },
     {
-      title: "Ảnh Bìa",
-      dataIndex: "banner",
+      title: <span className="w-6 text-center">Trạng thái</span>,
       align: "center",
-      width: 180,
-      render: (banner) => (
-        <div className="flex justify-center">
-          <img
-            src={banner || "https://vawr.vn/images/logo-google.png"}
-            alt="Banner"
-            className="w-16 h-8 rounded"
-          />
-        </div>
-      ),
-    },
-    {
-      title: "Mô tả",
-      dataIndex: "description",
-      width: 290,
-      key: "description",
-      render: (text) => (
-        <Tooltip title={<div dangerouslySetInnerHTML={{ __html: text }} />}>
-          <span
-            className="line-clamp-1"
-            dangerouslySetInnerHTML={{ __html: text }}
-          />
-        </Tooltip>
-      ),
-    },
-    {
-      title: "Trạng Thái",
       dataIndex: "status",
-      align: "center",
-      width: 120,
-      render: (status) => {     
+      width: 290,
+      key: "status",
+      render: (status) => {
         let text = "";
         switch (status) {
           case 0:
@@ -119,18 +93,23 @@ function BrandList() {
             text = "Đang hoạt động";
             break;
         }
-        return <Statusbrand status={status} text={text} />;
+        return (
+          <div className="flex items-center justify-center">
+            <Statuscategory status={status} text={text} />
+          </div>
+        );
       },
     },
     {
       title: "Chức năng",
+      width: 200,
       align: "center",
-      width: 100,
+      key: "action",
       render: (_, record) => (
-        <Space>
+        <Space size="middle">
           <Link
-            href={`${config.routes.admin.brand.edit}/${record.id}`}
-            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 flex items-center justify-center"
+            href={`${config.routes.admin.category.edit}/${record.id}`}
+            className="w-6 h-6 bg-yellow-100 rounded text-yellow-800 center-flex"
           >
             <FiEdit className="w-5 h-5" />
           </Link>
@@ -146,9 +125,9 @@ function BrandList() {
         ""
       ) : (
         <>
-          <TitleAdmin title="Danh Sách Thương Hiệu" />
+          <TitleAdmin title="Danh Sách Danh Mục" />
           <Boxsearchlimit
-            title="thương hiệu"
+            title="danh mục"
             onLimitChange={(newLimit: any) => {
               setLimit(newLimit);
               setPage(1);
@@ -158,20 +137,20 @@ function BrandList() {
               setPage(1);
             }}
           />
-          <div className=" bg-white shadow-xl min-h-0 rounded-lg px-4 py-4 flex items-start flex-col gap-4">
+          <div className=" bg-white shadow-xl rounded-lg px-4 py-4 flex min-h-0 items-start flex-col gap-4">
             <Link
-              href={config.routes.admin.brand.add}
+              href={config.routes.admin.category.add}
               className="flex items-center gap-2.5 p-2.5 bg-green-100 rounded"
             >
               <GoPlus className="w-6 h-6" />
-              <p className="text-sm font-bold">Tạo thương hiệu mới</p>
+              <p className="text-sm font-bold">Tạo danh mục mới</p>
             </Link>
             <div style={{ width: "100%", overflowX: "auto", maxWidth: "100%" }}>
-              <Table<IBrand>
+              <Table<ICategory>
                 columns={columns}
-                dataSource={brands}
+                dataSource={categories}
                 rowKey="id"
-                scroll={getTableScroll(brands.length)}
+                scroll={getTableScroll(categories.length)}
                 pagination={false}
                 tableLayout="auto"
               />
@@ -195,4 +174,4 @@ function BrandList() {
     </>
   );
 }
-export default BrandList;
+export default CategoryList;

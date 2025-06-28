@@ -1,1 +1,1 @@
-export { default } from "@/layouts/noFooterLayout";
+export { default } from "@/components/layouts/noFooterLayout";

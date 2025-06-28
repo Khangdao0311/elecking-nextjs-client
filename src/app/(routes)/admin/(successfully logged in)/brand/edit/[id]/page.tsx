@@ -1,1 +1,1 @@
-export { default } from "@/pages/E-admin/brand/edit";
+export { default } from "@/components/pages/E-admin/brand/edit";

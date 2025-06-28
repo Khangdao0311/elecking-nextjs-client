@@ -1,1 +1,1 @@
-export { default } from "@/pages/E-client/account/password";
+export { default } from "@/components/pages/client/account/password";

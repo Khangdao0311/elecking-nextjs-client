@@ -1,1 +1,1 @@
-export { default } from "@/pages/E-client/cart";
+export { default } from "@/components/pages/client/cart";

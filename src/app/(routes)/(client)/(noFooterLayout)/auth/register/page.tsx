@@ -1,1 +1,1 @@
-export { default } from "@/pages/E-client/auth/register";
+export { default } from "@/components/pages/client/auth/register";
