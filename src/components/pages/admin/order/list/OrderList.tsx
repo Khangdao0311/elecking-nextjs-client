@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import Boxsearchlimit from "@/components/admin/boxsearchlimtit";
 import * as orderServices from "@/services/orderService";
-import Statusorder from "@/components/pages/E-admin/Components/Status";
+import Statusorder from "@/components/pages/admin/Components/Status";
 import { useStore } from "@/store";
 import Loading from "@/components/client/Loading";
 import { Modal } from "antd";

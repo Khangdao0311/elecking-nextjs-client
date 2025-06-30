@@ -6,7 +6,7 @@ import Link from "next/link";
 import TitleAdmin from "@/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/components/admin/boxsearchlimtit";
 import * as categoryServices from "@/services/categoryService";
-import Statuscategory from "@/components/pages/E-admin/Components/Status";
+import Statuscategory from "@/components/pages/admin/Components/Status";
 import config from "@/config";
 import { useStore } from "@/store";
 import Loading from "@/components/client/Loading";

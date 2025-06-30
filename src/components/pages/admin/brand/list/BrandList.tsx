@@ -3,7 +3,7 @@
 import { FiEdit } from "react-icons/fi";
 import TitleAdmin from "@/components/admin/TitleAdmin";
 import Boxsearchlimit from "@/components/admin/boxsearchlimtit";
-import Statusbrand from "@/components/pages/E-admin/Components/Status";
+import Statusbrand from "@/components/pages/admin/Components/Status";
 import { GoPlus } from "react-icons/go";
 import { useEffect, useState } from "react";
 import * as brandServices from "@/services/brandService";

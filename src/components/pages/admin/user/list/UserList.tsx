@@ -4,7 +4,7 @@ import Boxsearchlimit from "@/components/admin/boxsearchlimtit";
 import * as userServices from "@/services/userService";
 import * as authServices from "@/services/authService";
 import { useEffect, useState } from "react";
-import Statususer from "@/components/pages/E-admin/Components/Status";
+import Statususer from "@/components/pages/admin/Components/Status";
 import { FaCircleUser, FaEye } from "react-icons/fa6";
 import { LuEyeClosed } from "react-icons/lu";
 import "swiper/css";
